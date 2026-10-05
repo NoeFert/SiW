@@ -54,3 +54,23 @@ export function summon(roster, units, spiritStones, speciesKey, level = 1, falle
     spiritStones: spiritStones - resummonPrice(species, level),
   };
 }
+
+// rules.md 11.4 : une espèce qui n'est pas [Légendaire] peut être invoquée plusieurs fois d'un
+// coup (écran Invocation, boutons − / +). Nombre maximal payable avec le solde (0 si aucun), 1
+// au plus pour un [Légendaire].
+export function maxSummonCount(species, spiritStones) {
+  const affordable = Math.floor(spiritStones / summonPrice(species));
+  return isLegendary(species) ? Math.min(affordable, 1) : affordable;
+}
+
+// rules.md 11.4 : `count` invocations successives de la même espèce (pas un [Légendaire]),
+// toutes ou aucune : la nouvelle liste et le nouveau solde, ou `null` si c'est impossible.
+export function summonMany(roster, units, spiritStones, speciesKey, count) {
+  if (count < 1 || isLegendary(roster[speciesKey])) return null;
+  let result = { units, spiritStones };
+  for (let i = 0; i < count; i += 1) {
+    result = summon(roster, result.units, result.spiritStones, speciesKey);
+    if (!result) return null;
+  }
+  return result;
+}

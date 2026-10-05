@@ -301,9 +301,14 @@ export default function App() {
   return (
     <>
       {/* GRAPHICS.md « Interface » : la faction du joueur choisit la teinte des accents (pixel-ui.css) ;
-          fond de tous les écrans : dégradé vertical #2a2c2f → #838796 (l'accueil le couvre de son
-          château). */}
-      <div data-faction={playerFaction ?? undefined} className="h-full bg-linear-to-b from-[#2a2c2f] to-[#838796] p-12">
+          fond des écrans : noir pour l'intro et le choix de faction, dégradé vertical #2a2c2f →
+          #838796 pour les autres (l'accueil le couvre de son château). */}
+      <div
+        data-faction={playerFaction ?? undefined}
+        className={`h-full p-12 ${screen === 'intro' || screen === 'factionChoice'
+          ? 'bg-neutral-900'
+          : 'bg-linear-to-b from-[#2a2c2f] to-[#838796]'}`}
+      >
         <Fragment key={saveVersion}>{content}</Fragment>
       </div>
       {import.meta.env.DEV && <DevMenu actions={devActions} />}

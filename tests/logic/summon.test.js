@@ -2,7 +2,7 @@ import { createUnit } from '../../src/logic/ownedUnits.js';
 import { createArmy, armyUnits } from '../../src/logic/army.js';
 import {
   summonAction, SUMMON_PRICE_FACTOR, LEGENDARY_PRICE_MULTIPLIER, summonPrice, canSummon, summon,
-  resummonPrice,
+  resummonPrice, maxSummonCount, summonMany,
 } from '../../src/logic/summon.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
@@ -104,5 +104,31 @@ describe('réinvocation à niveau gardé (rules.md 11.4)', () => {
   test('une unité non légendaire est toujours invoquée niveau 1', () => {
     expect(summon(roster, [], 1000, 'lambtonWorm', 3, 5)).toBeNull();
     expect(summon(roster, [], 1000, 'lambtonWorm').units[0].xp).toBe(0);
+  });
+});
+
+describe('invocation multiple (rules.md 11.4)', () => {
+  const roster = WYRMS_ROSTER;
+
+  test('nombre maximal payable ; 1 au plus pour un Légendaire', () => {
+    expect(maxSummonCount(roster.lambtonWorm, 35)).toBe(3); // 10 chacun
+    expect(maxSummonCount(roster.lambtonWorm, 5)).toBe(0);
+    expect(maxSummonCount(roster.fafnir, 1000)).toBe(1);
+  });
+
+  test('invoque plusieurs individus et débite la somme des prix', () => {
+    const result = summonMany(roster, [], 100, 'amphiptere', 3);
+    expect(result.spiritStones).toBe(25); // 3 × 25
+    expect(result.units).toHaveLength(3);
+    expect(result.units.every((unit) => unit.species === 'amphiptere')).toBe(true);
+  });
+
+  test('tout ou rien : impossible si le solde ne couvre pas toutes les invocations', () => {
+    expect(summonMany(roster, [], 40, 'amphiptere', 2)).toBeNull();
+  });
+
+  test('jamais pour un Légendaire, ni pour moins d\'un individu', () => {
+    expect(summonMany(roster, [], 1000, 'fafnir', 2)).toBeNull();
+    expect(summonMany(roster, [], 1000, 'lambtonWorm', 0)).toBeNull();
   });
 });

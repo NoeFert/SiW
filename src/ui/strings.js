@@ -98,6 +98,8 @@ export const TEXT = {
     confirmResummon: (name, level, price) => `Réinvoquer ${name} niveau ${level} pour ${price} Spirit Stones ?`,
     keptLevel: 'Niveau gardé :',
     levelPrice: (level, price) => `niv ${level} — ${price}`,
+    less: 'Invoquer un individu de moins',
+    more: 'Invoquer un individu de plus',
   },
   // « Partir en guerre » (rules.md 11.7). Noms des batailles provisoires.
   war: {

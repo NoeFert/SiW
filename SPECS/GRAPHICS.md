@@ -105,7 +105,7 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 
 **Padding du jeu** : sur tous les écrans (accueil, écrans de la couche méta, bataille, intro, fins de bataille), les éléments sont à **30 px** du bord de la fenêtre ; le fond des écrans va jusqu'au bord. Les éléments placés « dans un coin » (portrait, solde, menu, fontaine, « Retour », « Skip ») sont collés à ce padding.
 
-**Fond des écrans** : un **dégradé vertical**, de **#2a2c2f** en haut à **#838796** en bas, sur toute la fenêtre (padding compris), à la place du fond noir. L'accueil le recouvre de son château ; la tour de bataille garde son propre fond.
+**Fond des écrans** : un **dégradé vertical**, de **#2a2c2f** en haut à **#838796** en bas, sur toute la fenêtre (padding compris). L'intro et le choix de faction gardent le **fond noir** (#171717). L'accueil le recouvre de son château ; la tour de bataille garde son propre fond.
 
 **Mise en page plein écran** : comme l'accueil, les écrans « Partir en guerre », unités, « Armées » et Invocation occupent tout l'écran, sans carte centrée. En-tête commun en haut à gauche : une **flèche vers la gauche** (◀, sans cadre de bouton, à la place du bouton « Retour ») puis le titre ; le contenu prend toute la surface restante et défile si besoin (`src/ui/ScreenLayout.jsx`). La grille des unités et la liste d'invocation remplissent la largeur avec autant de colonnes qu'il en tient.
 
