@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/8bit/tooltip.jsx';
@@ -10,16 +10,18 @@ import { spritePath } from '../data/sprites.js';
 import { SpiritStoneIcon } from './SpiritStonesBalance.jsx';
 import { TEXT } from './strings.js';
 
-// rules.md 11.8 / GRAPHICS.md : Spirit Fountain de l'accueil, cliquable mais sans cadre de bouton —
+// rules.md 11.8 / GRAPHICS.md : Spirit Fountain de l'accueil, cliquable sans cadre de bouton —
 // contenu actuel avec l'icône des Spirit Stones, au-dessus de la statue de pierre (stone-statue,
-// taille d'origine, assombrie), recalculé
-// chaque seconde depuis l'heure de la dernière récolte. Un clic récolte :
-// `onHarvest(collected)` crédite le solde. Au survol, un tooltip provisoire (sous la fontaine)
-// explique ce qu'elle produit ; le déclencheur est un <span> autour du bouton pour qu'il
-// s'affiche aussi quand la fontaine est vide (bouton désactivé). Radix exige un TooltipProvider.
+// taille d'origine, assombrie), recalculé chaque seconde depuis l'heure de la dernière récolte.
+// Vide, elle reste opaque mais n'est pas cliquable. Un clic récolte : `onHarvest(collected,
+// iconRect)` crédite le solde ; `iconRect` (position de la gemme) sert de départ à l'animation
+// vers le solde. Au survol, un tooltip provisoire (sous la fontaine) explique ce qu'elle produit ;
+// le déclencheur est un <span> autour du bouton pour qu'il s'affiche aussi quand la fontaine est
+// vide (bouton désactivé). Radix exige un TooltipProvider.
 export default function SpiritFountain({ playerLevel, onHarvest }) {
   const [now, setNow] = useState(Date.now);
   const [lastHarvest, setLastHarvest] = useState(getFountainLastHarvest);
+  const iconRef = useRef(null);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
@@ -34,7 +36,7 @@ export default function SpiritFountain({ playerLevel, onHarvest }) {
     if (result.collected === 0) return;
     saveFountainLastHarvest(result.lastHarvestMs);
     setLastHarvest(result.lastHarvestMs);
-    onHarvest(result.collected);
+    onHarvest(result.collected, iconRef.current?.getBoundingClientRect() ?? null);
   };
 
   return (
@@ -42,10 +44,10 @@ export default function SpiritFountain({ playerLevel, onHarvest }) {
       <Tooltip>
         <TooltipTrigger>
           <span className="inline-block">
-            <button type="button" onClick={harvest} disabled={content === 0} className="retro text-white enabled:cursor-pointer enabled:hover:brightness-125 disabled:opacity-50">
+            <button type="button" onClick={harvest} disabled={content === 0} className="retro text-white enabled:cursor-pointer enabled:hover:brightness-125">
               <span className="flex w-52 flex-col gap-2">
                 <span className="flex items-center justify-center gap-2 text-xs">
-                  <SpiritStoneIcon />
+                  <span ref={iconRef} className="flex"><SpiritStoneIcon /></span>
                   {content}
                 </span>
                 <img src={spritePath('stone-statue')} alt="" className="pixelated mx-auto h-28.75 w-18 brightness-75" />

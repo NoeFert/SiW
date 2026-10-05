@@ -22,7 +22,7 @@ export default function SpiritStonesBalance({ amount, framed = false }) {
   if (framed) {
     return (
       <span className="pixel-panel retro absolute top-0 right-0 inline-flex items-center gap-2 px-2 text-sm">
-        <SpiritStoneIcon />
+        <span data-spirit-balance-icon className="flex"><SpiritStoneIcon /></span>
         {amount}
       </span>
     );

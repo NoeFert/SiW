@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { SOVEREIGN_SPRITES, spritePath } from '../data/sprites.js';
 import { playerProgress } from '../logic/levels.js';
 import {
@@ -6,6 +6,7 @@ import {
 } from '../persistence.js';
 import { XpBar } from '../ui/LevelDisplay.jsx';
 import SpiritFountain from '../ui/SpiritFountain.jsx';
+import SpiritStonesFlight from '../ui/SpiritStonesFlight.jsx';
 import SpiritStonesBalance from '../ui/SpiritStonesBalance.jsx';
 import { TEXT } from '../ui/strings.js';
 
@@ -27,6 +28,8 @@ const HOME_BACKGROUNDS = {
   undead: 'backgrounds/dark-castle-cold-grey.png',
 };
 
+const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+
 // technical.md 5.1 : écran d'accueil, point central du jeu, accessible uniquement après la
 // première victoire. En haut à gauche, le portrait du souverain avec, à sa droite, son nom, sa
 // barre d'XP et son niveau (rules.md 11.5) ; solde de Spirit Stones en haut à droite (rules.md
@@ -39,11 +42,28 @@ export default function HomeScreen({
   const [spiritStones, setSpiritStones] = useState(getSpiritStones);
   const progress = playerProgress(getPlayerXp());
 
-  const collect = (amount) => {
+  // rules.md 11.8 : la récolte est sauvegardée tout de suite ; le solde affiché n'augmente qu'à
+  // l'arrivée des gemmes qui volent de la fontaine jusqu'à lui (au plus 5), pour montrer où
+  // elles vont. `landedBalance` : solde à afficher à l'arrivée.
+  const [flight, setFlight] = useState(null);
+  const landedBalance = useRef(null);
+  const collect = (amount, iconRect) => {
     const balance = getSpiritStones() + amount;
     saveSpiritStones(balance);
-    setSpiritStones(balance);
+    landedBalance.current = balance;
+    const target = document.querySelector('[data-spirit-balance-icon]')?.getBoundingClientRect();
+    if (!iconRect || !target) {
+      setSpiritStones(balance);
+      return;
+    }
+    setFlight({
+      key: Date.now(), from: rectCenter(iconRect), to: rectCenter(target), count: Math.min(amount, 5),
+    });
   };
+  const land = useCallback(() => {
+    setSpiritStones(landedBalance.current);
+    setFlight(null);
+  }, []);
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 text-white">
@@ -80,6 +100,9 @@ export default function HomeScreen({
       <div className="absolute left-2 -bottom-0.5">
         <SpiritFountain playerLevel={progress.level} onHarvest={collect} />
       </div>
+      {flight && (
+        <SpiritStonesFlight key={flight.key} from={flight.from} to={flight.to} count={flight.count} onDone={land} />
+      )}
     </div>
   );
 }
