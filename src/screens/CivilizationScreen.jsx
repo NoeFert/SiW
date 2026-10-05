@@ -7,11 +7,12 @@ import {
   levelGroups, nextToAdd, nextToRemove, removeFromArmy, renameArmy,
 } from '../logic/army.js';
 import {
-  individualProgress, levelDamage, levelStat, sortByLevel,
+  individualLevel, individualProgress, levelDamage, levelStat, sortByLevel,
 } from '../logic/levels.js';
 import { isLegendary } from '../logic/ownedUnits.js';
 import { summonAction } from '../logic/summon.js';
 import { getArmy, getOwnedUnits, saveArmy } from '../persistence.js';
+import ArrowButton from '../ui/ArrowButton.jsx';
 import { LevelBadge, XpBar } from '../ui/LevelDisplay.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import SpeciesSprite from '../ui/SpeciesSprite.jsx';
@@ -28,10 +29,9 @@ function Keywords({ species }) {
 }
 
 // technical.md 5.1 : en-tête d'accordéon d'une espèce — clic pour ouvrir ou fermer la liste de
-// ses individus. `summary` : ce qui s'affiche sous le nom. Une espèce sans individu reste
-// affichée, grisée.
+// ses individus. Une espèce sans individu reste affichée, grisée.
 function SpeciesAccordion({
-  species, owned, open, onToggle, summary, children,
+  species, owned, open, onToggle, children,
 }) {
   return (
     <div className="border-2 border-white/30 bg-black/40">
@@ -45,12 +45,9 @@ function SpeciesAccordion({
           <span className="w-3 text-xs">{owned === 0 ? '' : (open ? '▾' : '▸')}</span>
           <span className="retro text-xs w-8 text-right">{owned}x</span>
           <SpeciesSprite species={species} className="size-12" />
-          <div className="flex flex-col gap-2 text-xs">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="font-bold">{unitName(species)}</span>
-              <Badge className="text-[10px] mx-1.5">{TEXT.presenceTag(species.cost)}</Badge>
-            </div>
-            <div className="flex flex-wrap items-center gap-y-1">{summary}</div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+            <span className="font-bold">{unitName(species)}</span>
+            <Badge className="text-[10px] mx-1.5">{TEXT.presenceTag(species.cost)}</Badge>
           </div>
         </button>
       </div>
@@ -107,25 +104,29 @@ function LegendaryCorners({ species }) {
 }
 
 // Case carrée d'un groupe d'individus strictement identiques (même espèce, même niveau, comme la
-// tour de commandement ; panneau PanelLarge) : sprite, puis nom, niveau et nombre. Clic -> page
-// de détail du groupe.
+// tour de commandement ; panneau PanelLarge) : sprite, puis nom et niveau. Un groupe de plusieurs
+// individus porte une fine bande en haut (GridPanelInactive du pack) avec leur nombre (« 3x »). Clic -> page de détail
+// du premier individu du groupe (le plus avancé en XP).
 function UnitTile({
   group, species, faction, onSelect,
 }) {
+  const count = group.unitIds.length;
   return (
     <button
       type="button"
       onClick={onSelect}
       className={`pixel-card relative flex aspect-square flex-col items-center justify-center gap-2 text-[10px] hover:brightness-125 ${legendaryClass(species)}`}
     >
+      {count > 1 && (
+        <span className="group-band retro absolute inset-x-0 top-0 text-center text-[9px] leading-none">
+          {count}x
+        </span>
+      )}
       <LegendaryCorners species={species} />
       <SpeciesSprite species={species} className="size-14" />
       <span className="flex flex-col items-center gap-1 text-center leading-tight">
         <span>{unitName(species)}</span>
-        <span className="retro">
-          <span className={LEVEL_TEXT_CLASS[faction]}>{TEXT.levels.badge(group.level)}</span>
-          {group.unitIds.length > 1 && <span className="text-white/70"> · {group.unitIds.length}x</span>}
-        </span>
+        <span className={`retro ${LEVEL_TEXT_CLASS[faction]}`}>{TEXT.levels.badge(group.level)}</span>
       </span>
     </button>
   );
@@ -161,51 +162,62 @@ function statRows(species, level) {
   ];
 }
 
-// technical.md 5.1 : page de détail d'un groupe d'individus strictement identiques (vue interne à
-// l'écran) — combien sont dans l'armée, XP de chacun, stats à leur niveau, aptitudes.
-function GroupDetail({
-  group, members, species, faction, inArmy,
+// technical.md 5.1 : page de détail d'un individu (jamais d'un groupe ; vue interne à l'écran) —
+// niveau, barre d'XP, stats à son niveau, aptitudes. Flèches à gauche et à droite, centrées en
+// hauteur, vers l'individu précédent / suivant dans l'ordre de la grille (`onPrevious` /
+// `onNext` : null au bout).
+function IndividualDetail({
+  unit, species, faction, onPrevious, onNext,
 }) {
-  const { level } = group;
+  const level = individualLevel(unit.xp);
   return (
-    <div className="flex max-w-3xl flex-col gap-6 text-sm">
-      <div className="flex items-center gap-6">
-        <SpeciesSprite species={species} className="size-32" />
-        <div className="flex flex-1 flex-col gap-3">
-          <span className="retro text-sm">{unitName(species)}</span>
-          <div className="flex flex-wrap items-center gap-y-1">
-            <LevelBadge level={level} faction={faction} />
-            <Keywords species={species} />
+    <div className="relative flex min-h-full items-center justify-center px-16">
+      <ArrowButton
+        direction="left"
+        label={T.previous}
+        disabled={!onPrevious}
+        onClick={onPrevious}
+        className="absolute top-1/2 left-0 -translate-y-1/2"
+      />
+      <ArrowButton
+        direction="right"
+        label={T.next}
+        disabled={!onNext}
+        onClick={onNext}
+        className="absolute top-1/2 right-0 -translate-y-1/2"
+      />
+      <div className="flex w-full max-w-3xl flex-col gap-6 text-sm">
+        <div className="flex items-center gap-6">
+          <SpeciesSprite species={species} className="size-32" />
+          <div className="flex flex-1 flex-col gap-3">
+            <span className="retro text-sm">{unitName(species)}</span>
+            <div className="flex flex-wrap items-center gap-y-1">
+              <LevelBadge level={level} faction={faction} />
+              <Keywords species={species} />
+            </div>
+            <XpBar progress={individualProgress(unit.xp)} faction={faction} />
           </div>
-          <span>{T.armySummary(inArmy, members.length)}</span>
         </div>
-      </div>
-      {/* XP de chaque individu du groupe, du plus avancé au moins avancé. */}
-      <section className="flex flex-col gap-2">
-        <h3 className="retro text-xs">{T.individualsXp}</h3>
-        {members.map((unit) => (
-          <XpBar key={unit.id} progress={individualProgress(unit.xp)} faction={faction} />
-        ))}
-      </section>
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-1">
-        {statRows(species, level).map(([label, value]) => (
-          <div key={label} className="contents">
-            <dt className="text-white/60">{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
-      {species.abilities && (
-        <section className="flex flex-col gap-2">
-          <h3 className="retro text-xs">{T.abilities}</h3>
-          {species.abilities.map((ability) => (
-            <p key={ability.name}>
-              <span className="font-bold">{ability.name} : </span>
-              {TEXT.abilityDescriptions[ability.name]}
-            </p>
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-1">
+          {statRows(species, level).map(([label, value]) => (
+            <div key={label} className="contents">
+              <dt className="text-white/60">{label}</dt>
+              <dd>{value}</dd>
+            </div>
           ))}
-        </section>
-      )}
+        </dl>
+        {species.abilities && (
+          <section className="flex flex-col gap-2">
+            <h3 className="retro text-xs">{T.abilities}</h3>
+            {species.abilities.map((ability) => (
+              <p key={ability.name}>
+                <span className="font-bold">{ability.name} : </span>
+                {TEXT.abilityDescriptions[ability.name]}
+              </p>
+            ))}
+          </section>
+        )}
+      </div>
     </div>
   );
 }
@@ -250,8 +262,9 @@ function ArmyName({ name, onRename }) {
 // technical.md 5.1 : gestion de civilisation, en deux écrans ouverts chacun par son bouton de
 // l'accueil (`section`) :
 // - 'units' (titré du nom de la faction) : grille de cases carrées, une par groupe d'individus
-//   strictement identiques (clic -> page de détail du groupe) ; une espèce à 0 garde une case
-//   grisée avec son bouton Invoquer / Réinvoquer.
+//   strictement identiques (clic -> page de détail de son premier individu, puis flèches d'un
+//   individu à l'autre) ; une espèce à 0 garde une case grisée avec son bouton Invoquer /
+//   Réinvoquer.
 // - 'army' (« Armées ») : nom, compteur « X / 500 PP », un accordéon par espèce ; fermé, un
 //   résumé ; ouvert, une case « dans l'armée » par individu (rules.md 11.2), sauvegardée à
 //   chaque changement.
@@ -260,7 +273,7 @@ export default function CivilizationScreen({
   playerFaction, section, onBack, onOpenSummon,
 }) {
   const [openKey, setOpenKey] = useState(null);
-  const [selected, setSelected] = useState(null); // { key, level } : groupe affiché en détail
+  const [selectedId, setSelectedId] = useState(null); // individu affiché en détail
   const [army, setArmy] = useState(getArmy);
   const roster = ROSTERS[playerFaction];
   const [units] = useState(() => getOwnedUnits() ?? []);
@@ -273,17 +286,22 @@ export default function CivilizationScreen({
   };
   const toggle = (key) => setOpenKey((current) => (current === key ? null : key));
 
-  const selectedGroup = selected
-    && levelGroups(speciesUnits(selected.key)).find((group) => group.level === selected.level);
+  const selected = units.find((unit) => unit.id === selectedId);
+  // Tous les individus, dans l'ordre de la grille des unités (roster, puis niveaux décroissants,
+  // puis XP décroissante dans un groupe) : ordre de navigation de la page de détail.
+  const gridOrder = Object.keys(roster)
+    .flatMap((key) => levelGroups(speciesUnits(key)).flatMap((group) => group.unitIds));
+  const selectedIndex = gridOrder.indexOf(selectedId);
+  const goTo = (index) => (gridOrder[index] ? () => setSelectedId(gridOrder[index]) : null);
   let content;
-  if (selectedGroup) {
+  if (selected) {
     content = (
-      <GroupDetail
-        group={selectedGroup}
-        members={selectedGroup.unitIds.map((id) => units.find((unit) => unit.id === id))}
-        species={roster[selected.key]}
+      <IndividualDetail
+        unit={selected}
+        species={roster[selected.species]}
         faction={playerFaction}
-        inArmy={selectedGroup.unitIds.filter((id) => armyIds.has(id)).length}
+        onPrevious={goTo(selectedIndex - 1)}
+        onNext={goTo(selectedIndex + 1)}
       />
     );
   } else if (section === 'army') {
@@ -297,7 +315,6 @@ export default function CivilizationScreen({
         <div className="grid grid-cols-3 items-start gap-3">
           {Object.entries(roster).map(([key, species]) => {
             const members = speciesUnits(key);
-            const inArmy = members.filter((unit) => armyIds.has(unit.id)).length;
             return (
               <SpeciesAccordion
                 key={key}
@@ -305,7 +322,6 @@ export default function CivilizationScreen({
                 owned={members.length}
                 open={openKey === key}
                 onToggle={() => toggle(key)}
-                summary={<span>{T.armySummary(inArmy, members.length)}</span>}
               >
                 {openKey === key && levelGroups(members).map((group) => {
                   const addId = nextToAdd(army, group);
@@ -343,7 +359,7 @@ export default function CivilizationScreen({
               group={group}
               species={species}
               faction={playerFaction}
-              onSelect={() => setSelected({ key, level: group.level })}
+              onSelect={() => setSelectedId(group.unitIds[0])}
             />
           ));
         })}
@@ -355,7 +371,7 @@ export default function CivilizationScreen({
   return (
     <ScreenLayout
       title={section === 'army' ? T.army : TEXT.factions[playerFaction]}
-      onBack={selectedGroup ? () => setSelected(null) : onBack}
+      onBack={selected ? () => setSelectedId(null) : onBack}
     >
       {content}
     </ScreenLayout>

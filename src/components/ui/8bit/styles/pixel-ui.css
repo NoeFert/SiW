@@ -10,6 +10,7 @@
 .pixel-bar-frame,
 .pixel-frame,
 .pixel-panel,
+.group-band,
 .pixel-divider,
 .spirit-stone-icon {
   image-rendering: pixelated;
@@ -111,6 +112,14 @@
   border-width: 4px;
   border-image: url("/ui/panel-plain.png") 2 fill / 4px stretch;
   padding-block: 4px;
+}
+
+/* Bande du nombre d'individus d'un groupe (Panels/Black/GridPanelInactive, 16×16), en haut des
+   cases de la grille des unités. */
+.group-band {
+  border-style: solid;
+  border-width: 4px;
+  border-image: url("/ui/group-band.png") 2 fill / 4px stretch;
 }
 
 /* Cadre en creux (Frame, 32×32) : portrait du souverain. */

@@ -105,7 +105,7 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 
 **Padding du jeu** : sur tous les écrans (accueil, écrans de la couche méta, bataille, intro, fins de bataille), les éléments sont à **30 px** du bord de la fenêtre ; le fond des écrans va jusqu'au bord. Les éléments placés « dans un coin » (portrait, solde, menu, fontaine, « Retour », « Skip ») sont collés à ce padding.
 
-**Mise en page plein écran** : comme l'accueil, les écrans « Partir en guerre », unités, « Armées » et Invocation occupent tout l'écran, sans carte centrée. En-tête commun en haut à gauche : bouton « Retour » puis le titre ; le contenu prend toute la surface restante et défile si besoin (`src/ui/ScreenLayout.jsx`). La grille des unités et la liste d'invocation remplissent la largeur avec autant de colonnes qu'il en tient.
+**Mise en page plein écran** : comme l'accueil, les écrans « Partir en guerre », unités, « Armées » et Invocation occupent tout l'écran, sans carte centrée. En-tête commun en haut à gauche : une **flèche vers la gauche** (◀, sans cadre de bouton, à la place du bouton « Retour ») puis le titre ; le contenu prend toute la surface restante et défile si besoin (`src/ui/ScreenLayout.jsx`). La grille des unités et la liste d'invocation remplissent la largeur avec autant de colonnes qu'il en tient.
 
 **Tags d'une unité** (page de détail, tour de bataille) : son type d'attaque — « Corps-à-corps », « Tirs », ou les deux pour Fafnir (hybride) — puis ses keywords (« Légendaire », « Vol »). Plus de tag « basique ».
 
@@ -117,7 +117,7 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 | Carte | PanelLarge noir (48 × 48) | Panneau noir à liseré gris ; le contenu passe en thème sombre. Plus utilisée par les écrans de la couche méta (voir ci-dessous). |
 | Badge | Bannières (64 × 15), hauteur fixe 30 px | Liseré blanc (par défaut), gris (secondaire), doré ou menthe (niveaux, faction du joueur). |
 | Barre d'XP | RegularBarA | Couleur de la faction du joueur. |
-| Case d'un groupe d'individus (écran des unités) | PanelLarge noir (48 × 48) | Case carrée par groupe d'individus strictement identiques (même niveau) : sprite, puis nom, « niv X » en couleur de la faction et le nombre (« · 3x », absent pour un individu seul) ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |
-| Menu de l'accueil | DividerD violet (48 × 4) | Quatre entrées alignées à droite, sans cadre de bouton : texte rétro, violet clair au survol, souligné du séparateur étiré à la largeur du texte. |
+| Case d'un groupe d'individus (écran des unités) | PanelLarge noir (48 × 48) | Case carrée par groupe d'individus strictement identiques (même niveau) : sprite, puis nom et « niv X » en couleur de la faction ; un groupe de plusieurs individus porte une **fine bande** en haut de la case (Panels/Black/GridPanelInactive du pack) avec leur nombre (« 3x ») — rien pour un individu seul ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |
+| Menu de l'accueil | DividerD violet (48 × 4) | Quatre entrées sur le bord gauche de l'écran (marge de 20 px en plus du padding), centrées en hauteur puis remontées de 20 px (entre le portrait et la fontaine), alignées à gauche, sans cadre de bouton : texte rétro, violet clair au survol, souligné du séparateur étiré à la largeur du texte. |
 | Portrait du souverain (accueil) | Frame noir (32 × 32) | Cadre en creux autour du sprite du souverain. |
 

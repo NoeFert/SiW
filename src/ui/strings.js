@@ -62,11 +62,12 @@ export const TEXT = {
   home: {
     goToWar: 'Partir en guerre',
     units: (faction, count) => `${faction} (${count})`, // entrée vers l'écran des unités, avec le nombre d'individus possédés
-    army: 'Armées',
+    army: 'Gestion d\'armée',
     summon: 'Invocation',
   },
   civilization: {
-    individualsXp: 'XP des individus', // page de détail d'un groupe d'individus
+    previous: 'Unité précédente',
+    next: 'Unité suivante',
     stats: {
       hp: 'PV',
       damage: 'Dégâts',

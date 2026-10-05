@@ -18,7 +18,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 - Solde de **Spirit Stones** affiché en haut à droite (nom provisoire, libellé dans `strings.js`)
 - **Niveau du joueur** et barre d'XP, en haut à gauche à côté du portrait du souverain (`rules.md` 11.5)
 - **Spirit Fountain** (`rules.md` 11.8) : produit 1 Spirit Stone par minute en temps réel, jusqu'à une capacité de 20 + 10 × niveau du joueur ; un clic récolte. Garantit qu'on peut toujours réinvoquer après avoir tout perdu
-- Quatre entrées de menu, alignées à droite : **Partir en guerre**, un bouton au **nom de la faction** suivi du nombre d'individus possédés (« Wyrms (21) », section Unités), **Armées** (section Armée), **Invocation**. Les deux sections de la gestion de civilisation sont des écrans séparés
+- Quatre entrées de menu, sur le bord gauche de l'écran : **Partir en guerre**, un bouton au **nom de la faction** suivi du nombre d'individus possédés (« Wyrms (21) », section Unités), **Armées** (section Armée), **Invocation**. Les deux sections de la gestion de civilisation sont des écrans séparés
 - **Partir en guerre** : ouvre l'écran « Partir en guerre » (voir ci-dessous)
 
 ### Partir en guerre (`rules.md` 11.7)
@@ -43,14 +43,14 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 
 ### Gestion de civilisation — section Unités
 - Liste : une **grille de cases carrées**, une par groupe d'individus strictement identiques (même espèce, même niveau, comme la tour de commandement : sprite, puis nom, niveau en couleur de la faction et nombre), espèce par espèce. Une espèce sans individu (ex : Légendaire mort) garde une case grisée avec son bouton « Invoquer » / « Réinvoquer » menant à l'écran Invocation
-- Clic sur une case → **page de détail du groupe** : grand sprite, nom de l'espèce, keywords, niveau, nombre dans l'armée, barre d'XP de chaque individu, toutes les stats **à son niveau** (PV, dégâts, type d'attaque, taille, vitesses, portée, coût), texte des aptitudes (pas de bouton d'invocation)
+- Clic sur une case → **page de détail de son premier individu** (jamais groupée) : grand sprite, nom de l'espèce, keywords, niveau, barre d'XP, flèches vers l'individu précédent / suivant (un par un), toutes les stats **à son niveau** (PV, dégâts, type d'attaque, taille, vitesses, portée, coût), texte des aptitudes (pas de bouton d'invocation)
 
 ### Gestion de civilisation — section Armée
 - **Une seule armée** dans le MVP (les emplacements supplémentaires sont verrouillés, voir Suite)
 - Une armée est une liste d'identifiants d'individus (preset) : un même individu pourra figurer dans plusieurs armées quand d'autres emplacements seront débloqués
 - **Plafond : 500 PP** de coût total par armée (volontairement au-dessus des 150 PP du terrain) ; **minimum : 1 unité**
 - Actions : **renommer** l'armée (1 à 20 caractères), **ajouter / retirer** des individus, avec un compteur « X / 500 PP ». Pas de suppression (armée unique)
-- **Un accordéon par espèce** : fermé, un résumé seul (« 7 / 9 dans l'armée ») ; ouvert, une ligne par niveau (individus strictement identiques regroupés, comme la tour de commandement) avec des boutons − / + pour retirer ou ajouter un individu
+- **Un accordéon par espèce** : fermé, l'en-tête seul ; ouvert, une ligne par niveau (individus strictement identiques regroupés, comme la tour de commandement) avec des boutons − / + pour retirer ou ajouter un individu
 - Un individu invoqué n'est **pas** ajouté automatiquement à l'armée
 - **Armée de départ** : créée automatiquement à l'arrivée sur l'accueil après la victoire de la bataille 01, avec **tous les survivants** (les dotations de départ totalisent au plus 430 PP, donc tiennent toujours sous 500), et un nom par défaut
 

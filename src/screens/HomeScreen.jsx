@@ -15,7 +15,7 @@ import { TEXT } from '../ui/strings.js';
 // (violet, doré pour les Wyrms).
 function MenuItem({ onClick, children }) {
   return (
-    <button type="button" onClick={onClick} className="pixel-menu-item retro flex flex-col items-end gap-2 text-sm">
+    <button type="button" onClick={onClick} className="pixel-menu-item retro flex flex-col items-start gap-2 text-sm">
       {children}
       <span aria-hidden className="pixel-divider w-full" />
     </button>
@@ -34,7 +34,7 @@ const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rec
 // technical.md 5.1 : écran d'accueil, point central du jeu, accessible uniquement après la
 // première victoire. En haut à gauche, le portrait du souverain avec, à sa droite, son nom, sa
 // barre d'XP et son niveau (rules.md 11.5) ; solde de Spirit Stones en haut à droite (rules.md
-// 11.3) ; menu de quatre entrées alignées à droite — « Partir en guerre » (WarScreen), les unités
+// 11.3) ; menu de quatre entrées alignées à gauche — « Partir en guerre » (WarScreen), les unités
 // (entrée au nom de la faction) et « Armées » (CivilizationScreen), invocation — et la Spirit
 // Fountain alignée à gauche (rules.md 11.8).
 export default function HomeScreen({
@@ -88,7 +88,7 @@ export default function HomeScreen({
           />
         </div>
       </div>
-      <nav className="absolute right-0 top-1/2 flex -translate-y-1/2 flex-col items-end gap-8">
+      <nav className="absolute left-5 top-1/2 -mt-8 flex -translate-y-1/2 flex-col items-start gap-8">
         <MenuItem onClick={onOpenWar}>{TEXT.home.goToWar}</MenuItem>
         <MenuItem onClick={onOpenUnits}>
           {TEXT.home.units(TEXT.factions[playerFaction], (getOwnedUnits() ?? []).length)}
