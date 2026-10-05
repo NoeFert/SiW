@@ -109,7 +109,7 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 
 **Tags d'une unité** (page de détail, tour de bataille) : son type d'attaque — « Corps-à-corps », « Tirs », ou les deux pour Fafnir (hybride) — puis ses keywords (« Légendaire », « Vol »). Plus de tag « basique ».
 
-**Accents selon la faction du joueur** : dorés (variantes Gold du pack) pour la Souveraine des Wyrms, violets pour le Souverain des Morts-Vivants et les écrans d'avant le choix de faction. Concerne le survol du bouton principal, ainsi que le séparateur et le survol du menu de l'accueil. L'icône des Spirit Stones (gemme noire) est la même pour les deux factions.
+**Accents selon la faction du joueur** : dorés (variantes Gold du pack) pour la Souveraine des Wyrms, violets pour le Souverain des Morts-Vivants et les écrans d'avant le choix de faction. Concerne le survol du bouton principal et le survol du menu de l'accueil. L'icône des Spirit Stones (gemme noire) est la même pour les deux factions.
 
 | Composant | Sprite | Comportement |
 |---|---|---|
@@ -118,6 +118,7 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 | Badge | Bannières (64 × 15), hauteur fixe 30 px | Liseré blanc (par défaut), gris (secondaire), doré ou menthe (niveaux, faction du joueur). |
 | Barre d'XP | RegularBarA | Couleur de la faction du joueur. |
 | Case d'un groupe d'individus (écran des unités) | PanelLarge noir (48 × 48) | Case carrée par groupe d'individus strictement identiques (même niveau) : sprite, puis nom et « niv X » en couleur de la faction ; un groupe de plusieurs individus porte une **fine bande** en haut de la case (Panels/Black/GridPanelInactive du pack) avec leur nombre (« 3x ») — rien pour un individu seul ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |
-| Menu de l'accueil | DividerD violet (48 × 4) | Quatre entrées sur le bord gauche de l'écran (marge de 20 px en plus du padding), centrées en hauteur puis remontées de 20 px (entre le portrait et la fontaine), alignées à gauche, sans cadre de bouton : texte rétro, violet clair au survol, souligné du séparateur étiré à la largeur du texte. |
+| Menu de l'accueil | — | Quatre entrées sur le bord gauche de l'écran (marge de 20 px en plus du padding), centrées en hauteur puis remontées de 20 px (entre le portrait et la fontaine), alignées à gauche, sans cadre de bouton ni séparateur : texte rétro, violet clair au survol (doré chez les Wyrms). |
+| Séparateur d'en-tête (Partir en guerre, unités, Armées, Invocation) | DividerD noir (48 × 4) | Sous la flèche « Retour » et le titre, sur toute la largeur : sépare l'en-tête du contenu. Le pack n'a pas de DividerD noir : c'est le doré recoloré en gris très foncé. |
 | Portrait du souverain (accueil) | Frame noir (32 × 32) | Cadre en creux autour du sprite du souverain. |
 

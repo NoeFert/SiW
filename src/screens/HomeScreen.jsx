@@ -11,13 +11,11 @@ import SpiritStonesFlight from '../ui/SpiritStonesFlight.jsx';
 import SpiritStonesBalance from '../ui/SpiritStonesBalance.jsx';
 import { TEXT } from '../ui/strings.js';
 
-// GRAPHICS.md « Interface » : entrée de menu sans cadre de bouton, soulignée du séparateur
-// (violet, doré pour les Wyrms).
+// GRAPHICS.md « Interface » : entrée de menu sans cadre de bouton.
 function MenuItem({ onClick, children }) {
   return (
-    <button type="button" onClick={onClick} className="pixel-menu-item retro flex flex-col items-start gap-2 text-sm">
+    <button type="button" onClick={onClick} className="pixel-menu-item retro text-sm">
       {children}
-      <span aria-hidden className="pixel-divider w-full" />
     </button>
   );
 }

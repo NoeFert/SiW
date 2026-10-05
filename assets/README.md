@@ -24,7 +24,7 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 - `panel.png`, `panel-gold.png` — card / unit tile panel (Black and Gold/PanelLarge; gold for a legendary unit)
 - `badge.png`, `badge-secondary.png`, `badge-wyrms.png`, `badge-undead.png` — badge banners
 - `bar-background.png`, `bar-foreground.png`, `bar-fill-{purple,undead,wyrms}.png` — value bars (RegularBarA): Spirit Fountain (purple), XP (Green; Orange recolored to gold for Wyrms)
-- `divider.png`, `divider-gold.png` — home menu underline (Decorators/Purple and Gold/DividerD; gold for a Wyrms player)
+- `divider-black.png` — separator between the header and the content of the meta screens (Decorators/Gold/DividerD recolored to dark grey: no black variant in the pack)
 - `portrait-frame.png` — sovereign portrait frame on the home screen (Black/Frame)
 - `war-slot-{yellow,purple,grey}.png`, `war-slot-won-{yellow,purple}.png`, `war-selector-{yellow,purple,grey}.png`, `war-connector-{vertical,horizontal}-{yellow,purple,grey}.png` — "Partir en guerre" map (SkillTree: SkillSlotSharp, SkillSlotSharpPlaceholder, SelectorSharp, ConnectorVertical/Horizontal)
 - `war-boss-slot-{yellow,purple,grey}.png`, `war-boss-slot-won-{yellow,purple}.png`, `war-boss-selector-{yellow,purple,grey}.png` — larger boss slot on the war map (SkillTree: SkillSlotLarge, SkillSlotLargePlaceholder, SelectorLarge)
