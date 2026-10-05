@@ -37,9 +37,9 @@ export default function HomeScreen({
   };
 
   return (
-    <div className="relative h-screen w-screen flex flex-col items-center justify-center gap-10 bg-neutral-900 text-white">
+    <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 bg-neutral-900 text-white">
       <SpiritStonesBalance amount={spiritStones} />
-      <div className="absolute top-4 left-6 flex items-center gap-4">
+      <div className="absolute top-0 left-0 flex items-center gap-4">
         <div className="pixel-frame size-24">
           <img src={spritePath(SOVEREIGN_SPRITES[playerFaction])} alt="" className="size-full object-contain" />
         </div>
@@ -53,13 +53,13 @@ export default function HomeScreen({
           />
         </div>
       </div>
-      <nav className="absolute right-12 top-1/2 flex -translate-y-1/2 flex-col items-end gap-8">
+      <nav className="absolute right-0 top-1/2 flex -translate-y-1/2 flex-col items-end gap-8">
         <MenuItem onClick={onOpenWar}>{TEXT.home.goToWar}</MenuItem>
         <MenuItem onClick={onOpenUnits}>{TEXT.factions[playerFaction]}</MenuItem>
         <MenuItem onClick={onOpenArmy}>{TEXT.home.army}</MenuItem>
         <MenuItem onClick={onOpenSummon}>{TEXT.home.summon}</MenuItem>
       </nav>
-      <div className="absolute left-12 top-1/2 -translate-y-1/2">
+      <div className="absolute left-0 top-1/2 -translate-y-1/2">
         <SpiritFountain playerLevel={progress.level} onHarvest={collect} />
       </div>
     </div>

@@ -36,7 +36,7 @@ function FactionColumn({ faction, onChoose }) {
 // dépendance à Phaser (rules.md 9 : le choix détermine le roster joué et celui de l'IA).
 export default function FactionChoiceScreen({ onChoose }) {
   return (
-    <div className="relative h-screen w-screen flex bg-neutral-900 text-white">
+    <div className="relative h-full w-full flex bg-neutral-900 text-white">
       <FactionColumn faction="wyrms" onChoose={onChoose} />
       <div className="w-1 bg-white/20" />
       <FactionColumn faction="undead" onChoose={onChoose} />

@@ -27,11 +27,20 @@ const PARTIAL_DESATURATION = -0.7;
 // Durée de l'arrivée d'une unité IA depuis l'extérieur de l'écran jusqu'au bord droit.
 const ENEMY_ENTRY_MS = 600;
 
-// Couleur du missile d'attaque à distance, par faction (voir fireProjectile).
+// Couleur de l'impact d'un missile d'attaque à distance, par faction (voir fireProjectile).
 const PROJECTILE_COLORS = {
   wyrms: 0xff8c1a, // orange
   undead: 0x7dffc8, // vert menthe
 };
+
+// GRAPHICS.md « Projectiles » : missile animé de chaque faction, tiré d'une planche d'effets
+// (assets/effect/) — images de 64 × 64, une ligne par couleur (9 couleurs), une colonne par
+// étape de l'animation. `row` : ligne de la couleur de la faction.
+const PROJECTILE_EFFECTS = {
+  wyrms: { key: 'missile-burst', path: 'effect/missile-burst.png', frames: 15, row: 0 }, // orange
+  undead: { key: 'missile-streak', path: 'effect/missile-streak.png', frames: 8, row: 3 }, // vert
+};
+const PROJECTILE_FLIGHT_MS = 220;
 
 // Cette Scene gère exclusivement le champ de bataille (technical.md 2.2) : grille, sprites,
 // animations, clics sur le terrain pendant la sélection d'une commande, signaux visuels de
@@ -61,9 +70,22 @@ export default class BattleScene extends Phaser.Scene {
     this.load.image('battlefield', 'backgrounds/battlefield-01.png');
     for (const { key } of Object.values(SPECIES_SPRITES)) this.load.image(key, spritePath(key));
     this.load.image('rocks', 'sprites/rocks.png');
+    for (const { key, path } of Object.values(PROJECTILE_EFFECTS)) {
+      this.load.spritesheet(key, path, { frameWidth: CELL_SIZE, frameHeight: CELL_SIZE });
+    }
   }
 
   create() {
+    // Animation de vol de chaque missile : la ligne de couleur de la faction, jouée en entier
+    // pendant le trajet (les animations sont globales au Game, recréé à chaque bataille).
+    for (const { key, frames, row } of Object.values(PROJECTILE_EFFECTS)) {
+      if (this.anims.exists(`${key}-flight`)) continue;
+      this.anims.create({
+        key: `${key}-flight`,
+        frames: this.anims.generateFrameNumbers(key, { start: row * frames, end: row * frames + frames - 1 }),
+        duration: PROJECTILE_FLIGHT_MS,
+      });
+    }
     const grid = new Grid(GRID_WIDTH, GRID_HEIGHT, this.phases[0].obstacles); // rules.md 1
     this.grid = grid;
     this.width = grid.width * CELL_SIZE;
@@ -258,14 +280,19 @@ export default class BattleScene extends Phaser.Scene {
       : (this.playerFaction === 'wyrms' ? 'undead' : 'wyrms');
     const color = PROJECTILE_COLORS[shooterFaction];
 
-    const missile = this.add.circle(from.x, from.y, 6, color).setStrokeStyle(2, 0xffffff).setDepth(10);
+    // Le missile joue toute son animation pendant le vol, orienté vers la cible.
+    const effect = PROJECTILE_EFFECTS[shooterFaction];
+    const missile = this.add.sprite(from.x, from.y, effect.key)
+      .setRotation(Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y))
+      .setDepth(10)
+      .play(`${effect.key}-flight`);
     const impactX = to.x;
     const impactY = to.y;
     this.tweens.add({
       targets: missile,
       x: impactX,
       y: impactY,
-      duration: 220,
+      duration: PROJECTILE_FLIGHT_MS,
       onComplete: () => {
         missile.destroy();
         const impact = this.add.circle(impactX, impactY, 8, color, 0.9).setDepth(10);

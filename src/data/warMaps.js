@@ -4,6 +4,7 @@
 // colonne. Les premiers emplacements portent les batailles de WAR_BATTLE_IDS (src/data/battles.js),
 // dans l'ordre ; les suivants sont affichés verrouillés, en attendant leurs batailles.
 export const WAR_MAP_1 = {
+  background: 'backgrounds/temporary-map1.png', // provisoire (GRAPHICS.md)
   cols: 5,
   rows: 4,
   // Lacets qui montent vers la droite : 3 batailles en bas, un virage, retour vers la gauche,
@@ -18,6 +19,6 @@ export const WAR_MAP_1 = {
     { col: 2, row: 1 },
     { col: 3, row: 1 },
     { col: 3, row: 0 },
-    { col: 4, row: 0 },
+    { col: 4, row: 0, boss: true }, // bataille de boss : losange plus grand
   ],
 };

@@ -301,7 +301,7 @@ export default function App() {
   return (
     <>
       {/* GRAPHICS.md « Interface » : la faction du joueur choisit la teinte des accents (pixel-ui.css). */}
-      <div data-faction={playerFaction ?? undefined} className="contents">
+      <div data-faction={playerFaction ?? undefined} className="h-full bg-neutral-900 p-12">
         <Fragment key={saveVersion}>{content}</Fragment>
       </div>
       {import.meta.env.DEV && <DevMenu actions={devActions} />}

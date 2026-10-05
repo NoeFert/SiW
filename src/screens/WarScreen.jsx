@@ -17,36 +17,43 @@ const T = TEXT.war;
 // 2×), dans la couleur du souverain adverse — violet face aux Morts-Vivants, jaune face aux Wyrms.
 const ENEMY_COLOR = { wyrms: 'purple', undead: 'yellow' };
 const SLOT = 42; // losange 21×21 à 2×, pointes au milieu des côtés
+const BOSS_SLOT = 56; // losange du boss, plus grand : SkillSlotLarge 28×28 à 2×
 const HALF = SLOT / 2;
-const SELECTOR = 63; // sélecteur 21×21 à 3×, pour entourer le losange
 const STEP = 96; // distance entre deux cases de la grille de la map
 
 const uiSprite = (name) => `url(/ui/${name}.png)`;
 const slotCenter = ({ col, row }) => ({ x: HALF + col * STEP, y: HALF + row * STEP });
+const slotSize = (node) => (node.boss ? BOSS_SLOT : SLOT);
 
-// Losange d'un emplacement : vide si disponible, plein si gagné, gris si verrouillé ; le
-// sélecteur entoure l'emplacement choisi.
+// Losange d'un emplacement : vide si disponible, plein si gagné, gris si verrouillé ; plus grand
+// pour le boss. Le sélecteur (à 3×, une fois et demie le losange) entoure l'emplacement choisi.
 function Slot({ node, color, selected, onSelect }) {
   const { x, y } = slotCenter(node);
-  let sprite = `war-slot-${color}`;
-  if (node.state === 'won') sprite = `war-slot-won-${color}`;
-  if (node.state === 'locked') sprite = 'war-slot-grey';
+  const size = slotSize(node);
+  const prefix = node.boss ? 'war-boss' : 'war';
+  let sprite = `${prefix}-slot-${color}`;
+  if (node.state === 'won') sprite = `${prefix}-slot-won-${color}`;
+  if (node.state === 'locked') sprite = `${prefix}-slot-grey`;
+  const selector = size * 1.5;
   return (
     <button
       type="button"
       onClick={onSelect}
-      className="pixelated absolute cursor-pointer bg-size-[100%_100%] hover:brightness-125"
-      style={{ left: x - HALF, top: y - HALF, width: SLOT, height: SLOT, backgroundImage: uiSprite(sprite) }}
+      className="absolute cursor-pointer hover:brightness-125"
+      style={{ left: x - size / 2, top: y - size / 2, width: size, height: size }}
     >
+      {/* Intérieur noir du losange, pour qu'il se détache du fond de la map. */}
+      <span className="absolute rotate-45 bg-black/80" style={{ inset: size / 7 }} />
+      <span className="pixelated absolute inset-0 bg-size-[100%_100%]" style={{ backgroundImage: uiSprite(sprite) }} />
       {selected && (
         <span
           className="pixelated absolute bg-size-[100%_100%]"
           style={{
-            left: HALF - SELECTOR / 2,
-            top: HALF - SELECTOR / 2,
-            width: SELECTOR,
-            height: SELECTOR,
-            backgroundImage: uiSprite(`war-selector-${node.state === 'locked' ? 'grey' : color}`),
+            left: (size - selector) / 2,
+            top: (size - selector) / 2,
+            width: selector,
+            height: selector,
+            backgroundImage: uiSprite(`${prefix}-selector-${node.state === 'locked' ? 'grey' : color}`),
           }}
         />
       )}
@@ -60,9 +67,13 @@ function Connector({ from, to, color }) {
   const a = slotCenter(from);
   const b = slotCenter(to);
   const vertical = a.x === b.x;
+  // Demi-tailles des losanges aux deux bouts : `first` est celui du haut (ou de gauche).
+  const [first, last] = (vertical ? a.y < b.y : a.x < b.x) ? [from, to] : [to, from];
+  const start = slotSize(first) / 2;
+  const gap = start + slotSize(last) / 2;
   const style = vertical
-    ? { left: a.x - 16, top: Math.min(a.y, b.y) + HALF, width: 32, height: Math.abs(a.y - b.y) - SLOT }
-    : { left: Math.min(a.x, b.x) + HALF, top: a.y - 16, width: Math.abs(a.x - b.x) - SLOT, height: 32 };
+    ? { left: a.x - 16, top: Math.min(a.y, b.y) + start, width: 32, height: Math.abs(a.y - b.y) - gap }
+    : { left: Math.min(a.x, b.x) + start, top: a.y - 16, width: Math.abs(a.x - b.x) - gap, height: 32 };
   return (
     <div
       className={`pixelated absolute bg-size-[32px_32px] ${vertical ? 'bg-repeat-y' : 'bg-repeat-x'}`}
@@ -97,16 +108,24 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
         <p className="retro text-xs">{T.armyLine(army.name, armyCost(army, units, roster), ARMY_PP_CAP)}</p>
         {armyIsEmpty && <p className="text-xs text-red-400">{T.emptyArmy}</p>}
         <div className="flex flex-1 items-center justify-center gap-16">
-          <div
-            className="relative shrink-0"
-            style={{ width: SLOT + (WAR_MAP_1.cols - 1) * STEP, height: SLOT + (WAR_MAP_1.rows - 1) * STEP }}
-          >
-            {nodes.slice(1).map((node, i) => (
-              <Connector key={i} from={nodes[i]} to={node} color={node.state === 'locked' ? 'grey' : color} />
-            ))}
-            {nodes.map((node, i) => (
-              <Slot key={i} node={node} color={color} selected={i === selected} onSelect={() => setSelected(i)} />
-            ))}
+          {/* Fond de la map en monochrome contrasté et assombri, sur son propre calque (le filtre ne
+              touche pas le tracé), avec une marge autour des losanges. */}
+          <div className="relative shrink-0 p-10">
+            <div
+              className="absolute inset-0 bg-cover bg-center brightness-50 grayscale contrast-150"
+              style={{ backgroundImage: `url(${WAR_MAP_1.background})` }}
+            />
+            <div
+              className="relative"
+              style={{ width: SLOT + (WAR_MAP_1.cols - 1) * STEP, height: SLOT + (WAR_MAP_1.rows - 1) * STEP }}
+            >
+              {nodes.slice(1).map((node, i) => (
+                <Connector key={i} from={nodes[i]} to={node} color={node.state === 'locked' ? 'grey' : color} />
+              ))}
+              {nodes.map((node, i) => (
+                <Slot key={i} node={node} color={color} selected={i === selected} onSelect={() => setSelected(i)} />
+              ))}
+            </div>
           </div>
           <div className={`flex w-80 flex-col items-center gap-3 text-center text-xs ${current.state === 'locked' ? 'opacity-50' : ''}`}>
             <div className="flex items-center gap-3">

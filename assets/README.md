@@ -25,8 +25,15 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 - `divider.png`, `divider-gold.png` — home menu underline (Decorators/Purple and Gold/DividerD; gold for a Wyrms player)
 - `portrait-frame.png` — sovereign portrait frame on the home screen (Black/Frame)
 - `war-slot-{yellow,purple,grey}.png`, `war-slot-won-{yellow,purple}.png`, `war-selector-{yellow,purple,grey}.png`, `war-connector-{vertical,horizontal}-{yellow,purple,grey}.png` — "Partir en guerre" map (SkillTree: SkillSlotSharp, SkillSlotSharpPlaceholder, SelectorSharp, ConnectorVertical/Horizontal)
+- `war-boss-slot-{yellow,purple,grey}.png`, `war-boss-slot-won-{yellow,purple}.png`, `war-boss-selector-{yellow,purple,grey}.png` — larger boss slot on the war map (SkillTree: SkillSlotLarge, SkillSlotLargePlaceholder, SelectorLarge)
 - `legendary-corner-{top,bottom}-{left,right}.png` — gold corners on a legendary unit tile (Decorators/Gold/BorderC)
 - `spirit-stone.png` — Spirit Stones icon (Black/Jewel_Spin, 9 frames of 11×11)
 
+## effect/
+Effect spritesheets: 64×64 frames, one row per color (9 colors), one column per animation step.
+- `missile-burst.png` — Wyrms missile (15 frames; orange row)
+- `missile-streak.png` — Undead missile (8 frames; green row)
+
 ## backgrounds/
 - `battlefield-01.png` — First battlefield background (v1 scripted battle)
+- `temporary-map1.png` — "Partir en guerre" map 1 background (temporary; shown grayscale, higher contrast)

@@ -18,5 +18,5 @@ export function SpiritStonesAmount({ amount, className = '' }) {
 
 // rules.md 11.3 : solde de Spirit Stones, en haut à droite (HomeScreen et SummonScreen).
 export default function SpiritStonesBalance({ amount }) {
-  return <SpiritStonesAmount amount={amount} className="retro absolute top-4 right-6 text-sm" />;
+  return <SpiritStonesAmount amount={amount} className="retro absolute top-0 right-0 text-sm" />;
 }

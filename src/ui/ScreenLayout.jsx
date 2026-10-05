@@ -6,7 +6,7 @@ import { TEXT } from './strings.js';
 // contenu sur toute la surface restante (défilant si besoin).
 export default function ScreenLayout({ title, onBack, children }) {
   return (
-    <div className="relative flex h-screen w-screen flex-col gap-6 bg-neutral-900 px-6 pt-4 pb-6 text-white">
+    <div className="relative flex h-full w-full flex-col gap-6 bg-neutral-900 text-white">
       <header className="flex items-center gap-6">
         <Button onClick={onBack}>{TEXT.back}</Button>
         <h1 className="retro text-lg">{title}</h1>

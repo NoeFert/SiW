@@ -65,6 +65,15 @@ Les niveaux (`rules.md` 11.5 et 11.6) reprennent la **couleur signature de la fa
 
 Rien n'est ajouté sur le terrain : les unités en bataille ne montrent pas leur niveau.
 
+## Projectiles
+
+Les missiles des attaques à distance sont des **effets animés**, tirés de planches d'effets (`assets/effect/`) : images de 64 × 64 (une case), une ligne par couleur (9 couleurs), une colonne par étape de l'animation. Le missile joue toute son animation pendant son vol (220 ms), orienté vers sa cible ; à l'arrivée, un éclat rond dans la couleur de la faction.
+
+| Faction | Planche | Couleur |
+|---|---|---|
+| Souveraine des Wyrms | `missile-burst.png` (15 étapes, gerbe qui éclate) | ligne orange (1re) |
+| Souverain des Morts-Vivants | `missile-streak.png` (8 étapes, traînée) | ligne verte (4e) — la plus proche du menthe |
+
 ## Signaux visuels en bataille
 
 - **Pause** : terrain désaturé ; ce qui reste cliquable garde ses couleurs (`ui-battle-screen-decisions.md` section 3).
@@ -75,6 +84,8 @@ Rien n'est ajouté sur le terrain : les unités en bataille ne montrent pas leur
 
 La **map 1** est une carte en **arbre de compétences** (sprites SkillTree du pack, à 2×) : **10 losanges** (SkillSlotSharp) sur une grille de 5 × 4 cases espacées de 96 px, reliés de pointe à pointe par des connecteurs droits. Le tracé monte **en lacets** vers la droite : 3 emplacements en bas à gauche, un virage, retour vers la gauche, puis la montée jusqu'au sommet en haut à droite (`src/data/warMaps.js`). Un **panneau à droite** de la map montre l'emplacement sélectionné : nom (« À venir » sans bataille) avec son état à sa droite, récompense, « Combattre ».
 
+- **Fond** (provisoire) : `assets/backgrounds/temporary-map1.png` (2048 × 1536, plaine et montagnes), affiché derrière le tracé avec une marge autour, en **monochrome**, avec un **contraste augmenté** (×1,5) et **assombri** (luminosité 50 %) ; le filtre ne touche que le fond, pas les losanges ni les connecteurs. Chaque losange a un **intérieur noir** pour se détacher du fond.
+- **Boss** : le 10e et dernier emplacement (bataille de boss, `boss: true` dans `src/data/warMaps.js`) a un losange **un peu plus grand** — SkillSlotLarge (28 × 28) à 2×, soit 56 px au lieu de 42, avec son sélecteur SelectorLarge. Affichage seulement : la bataille elle-même reste à définir (`rules.md` 11.7).
 - **Couleur du souverain adverse** : violet (Purple) quand le joueur joue les Wyrms, jaune (Yellow) quand il joue les Morts-Vivants.
 - **États** : disponible = losange vide ; gagnée = losange plein (SkillSlotSharpPlaceholder) ; verrouillée = losange et connecteur d'arrivée gris (Grey), panneau à moitié transparent.
 - **Sélection** : le sélecteur (SelectorSharp, à 3× pour entourer le losange) marque l'emplacement affiché dans le panneau ; gris sur un emplacement verrouillé.
@@ -83,6 +94,8 @@ La **map 1** est une carte en **arbre de compétences** (sprites SkillTree du pa
 ## Interface
 
 Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un sprite du pack **Pixel UI & HUD**, découpé en 9-slice (`border-image`) et affiché à **2×** sans lissage (`src/components/ui/8bit/styles/pixel-ui.css`). Le pack complet reste dans `asset-packs/` (local, ignoré par git, hors build) ; seuls les fichiers utilisés sont copiés dans `assets/ui/`.
+
+**Padding du jeu** : sur tous les écrans (accueil, écrans de la couche méta, bataille, intro, fins de bataille), les éléments sont à **30 px** du bord de la fenêtre ; le fond des écrans va jusqu'au bord. Les éléments placés « dans un coin » (portrait, solde, menu, fontaine, « Retour », « Skip ») sont collés à ce padding.
 
 **Mise en page plein écran** : comme l'accueil, les écrans « Partir en guerre », unités, « Armées » et Invocation occupent tout l'écran, sans carte centrée. En-tête commun en haut à gauche : bouton « Retour » puis le titre ; le contenu prend toute la surface restante et défile si besoin (`src/ui/ScreenLayout.jsx`). La grille des unités et la liste d'invocation remplissent la largeur avec autant de colonnes qu'il en tient.
 
