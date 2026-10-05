@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { ROSTERS } from '../data/rosters.js';
 import {
   ARMY_NAME_MAX_LENGTH, ARMY_PP_CAP, addToArmy, armyCost, canAddToArmy, canRemoveFromArmy,
-  removeFromArmy, renameArmy,
+  levelGroups, nextToAdd, nextToRemove, removeFromArmy, renameArmy,
 } from '../logic/army.js';
 import {
-  individualLevel, individualProgress, levelDamage, levelStat, sortByLevel,
+  individualProgress, levelDamage, levelStat, sortByLevel,
 } from '../logic/levels.js';
 import { isLegendary } from '../logic/ownedUnits.js';
 import { summonAction } from '../logic/summon.js';
@@ -59,13 +59,20 @@ function SpeciesAccordion({
   );
 }
 
-// Une ligne d'individu : niveau, barre d'XP.
-function IndividualLine({ unit, faction }) {
+// rules.md 11.2 : ligne d'un groupe d'individus strictement identiques (même niveau, comme la
+// tour de commandement) : nombre, niveau, combien sont dans l'armée, et − / + pour en retirer
+// ou en ajouter un. `onRemove` / `onAdd` : null si impossible.
+function ArmyGroupRow({
+  group, faction, inArmy, onRemove, onAdd,
+}) {
   return (
-    <>
-      <LevelBadge level={individualLevel(unit.xp)} faction={faction} />
-      <XpBar progress={individualProgress(unit.xp)} faction={faction} className="flex-1" />
-    </>
+    <div className="flex items-center gap-2 px-1 text-xs">
+      <span className="retro w-8 text-right">{group.unitIds.length > 1 && `${group.unitIds.length}x`}</span>
+      <LevelBadge level={group.level} faction={faction} />
+      <span className="flex-1 text-white/70">{T.armySummary(inArmy, group.unitIds.length)}</span>
+      <Button size="icon" disabled={!onRemove} onClick={onRemove} aria-label={T.removeOne}>−</Button>
+      <Button size="icon" disabled={!onAdd} onClick={onAdd} aria-label={T.addOne}>+</Button>
+    </div>
   );
 }
 
@@ -99,10 +106,11 @@ function LegendaryCorners({ species }) {
   ));
 }
 
-// Case carrée d'un individu (panneau PanelLarge) : sprite, puis nom et niveau. Clic -> page de
-// détail de l'individu.
+// Case carrée d'un groupe d'individus strictement identiques (même espèce, même niveau, comme la
+// tour de commandement ; panneau PanelLarge) : sprite, puis nom, niveau et nombre. Clic -> page
+// de détail du groupe.
 function UnitTile({
-  unit, species, faction, onSelect,
+  group, species, faction, onSelect,
 }) {
   return (
     <button
@@ -114,7 +122,10 @@ function UnitTile({
       <SpeciesSprite species={species} className="size-14" />
       <span className="flex flex-col items-center gap-1 text-center leading-tight">
         <span>{unitName(species)}</span>
-        <span className={`retro ${LEVEL_TEXT_CLASS[faction]}`}>{TEXT.levels.badge(individualLevel(unit.xp))}</span>
+        <span className="retro">
+          <span className={LEVEL_TEXT_CLASS[faction]}>{TEXT.levels.badge(group.level)}</span>
+          {group.unitIds.length > 1 && <span className="text-white/70"> · {group.unitIds.length}x</span>}
+        </span>
       </span>
     </button>
   );
@@ -150,12 +161,12 @@ function statRows(species, level) {
   ];
 }
 
-// technical.md 5.1 : page de détail d'un individu (vue interne à l'écran) — stats à son niveau,
-// XP, présence dans l'armée, aptitudes.
-function IndividualDetail({
-  unit, species, faction, inArmy,
+// technical.md 5.1 : page de détail d'un groupe d'individus strictement identiques (vue interne à
+// l'écran) — combien sont dans l'armée, XP de chacun, stats à leur niveau, aptitudes.
+function GroupDetail({
+  group, members, species, faction, inArmy,
 }) {
-  const level = individualLevel(unit.xp);
+  const { level } = group;
   return (
     <div className="flex max-w-3xl flex-col gap-6 text-sm">
       <div className="flex items-center gap-6">
@@ -166,10 +177,16 @@ function IndividualDetail({
             <LevelBadge level={level} faction={faction} />
             <Keywords species={species} />
           </div>
-          <XpBar progress={individualProgress(unit.xp)} faction={faction} />
-          <span>{inArmy ? T.inArmyYes : T.inArmyNo}</span>
+          <span>{T.armySummary(inArmy, members.length)}</span>
         </div>
       </div>
+      {/* XP de chaque individu du groupe, du plus avancé au moins avancé. */}
+      <section className="flex flex-col gap-2">
+        <h3 className="retro text-xs">{T.individualsXp}</h3>
+        {members.map((unit) => (
+          <XpBar key={unit.id} progress={individualProgress(unit.xp)} faction={faction} />
+        ))}
+      </section>
       <dl className="grid grid-cols-2 gap-x-6 gap-y-1">
         {statRows(species, level).map(([label, value]) => (
           <div key={label} className="contents">
@@ -232,9 +249,9 @@ function ArmyName({ name, onRename }) {
 
 // technical.md 5.1 : gestion de civilisation, en deux écrans ouverts chacun par son bouton de
 // l'accueil (`section`) :
-// - 'units' (titré du nom de la faction) : grille de cases carrées, une par individu (clic ->
-//   page de détail de l'individu) ; une espèce à 0 garde une case grisée avec son bouton
-//   Invoquer / Réinvoquer.
+// - 'units' (titré du nom de la faction) : grille de cases carrées, une par groupe d'individus
+//   strictement identiques (clic -> page de détail du groupe) ; une espèce à 0 garde une case
+//   grisée avec son bouton Invoquer / Réinvoquer.
 // - 'army' (« Armées ») : nom, compteur « X / 500 PP », un accordéon par espèce ; fermé, un
 //   résumé ; ouvert, une case « dans l'armée » par individu (rules.md 11.2), sauvegardée à
 //   chaque changement.
@@ -243,7 +260,7 @@ export default function CivilizationScreen({
   playerFaction, section, onBack, onOpenSummon,
 }) {
   const [openKey, setOpenKey] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selected, setSelected] = useState(null); // { key, level } : groupe affiché en détail
   const [army, setArmy] = useState(getArmy);
   const roster = ROSTERS[playerFaction];
   const [units] = useState(() => getOwnedUnits() ?? []);
@@ -256,15 +273,17 @@ export default function CivilizationScreen({
   };
   const toggle = (key) => setOpenKey((current) => (current === key ? null : key));
 
-  const selected = units.find((unit) => unit.id === selectedId);
+  const selectedGroup = selected
+    && levelGroups(speciesUnits(selected.key)).find((group) => group.level === selected.level);
   let content;
-  if (selected) {
+  if (selectedGroup) {
     content = (
-      <IndividualDetail
-        unit={selected}
-        species={roster[selected.species]}
+      <GroupDetail
+        group={selectedGroup}
+        members={selectedGroup.unitIds.map((id) => units.find((unit) => unit.id === id))}
+        species={roster[selected.key]}
         faction={playerFaction}
-        inArmy={armyIds.has(selected.id)}
+        inArmy={selectedGroup.unitIds.filter((id) => armyIds.has(id)).length}
       />
     );
   } else if (section === 'army') {
@@ -288,24 +307,20 @@ export default function CivilizationScreen({
                 onToggle={() => toggle(key)}
                 summary={<span>{T.armySummary(inArmy, members.length)}</span>}
               >
-                {openKey === key && members.map((unit) => {
-                  const checked = armyIds.has(unit.id);
-                  const allowed = checked
-                    ? canRemoveFromArmy(army, units, unit.id)
-                    : canAddToArmy(army, units, roster, unit.id);
+                {openKey === key && levelGroups(members).map((group) => {
+                  const addId = nextToAdd(army, group);
+                  const removeId = nextToRemove(army, group);
                   return (
-                    <label key={unit.id} className={`flex items-center gap-2 px-1 ${allowed ? 'cursor-pointer' : 'opacity-50'}`}>
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        disabled={!allowed}
-                        onChange={() => changeArmy(checked
-                          ? removeFromArmy(army, units, unit.id)
-                          : addToArmy(army, units, roster, unit.id))}
-                        className="size-4 accent-white"
-                      />
-                      <IndividualLine unit={unit} faction={playerFaction} />
-                    </label>
+                    <ArmyGroupRow
+                      key={group.level}
+                      group={group}
+                      faction={playerFaction}
+                      inArmy={group.unitIds.filter((id) => armyIds.has(id)).length}
+                      onAdd={addId && canAddToArmy(army, units, roster, addId)
+                        ? () => changeArmy(addToArmy(army, units, roster, addId)) : null}
+                      onRemove={removeId && canRemoveFromArmy(army, units, removeId)
+                        ? () => changeArmy(removeFromArmy(army, units, removeId)) : null}
+                    />
                   );
                 })}
               </SpeciesAccordion>
@@ -322,13 +337,13 @@ export default function CivilizationScreen({
           if (members.length === 0) {
             return [<EmptySpeciesTile key={key} species={species} onSummon={onOpenSummon} />];
           }
-          return members.map((unit) => (
+          return levelGroups(members).map((group) => (
             <UnitTile
-              key={unit.id}
-              unit={unit}
+              key={`${key}-${group.level}`}
+              group={group}
               species={species}
               faction={playerFaction}
-              onSelect={() => setSelectedId(unit.id)}
+              onSelect={() => setSelected({ key, level: group.level })}
             />
           ));
         })}
@@ -340,7 +355,7 @@ export default function CivilizationScreen({
   return (
     <ScreenLayout
       title={section === 'army' ? T.army : TEXT.factions[playerFaction]}
-      onBack={selected ? () => setSelectedId(null) : onBack}
+      onBack={selectedGroup ? () => setSelected(null) : onBack}
     >
       {content}
     </ScreenLayout>

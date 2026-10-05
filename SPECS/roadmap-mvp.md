@@ -42,15 +42,15 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 - **Bataille** : la tour de déploiement affiche une ligne par espèce **et par niveau** (`ui-battle-screen-decisions.md` 2.2)
 
 ### Gestion de civilisation — section Unités
-- Liste : une **grille de cases carrées**, une par individu (sprite, puis nom et niveau en couleur de la faction), espèce par espèce. Une espèce sans individu (ex : Légendaire mort) garde une case grisée avec son bouton « Invoquer » / « Réinvoquer » menant à l'écran Invocation
-- Clic sur un individu → **page de détail de l'individu** : grand sprite, nom de l'espèce, keywords, niveau et barre d'XP, présence dans l'armée, toutes les stats **à son niveau** (PV, dégâts, type d'attaque, taille, vitesses, portée, coût), texte des aptitudes (pas de bouton d'invocation)
+- Liste : une **grille de cases carrées**, une par groupe d'individus strictement identiques (même espèce, même niveau, comme la tour de commandement : sprite, puis nom, niveau en couleur de la faction et nombre), espèce par espèce. Une espèce sans individu (ex : Légendaire mort) garde une case grisée avec son bouton « Invoquer » / « Réinvoquer » menant à l'écran Invocation
+- Clic sur une case → **page de détail du groupe** : grand sprite, nom de l'espèce, keywords, niveau, nombre dans l'armée, barre d'XP de chaque individu, toutes les stats **à son niveau** (PV, dégâts, type d'attaque, taille, vitesses, portée, coût), texte des aptitudes (pas de bouton d'invocation)
 
 ### Gestion de civilisation — section Armée
 - **Une seule armée** dans le MVP (les emplacements supplémentaires sont verrouillés, voir Suite)
 - Une armée est une liste d'identifiants d'individus (preset) : un même individu pourra figurer dans plusieurs armées quand d'autres emplacements seront débloqués
 - **Plafond : 500 PP** de coût total par armée (volontairement au-dessus des 150 PP du terrain) ; **minimum : 1 unité**
 - Actions : **renommer** l'armée (1 à 20 caractères), **ajouter / retirer** des individus, avec un compteur « X / 500 PP ». Pas de suppression (armée unique)
-- **Un accordéon par espèce** : fermé, un résumé seul (« 7 / 9 dans l'armée ») ; ouvert, un individu par ligne (niveau, barre d'XP) avec une case « dans l'armée » à cocher / décocher
+- **Un accordéon par espèce** : fermé, un résumé seul (« 7 / 9 dans l'armée ») ; ouvert, une ligne par niveau (individus strictement identiques regroupés, comme la tour de commandement) avec des boutons − / + pour retirer ou ajouter un individu
 - Un individu invoqué n'est **pas** ajouté automatiquement à l'armée
 - **Armée de départ** : créée automatiquement à l'arrivée sur l'accueil après la victoire de la bataille 01, avec **tous les survivants** (les dotations de départ totalisent au plus 430 PP, donc tiennent toujours sous 500), et un nom par défaut
 

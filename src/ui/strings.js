@@ -41,6 +41,9 @@ export const TEXT = {
 
   // Couche méta (rules.md 11).
   defaultArmyName: 'Armée 1', // rules.md 10 : nom de l'armée de départ
+  // Tooltip provisoire de la Spirit Fountain (rules.md 11.8) : `seconds` = durée de production
+  // d'une Spirit Stone.
+  fountainTooltip: (seconds) => `Cette statue génère des Spirit Stones toutes les ${seconds} secondes. Puisse le souverain faire bon usage de cette ressource précieuse.`,
   spiritStones: (amount) => `${amount} Spirit Stones`, // nom provisoire (rules.md 11.3)
   // Niveaux (rules.md 11.5 et 11.6).
   levels: {
@@ -62,8 +65,7 @@ export const TEXT = {
     summon: 'Invocation',
   },
   civilization: {
-    inArmyYes: "Dans l'armée",
-    inArmyNo: "Hors de l'armée",
+    individualsXp: 'XP des individus', // page de détail d'un groupe d'individus
     stats: {
       hp: 'PV',
       damage: 'Dégâts',
@@ -84,6 +86,8 @@ export const TEXT = {
     army: 'Armées',
     armyCost: (cost, cap) => `${cost} / ${cap} PP`,
     armySummary: (inArmy, owned) => `${inArmy} / ${owned} dans l'armée`,
+    removeOne: "Retirer un individu de l'armée",
+    addOne: "Ajouter un individu à l'armée",
     rename: 'Renommer',
     confirmRename: 'Valider',
   },

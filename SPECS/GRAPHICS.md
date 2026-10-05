@@ -53,7 +53,7 @@ Icône : la **gemme noire animée** du pack Pixel UI & HUD (Black/Jewel_Spin, `a
 
 ## Spirit Fountain (accueil)
 
-Un élément cliquable **sans cadre de bouton** (plus lumineux au survol, à moitié transparent quand la fontaine est vide) : la **statue de pierre** (`assets/sprites/stone-statue.png`, 72 × 115 px, affichée à 2×), puis l'icône des Spirit Stones et le **contenu actuel** seul (sans la capacité ni barre de remplissage) (`rules.md` 11.8).
+Un élément cliquable **sans cadre de bouton** (plus lumineux au survol, à moitié transparent quand la fontaine est vide) : la **statue de pierre** (`assets/sprites/stone-statue.png`, 72 × 115 px, affichée à 2×), puis l'icône des Spirit Stones et le **contenu actuel** seul (sans la capacité ni barre de remplissage) (`rules.md` 11.8). Au survol, un **tooltip provisoire** sous la fontaine : « Cette statue génère des Spirit Stones toutes les 60 secondes. Puisse le souverain faire bon usage de cette ressource précieuse. » (la durée suit la production de `rules.md` 11.8).
 
 ## Niveaux (joueur et individus)
 
@@ -109,7 +109,7 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 | Carte | PanelLarge noir (48 × 48) | Panneau noir à liseré gris ; le contenu passe en thème sombre. Plus utilisée par les écrans de la couche méta (voir ci-dessous). |
 | Badge | Bannières (64 × 15), hauteur fixe 30 px | Liseré blanc (par défaut), gris (secondaire), doré ou menthe (niveaux, faction du joueur). |
 | Barre d'XP | RegularBarA | Couleur de la faction du joueur. |
-| Case d'un individu (écran des unités) | PanelLarge noir (48 × 48) | Case carrée : sprite, puis nom et « niv X » en couleur de la faction ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |
+| Case d'un groupe d'individus (écran des unités) | PanelLarge noir (48 × 48) | Case carrée par groupe d'individus strictement identiques (même niveau) : sprite, puis nom, « niv X » en couleur de la faction et le nombre (« · 3x », absent pour un individu seul) ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |
 | Menu de l'accueil | DividerD violet (48 × 4) | Quatre entrées alignées à droite, sans cadre de bouton : texte rétro, violet clair au survol, souligné du séparateur étiré à la largeur du texte. |
 | Portrait du souverain (accueil) | Frame noir (32 × 32) | Cadre en creux autour du sprite du souverain. |
 

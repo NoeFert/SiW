@@ -1,7 +1,7 @@
 import { createUnit, countUnitsBySpecies } from '../../src/logic/ownedUnits.js';
 import {
   createArmy, armyUnits, ARMY_PP_CAP, armyCost, canAddToArmy, addToArmy, canRemoveFromArmy,
-  removeFromArmy, renameArmy, removeDeadFromArmy,
+  removeFromArmy, renameArmy, removeDeadFromArmy, levelGroups, nextToAdd, nextToRemove,
 } from '../../src/logic/army.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 
@@ -106,5 +106,33 @@ describe('renameArmy — renommage (rules.md 11.2)', () => {
 
   test('les espaces de début et de fin sont retirés', () => {
     expect(renameArmy(army, '  Horde  ').name).toBe('Horde');
+  });
+});
+
+describe('levelGroups — regroupement de l\'écran Armées (rules.md 11.2)', () => {
+  // Niveaux (rules.md 11.6) : 2 à 50 XP, 3 à 150 XP.
+  const units = [
+    { id: 'a', species: 'lambtonWorm', xp: 160 }, // niveau 3
+    { id: 'b', species: 'lambtonWorm', xp: 60 }, // niveau 2
+    { id: 'c', species: 'lambtonWorm', xp: 90 }, // niveau 2
+    { id: 'd', species: 'lambtonWorm', xp: 0 }, // niveau 1
+  ];
+
+  test('un groupe par niveau (strictement identiques), niveaux décroissants, XP décroissante', () => {
+    expect(levelGroups(units)).toEqual([
+      { level: 3, unitIds: ['a'] },
+      { level: 2, unitIds: ['c', 'b'] },
+      { level: 1, unitIds: ['d'] },
+    ]);
+  });
+
+  test('« + » ajoute le plus avancé en XP hors de l\'armée ; « − » retire le moins avancé dedans', () => {
+    const [, levelTwo] = levelGroups(units);
+    expect(nextToAdd({ unitIds: [] }, levelTwo)).toBe('c');
+    expect(nextToAdd({ unitIds: ['c'] }, levelTwo)).toBe('b');
+    expect(nextToAdd({ unitIds: ['c', 'b'] }, levelTwo)).toBeNull();
+    expect(nextToRemove({ unitIds: ['c', 'b'] }, levelTwo)).toBe('b');
+    expect(nextToRemove({ unitIds: ['c'] }, levelTwo)).toBe('c');
+    expect(nextToRemove({ unitIds: ['a'] }, levelTwo)).toBeNull();
   });
 });

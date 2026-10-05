@@ -1,5 +1,6 @@
 // Couche méta du jeu normal (rules.md 11.2) : l'armée du joueur. Logique pure, sans Phaser ni
 // localStorage (la sauvegarde vit dans persistence.js).
+import { individualLevel, sortByLevel } from './levels.js';
 
 // rules.md 11.2 : plafond de coût d'une armée, en points de présence (distinct des 150 du terrain).
 export const ARMY_PP_CAP = 500;
@@ -43,6 +44,30 @@ export function canRemoveFromArmy(army, units, unitId) {
 export function removeFromArmy(army, units, unitId) {
   if (!canRemoveFromArmy(army, units, unitId)) return army;
   return { ...army, unitIds: army.unitIds.filter((id) => id !== unitId) };
+}
+
+// rules.md 11.2 : sur l'écran Armées, les individus d'une espèce sont regroupés comme dans la tour
+// de commandement — seuls les individus strictement identiques partagent un groupe : même niveau
+// (hors bataille, les PV sont toujours pleins). Groupes par niveau décroissant ; `unitIds` triés
+// par XP décroissante.
+export function levelGroups(units) {
+  const groups = new Map();
+  for (const unit of sortByLevel(units)) {
+    const level = individualLevel(unit.xp);
+    if (!groups.has(level)) groups.set(level, { level, unitIds: [] });
+    groups.get(level).unitIds.push(unit.id);
+  }
+  return [...groups.values()];
+}
+
+// rules.md 11.2 : « + » sur un groupe ajoute l'individu le plus avancé en XP qui n'est pas encore
+// dans l'armée ; « − » retire le moins avancé qui y est. null s'il n'y en a pas.
+export function nextToAdd(army, group) {
+  return group.unitIds.find((id) => !army.unitIds.includes(id)) ?? null;
+}
+
+export function nextToRemove(army, group) {
+  return group.unitIds.findLast((id) => army.unitIds.includes(id)) ?? null;
 }
 
 // rules.md 11.2 : un individu mort est retiré de l'armée en même temps que de la liste.
