@@ -20,6 +20,13 @@ function MenuItem({ onClick, children }) {
   );
 }
 
+// GRAPHICS.md « Accueil » : château sombre en fond, gris chaud pour les Wyrms, gris froid pour les
+// Morts-Vivants (provisoire).
+const HOME_BACKGROUNDS = {
+  wyrms: 'backgrounds/dark-castle-warm-grey.png',
+  undead: 'backgrounds/dark-castle-cold-grey.png',
+};
+
 // technical.md 5.1 : écran d'accueil, point central du jeu, accessible uniquement après la
 // première victoire. En haut à gauche, le portrait du souverain avec, à sa droite, son nom, sa
 // barre d'XP et son niveau (rules.md 11.5) ; solde de Spirit Stones en haut à droite (rules.md
@@ -39,7 +46,12 @@ export default function HomeScreen({
   };
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 bg-neutral-900 text-white">
+    <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 text-white">
+      {/* Fond jusqu'au bord de la fenêtre, padding de 30 px compris (-inset-7.5), sans lissage. */}
+      <div
+        className="pixelated absolute -inset-7.5 bg-cover bg-center"
+        style={{ backgroundImage: `url(${HOME_BACKGROUNDS[playerFaction]})` }}
+      />
       <SpiritStonesBalance amount={spiritStones} framed />
       <div className="absolute top-0 left-0 flex items-center gap-4">
         <div className="pixel-frame size-24">
@@ -63,7 +75,9 @@ export default function HomeScreen({
         <MenuItem onClick={onOpenArmy}>{TEXT.home.army}</MenuItem>
         <MenuItem onClick={onOpenSummon}>{TEXT.home.summon}</MenuItem>
       </nav>
-      <div className="absolute left-0 top-1/2 -translate-y-1/2">
+      {/* Fontaine posée sur le sol du château du fond : son bas à 40 px du bas de la fenêtre (le
+          padding du jeu en fait déjà 30). */}
+      <div className="absolute left-2 -bottom-0.5">
         <SpiritFountain playerLevel={progress.level} onHarvest={collect} />
       </div>
     </div>

@@ -11,7 +11,8 @@ import { SpiritStoneIcon } from './SpiritStonesBalance.jsx';
 import { TEXT } from './strings.js';
 
 // rules.md 11.8 / GRAPHICS.md : Spirit Fountain de l'accueil, cliquable mais sans cadre de bouton —
-// statue de pierre (stone-statue, 2×) et contenu actuel avec l'icône des Spirit Stones, recalculé
+// contenu actuel avec l'icône des Spirit Stones, au-dessus de la statue de pierre (stone-statue,
+// taille d'origine, assombrie), recalculé
 // chaque seconde depuis l'heure de la dernière récolte. Un clic récolte :
 // `onHarvest(collected)` crédite le solde. Au survol, un tooltip provisoire (sous la fontaine)
 // explique ce qu'elle produit ; le déclencheur est un <span> autour du bouton pour qu'il
@@ -43,11 +44,11 @@ export default function SpiritFountain({ playerLevel, onHarvest }) {
           <span className="inline-block">
             <button type="button" onClick={harvest} disabled={content === 0} className="retro text-white enabled:cursor-pointer enabled:hover:brightness-125 disabled:opacity-50">
               <span className="flex w-52 flex-col gap-2">
-                <img src={spritePath('stone-statue')} alt="" className="pixelated mx-auto h-57.5 w-36" />
                 <span className="flex items-center justify-center gap-2 text-xs">
                   <SpiritStoneIcon />
                   {content}
                 </span>
+                <img src={spritePath('stone-statue')} alt="" className="pixelated mx-auto h-28.75 w-18 brightness-75" />
               </span>
             </button>
           </span>

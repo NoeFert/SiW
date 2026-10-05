@@ -57,7 +57,7 @@ Icône : la **gemme noire animée** du pack Pixel UI & HUD (Black/Jewel_Spin, `a
 
 ## Spirit Fountain (accueil)
 
-Un élément cliquable **sans cadre de bouton** (plus lumineux au survol, à moitié transparent quand la fontaine est vide) : la **statue de pierre** (`assets/sprites/stone-statue.png`, 72 × 115 px, affichée à 2×), puis l'icône des Spirit Stones et le **contenu actuel** seul (sans la capacité ni barre de remplissage) (`rules.md` 11.8). Au survol, un **tooltip provisoire** sous la fontaine : « Cette statue génère des Spirit Stones toutes les 60 secondes. Puisse le souverain faire bon usage de cette ressource précieuse. » (la durée suit la production de `rules.md` 11.8).
+Un élément cliquable **sans cadre de bouton** (plus lumineux au survol, à moitié transparent quand la fontaine est vide) : l'icône des Spirit Stones et le **contenu actuel** seul, **au-dessus** de la **statue de pierre** (`assets/sprites/stone-statue.png`, 72 × 115 px, à sa taille d'origine et **assombrie**, luminosité 75 %), le tout en bas à gauche de l'accueil, à 40 px du bas de la fenêtre, posé sur le sol du château du fond (sans la capacité ni barre de remplissage) (`rules.md` 11.8). Au survol, un **tooltip provisoire** sous la fontaine : « Cette statue génère des Spirit Stones toutes les 60 secondes. Puisse le souverain faire bon usage de cette ressource précieuse. » (la durée suit la production de `rules.md` 11.8).
 
 ## Niveaux (joueur et individus)
 
