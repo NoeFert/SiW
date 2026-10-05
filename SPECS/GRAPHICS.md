@@ -15,8 +15,8 @@ Principes :
 
 | Faction | Couleur signature | Tons secondaires | Utilisée pour |
 |---|---|---|---|
-| Souveraine des Wyrms | **doré** | rouge sombre, noir | jauge de présence, projectiles (orange) |
-| Souverain des Morts-Vivants | **menthe** (vert spectral) | violet, gris ardoise | jauge de présence, projectiles (menthe) |
+| Souveraine des Wyrms | **doré** | rouge sombre, noir | jauge de présence, barres de vie, projectiles (orange) |
+| Souverain des Morts-Vivants | **menthe** (vert spectral) | violet, gris ardoise | jauge de présence, barres de vie, projectiles (menthe) |
 
 ## Les souverains (écran de choix de faction)
 
@@ -77,7 +77,7 @@ Les missiles des attaques à distance sont des **effets animés**, tirés de pla
 ## Signaux visuels en bataille
 
 - **Pause** : terrain désaturé ; ce qui reste cliquable garde ses couleurs (`ui-battle-screen-decisions.md` section 3).
-- **Barres de vie** au-dessus des unités : vert, puis jaune sous 50 %, rouge sous 25 %.
+- **Barres de vie** au-dessus des unités (et mini barre des lignes blessées de la tour) : dans la **couleur principale de la faction** de l'unité — doré (#eab532) pour les Wyrms, menthe (#73ecbc) pour les Morts-Vivants —, quel que soit le niveau de PV.
 - **Aptitudes** : « COUP CRITIQUE ! » et tremblement d'écran (Fafnir), « Raté ! » et badge 💫 (paralysie d'Athos), « +40 » en vert (Soif de sang).
 
 ## Partir en guerre

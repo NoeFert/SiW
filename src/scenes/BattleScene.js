@@ -10,7 +10,7 @@ import { ROSTERS } from '../data/rosters.js';
 import { BATTLES } from '../data/battles.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import {
-  CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, cellCenter, healthBarColor,
+  CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, FACTION_COLORS, cellCenter,
 } from '../renderConstants.js';
 import { interactionState } from '../state/interactionState.js';
 
@@ -460,7 +460,9 @@ export default class BattleScene extends Phaser.Scene {
     const barWidth = footprintSize * 0.8;
     const barY = -footprintSize / 2 - 10;
     const barBackground = this.add.rectangle(0, barY, barWidth, 6, 0x000000).setOrigin(0.5);
-    const barFill = this.add.rectangle(-barWidth / 2, barY, barWidth, 6, 0x2ecc71).setOrigin(0, 0.5);
+    // Barre de vie dans la couleur principale de la faction de l'unité.
+    const barColor = FACTION_COLORS[unit.faction === 'player' ? this.playerFaction : this.enemyFaction];
+    const barFill = this.add.rectangle(-barWidth / 2, barY, barWidth, 6, barColor).setOrigin(0, 0.5);
     container.add(barBackground);
     container.add(barFill);
 
@@ -514,7 +516,6 @@ export default class BattleScene extends Phaser.Scene {
 
     const ratio = Math.max(0, unit.hp / unit.maxHp);
     view.barFill.setSize(view.barWidth * ratio, 6);
-    view.barFill.fillColor = healthBarColor(ratio);
 
     view.paralyzedBadge.setVisible(unit.paralyzedNextAttack === true);
   }

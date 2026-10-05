@@ -11,13 +11,13 @@ export const GRID_HEIGHT = 14;
 export const GAME_WIDTH = GRID_WIDTH * CELL_SIZE; // 1536
 export const GAME_HEIGHT = GRID_HEIGHT * CELL_SIZE; // 896
 
-// Couleur d'une barre de vie selon le ratio PV/PV max — même code visuel sur le terrain
-// (Phaser) et dans la tour (React), voir `cssColor`.
-export function healthBarColor(ratio) {
-  if (ratio > 0.5) return 0x2ecc71;
-  if (ratio > 0.25) return 0xf1c40f;
-  return 0xe74c3c;
-}
+// GRAPHICS.md « Palettes des factions » : couleur principale de chaque faction, celle des barres de
+// vie de ses unités sur le terrain (Phaser) et dans la tour (React, voir `cssColor`). Mêmes
+// teintes que --faction-wyrms / --faction-undead de index.css, converties en hexadécimal.
+export const FACTION_COLORS = {
+  wyrms: 0xeab532, // doré
+  undead: 0x73ecbc, // menthe
+};
 
 // Couleur d'alerte des PV d'une unité blessée dans la tour : rouge au même seuil que la barre.
 export function woundedHpColor(ratio) {

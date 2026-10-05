@@ -274,41 +274,44 @@ export default function CivilizationScreen({
           <ArmyName name={army.name} onRename={(name) => changeArmy(renameArmy(army, name))} />
           <span className="retro text-xs">{T.armyCost(armyCost(army, units, roster), ARMY_PP_CAP)}</span>
         </div>
-        {Object.entries(roster).map(([key, species]) => {
-          const members = speciesUnits(key);
-          const inArmy = members.filter((unit) => armyIds.has(unit.id)).length;
-          return (
-            <SpeciesAccordion
-              key={key}
-              species={species}
-              owned={members.length}
-              open={openKey === key}
-              onToggle={() => toggle(key)}
-              summary={<span>{T.armySummary(inArmy, members.length)}</span>}
-            >
-              {openKey === key && members.map((unit) => {
-                const checked = armyIds.has(unit.id);
-                const allowed = checked
-                  ? canRemoveFromArmy(army, units, unit.id)
-                  : canAddToArmy(army, units, roster, unit.id);
-                return (
-                  <label key={unit.id} className={`flex items-center gap-2 px-1 ${allowed ? 'cursor-pointer' : 'opacity-50'}`}>
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      disabled={!allowed}
-                      onChange={() => changeArmy(checked
-                        ? removeFromArmy(army, units, unit.id)
-                        : addToArmy(army, units, roster, unit.id))}
-                      className="size-4 accent-white"
-                    />
-                    <IndividualLine unit={unit} faction={playerFaction} />
-                  </label>
-                );
-              })}
-            </SpeciesAccordion>
-          );
-        })}
+        {/* Une colonne par espèce, côte à côte. */}
+        <div className="grid grid-cols-3 items-start gap-3">
+          {Object.entries(roster).map(([key, species]) => {
+            const members = speciesUnits(key);
+            const inArmy = members.filter((unit) => armyIds.has(unit.id)).length;
+            return (
+              <SpeciesAccordion
+                key={key}
+                species={species}
+                owned={members.length}
+                open={openKey === key}
+                onToggle={() => toggle(key)}
+                summary={<span>{T.armySummary(inArmy, members.length)}</span>}
+              >
+                {openKey === key && members.map((unit) => {
+                  const checked = armyIds.has(unit.id);
+                  const allowed = checked
+                    ? canRemoveFromArmy(army, units, unit.id)
+                    : canAddToArmy(army, units, roster, unit.id);
+                  return (
+                    <label key={unit.id} className={`flex items-center gap-2 px-1 ${allowed ? 'cursor-pointer' : 'opacity-50'}`}>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={!allowed}
+                        onChange={() => changeArmy(checked
+                          ? removeFromArmy(army, units, unit.id)
+                          : addToArmy(army, units, roster, unit.id))}
+                        className="size-4 accent-white"
+                      />
+                      <IndividualLine unit={unit} faction={playerFaction} />
+                    </label>
+                  );
+                })}
+              </SpeciesAccordion>
+            );
+          })}
+        </div>
       </section>
     );
   } else {

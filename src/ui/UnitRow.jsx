@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { cn } from '@/lib/utils';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import {
-  healthBarColor, woundedHpColor, cssColor,
+  FACTION_COLORS, woundedHpColor, cssColor,
 } from '../renderConstants.js';
 import { LevelBadge } from './LevelDisplay.jsx';
 import { TEXT, keywordLabels, unitName } from './strings.js';
@@ -45,7 +45,7 @@ const UnitRow = forwardRef(({
           />
           {row.wounded && (
             <div className="w-10 h-1.5 bg-black">
-              <div className="h-full" style={{ width: `${ratio * 100}%`, background: cssColor(healthBarColor(ratio)) }} />
+              <div className="h-full" style={{ width: `${ratio * 100}%`, background: cssColor(FACTION_COLORS[playerFaction]) }} />
             </div>
           )}
         </div>
