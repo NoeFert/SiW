@@ -37,4 +37,5 @@ Effect spritesheets: 64×64 frames, one row per color (9 colors), one column per
 
 ## backgrounds/
 - `battlefield-01.png` — First battlefield background (v1 scripted battle)
+- `dark-castle-warm-grey.png`, `dark-castle-cold-grey.png` — home screen background, Wyrms / Undead (temporary)
 - `temporary-map1.png` — "Partir en guerre" map 1 background (temporary; shown grayscale, higher contrast)
