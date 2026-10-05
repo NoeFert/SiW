@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { SOVEREIGN_SPRITES, spritePath } from '../data/sprites.js';
 import { playerProgress } from '../logic/levels.js';
-import { getPlayerXp, getSpiritStones, saveSpiritStones } from '../persistence.js';
+import {
+  getOwnedUnits, getPlayerXp, getSpiritStones, saveSpiritStones,
+} from '../persistence.js';
 import { XpBar } from '../ui/LevelDisplay.jsx';
 import SpiritFountain from '../ui/SpiritFountain.jsx';
 import SpiritStonesBalance from '../ui/SpiritStonesBalance.jsx';
@@ -38,7 +40,7 @@ export default function HomeScreen({
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 bg-neutral-900 text-white">
-      <SpiritStonesBalance amount={spiritStones} />
+      <SpiritStonesBalance amount={spiritStones} framed />
       <div className="absolute top-0 left-0 flex items-center gap-4">
         <div className="pixel-frame size-24">
           <img src={spritePath(SOVEREIGN_SPRITES[playerFaction])} alt="" className="size-full object-contain" />
@@ -55,7 +57,9 @@ export default function HomeScreen({
       </div>
       <nav className="absolute right-0 top-1/2 flex -translate-y-1/2 flex-col items-end gap-8">
         <MenuItem onClick={onOpenWar}>{TEXT.home.goToWar}</MenuItem>
-        <MenuItem onClick={onOpenUnits}>{TEXT.factions[playerFaction]}</MenuItem>
+        <MenuItem onClick={onOpenUnits}>
+          {TEXT.home.units(TEXT.factions[playerFaction], (getOwnedUnits() ?? []).length)}
+        </MenuItem>
         <MenuItem onClick={onOpenArmy}>{TEXT.home.army}</MenuItem>
         <MenuItem onClick={onOpenSummon}>{TEXT.home.summon}</MenuItem>
       </nav>

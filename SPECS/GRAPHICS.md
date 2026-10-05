@@ -49,7 +49,7 @@ Les obstacles de la grille utilisent un seul sprite de rocher, d'autres pourront
 
 ## Spirit Stones (monnaie)
 
-Icône : la **gemme noire animée** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px, affichée à 22 × 22 px). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
+Icône : la **gemme noire animée** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px, affichée à 22 × 22 px). Sur l'accueil, le solde est réduit à **l'icône et le nombre**, sans le mot « Spirit Stones », dans un **cadre** (Panels/Black/Panel du pack). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
 
 ## Spirit Fountain (accueil)
 

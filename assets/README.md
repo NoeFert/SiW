@@ -19,6 +19,7 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 `asset-packs/` (local only: gitignored and outside the Vite build). Used through
 `src/components/ui/8bit/styles/pixel-ui.css` (see `SPECS/GRAPHICS.md`, "Interface").
 - `button.png`, `button-pressed.png`, `button-highlighted-{white,purple,gold,red}.png` — ButtonA states (gold: Wyrms player)
+- `panel-plain.png` — plain dark panel around the Spirit Stones balance on the home screen (Black/Panel)
 - `panel.png`, `panel-gold.png` — card / unit tile panel (Black and Gold/PanelLarge; gold for a legendary unit)
 - `badge.png`, `badge-secondary.png`, `badge-wyrms.png`, `badge-undead.png` — badge banners
 - `bar-background.png`, `bar-foreground.png`, `bar-fill-{purple,undead,wyrms}.png` — value bars (RegularBarA): Spirit Fountain (purple), XP (Green; Orange recolored to gold for Wyrms)
