@@ -85,7 +85,7 @@ export const TEXT = {
     attackSpeed: (seconds) => `${formatDecimal(seconds)} s`,
     range: (range) => (range === null ? '—' : `${range} cases`),
     abilities: 'Aptitudes',
-    army: 'Armées',
+    army: 'Gestion d\'armée',
     armyCost: (cost, cap) => `${cost} / ${cap} PP`,
     armySummary: (inArmy, owned) => `${inArmy} / ${owned} dans l'armée`,
     removeOne: "Retirer un individu de l'armée",

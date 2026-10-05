@@ -13,6 +13,7 @@ import { isLegendary } from '../logic/ownedUnits.js';
 import { summonAction } from '../logic/summon.js';
 import { getArmy, getOwnedUnits, saveArmy } from '../persistence.js';
 import ArrowButton from '../ui/ArrowButton.jsx';
+import CornerDecor from '../ui/CornerDecor.jsx';
 import { LevelBadge, XpBar } from '../ui/LevelDisplay.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import SpeciesSprite from '../ui/SpeciesSprite.jsx';
@@ -81,26 +82,11 @@ const LEVEL_TEXT_CLASS = {
 };
 
 // GRAPHICS.md « Interface » : la case d'une espèce [Légendaire] a un panneau doré
-// (Gold/PanelLarge) et des coins dorés (Decorators/Gold/BorderC, 11×11 à 2×).
-const LEGENDARY_CORNERS = [
-  ['top-left', 'top-0 left-0'],
-  ['top-right', 'top-0 right-0'],
-  ['bottom-left', 'bottom-0 left-0'],
-  ['bottom-right', 'bottom-0 right-0'],
-];
-
+// (Gold/PanelLarge) et des coins dorés (Decorators/Gold/BorderC).
 const legendaryClass = (species) => (isLegendary(species) ? 'pixel-card-gold' : '');
 
 function LegendaryCorners({ species }) {
-  if (!isLegendary(species)) return null;
-  return LEGENDARY_CORNERS.map(([corner, position]) => (
-    <img
-      key={corner}
-      src={`/ui/legendary-corner-${corner}.png`}
-      alt=""
-      className={`pixelated pointer-events-none absolute size-5.5 ${position}`}
-    />
-  ));
+  return isLegendary(species) ? <CornerDecor color="gold" /> : null;
 }
 
 // Case carrée d'un groupe d'individus strictement identiques (même espèce, même niveau, comme la

@@ -27,7 +27,9 @@ function Button({
       {...props}
       className={cn(
         'rounded-none relative inline-flex items-center justify-center gap-1.5',
-        framed && 'pixel-button bg-transparent hover:bg-transparent text-white active:translate-y-0',
+        // Pas de décalage d'1 px au clic (celui du bouton shadcn) : le sprite enfoncé suffit, et ce
+        // décalage faisait apparaître une barre de défilement quand le bouton touche le bas d'une zone.
+        framed && 'pixel-button bg-transparent hover:bg-transparent text-white active:not-aria-[haspopup]:translate-y-0',
         font !== 'normal' && 'retro',
         className,
       )}
