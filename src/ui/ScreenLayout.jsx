@@ -8,7 +8,7 @@ import { TEXT } from './strings.js';
 // (défilant si besoin).
 export default function ScreenLayout({ title, onBack, children }) {
   return (
-    <div className="relative flex h-full w-full flex-col gap-6 bg-neutral-900 text-white">
+    <div className="relative flex h-full w-full flex-col gap-6 text-white">
       <header className="flex items-center gap-6">
         <ArrowButton direction="left" label={TEXT.back} onClick={onBack} />
         <h1 className="retro text-lg">{title}</h1>

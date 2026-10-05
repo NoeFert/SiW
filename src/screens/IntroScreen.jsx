@@ -6,7 +6,7 @@ import { TEXT } from '../ui/strings.js';
 // clickbait (technical.md 5.6). `mvpLocked` : le bouton MVP (jeu normal) est grisé.
 export default function IntroScreen({ onContinue, onClickbait, mvpLocked }) {
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center gap-12 bg-neutral-900 text-white">
+    <div className="h-full w-full flex flex-col items-center justify-center gap-12 text-white">
       {/* Espace court entre les mots, "in" en plus petit, tous alignés sur la ligne de base. */}
       <h1 className="retro flex items-baseline gap-3 text-4xl">
         <span>{TEXT.title.first}</span>

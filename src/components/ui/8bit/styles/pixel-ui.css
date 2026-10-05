@@ -106,7 +106,7 @@
   border-image: url("/ui/bar-foreground.png") 3 / 6px stretch;
 }
 
-/* Panneau uni (Panels/Black/Panel, 48×48) : solde de Spirit Stones de l'accueil. */
+/* Panneau uni (Panels/Black/Panel, 48×48) : solde de Spirit Stones (accueil et Invocation). */
 .pixel-panel {
   border-style: solid;
   border-width: 4px;

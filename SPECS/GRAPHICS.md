@@ -57,7 +57,7 @@ Version **gris chaud** (`assets/backgrounds/dark-castle-warm-grey.png`) pour la 
 
 ## Spirit Stones (monnaie)
 
-Icône : la **gemme noire** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px), **fixe** : seule la première image est affichée, à 22 × 22 px, sans animation. Sur l'accueil, le solde est réduit à **l'icône et le nombre**, sans le mot « Spirit Stones », dans un **cadre** (Panels/Black/Panel du pack). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
+Icône : la **gemme noire** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px), **fixe** : seule la première image est affichée, à 22 × 22 px, sans animation. Sur l'accueil et l'écran Invocation, le solde est réduit à **l'icône et le nombre**, sans le mot « Spirit Stones », dans un **cadre** (Panels/Black/Panel du pack). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
 
 ## Spirit Fountain (accueil)
 
@@ -104,6 +104,8 @@ La **map 1** est une carte en **arbre de compétences** (sprites SkillTree du pa
 Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un sprite du pack **Pixel UI & HUD**, découpé en 9-slice (`border-image`) et affiché à **2×** sans lissage (`src/components/ui/8bit/styles/pixel-ui.css`). Le pack complet reste dans `asset-packs/` (local, ignoré par git, hors build) ; seuls les fichiers utilisés sont copiés dans `assets/ui/`.
 
 **Padding du jeu** : sur tous les écrans (accueil, écrans de la couche méta, bataille, intro, fins de bataille), les éléments sont à **30 px** du bord de la fenêtre ; le fond des écrans va jusqu'au bord. Les éléments placés « dans un coin » (portrait, solde, menu, fontaine, « Retour », « Skip ») sont collés à ce padding.
+
+**Fond des écrans** : un **dégradé vertical**, de **#2a2c2f** en haut à **#838796** en bas, sur toute la fenêtre (padding compris), à la place du fond noir. L'accueil le recouvre de son château ; la tour de bataille garde son propre fond.
 
 **Mise en page plein écran** : comme l'accueil, les écrans « Partir en guerre », unités, « Armées » et Invocation occupent tout l'écran, sans carte centrée. En-tête commun en haut à gauche : une **flèche vers la gauche** (◀, sans cadre de bouton, à la place du bouton « Retour ») puis le titre ; le contenu prend toute la surface restante et défile si besoin (`src/ui/ScreenLayout.jsx`). La grille des unités et la liste d'invocation remplissent la largeur avec autant de colonnes qu'il en tient.
 

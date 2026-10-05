@@ -71,7 +71,7 @@ export default function HomeScreen({
         className="pixelated absolute -inset-7.5 bg-cover bg-center"
         style={{ backgroundImage: `url(${HOME_BACKGROUNDS[playerFaction]})` }}
       />
-      <SpiritStonesBalance amount={spiritStones} framed />
+      <SpiritStonesBalance amount={spiritStones} />
       <div className="absolute top-0 left-0 flex items-center gap-4">
         <div className="pixel-frame size-24">
           <img src={spritePath(SOVEREIGN_SPRITES[playerFaction])} alt="" className="size-full object-contain" />

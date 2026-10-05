@@ -61,7 +61,7 @@ export default function VictoryScreen({
   const lost = report?.filter((row) => row.lost > 0) ?? [];
 
   return (
-    <div className="min-h-full w-full flex flex-col items-center justify-center gap-8 py-8 bg-neutral-900 text-white">
+    <div className="min-h-full w-full flex flex-col items-center justify-center gap-8 py-8 text-white">
       <h1 className="text-3xl font-bold">Victoire</h1>
       {report && (lost.length > 0
         ? <ReportList title={TEXT.report.lost} rows={lost} count={(row) => row.lost} lost />
