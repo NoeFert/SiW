@@ -28,7 +28,7 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 - `war-slot-{yellow,purple,grey}.png`, `war-slot-won-{yellow,purple}.png`, `war-selector-{yellow,purple,grey}.png`, `war-connector-{vertical,horizontal}-{yellow,purple,grey}.png` — "Partir en guerre" map (SkillTree: SkillSlotSharp, SkillSlotSharpPlaceholder, SelectorSharp, ConnectorVertical/Horizontal)
 - `war-boss-slot-{yellow,purple,grey}.png`, `war-boss-slot-won-{yellow,purple}.png`, `war-boss-selector-{yellow,purple,grey}.png` — larger boss slot on the war map (SkillTree: SkillSlotLarge, SkillSlotLargePlaceholder, SelectorLarge)
 - `legendary-corner-{top,bottom}-{left,right}.png` — gold corners on a legendary unit tile (Decorators/Gold/BorderC)
-- `spirit-stone.png` — Spirit Stones icon (Black/Jewel_Spin, 9 frames of 11×11)
+- `spirit-stone.png` — Spirit Stones icon (Black/Jewel_Spin, 9 frames of 11×11; only the first frame is shown)
 
 ## effect/
 Effect spritesheets: 64×64 frames, one row per color (9 colors), one column per animation step.

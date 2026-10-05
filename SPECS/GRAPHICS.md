@@ -49,11 +49,15 @@ Les obstacles de la grille utilisent un seul sprite de rocher, d'autres pourront
 
 ## Accueil
 
-Fond **provisoire** : un château sombre en pixel art (200 × 93 px), affiché en plein écran sans lissage, jusqu'au bord de la fenêtre, derrière tous les éléments de l'accueil. Version **gris chaud** (`assets/backgrounds/dark-castle-warm-grey.png`) pour la Souveraine des Wyrms, **gris froid** (`dark-castle-cold-grey.png`) pour le Souverain des Morts-Vivants.
+Fond **provisoire** : un château sombre en pixel art (200 × 93 px), affiché en plein écran sans lissage, jusqu'au bord de la fenêtre, derrière tous les éléments de l'accueil.
+
+Version **gris chaud** (`assets/backgrounds/dark-castle-warm-grey.png`) pour la Souveraine des Wyrms, **gris froid** (`dark-castle-cold-grey.png`) pour le Souverain des Morts-Vivants.
+
+**Jusqu'à trois unités du joueur errent** en bas de l'écran, à la même hauteur que la Spirit Fountain par rapport au bas. Ce sont des individus différents, tirés au hasard parmi ceux d'une case (1 × 1, donc pas les [Légendaire] 2 × 2) ; moins de trois si le joueur n'en a pas assez, aucun s'il n'en a pas. Chacune entre par un bord, puis va et vient **au hasard** entre la gauche et la droite de l'écran (lentement, avec des pauses de 1 à 4 s entre deux trajets), sans sortir de l'écran ; son sprite regarde dans le sens de sa marche. **Toutes les 5 minutes**, elles sortent par le bord le plus proche, puis un **nouveau groupe**, tiré au hasard, entre. Sprites à la moitié de la hauteur de la statue de la fontaine (≈ 58 px). Un clic sur une unité la fait **sursauter** (petit saut de 0,35 s). Elles passent derrière la fontaine et le menu.
 
 ## Spirit Stones (monnaie)
 
-Icône : la **gemme noire animée** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px, affichée à 22 × 22 px). Sur l'accueil, le solde est réduit à **l'icône et le nombre**, sans le mot « Spirit Stones », dans un **cadre** (Panels/Black/Panel du pack). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
+Icône : la **gemme noire** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px), **fixe** : seule la première image est affichée, à 22 × 22 px, sans animation. Sur l'accueil, le solde est réduit à **l'icône et le nombre**, sans le mot « Spirit Stones », dans un **cadre** (Panels/Black/Panel du pack). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
 
 ## Spirit Fountain (accueil)
 

@@ -4,6 +4,7 @@ import { playerProgress } from '../logic/levels.js';
 import {
   getOwnedUnits, getPlayerXp, getSpiritStones, saveSpiritStones,
 } from '../persistence.js';
+import HomeWanderer from '../ui/HomeWanderer.jsx';
 import { XpBar } from '../ui/LevelDisplay.jsx';
 import SpiritFountain from '../ui/SpiritFountain.jsx';
 import SpiritStonesFlight from '../ui/SpiritStonesFlight.jsx';
@@ -95,6 +96,7 @@ export default function HomeScreen({
         <MenuItem onClick={onOpenArmy}>{TEXT.home.army}</MenuItem>
         <MenuItem onClick={onOpenSummon}>{TEXT.home.summon}</MenuItem>
       </nav>
+      <HomeWanderer playerFaction={playerFaction} />
       {/* Fontaine posée sur le sol du château du fond : son bas à 40 px du bas de la fenêtre (le
           padding du jeu en fait déjà 30). */}
       <div className="absolute left-2 -bottom-0.5">
