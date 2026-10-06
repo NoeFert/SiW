@@ -1,12 +1,10 @@
 import { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
-import { Button } from '@/components/ui/8bit/button.jsx';
 import BattleSceneClass from '../scenes/BattleScene.js';
 import CommandTower from '../ui/CommandTower.jsx';
 import TutorialOverlay from '../ui/TutorialOverlay.jsx';
 import { GAME_WIDTH, GAME_HEIGHT } from '../renderConstants.js';
 import { interactionState } from '../state/interactionState.js';
-import { TEXT } from '../ui/strings.js';
 
 // Délai entre la victoire et l'affichage de l'écran de victoire.
 const VICTORY_SCREEN_DELAY_MS = 3000;
@@ -25,10 +23,8 @@ const TOWER_WIDTH = `max(clamp(300px, 24%, 400px), calc(100vw - 100vh * ${GAME_W
 // ce sélecteur pour convertir les coordonnées de glisser-déposer (voir renderConstants.js).
 // `battleId` : bataille à jouer (src/data/battles.js), avec son tutoriel s'il en a un.
 // `playerUnits` : individus du joueur engagés (jeu normal, rules.md 2), ou null (clickbait).
-// `onSkip` : bouton « Skip » en haut à droite pour passer la bataille (bataille 01 du jeu
-// normal, rules.md 11), ou null.
 export default function BattleScreen({
-  playerFaction, battleId, playerUnits, onVictory, onDefeat, onSkip,
+  playerFaction, battleId, playerUnits, onVictory, onDefeat,
 }) {
   const containerRef = useRef(null);
 
@@ -86,7 +82,7 @@ export default function BattleScreen({
     // ui-battle-screen-decisions.md 1 : tour de commandement à gauche, terrain à droite,
     // côte à côte (jamais superposés). `dark` : thème sombre des composants 8bitcn de la tour.
     // GRAPHICS.md « Interface » : la tour et le terrain vont jusqu'au bord de la fenêtre, padding
-    // du jeu compris (-inset-game) ; seul « Skip » reste dans le padding.
+    // du jeu compris (-inset-game).
     <div className="relative h-full w-full">
       <div className="absolute -inset-game flex">
         <div className="dark flex-none h-full" style={{ width: TOWER_WIDTH }}>
@@ -94,9 +90,6 @@ export default function BattleScreen({
         </div>
         <div id="phaser-root" ref={containerRef} className="flex-1 min-w-0 h-full" />
         <TutorialOverlay />
-        {onSkip && (
-          <Button onClick={onSkip} className="absolute top-game right-game z-50">{TEXT.skip}</Button>
-        )}
       </div>
     </div>
   );

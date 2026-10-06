@@ -154,8 +154,9 @@ export default function App() {
     setScreen('victory');
   }, [isClickbait, playerFaction, saveGameVictory]);
 
-  // Bataille 01 passée avec « Skip » : comptée comme gagnée sans combat (aucune perte, armée de
-  // départ avec toute la dotation, récompense et XP fixe du joueur), puis retour direct à l'accueil.
+  // Menu devs, pendant la bataille 01 (rules.md 11) : comptée comme gagnée sans combat (aucune
+  // perte, armée de départ avec toute la dotation, récompense et XP fixe du joueur), puis retour
+  // direct à l'accueil.
   const skipFirstBattle = useCallback(() => {
     saveGameVictory([]);
     goHome();
@@ -212,6 +213,8 @@ export default function App() {
     { label: 'restart game', run: restartGame },
     { label: 'restart clickbait', run: startClickbait },
     { label: 'entrainement', run: startTraining },
+    ...(screen === 'battle' && mode === 'game' && battleId === FIRST_BATTLE_ID
+      ? [{ label: 'skip tutorial', run: skipFirstBattle }] : []),
     ...[['test-wyrm', TEST_PROFILES.testWyrm], ['test-wyrm-fallen', TEST_PROFILES.testWyrmFallen],
       ['test-undead', TEST_PROFILES.testUndead]]
       .map(([label, profile]) => ({
@@ -249,7 +252,6 @@ export default function App() {
         playerUnits={battleUnits()}
         onVictory={handleVictory}
         onDefeat={handleDefeat}
-        onSkip={mode === 'game' && battleId === FIRST_BATTLE_ID ? skipFirstBattle : null}
       />
     );
   } else if (screen === 'victory') {

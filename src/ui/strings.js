@@ -158,7 +158,6 @@ export const TEXT = {
   ordersTitle: 'Ordres',
   cancel: 'Annuler',
   back: 'Retour', // en-tête des écrans de la couche méta (ScreenLayout)
-  skip: 'Skip', // passer la bataille 01 (rules.md 11)
   orders: { move: 'Aller', attack: 'Attaquer', flee: 'Fuir' },
   fleeCooldown: (seconds) => `Fuir (${seconds.toFixed(1)} s)`, // rules.md 5.1
 
