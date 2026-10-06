@@ -194,3 +194,45 @@
     scrollbar-color: #eeb632 transparent;
   }
 }
+
+/* Curseurs (Cursors du pack, pré-agrandis ×2 pour la taille d'un curseur système : un curseur
+   CSS ne se met pas à l'échelle). Couleur selon la faction du joueur, posée sur <html> par App.jsx
+   (data-cursor) pour couvrir aussi les fenêtres affichées hors de l'app (tooltips, dialogues) :
+   doré pour les Wyrms, violet pour les Morts-Vivants, blanc tant qu'il n'a pas de faction (intro,
+   choix de faction).
+   Flèche partout par défaut ; main sur ce qui est cliquable (cursor-pointer), main fermée sur ce
+   qui se glisse (cursor-grab), « interdit » sur ce qui est indisponible (cursor-not-allowed).
+   Hors @layer : l'emporte sur les utilitaires Tailwind du même nom. Les boutons gardent la
+   flèche, comme avant. */
+html {
+  --cursor-arrow: url("/ui/cursor-arrow-white.png");
+  --cursor-hand: url("/ui/cursor-hand-white.png");
+  --cursor-grab: url("/ui/cursor-grab-white.png");
+  --cursor-unavailable: url("/ui/cursor-unavailable-white.png");
+  cursor: var(--cursor-arrow) 0 0, default;
+}
+html[data-cursor="wyrms"] {
+  --cursor-arrow: url("/ui/cursor-arrow-gold.png");
+  --cursor-hand: url("/ui/cursor-hand-gold.png");
+  --cursor-grab: url("/ui/cursor-grab-gold.png");
+  --cursor-unavailable: url("/ui/cursor-unavailable-gold.png");
+}
+html[data-cursor="undead"] {
+  --cursor-arrow: url("/ui/cursor-arrow-purple.png");
+  --cursor-hand: url("/ui/cursor-hand-purple.png");
+  --cursor-grab: url("/ui/cursor-grab-purple.png");
+  --cursor-unavailable: url("/ui/cursor-unavailable-purple.png");
+}
+button,
+[role="button"] {
+  cursor: inherit;
+}
+.cursor-pointer {
+  cursor: var(--cursor-hand) 7 1, pointer;
+}
+.cursor-grab {
+  cursor: var(--cursor-grab) 9 10, grab;
+}
+.cursor-not-allowed {
+  cursor: var(--cursor-unavailable) 13 13, not-allowed;
+}

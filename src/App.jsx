@@ -1,4 +1,6 @@
-import { Fragment, useCallback, useState } from 'react';
+import {
+  Fragment, useCallback, useEffect, useState,
+} from 'react';
 import IntroScreen from './screens/IntroScreen.jsx';
 import FactionChoiceScreen from './screens/FactionChoiceScreen.jsx';
 import BattleScreen from './screens/BattleScreen.jsx';
@@ -72,6 +74,13 @@ export default function App() {
   const isWarBattle = mode === 'game' && WAR_BATTLE_IDS.includes(battleId);
   let playerFaction = isClickbait ? clickbaitFaction : getSavedFaction();
   if (isTraining) playerFaction ??= 'wyrms'; // couleurs de l'interface seulement
+
+  // GRAPHICS.md « Curseur de la souris » : couleur du curseur selon la faction (pixel-ui.css),
+  // posée sur <html> pour couvrir aussi les tooltips et dialogues rendus hors de l'app. Sans
+  // faction (intro, choix de faction) : curseur blanc.
+  useEffect(() => {
+    document.documentElement.dataset.cursor = playerFaction ?? 'none';
+  }, [playerFaction]);
 
   const startBattle = useCallback(() => {
     setBattleAttempt((n) => n + 1);
