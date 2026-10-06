@@ -2,9 +2,10 @@ import { createUnit } from '../logic/ownedUnits.js';
 import { createArmy } from '../logic/army.js';
 import {
   clearProgress, savePlayerFaction, markFirstBattleWon, saveOwnedUnits, saveArmy, saveSpiritStones,
-  savePlayerXp, saveFallenLegendaryLevel, saveFountainLastHarvest,
+  savePlayerXp, saveFallenLegendaryLevel, saveFountainLastHarvest, saveHomeTipsSeen,
 } from '../persistence.js';
 import { FOUNTAIN_MINUTE_MS } from '../logic/fountain.js';
+import { HOME_TIPS } from '../logic/homeTips.js';
 import { TEXT } from '../ui/strings.js';
 
 // Outil de dev — joueurs de test figés, pour tester à la main l'après-bataille 01 sans la
@@ -59,4 +60,5 @@ export function loadTestProfile({
   savePlayerXp(playerXp);
   if (fallenLegendaryLevel !== null) saveFallenLegendaryLevel(fallenLegendaryLevel);
   saveFountainLastHarvest(Date.now() - 24 * 60 * FOUNTAIN_MINUTE_MS);
+  saveHomeTipsSeen(HOME_TIPS); // tutoriel de l'accueil déjà passé (technical.md 5.7)
 }

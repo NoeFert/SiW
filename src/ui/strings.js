@@ -64,6 +64,13 @@ export const TEXT = {
     army: 'Gestion d\'armée',
     summon: 'Invocation',
   },
+  // Conseils du tutoriel de l'accueil (src/logic/homeTips.js, technical.md 5.5).
+  homeTips: {
+    welcome: 'Voici ton noble domaine, le territoire de ton peuple.\nL\'ennemi continue cependant son invasion, repousse-le !',
+    summon: 'En tant que souverain, tu possèdes un pouvoir puissant : fais grandir ton peuple en invoquant de nouvelles créatures.',
+    armyRecruit: 'Ta recrue n\'est pas encore dans ton armée. Ajoute-la avant de repartir.',
+    close: 'Fermer',
+  },
   // Menu des paramètres de l'accueil (engrenage à côté du solde).
   settings: {
     title: 'Paramètres',

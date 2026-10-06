@@ -8,7 +8,7 @@ Roadmap des fonctionnalités méta ajoutées au MVP : accueil, gestion de civili
 
 ## Objectif
 
-Brancher sur le moteur de bataille une première boucle méta : perdre des unités en bataille, gagner des Spirit Stones, reconstituer son armée — et faire progresser le joueur et ses unités survivantes en niveau, pour que perdre peu d'unités soit récompensé.
+Brancher sur le moteur de bataille une première boucle méta : perdre des créatures en bataille, gagner des Spirit Stones, faire grandir à nouveau son peuple — et faire progresser le joueur et ses unités survivantes en niveau, pour que perdre peu d'unités soit récompensé.
 
 ---
 
@@ -20,6 +20,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 - **Spirit Fountain** (`rules.md` 11.8) : produit 1 Spirit Stone par minute en temps réel, jusqu'à une capacité de 20 + 10 × niveau du joueur ; un clic récolte. Garantit qu'on peut toujours réinvoquer après avoir tout perdu
 - Quatre entrées de menu, sur le bord gauche de l'écran : **Partir en guerre**, un bouton au **nom de la faction** suivi du nombre d'individus possédés (« Wyrms (21) », section Unités), **Armées** (section Armée), **Invocation**. Les deux sections de la gestion de civilisation sont des écrans séparés
 - **Partir en guerre** : ouvre l'écran « Partir en guerre » (voir ci-dessous)
+- **Tutoriel de l'accueil** : des conseils non bloquants, un par un, au moment où la fonction devient utile — pour l'instant l'arrivée (vers « Partir en guerre »), les premières pertes, quand le joueur peut faire grandir à nouveau son peuple (vers « Invocation ») et la première recrue invoquée (vers « Gestion d'armée ») ; chaque conseil n'apparaît qu'une fois (`technical.md` 5.5)
 
 ### Partir en guerre (`rules.md` 11.7)
 - **Trois batailles en séquence** (« La passe », « Les crevasses », « La citadelle », noms provisoires) : chacune se débloque en gagnant la précédente ; une bataille gagnée reste **rejouable**, avec une récompense réduite
@@ -62,12 +63,12 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 - Achat d'un individu d'une **espèce déjà connue** (roster de la faction du joueur) — pas de gacha
 - **Pas de plafond de possession** pour les unités non légendaires : ce qui freine le joueur, c'est la monnaie ; le plafond d'armée (500 PP) et celui du terrain (150 PP) bornent déjà ce qui combat
 - **[Légendaire] unique** : au plus un exemplaire possédé. Masqué de l'écran Invocation tant qu'il est vivant, proposé seulement s'il est mort
-- Rachat et réinvocation sont **la même action** (payer, ajouter un individu) ; seul le libellé change : « Invoquer » pour une unité classique, « Réinvoquer » pour un Légendaire mort. Pas de délai ni de coût croissant d'une réinvocation à l'autre
+- Invocation et réinvocation sont **la même action** (payer, ajouter un individu) ; seul le libellé change : « Invoquer » pour une unité classique, « Réinvoquer » pour un Légendaire mort. Pas de délai ni de coût croissant d'une réinvocation à l'autre
 - **Niveau gardé** : à la réinvocation, le joueur choisit le niveau du Légendaire, entre 1 et celui qu'il avait à sa mort ; +25 % du prix de base par niveau gardé au-delà du 1 (`rules.md` 11.4). Un individu invoqué autrement est niveau 1
 - **Prix = coût en PP de l'espèce × k**, avec un multiplicateur à part éventuel pour le [Légendaire] (valeurs à définir)
 
 ### Persistance (localStorage)
-- Sont conservés : la faction choisie, la victoire de la bataille 01, la **liste des individus possédés** (avec leur XP), l'**armée** (nom + identifiants), le **solde de Spirit Stones**, l'**XP du joueur**, le **niveau du Légendaire à sa mort** (pour la réinvocation), la **liste des batailles de « Partir en guerre » gagnées** et l'**heure de la dernière récolte de la Spirit Fountain**. La liste d'individus remplace l'ancien décompte de copies par espèce
+- Sont conservés : la faction choisie, la victoire de la bataille 01, la **liste des individus possédés** (avec leur XP), l'**armée** (nom + identifiants), le **solde de Spirit Stones**, l'**XP du joueur**, le **niveau du Légendaire à sa mort** (pour la réinvocation), la **liste des batailles de « Partir en guerre » gagnées** l'**heure de la dernière récolte de la Spirit Fountain** et la **liste des conseils de l'accueil déjà vus** (tutoriel de l'accueil, `technical.md` 5.5). La liste d'individus remplace l'ancien décompte de copies par espèce
 - Pas de système de sauvegarde généralisé : ni historique de batailles, ni état d'une bataille en cours
 
 ### Outil de développement
@@ -125,7 +126,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 | Niveau des individus | Porté par chaque individu (pas par l'espèce) ; XP à la victoire (survie + ennemis achevés) ; niveau 1 à 5 ; +10 % PV et dégâts par niveau ; coût en PP fixe, pour que garder ses unités en vie les rende plus fortes sous le même plafond |
 | Niveau du joueur | XP à la victoire (100 + bonus selon les PP survivants ; 100 fixes au tutoriel) ; sans maximum ; rapporte des Spirit Stones. Emplacements d'armée et plafond de PP liés au niveau : hors MVP |
 | Armée | Une seule armée (preset d'identifiants), renommable, 500 PP max, 1 unité min ; créée automatiquement avec tous les survivants de la bataille 01, nommée « Armée 1 » ; composée individu par individu (accordéons) |
-| Invocation | Achat d'espèces connues sans plafond ; Légendaire unique, réinvocable seulement s'il est mort ; même action pour rachat et réinvocation ; prix = coût PP × k ; à la réinvocation, niveau gardé au choix, +25 % du prix par niveau |
+| Invocation | Achat d'espèces connues sans plafond ; Légendaire unique, réinvocable seulement s'il est mort ; même action pour invocation et réinvocation ; prix = coût PP × k ; à la réinvocation, niveau gardé au choix, +25 % du prix par niveau |
 | Monnaie | Spirit Stones (nom provisoire) : somme de départ + récompenses de victoire (réduites au rejeu) + récompenses de niveau ; solde affiché en haut à droite de l'accueil |
 | Partir en guerre | Trois batailles en séquence, deux zones chacune, rejouables ; pertes définitives même en défaite ; la Spirit Fountain évite le blocage |
 

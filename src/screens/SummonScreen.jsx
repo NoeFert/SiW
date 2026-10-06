@@ -32,7 +32,7 @@ const SELECTION_CORNERS = { wyrms: 'gold', undead: 'purple' };
 // La réinvocation du [Légendaire] passe par une boîte de confirmation où le joueur choisit le
 // niveau gardé (de 1 à son niveau à sa mort), avec le prix de chaque niveau ; l'annuler ne
 // dépense rien.
-export default function SummonScreen({ playerFaction, onBack }) {
+export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
   const roster = ROSTERS[playerFaction];
   const [units, setUnits] = useState(() => getOwnedUnits() ?? []);
   const [spiritStones, setSpiritStones] = useState(getSpiritStones);
@@ -52,6 +52,7 @@ export default function SummonScreen({ playerFaction, onBack }) {
     setUnits(result.units);
     setSpiritStones(result.spiritStones);
     setCount(1);
+    onSummoned();
   };
   const doSummon = (key, level = 1) => apply(summon(roster, units, spiritStones, key, level, fallenLevel));
   const selectSpecies = (key) => {

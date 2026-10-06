@@ -203,7 +203,7 @@ IntroScreen → FactionChoiceScreen (une fois)
 
 ### 5.4 Navigation et état persistant
 - **Gestion de la navigation entre écrans : état React simple** (ex : un state `currentScreen` géré dans le composant racine `App.jsx`), pas de librairie de routing (React Router ou équivalent) pour la v1 — le jeu est une session continue dans un seul onglet, sans besoin d'URLs distinctes par écran. Une vraie solution de routing pourra être introduite en v2+ si la sélection de niveau (plusieurs batailles) le justifie.
-- **Persistance via localStorage** : neuf valeurs sont sauvegardées (`roadmap-mvp.md`) —
+- **Persistance via localStorage** : dix valeurs sont sauvegardées (`roadmap-mvp.md`) —
   1. la faction choisie par le joueur
   2. un indicateur booléen "première bataille (tutoriel) gagnée"
   3. la **liste des individus possédés**, chacun `{ id, species, xp }` (ex : `[{ id: 'u1', species: 'lambtonWorm', xp: 0 }, …]`, `rules.md` 11.1 et 11.6 ; le niveau se calcule à partir de l'XP, il n'est pas sauvegardé) : créée avec la dotation de départ au choix de la faction, mise à jour à chaque victoire (individus tués retirés, XP gagnée), à chaque défaite de « Partir en guerre » (individus tués retirés, `rules.md` 11.7) et à chaque invocation — jamais lors d'une tentative ratée de la bataille 01 (voir 5.2). Elle remplace l'ancien décompte de copies par espèce
@@ -213,6 +213,7 @@ IntroScreen → FactionChoiceScreen (une fois)
   7. le **niveau du [Légendaire] à sa mort** (entier, ou absent s'il n'est jamais mort ; `rules.md` 11.4), mis à jour à chaque mort du [Légendaire] comptabilisée (victoire, ou défaite de « Partir en guerre »)
   8. la **liste des batailles de « Partir en guerre » gagnées** (identifiants, ex : `['war1', 'war2']` ; `rules.md` 11.7) : sert au déblocage de la bataille suivante et à la récompense réduite au rejeu
   9. l'**heure de la dernière récolte de la Spirit Fountain** (horodatage en millisecondes, `rules.md` 11.8 ; absente tant que la fontaine n'est pas en route) : son contenu se recalcule à partir de cette heure, rien d'autre n'est sauvegardé pour elle
+  10. la **liste des conseils de l'accueil déjà vus** (identifiants, ex : `['welcome']`, 5.5) : un conseil vu ne réapparaît jamais
 - **Identifiant d'un individu** : généré par `crypto.randomUUID()` à sa création (dotation de départ ou invocation). Jamais dérivé de la taille de la liste, qui réutiliserait l'identifiant d'un individu mort ; aucun compteur n'est sauvegardé.
 - Aucun champ de personnalisation n'est ajouté aux individus : l'identifiant suffit pour que les armées référencent des individus, et pour accueillir la personnalisation plus tard sans migration de sauvegarde.
 - C'est une exception ciblée à l'absence de persistance, pas un système de sauvegarde généralisé. Ces valeurs suffisent à reconstituer l'écran de départ correct au chargement de l'application (voir 5.2) et à afficher `HomeScreen`, `CivilizationScreen` et `SummonScreen`.
@@ -240,6 +241,18 @@ IntroScreen → FactionChoiceScreen (une fois)
 
 - **Déclenchement de l'étape 3** : quand l'IA a déployé son **avant-dernière vague** (avant-dernière entrée de son script, `rules.md` 7.1 — t=28 s) **ou au plus tard 8 s** (temps de bataille) après la fin de l'étape 2, au premier des deux ; dans les deux cas, dès que le joueur a au moins une unité sur le terrain, que Fuir est disponible (pas de cooldown en cours) et qu'aucun geste n'est en cours.
 
+- **Tutoriel de l'accueil** (`HomeScreen`, jeu normal) : pas de visite guidée, mais des **conseils** qui apparaissent un par un, au moment où la fonction devient utile. Rien n'est verrouillé ni caché : le joueur peut tout explorer librement.
+  - **Règles communes** : même bulle (`Item`, en haut de l'écran) et même main blanche que le tutoriel de bataille ; **une seule bulle à la fois**, au plus une par arrivée sur l'accueil ; **rien n'est figé** (tout reste cliquable) ; la bulle a un bouton [×] et disparaît aussi dès que le joueur quitte l'accueil. **Chaque conseil n'apparaît qu'une fois** : il est marqué vu dès qu'il s'affiche (sauvegardé, 5.4).
+  - **Conseils** (l'ordre donne la priorité si deux sont prêts en même temps) :
+
+| Conseil | Déclencheur | Message | Main |
+|---|---|---|---|
+| `welcome` | Première arrivée sur l'accueil | « Voici ton noble domaine, le territoire de ton peuple. » (retour à la ligne) « L'ennemi continue cependant son invasion, repousse-le ! » | Tapote « Partir en guerre » |
+| `summon` | Arrivée sur l'accueil quand une espèce compte moins d'individus que sa dotation de départ (`units.md`, pertes) **et** que le solde paie l'invocation d'un individu de cette espèce (`rules.md` 11.4). Marqué vu aussi dès que le joueur invoque de lui-même | « En tant que souverain, tu possèdes un pouvoir puissant : fais grandir ton peuple en invoquant de nouvelles créatures. » (les unités sont le peuple vivant du souverain, jamais des pions remplaçables : pas de « remplacer ses morts ») | Tapote « Invocation » |
+| `armyRecruit` | Arrivée sur l'accueil après au moins une invocation faite depuis l'arrivée précédente (écran Invocation ouvert depuis l'accueil ou depuis la section Unités ; non sauvegardé), avec au moins un individu hors de l'armée (`rules.md` 11.2 : un individu invoqué n'est pas ajouté à l'armée) | « Ta recrue n'est pas encore dans ton armée. Ajoute-la avant de repartir. » | Tapote « Gestion d'armée » |
+
+  - Conseils prévus plus tard (hors de cette étape) : Spirit Fountain quand elle a de quoi être récoltée, vétérans dans la section Unités.
+
 ### 5.6 Version clickbait
 - Version du jeu **indépendante** du jeu normal : écran de choix de faction → bataille-clickbait (`clickbaitBattle`, avec le tutoriel clickbait, section 5.5).
 - La bataille-clickbait a **trois phases** (`rules.md` 7.3) : la phase 1 reprend le terrain de la bataille 01 et une version resserrée de son script, sans Légendaire (`rules.md` 7.3), puis l'armée du joueur passe dans « Le mur » (phase 2, fond retourné) puis « Le fort » (phase 3, provisoire), chacune avec sa vague ennemie. Les zones sont des plans ASCII dans `src/data/battlefield.js` (convertis par `parseObstacleMap`, `src/logic/grid.js`). Logique : `src/logic/phases.js` ; données : `phases` dans `src/data/battles.js` ; animation de sortie/entrée des unités : `BattleScene.applyPhaseTransition`. « Réessayer » après une défaite en phase 2 relance toute la bataille depuis la phase 1. La bataille est **gagnée dès que l'IA a fini le script de la dernière phase (phase 3) et n'a plus d'unité vivante**, comme toutes les batailles (`rules.md` 7.3 et 8.1, écran de victoire 2 s plus tard).
@@ -261,4 +274,5 @@ IntroScreen → FactionChoiceScreen (une fois)
       - Amphiptères : 70 (niveau 2), 30, 0, 0, 0, 0, 0 (niveau 1) ;
       - Fafnir : 350 (niveau 4).
     - **Spirit Fountain** pleine (dernière récolte il y a 24 h, `rules.md` 11.8), pour tester la récolte.
+    - **Tutoriel de l'accueil déjà passé** : tous les conseils sont marqués vus (5.5).
   - **test-wyrm-fallen** : comme test-wyrm, mais **Fafnir est mort au niveau 5** — il n'est ni dans les individus possédés ni dans l'armée (16 individus, 265 PP), et le niveau du [Légendaire] à sa mort vaut 5. Sert à tester la réinvocation avec niveau gardé (`rules.md` 11.4).

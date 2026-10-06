@@ -1,9 +1,14 @@
-import { useCallback, useRef, useState } from 'react';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
+import { ROSTERS } from '../data/rosters.js';
 import { SOVEREIGN_SPRITES, spritePath } from '../data/sprites.js';
+import { homeTipToShow, markTipSeen } from '../logic/homeTips.js';
 import { playerProgress } from '../logic/levels.js';
 import {
-  getOwnedUnits, getPlayerXp, getSpiritStones, saveSpiritStones,
+  getArmy, getHomeTipsSeen, getOwnedUnits, getPlayerXp, getSpiritStones, saveHomeTipsSeen, saveSpiritStones,
 } from '../persistence.js';
+import HomeTip from '../ui/HomeTip.jsx';
 import HomeWanderer from '../ui/HomeWanderer.jsx';
 import { XpBar } from '../ui/LevelDisplay.jsx';
 import SpiritFountain from '../ui/SpiritFountain.jsx';
@@ -13,9 +18,9 @@ import SettingsMenu from '../ui/SettingsMenu.jsx';
 import { TEXT } from '../ui/strings.js';
 
 // GRAPHICS.md « Interface » : entrée de menu sans cadre de bouton.
-function MenuItem({ onClick, children }) {
+function MenuItem({ onClick, tutorial, children }) {
   return (
-    <button type="button" onClick={onClick} className="pixel-menu-item retro text-sm">
+    <button type="button" onClick={onClick} data-tutorial={tutorial} className="pixel-menu-item retro text-sm">
       {children}
     </button>
   );
@@ -37,9 +42,25 @@ const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rec
 // (entrée au nom de la faction) et « Armées » (CivilizationScreen), invocation — et la Spirit
 // Fountain alignée à gauche (rules.md 11.8).
 export default function HomeScreen({
-  playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon, onResetGame,
+  playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon, onResetGame, justSummoned, onArrived,
 }) {
   const [spiritStones, setSpiritStones] = useState(getSpiritStones);
+
+  // technical.md 5.5 : au plus un conseil par arrivée, marqué vu dès qu'il s'affiche.
+  // `justSummoned` : au moins une invocation depuis l'arrivée précédente (remis à zéro par
+  // `onArrived`).
+  const [tip, setTip] = useState(() => homeTipToShow({
+    seen: getHomeTipsSeen(),
+    justSummoned,
+    units: getOwnedUnits() ?? [],
+    army: getArmy(),
+    roster: ROSTERS[playerFaction],
+    spiritStones: getSpiritStones(),
+  }));
+  useEffect(() => {
+    if (tip) saveHomeTipsSeen(markTipSeen(getHomeTipsSeen(), tip));
+    onArrived();
+  }, []); // une seule fois, à l'arrivée
   const progress = playerProgress(getPlayerXp());
 
   // rules.md 11.8 : la récolte est sauvegardée tout de suite ; le solde affiché n'augmente qu'à
@@ -91,12 +112,12 @@ export default function HomeScreen({
         </div>
       </div>
       <nav className="absolute left-5 top-1/2 -mt-8 flex -translate-y-1/2 flex-col items-start gap-8">
-        <MenuItem onClick={onOpenWar}>{TEXT.home.goToWar}</MenuItem>
+        <MenuItem onClick={onOpenWar} tutorial="home-war">{TEXT.home.goToWar}</MenuItem>
         <MenuItem onClick={onOpenUnits}>
           {TEXT.home.units(TEXT.factions[playerFaction], (getOwnedUnits() ?? []).length)}
         </MenuItem>
-        <MenuItem onClick={onOpenArmy}>{TEXT.home.army}</MenuItem>
-        <MenuItem onClick={onOpenSummon}>{TEXT.home.summon}</MenuItem>
+        <MenuItem onClick={onOpenArmy} tutorial="home-army">{TEXT.home.army}</MenuItem>
+        <MenuItem onClick={onOpenSummon} tutorial="home-summon">{TEXT.home.summon}</MenuItem>
       </nav>
       <HomeWanderer playerFaction={playerFaction} />
       {/* Fontaine posée sur le sol du château du fond, dans le padding du jeu comme le reste du
@@ -104,6 +125,7 @@ export default function HomeScreen({
       <div className="absolute left-2 -bottom-0.5">
         <SpiritFountain playerLevel={progress.level} onHarvest={collect} />
       </div>
+      {tip && <HomeTip tip={tip} onClose={() => setTip(null)} />}
       {flight && (
         <SpiritStonesFlight key={flight.key} from={flight.from} to={flight.to} count={flight.count} onDone={land} />
       )}

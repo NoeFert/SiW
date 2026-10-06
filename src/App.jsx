@@ -26,8 +26,10 @@ import {
   getSavedFaction, savePlayerFaction, hasWonFirstBattle, markFirstBattleWon, getOwnedUnits,
   saveOwnedUnits, getArmy, saveArmy, getSpiritStones, saveSpiritStones, getPlayerXp, savePlayerXp,
   getFallenLegendaryLevel, saveFallenLegendaryLevel, getWonWarBattles, saveWonWarBattles,
-  getFountainLastHarvest, saveFountainLastHarvest, isLegacySave, clearProgress,
+  getFountainLastHarvest, saveFountainLastHarvest, isLegacySave, clearProgress, getHomeTipsSeen,
+  saveHomeTipsSeen,
 } from './persistence.js';
+import { markTipSeen } from './logic/homeTips.js';
 import { TEXT } from './ui/strings.js';
 
 // rules.md 11.8 : la Spirit Fountain se met en route, vide, à la première arrivée sur l'accueil.
@@ -63,6 +65,9 @@ export default function App() {
   // technical.md 5.2 : SummonScreen s'ouvre depuis l'accueil ou depuis l'écran des unités ;
   // « Retour » ramène à l'écran d'origine ('home' ou 'units').
   const [summonBack, setSummonBack] = useState('home');
+  // technical.md 5.5 : au moins une invocation depuis la dernière arrivée sur l'accueil (conseil
+  // « recrue hors de l'armée » du tutoriel de l'accueil).
+  const [summonedSinceHome, setSummonedSinceHome] = useState(false);
   const [saveVersion, setSaveVersion] = useState(0); // menu devs : recharge l'écran après un profil
   const isClickbait = mode === 'clickbait';
   const isTraining = mode === 'training';
@@ -292,6 +297,11 @@ export default function App() {
     content = (
       <SummonScreen
         playerFaction={playerFaction}
+        onSummoned={() => {
+          setSummonedSinceHome(true);
+          // technical.md 5.5 : invoquer de soi-même rend le conseil d'invocation inutile.
+          saveHomeTipsSeen(markTipSeen(getHomeTipsSeen(), 'summon'));
+        }}
         onBack={() => (summonBack === 'units' ? setScreen('units') : goHome())}
       />
     );
@@ -307,6 +317,8 @@ export default function App() {
           setScreen('summon');
         }}
         onResetGame={restartGame}
+        justSummoned={summonedSinceHome}
+        onArrived={() => setSummonedSinceHome(false)}
       />
     );
   }

@@ -19,6 +19,16 @@ Le vrai choix stratégique se fait **avant et pendant le déploiement** : chaque
 
 Gagner la bataille **en perdant le moins d'unités possible**. Une unité tuée est perdue pour de bon ; une unité blessée peut battre en retraite et revenir plus tard dans la bataille, avec ses PV réduits.
 
+## Le peuple du souverain
+
+Les monstres du joueur sont **son peuple vivant**, jamais des pions jetables. Chaque créature est un individu, avec son expérience et son histoire (son niveau). Une créature tombée ne revient pas, et aucune autre ne « la remplace » : une nouvelle invocation **fait grandir le peuple** d'une nouvelle vie, elle ne ramène pas la disparue.
+
+C'est une règle de ton pour tous les textes montrés au joueur (`src/ui/strings.js`) :
+- **à éviter** : remplacer, racheter, rachat, stock, pion, copie, unité « consommée » ;
+- **à préférer** : peuple, créatures, individus, tombés, disparus, invoquer, donner vie, faire grandir son peuple.
+
+Dans les specs, « copie » reste un terme technique de règle (réserves de l'IA et de la version clickbait, `RULES.md` section 2).
+
 ## La mécanique « pub » (version clickbait, le POC)
 
 Le thème de la gamejam est le *clickbait game* : un jeu web inspiré des publicités de jeux mobiles.
@@ -39,13 +49,13 @@ Le clickbait est construit comme une pub ; le MVP est **le jeu complet, construi
 - une **première boucle méta**, organisée autour de l'écran d'accueil (détail dans `roadmap-mvp.md` et `RULES.md` section 11) :
   - la **gestion de civilisation** : consulter ses monstres espèce par espèce, et composer l'**armée** qui partira en guerre (500 points de présence au plus, au-dessus des 150 du terrain : l'armée contient des réserves) ;
   - une monnaie, les **Spirit Stones**, reçue au départ puis en récompense des victoires, et produite en continu par la **Spirit Fountain** de l'accueil, dont la capacité grandit avec le niveau du souverain ;
-  - l'**invocation** : dépenser ses Spirit Stones pour racheter des monstres d'espèces connues, ou réinvoquer son Légendaire tombé au combat ;
+  - l'**invocation** : dépenser ses Spirit Stones pour donner vie à de nouvelles créatures d'espèces connues, ou réinvoquer son Légendaire tombé au combat ;
   - « **Partir en guerre** » : trois batailles qui suivent la bataille 01, à conquérir l'une après l'autre avec son armée. Chacune traverse deux zones ; une bataille gagnée peut être rejouée pour progresser, mais une défaite coûte cher : les monstres tombés sont perdus quand même (`RULES.md` section 11.7) ;
   - les **niveaux** (`RULES.md` sections 11.5 et 11.6) :
     - chaque **monstre** gagne de l'expérience quand il survit à une victoire et quand il achève des ennemis. En montant de niveau (jusqu'au niveau 5), il devient plus robuste et plus fort, sans coûter plus de points de présence : un vétéran vaut plus qu'une recrue sur le terrain. Chaque monstre devient ainsi un individu reconnaissable dans la gestion de civilisation ;
     - le **souverain** progresse lui aussi à chaque victoire, d'autant plus que son armée en sort intacte, et chaque niveau lui rapporte des Spirit Stones ;
     - un **Légendaire** tombé peut être réinvoqué au niveau qu'il avait atteint, contre un prix plus élevé.
 
-La boucle méta donne son poids à l'objectif du joueur : chaque monstre perdu devra être racheté, et chaque Spirit Stone dépensée à reconstruire l'armée ne sert pas à la renforcer. Les niveaux renforcent encore cet enjeu : perdre un monstre, c'est aussi perdre son expérience, et un vétéran racheté repart de zéro.
+La boucle méta donne son poids à l'objectif du joueur : chaque créature tombée est une perte pour le peuple, et chaque Spirit Stone dépensée pour le faire grandir à nouveau ne sert pas à le rendre plus fort. Les niveaux renforcent encore cet enjeu : une créature tombée emporte son expérience avec elle, et la nouvelle venue part de zéro.
 
 Pour le Rendu 1, seule la version clickbait était jouable. Depuis, l'écran d'introduction mène au jeu normal (bouton « Commencer ») et la version clickbait n'est plus accessible qu'en développement (`TECHNICAL.md` sections 5.2 et 5.6).
