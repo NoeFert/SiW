@@ -134,7 +134,6 @@ export const TEXT = {
   chooseFaction: 'Choisis ta faction',
   factions: { wyrms: 'Wyrms', undead: 'Morts-Vivants' },
 
-  presenceLabel: 'Présence sur le terrain',
   yourUnits: 'Vos unités',
   ungroupSpecies: 'Séparer les individus',
   groupSpecies: 'Regrouper l\'espèce',

@@ -59,12 +59,12 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 
 ### 2.1 Jauge de présence (en haut)
 
-- **Forme :** un rond qui se remplit de bas en haut, comme un liquide, selon les points de présence actuellement sur le terrain.
+- **Forme :** une fiole ronde (pack Pixel UI : ValueBars/White, FlaskBackground et FlaskForeground) qui se remplit de bas en haut, comme un liquide, selon les points de présence actuellement sur le terrain. Le remplissage est une couleur unie, pas les FlaskFill du pack.
 - **Couleur du remplissage :** la couleur principale de la faction jouée.
   - Wyrms : **doré**
   - Morts-Vivants : **menthe**
 - **Ratio en chiffres** affiché par-dessus le rond, par exemple `60/150`.
-- **Label** sous le rond : « Présence sur le terrain ».
+- **Pas de label** sous la fiole.
 
 ### 2.2 Section « Vos unités »
 

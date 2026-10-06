@@ -21,7 +21,7 @@ export default function CommandTower({ playerFaction }) {
 
   return (
     <TooltipProvider>
-      <div className="h-full flex flex-col bg-neutral-950 text-foreground border-r-4 border-foreground/40">
+      <div className="h-full flex flex-col bg-neutral-950 text-foreground">
         <div className="relative flex-none pl-game pr-4 pt-game pb-2">
           {battle.surrenderAllowed && (
             <div className="absolute top-game right-4">
