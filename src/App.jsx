@@ -187,7 +187,7 @@ export default function App() {
     else goHome();
   }, [isClickbait, goHome]);
 
-  // Repart comme au tout premier lancement (menu devs).
+  // Repart comme au tout premier lancement (menu des paramètres de l'accueil, menu devs).
   const restartGame = useCallback(() => {
     clearProgress();
     setMode('game');
@@ -304,6 +304,7 @@ export default function App() {
           setSummonBack('home');
           setScreen('summon');
         }}
+        onResetGame={restartGame}
       />
     );
   }

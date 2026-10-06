@@ -33,6 +33,7 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 - `step-slot-{green,red}-{background,fill}.png` — periodic ability counter under the health bar (ValueSlots/Green and Red: StepSlotABackground, StepSlotAFill; green: Athos, red: Fafnir)
 - `flask-background.png`, `flask-foreground.png` — presence gauge of the command tower (ValueBars/White: FlaskBackground, FlaskForeground; the fill is drawn in CSS in the faction colour, not the pack's FlaskFill)
 - `cursor-{arrow,hand,grab,unavailable}-{gold,purple,white}.png` — mouse cursors (Cursors/Gold, Purple and White: Arrow, HandUp, Grab, Unavailable; pre-scaled 2×, the size of a system cursor): gold for Wyrms, purple for Undead, white without a faction
+- `settings.png` — settings menu icon (gear) on the home screen, next to the Spirit Stones balance (64×64, white background made transparent, shown at 32 px)
 - `spirit-stone.png` — Spirit Stones icon (Black/Jewel_Spin, 9 frames of 11×11; only the first frame is shown)
 
 ## effect/

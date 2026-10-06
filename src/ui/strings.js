@@ -64,6 +64,15 @@ export const TEXT = {
     army: 'Gestion d\'armée',
     summon: 'Invocation',
   },
+  // Menu des paramètres de l'accueil (engrenage à côté du solde).
+  settings: {
+    title: 'Paramètres',
+    resetGame: 'Réinitialiser le jeu',
+    resetTitle: 'Réinitialiser le jeu ?',
+    resetDescription: 'Toute ta progression sera perdue : unités, armée, Spirit Stones et niveaux.',
+    resetCancel: 'Annuler',
+    resetConfirm: 'Réinitialiser',
+  },
   civilization: {
     previous: 'Unité précédente',
     next: 'Unité suivante',

@@ -16,11 +16,11 @@ export function SpiritStonesAmount({ amount, className = '' }) {
   );
 }
 
-// rules.md 11.3 : solde de Spirit Stones, en haut à droite (HomeScreen et SummonScreen) : l'icône
-// et le nombre seuls, dans un cadre (Panels/Black/Panel du pack).
+// rules.md 11.3 : solde de Spirit Stones, en haut à droite (HomeScreen et SummonScreen, qui le
+// placent) : l'icône et le nombre seuls, dans un cadre (Panels/Black/Panel du pack).
 export default function SpiritStonesBalance({ amount }) {
   return (
-    <span className="pixel-panel retro absolute top-0 right-0 inline-flex items-center gap-2 px-2 text-sm">
+    <span className="pixel-panel retro inline-flex items-center gap-2 px-2 text-sm">
       <span data-spirit-balance-icon className="flex"><SpiritStoneIcon /></span>
       {amount}
     </span>

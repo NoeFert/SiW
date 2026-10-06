@@ -9,6 +9,7 @@ import { XpBar } from '../ui/LevelDisplay.jsx';
 import SpiritFountain from '../ui/SpiritFountain.jsx';
 import SpiritStonesFlight from '../ui/SpiritStonesFlight.jsx';
 import SpiritStonesBalance from '../ui/SpiritStonesBalance.jsx';
+import SettingsMenu from '../ui/SettingsMenu.jsx';
 import { TEXT } from '../ui/strings.js';
 
 // GRAPHICS.md « Interface » : entrée de menu sans cadre de bouton.
@@ -32,11 +33,11 @@ const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rec
 // technical.md 5.1 : écran d'accueil, point central du jeu, accessible uniquement après la
 // première victoire. En haut à gauche, le portrait du souverain avec, à sa droite, son nom, sa
 // barre d'XP et son niveau (rules.md 11.5) ; solde de Spirit Stones en haut à droite (rules.md
-// 11.3) ; menu de quatre entrées alignées à gauche — « Partir en guerre » (WarScreen), les unités
+// 11.3), et à sa droite l'engrenage du menu des paramètres (réinitialiser le jeu) ; menu de quatre entrées alignées à gauche — « Partir en guerre » (WarScreen), les unités
 // (entrée au nom de la faction) et « Armées » (CivilizationScreen), invocation — et la Spirit
 // Fountain alignée à gauche (rules.md 11.8).
 export default function HomeScreen({
-  playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon,
+  playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon, onResetGame,
 }) {
   const [spiritStones, setSpiritStones] = useState(getSpiritStones);
   const progress = playerProgress(getPlayerXp());
@@ -71,7 +72,10 @@ export default function HomeScreen({
         className="pixelated absolute -inset-game bg-cover bg-center"
         style={{ backgroundImage: `url(${HOME_BACKGROUNDS[playerFaction]})` }}
       />
-      <SpiritStonesBalance amount={spiritStones} />
+      <div className="absolute top-0 right-0 z-10 flex items-center gap-4">
+        <SpiritStonesBalance amount={spiritStones} />
+        <SettingsMenu onReset={onResetGame} />
+      </div>
       <div className="absolute top-0 left-0 flex items-center gap-4">
         <div className="pixel-frame size-24">
           <img src={spritePath(SOVEREIGN_SPRITES[playerFaction])} alt="" className="size-full object-contain" />

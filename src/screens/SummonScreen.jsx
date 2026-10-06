@@ -78,7 +78,9 @@ export default function SummonScreen({ playerFaction, onBack }) {
 
   return (
     <ScreenLayout title={T.title} onBack={onBack}>
-      <SpiritStonesBalance amount={spiritStones} />
+      <div className="absolute top-0 right-0">
+        <SpiritStonesBalance amount={spiritStones} />
+      </div>
       <div className="grid h-full grid-cols-3 gap-6">
         {/* Colonne 1 (1/3) : les espèces à invoquer. */}
         <div className="flex flex-col gap-3 overflow-y-auto">
