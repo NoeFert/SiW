@@ -127,7 +127,7 @@ export const TEXT = {
   // Texte des aptitudes (units.md), par nom d'aptitude (`abilities[].name` du roster).
   abilityDescriptions: {
     'Attaque dévastatrice': 'Toutes les 5 attaques (distance et corps-à-corps confondus), la 5e inflige +100 % de dégâts (60 à distance / 90 au corps-à-corps).',
-    'Frappe paralysante': 'Toutes les 4 attaques, la cible touchée voit sa prochaine attaque annulée.',
+    'Frappe paralysante': 'Toutes les 4 attaques, la cible touchée voit ses 2 prochaines attaques annulées.',
     'Soif de sang': 'Chaque fois qu\'il porte le coup fatal à un ennemi, il régénère 40 PV (sans dépasser ses PV max).',
   },
 

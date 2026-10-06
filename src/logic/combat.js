@@ -114,11 +114,12 @@ function stepAwayFrom(unit, target, grid, aliveUnits, deltaSeconds) {
 // units.md — aptitudes automatiques (section 6.1) : périodiques (tous les N coups portés) ou au
 // coup fatal. Renvoie aussi les aptitudes déclenchées (`triggered`), pour que la couche Phaser
 // puisse en tirer un feedback visuel sans que combat.js sache quoi que ce soit du rendu.
-// La paralysie n'est que signalée (`paralyzes`) : applyAttacks la pose après coup, pour qu'elle
-// ne touche jamais une attaque du même tick (rules.md 4.1).
+// La paralysie n'est que signalée (`paralyzes` : nombre d'attaques annulées, 0 sinon) :
+// applyAttacks la pose après coup, pour qu'elle ne touche jamais une attaque du même tick
+// (rules.md 4.1).
 function applyPeriodicAbilities(attacker, target, baseDamage) {
   let damage = baseDamage;
-  let paralyzes = false;
+  let paralyzes = 0;
   const triggered = [];
   for (const ability of attacker.species.abilities ?? []) {
     if (ability.trigger !== 'periodic' || attacker.attacksLanded % ability.every !== 0) continue;
@@ -127,7 +128,7 @@ function applyPeriodicAbilities(attacker, target, baseDamage) {
       triggered.push({ type: 'bonusDamage', unit: attacker, target, damage });
     }
     if (ability.type === 'paralyze') {
-      paralyzes = true;
+      paralyzes = ability.attacks;
       triggered.push({ type: 'paralyze', unit: target });
     }
   }
@@ -209,7 +210,7 @@ function processMoveCommand(unit, grid, aliveUnits, deltaSeconds) {
 // évènement 'rangedAttack' par tir à distance porté (rules.md 4.5), pour un éventuel feedback
 // visuel côté Phaser — combat.js ne sait rien du rendu lui-même.
 // Le résultat ne dépend jamais de l'ordre des attaques dans la liste : une paralysie posée ce
-// tick ne vise que la prochaine attaque (tick suivant), et quand plusieurs attaques du même
+// tick ne vise que les attaques suivantes (ticks suivants), et quand plusieurs attaques du même
 // tick tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal —
 // sauf s'il meurt lui-même ce tick (un mort ne se soigne pas).
 function applyAttacks(pendingAttacks) {
@@ -218,8 +219,8 @@ function applyAttacks(pendingAttacks) {
   const toParalyze = [];
 
   for (const { attacker, target, mode, free } of pendingAttacks) {
-    if (attacker.paralyzedNextAttack) {
-      attacker.paralyzedNextAttack = false;
+    if (attacker.paralyzedAttacks > 0) {
+      attacker.paralyzedAttacks -= 1;
       events.push({ type: 'missed', unit: attacker });
       continue;
     }
@@ -228,15 +229,16 @@ function applyAttacks(pendingAttacks) {
     const baseDamage = damageFor(attacker, mode);
     if (!free) attacker.attacksLanded += 1;
     const { damage, paralyzes, triggered } = free
-      ? { damage: baseDamage, paralyzes: false, triggered: [] }
+      ? { damage: baseDamage, paralyzes: 0, triggered: [] }
       : applyPeriodicAbilities(attacker, target, baseDamage);
     events.push(...triggered);
-    if (paralyzes) toParalyze.push(target);
+    if (paralyzes > 0) toParalyze.push({ target, attacks: paralyzes });
     landed.push({ attacker, target, damage, targetWasAlive: target.isAlive });
   }
 
   for (const { target, damage } of landed) target.takeDamage(damage);
-  for (const target of toParalyze) target.paralyzedNextAttack = true;
+  // units.md : une nouvelle paralysie remet le compteur à sa valeur, sans cumul.
+  for (const { target, attacks } of toParalyze) target.paralyzedAttacks = attacks;
 
   const credited = new Set();
   for (const { attacker, target, targetWasAlive } of landed) {

@@ -12,7 +12,7 @@ import DevMenu from './dev/DevMenu.jsx';
 import { TEST_PROFILES, loadTestProfile } from './dev/testProfiles.js';
 import { ROSTERS } from './data/rosters.js';
 import {
-  BATTLES, FIRST_BATTLE_ID, CLICKBAIT_BATTLE_ID, WAR_BATTLE_IDS,
+  BATTLES, FIRST_BATTLE_ID, CLICKBAIT_BATTLE_ID, TRAINING_BATTLE_ID, WAR_BATTLE_IDS,
 } from './data/battles.js';
 import { armyUnits } from './logic/army.js';
 import { getCasualtyReport } from './logic/deployment.js';
@@ -51,7 +51,8 @@ function initialScreen() {
 // technical.md 5.4 : navigation par état React simple dans le composant racine, pas de librairie
 // de routing — un seul onglet, une session continue.
 // Deux modes (technical.md 5.6) : 'game' (jeu normal, sauvegardé) et 'clickbait' (choix de
-// faction -> bataille-clickbait, rien n'est sauvegardé, la faction reste en mémoire).
+// faction -> bataille-clickbait, rien n'est sauvegardé, la faction reste en mémoire). Plus
+// 'training', réservé au menu devs : bataille d'entraînement, rien n'est sauvegardé.
 export default function App() {
   const [mode, setMode] = useState('game');
   const [screen, setScreen] = useState(initialScreen);
@@ -67,8 +68,10 @@ export default function App() {
   const [summonBack, setSummonBack] = useState('home');
   const [saveVersion, setSaveVersion] = useState(0); // menu devs : recharge l'écran après un profil
   const isClickbait = mode === 'clickbait';
-  const isWarBattle = !isClickbait && WAR_BATTLE_IDS.includes(battleId);
-  const playerFaction = isClickbait ? clickbaitFaction : getSavedFaction();
+  const isTraining = mode === 'training';
+  const isWarBattle = mode === 'game' && WAR_BATTLE_IDS.includes(battleId);
+  let playerFaction = isClickbait ? clickbaitFaction : getSavedFaction();
+  if (isTraining) playerFaction ??= 'wyrms'; // couleurs de l'interface seulement
 
   const startBattle = useCallback(() => {
     setBattleAttempt((n) => n + 1);
@@ -195,9 +198,16 @@ export default function App() {
     setScreen('factionChoice');
   }, []);
 
+  // Menu devs : bataille d'entraînement (mannequin immobile, toutes les unités déployables).
+  const startTraining = useCallback(() => {
+    setMode('training');
+    startBattle();
+  }, [startBattle]);
+
   const devActions = [
     { label: 'restart game', run: restartGame },
     { label: 'restart clickbait', run: startClickbait },
+    { label: 'entrainement', run: startTraining },
     ...[['test-wyrm', TEST_PROFILES.testWyrm], ['test-wyrm-fallen', TEST_PROFILES.testWyrmFallen],
       ['test-undead', TEST_PROFILES.testUndead]]
       .map(([label, profile]) => ({
@@ -214,7 +224,7 @@ export default function App() {
   // rules.md 2 : bataille 01 = tous les individus possédés ; « Partir en guerre » = l'armée ;
   // version clickbait = copies de units.md (null).
   const battleUnits = () => {
-    if (isClickbait) return null;
+    if (isClickbait || isTraining) return null;
     const owned = getOwnedUnits();
     return isWarBattle ? armyUnits(getArmy(), owned) : owned;
   };
@@ -235,11 +245,11 @@ export default function App() {
       <BattleScreen
         key={battleAttempt}
         playerFaction={playerFaction}
-        battleId={isClickbait ? CLICKBAIT_BATTLE_ID : battleId}
+        battleId={{ clickbait: CLICKBAIT_BATTLE_ID, training: TRAINING_BATTLE_ID }[mode] ?? battleId}
         playerUnits={battleUnits()}
         onVictory={handleVictory}
         onDefeat={handleDefeat}
-        onSkip={!isClickbait && battleId === FIRST_BATTLE_ID ? skipFirstBattle : null}
+        onSkip={mode === 'game' && battleId === FIRST_BATTLE_ID ? skipFirstBattle : null}
       />
     );
   } else if (screen === 'victory') {

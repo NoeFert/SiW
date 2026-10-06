@@ -7,6 +7,7 @@ import {
   BATTLEFIELD_OBSTACLES, WALL_ZONE_OBSTACLES, LANES_ZONE_OBSTACLES, FORT_ZONE_OBSTACLES,
 } from './battlefield.js';
 import { STARTER_TUTORIAL, CLICKBAIT_TUTORIAL } from './tutorials.js';
+import { TRAINING_ROSTER } from './training.js';
 
 // Statique — définition de chaque bataille, repérée par son identifiant.
 // - phases : une ou plusieurs zones jouées l'une après l'autre (rules.md 7.3). Chaque phase a
@@ -18,6 +19,8 @@ import { STARTER_TUTORIAL, CLICKBAIT_TUTORIAL } from './tutorials.js';
 //   n'a plus d'unité vivante (rules.md 7.3), au lieu de la fin de bataille habituelle (8).
 // - orders : ordres proposés dans la rangée « Ordres » de la tour (rules.md 5), tous par défaut.
 // - surrenderAllowed : bouton Abandonner disponible (rules.md 8.2), vrai par défaut.
+// - playerRoster : roster déployable par le joueur, celui de sa faction par défaut.
+// - training : bataille d'entraînement du menu devs (voir setupTraining, src/logic/battle.js).
 // rules.md 11.7 : zones des batailles de « Partir en guerre », avec leurs scripts IA provisoires
 // (ceux de la bataille-clickbait : champ = phase 1, « Le mur » et « Les trois couloirs » =
 // phase 2, « Le fort » = phase 3), en attendant les zones et scripts définitifs.
@@ -101,9 +104,20 @@ export const BATTLES = {
   war1: warBattle(['field', 'wall'], 60),
   war2: warBattle(['wall', 'lanes'], 80),
   war3: warBattle(['lanes', 'fort'], 100),
+  // Menu devs (hors specs) : entraînement, pour tester les attaques et animations des unités.
+  // Terrain sans obstacle, aucun script IA (le mannequin est posé par setupTraining), toutes les
+  // espèces des deux factions déployables, pas d'abandon (on en sort par le menu devs).
+  training: {
+    phases: [{ enemyScripts: { wyrms: [], undead: [] }, obstacles: [], flippedBackground: false }],
+    tutorial: null,
+    playerRoster: TRAINING_ROSTER,
+    surrenderAllowed: false,
+    training: true,
+  },
 };
 
 export const FIRST_BATTLE_ID = 'firstBattle';
 // Ordre de déblocage des batailles de « Partir en guerre » (rules.md 11.7).
 export const WAR_BATTLE_IDS = ['war1', 'war2', 'war3'];
 export const CLICKBAIT_BATTLE_ID = 'clickbaitBattle';
+export const TRAINING_BATTLE_ID = 'training';

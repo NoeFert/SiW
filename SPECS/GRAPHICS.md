@@ -86,7 +86,7 @@ Les missiles des attaques à distance sont des **effets animés**, tirés de pla
 
 - **Pause** : terrain désaturé ; ce qui reste cliquable garde ses couleurs (`ui-battle-screen-decisions.md` section 3).
 - **Barres de vie** au-dessus des unités (et mini barre des lignes blessées de la tour) : dans la **couleur principale de la faction** de l'unité — doré (#eab532) pour les Wyrms, menthe (#73ecbc) pour les Morts-Vivants —, quel que soit le niveau de PV.
-- **Aptitudes** : « COUP CRITIQUE ! » et tremblement d'écran (Fafnir), « Raté ! » et badge 💫 (paralysie d'Athos), « +40 » en vert (Soif de sang).
+- **Aptitudes** : « COUP CRITIQUE ! », tremblement d'écran et animation d'effet 527 orange (1re ligne de `assets/effect/527.png`, 1,5 s, deux fois la taille de l'unité) sur la victime, à distance comme au corps-à-corps — elle suit la victime, et si la victime meurt du coup, la fin de l'animation se joue là où elle est morte (Attaque dévastatrice de Fafnir) ; animation d'effet 133 verte (4e ligne de `assets/effect/133.png`, 1,5 s par cycle) **en boucle** sur la victime tant qu'elle est paralysée (si le coup la tue, l'animation est jouée une fois là où elle est morte), et « Raté ! » à chaque attaque annulée (Frappe paralysante d'Athos) ; « +40 » en vert (Soif de sang). **Compteur des aptitudes périodiques** sous la barre de vie de l'unité qui les porte : une rangée de N cases (ValueSlots/StepSlotA du pack ; **vertes** pour la Frappe paralysante d'Athos, N = 4 ; **rouges** pour l'Attaque dévastatrice de Fafnir, N = 5), une case remplie par attaque portée depuis le dernier déclenchement — les cases vides sont les attaques restantes, celle qui déclenche l'aptitude comprise.
 
 ## Partir en guerre
 

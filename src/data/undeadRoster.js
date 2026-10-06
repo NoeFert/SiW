@@ -42,7 +42,7 @@ export const UNDEAD_ROSTER = {
     firesWhileMoving: true, // rules.md 4.5 : tire en avançant, s'arrête à 2 cases de sa cible
     copies: 1,
     abilities: [
-      { trigger: 'periodic', every: 4, type: 'paralyze', name: 'Frappe paralysante' },
+      { trigger: 'periodic', every: 4, type: 'paralyze', attacks: 2, name: 'Frappe paralysante' },
       { trigger: 'onKill', type: 'heal', amount: 40, name: 'Soif de sang' },
     ],
   },

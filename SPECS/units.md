@@ -32,7 +32,7 @@ Stats des unités des deux factions. Ce fichier contient des **données**, pas d
 
 ### Aptitudes — Athos (deux aptitudes automatiques)
 
-**Frappe paralysante :** toutes les 4 attaques, la cible touchée voit sa **prochaine attaque annulée** (elle continue de se déplacer et de combattre normalement ensuite, elle manque simplement son prochain coup).
+**Frappe paralysante :** toutes les 4 attaques, la cible touchée voit ses **2 prochaines attaques annulées** (elle continue de se déplacer et de combattre normalement ensuite, elle manque simplement ses 2 prochains coups). Une nouvelle Frappe paralysante sur une cible qui a encore une attaque annulée en attente **remet le compteur à 2**, sans cumul.
 
 **Soif de sang :** chaque fois qu'Athos porte le coup fatal sur un ennemi, il **régénère 40 PV** (plafonné à son maximum de 145). Contrairement à la frappe paralysante (garantie tous les 4 coups), cet effet est conditionnel — il ne se déclenche que si Athos porte effectivement le coup qui tue, pas s'il blesse une cible achevée par un allié. Si Athos et un allié tuent la cible au même instant, Athos compte comme ayant porté le coup fatal et se soigne, sauf s'il meurt lui-même à cet instant (voir `rules.md` 4.1).
 

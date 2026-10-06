@@ -42,7 +42,7 @@ describe('UNDEAD_ROSTER (units.md)', () => {
     });
     expect(UNDEAD_ROSTER.athos.keywords).toEqual(expect.arrayContaining(['legendary', 'flying']));
     expect(UNDEAD_ROSTER.athos.abilities).toEqual([
-      { trigger: 'periodic', every: 4, type: 'paralyze', name: 'Frappe paralysante' },
+      { trigger: 'periodic', every: 4, type: 'paralyze', attacks: 2, name: 'Frappe paralysante' },
       { trigger: 'onKill', type: 'heal', amount: 40, name: 'Soif de sang' },
     ]);
   });

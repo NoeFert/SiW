@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Grid from '../logic/grid.js';
-import { createBattle, tickBattle } from '../logic/battle.js';
+import { createBattle, setupTraining, tickBattle } from '../logic/battle.js';
 import { createDeploymentState } from '../logic/deployment.js';
 import { isBattleTimeRunning } from '../logic/pause.js';
 import { startTutorial } from '../logic/tutorial.js';
@@ -9,6 +9,7 @@ import { clickField, cancelCommand, getClickableHighlights } from '../logic/comm
 import { ROSTERS } from '../data/rosters.js';
 import { BATTLES } from '../data/battles.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
+import { TRAINING_DUMMY, TRAINING_COPIES } from '../data/training.js';
 import {
   CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, FACTION_COLORS, cellCenter,
 } from '../renderConstants.js';
@@ -42,6 +43,32 @@ const PROJECTILE_EFFECTS = {
 };
 const PROJECTILE_FLIGHT_MS = 220;
 
+// GRAPHICS.md « Aptitudes » : animation jouée sur l'unité touchée par une aptitude, tirée des
+// mêmes planches d'effets (64 × 64, une ligne par couleur). `scale` : taille par rapport à
+// l'emprise de l'unité ; `repeat` : -1 = en boucle.
+const ABILITY_EFFECTS = {
+  // Vert, Frappe paralysante (Athos) : en boucle sur la victime tant qu'elle est paralysée.
+  paralyze: {
+    key: 'effect-133', path: 'effect/133.png', frames: 12, row: 3, scale: 1, repeat: -1,
+  },
+  // Orange, Attaque dévastatrice (Fafnir) : une fois, sur la victime.
+  bonusDamage: {
+    key: 'effect-527', path: 'effect/527.png', frames: 13, row: 0, scale: 2, repeat: 0,
+  },
+};
+const ABILITY_EFFECT_MS = 1500;
+
+// GRAPHICS.md « Aptitudes » : compteur d'une aptitude périodique (units.md 6.1, « toutes les N
+// attaques »), sous la barre de vie : une rangée de N cases (ValueSlots/<couleur>/StepSlotA du
+// pack, 32 × 3 px), une case remplie par attaque portée depuis le dernier déclenchement. Les cases
+// vides sont les attaques restantes, celle qui déclenche l'aptitude comprise. Clé = type d'aptitude.
+const ABILITY_COUNTER_COLORS = {
+  paralyze: 'green', // Frappe paralysante (Athos)
+  bonusDamage: 'red', // Attaque dévastatrice (Fafnir)
+};
+const COUNTER_SLOT_HEIGHT = 4;
+const COUNTER_SLOT_GAP = 2;
+
 // Cette Scene gère exclusivement le champ de bataille (technical.md 2.2) : grille, sprites,
 // animations, clics sur le terrain pendant la sélection d'une commande, signaux visuels de
 // pause. Le déploiement (glisser-déposer) et les ordres (rangée « Ordres ») vivent dans la tour de
@@ -52,7 +79,7 @@ const PROJECTILE_FLIGHT_MS = 220;
 export default class BattleScene extends Phaser.Scene {
   constructor() {
     super('BattleScene');
-    this.unitViews = new Map(); // unit.id -> { container, barFill, barWidth, paralyzedBadge }
+    this.unitViews = new Map(); // unit.id -> { container, barFill, barWidth, stunEffect, ... }
   }
 
   init(data) {
@@ -70,7 +97,10 @@ export default class BattleScene extends Phaser.Scene {
     this.load.image('battlefield', 'backgrounds/battlefield-01.png');
     for (const { key } of Object.values(SPECIES_SPRITES)) this.load.image(key, spritePath(key));
     this.load.image('rocks', 'sprites/rocks.png');
-    for (const { key, path } of Object.values(PROJECTILE_EFFECTS)) {
+    for (const color of Object.values(ABILITY_COUNTER_COLORS)) {
+      for (const part of ['background', 'fill']) this.load.image(`step-slot-${color}-${part}`, `ui/step-slot-${color}-${part}.png`);
+    }
+    for (const { key, path } of [...Object.values(PROJECTILE_EFFECTS), ...Object.values(ABILITY_EFFECTS)]) {
       this.load.spritesheet(key, path, { frameWidth: CELL_SIZE, frameHeight: CELL_SIZE });
     }
   }
@@ -85,6 +115,23 @@ export default class BattleScene extends Phaser.Scene {
         frames: this.anims.generateFrameNumbers(key, { start: row * frames, end: row * frames + frames - 1 }),
         duration: PROJECTILE_FLIGHT_MS,
       });
+    }
+    for (const {
+      key, frames, row, repeat,
+    } of Object.values(ABILITY_EFFECTS)) {
+      if (this.anims.exists(key)) continue;
+      this.anims.create({
+        key,
+        frames: this.anims.generateFrameNumbers(key, { start: row * frames, end: row * frames + frames - 1 }),
+        duration: ABILITY_EFFECT_MS,
+        repeat,
+      });
+    }
+    // Cases du compteur d'aptitude : pixel art agrandi, sans lissage.
+    for (const color of Object.values(ABILITY_COUNTER_COLORS)) {
+      for (const part of ['background', 'fill']) {
+        this.textures.get(`step-slot-${color}-${part}`).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
     }
     const grid = new Grid(GRID_WIDTH, GRID_HEIGHT, this.phases[0].obstacles); // rules.md 1
     this.grid = grid;
@@ -171,7 +218,7 @@ export default class BattleScene extends Phaser.Scene {
   // rules.md 9 : le choix de faction lui-même vit maintenant dans FactionChoiceScreen (React,
   // technical.md 5) — cette Scene reçoit `playerFaction` déjà tranché via `init(data)`.
   startBattle(playerFaction) {
-    const playerRoster = ROSTERS[playerFaction];
+    const playerRoster = this.battleDefinition.playerRoster ?? ROSTERS[playerFaction];
     const enemyRoster = ROSTERS[playerFaction === 'wyrms' ? 'undead' : 'wyrms'];
 
     this.battle = createBattle(this.grid, playerRoster, enemyRoster, this.phases[0].enemyScript);
@@ -179,6 +226,7 @@ export default class BattleScene extends Phaser.Scene {
     // chacun avec son niveau ; sinon (clickbait), des copies de units.md.
     if (this.playerUnits) this.battle.playerDeployment = createDeploymentState(playerRoster, this.playerUnits);
     setUpcomingPhases(this.battle, this.phases.slice(1));
+    if (this.battleDefinition.training) setupTraining(this.battle, TRAINING_DUMMY, TRAINING_COPIES);
     this.battle.victoryWhenScriptCleared = !!this.battleDefinition.victoryWhenScriptCleared;
     const { tutorial, orders = null, surrenderAllowed = true } = this.battleDefinition;
     this.battle.orders = orders;
@@ -270,8 +318,18 @@ export default class BattleScene extends Phaser.Scene {
   // -- Feedback visuel des aptitudes (units.md, section 6) --------------------------------
 
   processAbilityEvents() {
-    for (const event of this.battle.abilityEvents) {
-      if (event.type === 'bonusDamage') {
+    const events = this.battle.abilityEvents;
+    // À distance, l'effet sur la victime attend l'arrivée du missile tiré au même tick (fireProjectile).
+    const impactDelay = (victim) => (events.some((e) => e.type === 'rangedAttack' && e.target === victim)
+      ? PROJECTILE_FLIGHT_MS : 0);
+    for (const event of events) {
+      if (event.type === 'paralyze') {
+        // Une victime vivante montre la paralysie en continu (stunEffect, updateUnitView). Tuée par
+        // le coup même (fréquent : 50 dégâts), elle n'a plus d'attaque à rater : l'animation est
+        // jouée une fois là où elle est morte, pour que l'aptitude reste visible.
+        if (!event.unit.isAlive) this.playAbilityEffect(event.unit, ABILITY_EFFECTS.paralyze, impactDelay(event.unit));
+      } else if (event.type === 'bonusDamage') {
+        this.playAbilityEffect(event.target, ABILITY_EFFECTS.bonusDamage, impactDelay(event.target));
         this.flashUnit(event.target, 0xffff00);
         this.cameras.main.shake(120, 0.006);
         this.spawnFloatingText(event.target, 'COUP CRITIQUE !', '#ffcc00');
@@ -319,6 +377,31 @@ export default class BattleScene extends Phaser.Scene {
           targets: impact, scale: 3, alpha: 0, duration: 180, onComplete: () => impact.destroy(),
         });
       },
+    });
+  }
+
+  // Animation d'aptitude jouée une fois sur `unit` : elle la suit tant qu'elle est sur le
+  // terrain ; si l'unité est morte (sa vue disparaît, voir syncViews) — avant le début de
+  // l'animation (victime tuée par le coup, missile encore en vol) ou pendant —, elle se joue là
+  // où elle est morte.
+  playAbilityEffect(unit, effect, delayMs) {
+    this.time.delayedCall(delayMs, () => {
+      const container = this.unitViews.get(unit.id)?.container;
+      const { x, y } = container ?? cellCenter(unit.x, unit.y, unit.size);
+      const size = unit.size * CELL_SIZE * effect.scale;
+      const sprite = this.add.sprite(x, y, effect.key)
+        .setDisplaySize(size, size)
+        .setDepth(10)
+        .play({ key: effect.key, repeat: 0 }); // une fois, même pour une animation en boucle
+      const follow = () => {
+        const view = this.unitViews.get(unit.id);
+        if (view) sprite.setPosition(view.container.x, view.container.y);
+      };
+      this.events.on('update', follow);
+      sprite.once('animationcomplete', () => {
+        this.events.off('update', follow);
+        sprite.destroy();
+      });
     });
   }
 
@@ -485,17 +568,19 @@ export default class BattleScene extends Phaser.Scene {
     const barFill = this.add.rectangle(-barWidth / 2, barY, barWidth, 6, barColor).setOrigin(0, 0.5);
     container.add(barBackground);
     container.add(barFill);
+    const abilityCounter = this.createAbilityCounter(unit, container, barWidth, barY + 3 + 2);
 
-    // units.md 6 — Frappe paralysante d'Athos : badge persistant tant que la prochaine
-    // attaque de cette unité est neutralisée (rules.md 6, disparaît exactement au moment
-    // où l'attaque ratée est traitée, voir le tweet flottant "Raté !" en complément).
-    const paralyzedBadge = this.add.text(footprintSize / 2 - 2, -footprintSize / 2 - 2, '\u{1F4AB}', {
-      fontSize: '14px',
-    }).setOrigin(1, 1).setVisible(false);
-    container.add(paralyzedBadge);
+    // units.md 6 — Frappe paralysante d'Athos : animation en boucle sur l'unité tant que des
+    // prochaines attaques sont neutralisées (s'arrête avec la dernière attaque ratée, voir
+    // updateUnitView et le texte flottant "Raté !").
+    const { paralyze } = ABILITY_EFFECTS;
+    const stunEffect = this.add.sprite(0, 0, paralyze.key)
+      .setDisplaySize(footprintSize * paralyze.scale, footprintSize * paralyze.scale)
+      .setVisible(false);
+    container.add(stunEffect);
 
     const view = {
-      container, barFill, barWidth, paralyzedBadge, visual, fx: visual.preFX?.addColorMatrix(),
+      container, barFill, barWidth, stunEffect, abilityCounter, visual, fx: visual.preFX?.addColorMatrix(),
       lastCellX: unit.x, lastCellY: unit.y, moveTween: null,
     };
     const center = cellCenter(unit.x, unit.y, unit.size);
@@ -518,6 +603,30 @@ export default class BattleScene extends Phaser.Scene {
   // continu en douceur en animant (tween) le passage d'une case à l'autre plutôt qu'en
   // "sautant" instantanément, sur la durée réelle qu'aurait dû prendre ce trajet à la vitesse
   // de déplacement de l'unité (species.moveSpeed, en cases/s).
+  // Rangée de cases du compteur d'aptitude périodique de `unit` (voir ABILITY_COUNTER_COLORS),
+  // en haut à `top` dans son conteneur, sur la largeur de la barre de vie. null sans aptitude.
+  createAbilityCounter(unit, container, width, top) {
+    const ability = (unit.species.abilities ?? [])
+      .find((a) => a.trigger === 'periodic' && ABILITY_COUNTER_COLORS[a.type]);
+    if (!ability) return null;
+    const color = ABILITY_COUNTER_COLORS[ability.type];
+    const slotWidth = (width - COUNTER_SLOT_GAP * (ability.every - 1)) / ability.every;
+    // Extrémités arrondies de 2 px gardées, milieu étiré (NineSlice horizontal).
+    const slot = (part, index) => {
+      const x = -width / 2 + index * (slotWidth + COUNTER_SLOT_GAP);
+      return this.add.nineslice(x, top, `step-slot-${color}-${part}`, undefined, slotWidth, COUNTER_SLOT_HEIGHT, 2, 2, 0, 0)
+        .setOrigin(0, 0);
+    };
+    const fills = [];
+    for (let i = 0; i < ability.every; i++) {
+      container.add(slot('background', i));
+      const fill = slot('fill', i);
+      container.add(fill);
+      fills.push(fill);
+    }
+    return { every: ability.every, fills };
+  }
+
   updateUnitView(view, unit) {
     if (unit.x !== view.lastCellX || unit.y !== view.lastCellY) {
       const cellsMoved = Math.max(Math.abs(unit.x - view.lastCellX), Math.abs(unit.y - view.lastCellY));
@@ -537,6 +646,12 @@ export default class BattleScene extends Phaser.Scene {
     const ratio = Math.max(0, unit.hp / unit.maxHp);
     view.barFill.setSize(view.barWidth * ratio, 6);
 
-    view.paralyzedBadge.setVisible(unit.paralyzedNextAttack === true);
+    const stunned = unit.paralyzedAttacks > 0;
+    if (stunned && !view.stunEffect.visible) view.stunEffect.setVisible(true).play(ABILITY_EFFECTS.paralyze.key);
+    if (!stunned && view.stunEffect.visible) view.stunEffect.stop().setVisible(false);
+    if (view.abilityCounter) {
+      const charged = unit.attacksLanded % view.abilityCounter.every;
+      view.abilityCounter.fills.forEach((fill, i) => fill.setVisible(i < charged));
+    }
   }
 }

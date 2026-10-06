@@ -194,7 +194,7 @@ describe('aptitudes automatiques (rules.md 6, units.md)', () => {
     expect(events).toContainEqual({ type: 'bonusDamage', unit: fafnir, target: dummy, damage: 60 });
   });
 
-  test('Athos — Frappe paralysante : la 4e attaque marque la cible', () => {
+  test('Athos — Frappe paralysante : la 4e attaque marque la cible pour ses 2 prochaines attaques', () => {
     const grid = new Grid(10, 10);
     const athos = new Unit(UNDEAD_ROSTER.athos, 'enemy', 0, 0);
     athos.attacksLanded = 3; // la prochaine attaque sera la 4e
@@ -203,22 +203,50 @@ describe('aptitudes automatiques (rules.md 6, units.md)', () => {
     const events = resolveCombatTick([athos, dummy], grid, athos.species.attackSpeed);
 
     expect(dummy.hp).toBe(DUMMY.maxHp - 50);
-    expect(dummy.paralyzedNextAttack).toBe(true);
+    expect(dummy.paralyzedAttacks).toBe(2);
     expect(events).toContainEqual({ type: 'paralyze', unit: dummy });
   });
 
   test('une attaque paralysée ne porte aucun dégât et ne compte pas comme portée', () => {
     const grid = new Grid(10, 10);
     const paralyzed = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    paralyzed.paralyzedNextAttack = true;
+    paralyzed.paralyzedAttacks = 1;
     const victim = new Unit(DUMMY, 'enemy', 1, 0); // adjacent
 
     const events = resolveCombatTick([paralyzed, victim], grid, paralyzed.species.attackSpeed);
 
     expect(victim.hp).toBe(DUMMY.maxHp);
-    expect(paralyzed.paralyzedNextAttack).toBe(false);
+    expect(paralyzed.paralyzedAttacks).toBe(0);
     expect(paralyzed.attacksLanded).toBe(0);
     expect(events).toContainEqual({ type: 'missed', unit: paralyzed });
+  });
+
+  test('Frappe paralysante : les 2 attaques suivantes de la cible sont ratées, la 3e porte', () => {
+    const grid = new Grid(10, 10);
+    const paralyzed = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    paralyzed.paralyzedAttacks = UNDEAD_ROSTER.athos.abilities[0].attacks;
+    const victim = new Unit(DUMMY, 'enemy', 1, 0); // adjacent
+    const attack = () => resolveCombatTick([paralyzed, victim], grid, paralyzed.species.attackSpeed);
+
+    attack();
+    attack();
+    expect(victim.hp).toBe(DUMMY.maxHp);
+    attack();
+
+    expect(victim.hp).toBe(DUMMY.maxHp - paralyzed.species.damage);
+    expect(paralyzed.attacksLanded).toBe(1);
+  });
+
+  test('Frappe paralysante : une nouvelle paralysie remet le compteur à 2, sans cumul', () => {
+    const grid = new Grid(10, 10);
+    const athos = new Unit(UNDEAD_ROSTER.athos, 'enemy', 0, 0);
+    athos.attacksLanded = 3;
+    const dummy = new Unit(DUMMY, 'player', 4, 0);
+    dummy.paralyzedAttacks = 1; // reste d'une paralysie précédente
+
+    resolveCombatTick([athos, dummy], grid, athos.species.attackSpeed);
+
+    expect(dummy.paralyzedAttacks).toBe(2);
   });
 
   test('Athos — Soif de sang : régénère 40 PV sur un coup fatal, plafonné au max', () => {
@@ -285,7 +313,7 @@ describe('résolution simultanée indépendante de l\'ordre (rules.md 4.1)', () 
     resolveCombatTick([athos, worm, dummy], grid, 0.02);
 
     expect(dummy.hp).toBe(DUMMY.maxHp - 8); // le coup du ver porte bien
-    expect(worm.paralyzedNextAttack).toBe(true); // c'est son coup suivant qui sera raté
+    expect(worm.paralyzedAttacks).toBe(2); // ce sont ses coups suivants qui seront ratés
   });
 
   test('Soif de sang : Athos se soigne même si un allié frappe la même cible au même tick', () => {

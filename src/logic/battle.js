@@ -1,3 +1,4 @@
+import Unit from './unit.js';
 import { resolveCombatTick } from './combat.js';
 import { createFleeState, commandAttack, commandMoveTo, commandFlee } from './commands.js';
 import { createAiScriptState, deployScheduledUnits } from './aiScript.js';
@@ -44,6 +45,7 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     // bouton Abandonner disponible ou non (rules.md 8.2) — la version clickbait restreint les deux.
     orders: null,
     surrenderAllowed: true,
+    training: false, // bataille d'entraînement du menu devs : ne se termine jamais (setupTraining)
     playerFleeState: createFleeState(),
     aiScriptState: createAiScriptState(),
     enemyScript,
@@ -54,6 +56,17 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     onFieldById: new Map(), // détecte les fuites qui viennent d'aboutir (transition on-field -> off-field)
     abilityEvents: [], // aptitudes déclenchées au dernier tick (rules.md 6), pour feedback visuel
   };
+}
+
+// Menu devs (hors specs) : bataille d'entraînement pour tester attaques et animations. Le joueur
+// dispose de `copies` copies de chaque espèce de son roster ; un mannequin (`dummySpecies`, côté
+// IA) est posé au centre du terrain ; la bataille ne se termine jamais (voir tickBattle).
+export function setupTraining(battle, dummySpecies, copies) {
+  battle.training = true;
+  for (const speciesState of battle.playerDeployment.bySpecies.values()) speciesState.freshRemaining = copies;
+  const x = Math.floor((battle.grid.width - dummySpecies.size) / 2);
+  const y = Math.floor((battle.grid.height - dummySpecies.size) / 2);
+  battle.units.push(new Unit(dummySpecies, 'enemy', x, y));
 }
 
 // rules.md 8.2, dernière clause : abandon explicite du joueur, possible à tout moment. Le
@@ -221,6 +234,7 @@ export function tickBattle(battle, deltaSeconds) {
   // rules.md 7.3 : dernière phase finie -> l'IA est vaincue tout de suite, réserves ou non
   // (match nul si le joueur tombe au même instant, rules.md 8.1).
   if (battle.victoryWhenScriptCleared && isEnemyScriptCleared(battle)) surrender(battle.enemyEndState);
+  if (battle.training) return battle.outcome; // entraînement : ni compte à rebours ni fin
 
   updateEndState(battle, 'player', deltaSeconds);
   updateEndState(battle, 'enemy', deltaSeconds);

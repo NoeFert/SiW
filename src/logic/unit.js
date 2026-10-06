@@ -22,7 +22,7 @@ export default class Unit {
     this.target = null;
     this.attackTimer = 0;
     this.attacksLanded = 0;
-    this.paralyzedNextAttack = false;
+    this.paralyzedAttacks = 0; // prochaines attaques annulées (Frappe paralysante d'Athos)
     this.moveProgress = 0;
     this.command = null; // { type: 'attack', target } | { type: 'moveTo', x, y } | { type: 'flee' }
     this.hasFled = false;
