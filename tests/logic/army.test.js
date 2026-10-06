@@ -1,7 +1,7 @@
 import { createUnit, countUnitsBySpecies } from '../../src/logic/ownedUnits.js';
 import {
   createArmy, armyUnits, ARMY_PP_CAP, armyCost, canAddToArmy, addToArmy, canRemoveFromArmy,
-  removeFromArmy, renameArmy, removeDeadFromArmy, levelGroups, nextToAdd, nextToRemove,
+  removeFromArmy, renameArmy, removeDeadFromArmy, levelGroups, nextToAdd, nextToRemove, speciesTiles,
 } from '../../src/logic/army.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 
@@ -123,6 +123,27 @@ describe('levelGroups — regroupement de l\'écran Armées (rules.md 11.2)', ()
       { level: 3, unitIds: ['a'] },
       { level: 2, unitIds: ['c', 'b'] },
       { level: 1, unitIds: ['d'] },
+    ]);
+  });
+
+  test('grille des unités regroupée : une case pour l\'espèce, tranche de niveaux, plus avancé en premier', () => {
+    expect(speciesTiles(levelGroups(units), true)).toEqual([
+      {
+        level: 3, minLevel: 1, maxLevel: 3, unitIds: ['a', 'c', 'b', 'd'],
+      },
+    ]);
+  });
+
+  test('grille des unités dégroupée (ou un seul niveau) : une case par groupe de niveau', () => {
+    expect(speciesTiles(levelGroups(units), false).map((t) => [t.minLevel, t.maxLevel, t.unitIds])).toEqual([
+      [3, 3, ['a']],
+      [2, 2, ['c', 'b']],
+      [1, 1, ['d']],
+    ]);
+    expect(speciesTiles(levelGroups(units.slice(1, 3)), true)).toEqual([
+      {
+        level: 2, minLevel: 2, maxLevel: 2, unitIds: ['c', 'b'],
+      },
     ]);
   });
 

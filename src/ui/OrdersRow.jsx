@@ -52,33 +52,37 @@ export default function OrdersRow({ battle, playerFaction }) {
           const label = cooling ? TEXT.fleeCooldown(fleeRemaining) : TEXT.orders[order];
           // Pas d'attribut disabled : le tooltip (temps restant) doit rester visible au survol.
           const unavailable = !selected && !canChooseOrder(battle, order);
+          // Enveloppe flex-col : TooltipContent (8bitcn) rend toujours une <div> vide, qui sinon
+          // ajouterait un écart dans la rangée.
           return (
-            <Tooltip key={order}>
-              <TooltipTrigger>
-                <Button
-                  data-tutorial={`order-${order}`}
-                  size="icon"
-                  onClick={() => chooseOrder(battle, order)}
-                  aria-disabled={unavailable}
-                  aria-label={label}
-                  aria-pressed={selected}
-                  className={cn(
-                    'relative overflow-hidden',
-                    selected && SELECTED_CLASS[playerFaction],
-                    unavailable && 'opacity-50 cursor-not-allowed',
-                  )}
-                >
-                  {cooling && (
-                    <span
-                      className="absolute inset-x-0 bottom-0 bg-foreground/30"
-                      style={{ height: `${(1 - fleeRemaining / FLEE_COOLDOWN_SECONDS) * 100}%` }}
-                    />
-                  )}
-                  <Icon className="relative" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" font="normal">{label}</TooltipContent>
-            </Tooltip>
+            <div key={order} className="flex flex-col">
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    data-tutorial={`order-${order}`}
+                    size="icon"
+                    onClick={() => chooseOrder(battle, order)}
+                    aria-disabled={unavailable}
+                    aria-label={label}
+                    aria-pressed={selected}
+                    className={cn(
+                      'relative overflow-hidden',
+                      selected && SELECTED_CLASS[playerFaction],
+                      unavailable && 'opacity-50 cursor-not-allowed',
+                    )}
+                  >
+                    {cooling && (
+                      <span
+                        className="absolute inset-x-0 bottom-0 bg-foreground/30"
+                        style={{ height: `${(1 - fleeRemaining / FLEE_COOLDOWN_SECONDS) * 100}%` }}
+                      />
+                    )}
+                    <Icon className="relative" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" font="normal">{label}</TooltipContent>
+              </Tooltip>
+            </div>
           );
         })}
       </div>

@@ -99,6 +99,45 @@ export function getTowerRows(state, faction, unitsOnField) {
   return rows;
 }
 
+// ui-battle-screen-decisions.md 2.2 : cases affichées dans la tour, à partir de getTowerRows.
+// Par défaut, toutes les lignes d'une espèce sont regroupées en une seule case (niveaux et PV
+// confondus) : son `count` est le total de l'espèce, et ses autres champs (niveau, PV,
+// `copyChoice`) sont ceux de sa première ligne — l'individu de plus haut niveau, puis aux PV les
+// plus hauts, qui est donc le prochain déployé. `minLevel` / `maxLevel` : tranche des niveaux de
+// la case (un seul niveau pour une case dégroupée). Une espèce présente dans `ungroupedSpecies`
+// garde ses lignes séparées (déploiement du niveau et des PV choisis). La première case de chaque
+// espèce porte `speciesHead` ; `groupable` est vrai si l'espèce a plusieurs lignes (le
+// regroupement change alors quelque chose) et `grouped` dit si elle est regroupée.
+export function groupTowerRows(rows, ungroupedSpecies) {
+  const displayed = [];
+  const heads = new Map();
+  for (const row of rows) {
+    const head = heads.get(row.species);
+    if (!head) {
+      const first = {
+        ...row,
+        minLevel: row.level,
+        maxLevel: row.level,
+        speciesHead: true,
+        groupable: false,
+        grouped: !ungroupedSpecies.has(row.species),
+      };
+      heads.set(row.species, first);
+      displayed.push(first);
+    } else {
+      head.groupable = true;
+      if (head.grouped) {
+        head.count += row.count;
+        head.minLevel = Math.min(head.minLevel, row.level);
+        head.maxLevel = Math.max(head.maxLevel, row.level);
+      } else {
+        displayed.push({ ...row, minLevel: row.level, maxLevel: row.level });
+      }
+    }
+  }
+  return displayed;
+}
+
 // rules.md 1/2 : une position de déploiement doit rester dans les limites du terrain, sur la
 // moitié du camp concerné, hors obstacle, et libre de toute autre unité déjà présente.
 // Séparée de `deployUnit` (qui ne connaît pas la grille) pour ne pas casser sa signature.

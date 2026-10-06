@@ -46,6 +46,8 @@ export const TEXT = {
   // Niveaux (rules.md 11.5 et 11.6).
   levels: {
     badge: (level) => `niv ${level}`,
+    // Case regroupant plusieurs niveaux : tranche des niveaux présents (« niv 1-5 »).
+    range: (min, max) => (min === max ? `niv ${min}` : `niv ${min}-${max}`),
     player: (level) => `Niveau ${level}`,
     xp: (xpInLevel, xpForLevel) => `${xpInLevel} / ${xpForLevel} XP`,
     max: 'MAX',
@@ -134,6 +136,8 @@ export const TEXT = {
 
   presenceLabel: 'Présence sur le terrain',
   yourUnits: 'Vos unités',
+  ungroupSpecies: 'Séparer les individus',
+  groupSpecies: 'Regrouper l\'espèce',
   presenceTag: (cost) => `${cost} PP`,
   notEnoughPresence: 'Pas assez de points de présence. Libérez de la place sur le terrain pour déployer cette unité.',
   deployRefused: {

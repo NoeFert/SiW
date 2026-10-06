@@ -1,7 +1,8 @@
 import Grid from '../../src/logic/grid.js';
 import Unit from '../../src/logic/unit.js';
 import {
-  createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, countOwnedCopies, getTowerRows, getCasualtyReport,
+  createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, countOwnedCopies, getTowerRows, groupTowerRows,
+  getCasualtyReport,
   PRESENCE_CAP,
 } from '../../src/logic/deployment.js';
 
@@ -315,6 +316,63 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
     const champion = getTowerRows(state, 'player', [unit]).find((r) => r.species === ROSTER.champion);
 
     expect(champion.deployable).toBe(false);
+  });
+});
+
+describe('groupTowerRows — cases de la tour, regroupées par espèce (ui-battle-screen-decisions.md 2.2)', () => {
+  // 3 Grunts intacts, puis un blessé à 12 PV ; Champion et Lonely en une seule ligne chacun.
+  function stateWithWoundedGrunt() {
+    const state = createDeploymentState(ROSTER);
+    state.bySpecies.get(ROSTER.grunt).freshRemaining = 3;
+    const unit = new Unit(ROSTER.grunt, 'player', 0, 0);
+    unit.hp = 12;
+    recordReturn(state, unit);
+    return state;
+  }
+
+  test('par défaut, une case par espèce : total de l\'espèce, prochain individu déployé en tête', () => {
+    const rows = getTowerRows(stateWithWoundedGrunt(), 'player', []);
+
+    const tiles = groupTowerRows(rows, new Set());
+
+    expect(tiles.map((t) => [t.species.name, t.count, t.hp, t.grouped, t.groupable])).toEqual([
+      ['Grunt', 4, 20, true, true],
+      ['Champion', 2, 50, true, false],
+      ['Lonely', 1, 10, true, false],
+    ]);
+    expect(tiles.every((t) => t.speciesHead)).toBe(true);
+  });
+
+  test('déployer la case regroupée déploie l\'individu le plus fort, puis le suivant', () => {
+    const state = stateWithWoundedGrunt();
+    const deployGrunt = () => {
+      const [tile] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
+      return deployUnit(state, 'player', tile.species, 0, 0, [], tile.copyChoice).unit.hp;
+    };
+
+    expect([deployGrunt(), deployGrunt(), deployGrunt(), deployGrunt()]).toEqual([20, 20, 20, 12]);
+  });
+
+  test('espèce dégroupée : ses lignes séparées, la première porte la flèche', () => {
+    const rows = getTowerRows(stateWithWoundedGrunt(), 'player', []);
+
+    const tiles = groupTowerRows(rows, new Set([ROSTER.grunt]));
+
+    expect(tiles.map((t) => [t.species.name, t.count, t.hp, !!t.speciesHead])).toEqual([
+      ['Grunt', 3, 20, true],
+      ['Grunt', 1, 12, false],
+      ['Champion', 2, 50, true],
+      ['Lonely', 1, 10, true],
+    ]);
+    expect(tiles[0]).toMatchObject({ grouped: false, groupable: true });
+  });
+
+  test('ne modifie pas les lignes reçues', () => {
+    const rows = getTowerRows(stateWithWoundedGrunt(), 'player', []);
+
+    groupTowerRows(rows, new Set());
+
+    expect(rows[0].count).toBe(3);
   });
 });
 

@@ -9,7 +9,10 @@ import { TEXT } from './strings.js';
 
 // ui-battle-screen-decisions.md 1-2 : tour de commandement, à gauche du terrain. De haut en
 // bas : Abandonner (coin haut-droit), jauge de présence, rangée « Ordres » (Pause et ordres),
-// "Vos unités", liste (seule zone qui défile).
+// "Vos unités", liste (seule zone qui défile). GRAPHICS.md « Interface » : la tour va jusqu'au
+// bord de la fenêtre, son contenu reste à la distance du padding du jeu (game, 48 px) en haut, à
+// gauche et en bas. À droite (côté terrain) : 16 px ; dans la liste, la scrollbar (14 px,
+// gouttière toujours réservée) + 2 px.
 export default function CommandTower({ playerFaction }) {
   const battle = useBattle();
   if (!battle) return null;
@@ -19,9 +22,9 @@ export default function CommandTower({ playerFaction }) {
   return (
     <TooltipProvider>
       <div className="h-full flex flex-col bg-neutral-950 text-foreground border-r-4 border-foreground/40">
-        <div className="relative flex-none px-4 pt-4 pb-2">
+        <div className="relative flex-none pl-game pr-4 pt-game pb-2">
           {battle.surrenderAllowed && (
-            <div className="absolute top-3 right-3">
+            <div className="absolute top-game right-4">
               <SurrenderButton battle={battle} />
             </div>
           )}
@@ -34,7 +37,7 @@ export default function CommandTower({ playerFaction }) {
           <h2 className="retro text-xs mt-4">{TEXT.yourUnits}</h2>
         </div>
 
-        <div className="pixel-scrollbar flex-1 min-h-0 overflow-y-auto px-4 py-2">
+        <div className="pixel-scrollbar flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable] pl-game pr-0.5 pt-2 pb-game">
           <DeploymentList battle={battle} unitsOnField={unitsOnField} playerFaction={playerFaction} />
         </div>
       </div>

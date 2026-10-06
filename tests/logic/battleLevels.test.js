@@ -6,7 +6,7 @@ import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
 import { resolveCombatTick } from '../../src/logic/combat.js';
 import {
-  createDeploymentState, deployUnit, getTowerRows, recordReturn,
+  createDeploymentState, deployUnit, getTowerRows, groupTowerRows, recordReturn,
 } from '../../src/logic/deployment.js';
 
 describe('Unit — stats du niveau (rules.md 11.6)', () => {
@@ -56,6 +56,18 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
   test('version clickbait / IA : niveau 1, pas d\'affichage du niveau', () => {
     const rows = getTowerRows(createDeploymentState(WYRMS_ROSTER), 'player', []);
     expect(rows.every((r) => r.level === 1 && r.showLevel === false)).toBe(true);
+  });
+
+  test('regroupée, l\'espèce déploie ses individus par niveau décroissant', () => {
+    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const [lambtons] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
+    expect(lambtons).toMatchObject({ count: 3, minLevel: 1, maxLevel: 3 }); // affiché « niv 1-3 »
+    const deployLambton = () => {
+      const [tile] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
+      return deployUnit(state, 'player', tile.species, 0, 0, [], tile.copyChoice).unit.level;
+    };
+
+    expect([deployLambton(), deployLambton(), deployLambton()]).toEqual([3, 1, 1]);
   });
 
   test('déployer une ligne déploie un individu de ce niveau, avec ses stats', () => {

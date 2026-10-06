@@ -1,27 +1,34 @@
 import { forwardRef } from 'react';
 import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { cn } from '@/lib/utils';
-import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
+import { isLegendary } from '../logic/ownedUnits.js';
 import {
   FACTION_COLORS, woundedHpColor, cssColor,
 } from '../renderConstants.js';
-import { LevelBadge } from './LevelDisplay.jsx';
-import { TEXT, keywordLabels, unitName } from './strings.js';
+import CornerDecor from './CornerDecor.jsx';
+import SpeciesSprite from './SpeciesSprite.jsx';
+import { CountSquare, GroupArrow } from './TileGroupBadges.jsx';
+import { TEXT } from './strings.js';
 
-// Fafnir a deux valeurs de dégâts (distance / corps-à-corps, units.md).
-function formatDamage(damage) {
-  return typeof damage === 'number' ? damage : `${damage.ranged}/${damage.melee}`;
-}
+// Niveau dans la couleur de la faction du joueur (classes littérales pour Tailwind).
+const LEVEL_TEXT_CLASS = {
+  wyrms: 'text-faction-wyrms',
+  undead: 'text-faction-undead',
+};
 
-// ui-battle-screen-decisions.md 2.2 : colonne 1 = copies + sprite (+ mini barre de vie si
-// blessé) ; colonne 2 = nom + coût, puis PV/ATK et keywords (retour à la ligne automatique).
-// forwardRef : sert de déclencheur au tooltip "budget insuffisant" (DeploymentList).
-// Jeu normal : badge de niveau après le nom (ui-battle-screen-decisions.md 2.2, couleur de
-// `playerFaction`) ; PV et ATK de la ligne sont ceux du niveau. Rien en version clickbait.
+// ui-battle-screen-decisions.md 2.2 : case d'une ligne de la tour, deux par rangée. Même
+// panneau que les cases de CivilizationScreen (PanelLarge, doré avec coins pour un
+// [Légendaire]) ; le nombre de copies dans un carré en haut à gauche (« 8x »), seulement à partir de 2. Puis : sprite (+ mini
+// barre de vie si blessé), PV et niveau (jeu normal seulement, rien en clickbait), tag de
+// présence ; ni nom ni keywords (consultables dans l'écran de civilisation). Sur la première
+// case d'une espèce à plusieurs lignes, une flèche en haut à droite la regroupe / dégroupe
+// (`onToggleGroup`, voir groupTowerRows). forwardRef : sert de déclencheur au tooltip "budget insuffisant"
+// (DeploymentList).
 const UnitRow = forwardRef(({
-  row, playerFaction, className, ...props
+  row, playerFaction, onToggleGroup, className, ...props
 }, ref) => {
   const ratio = row.hp / row.maxHp;
+  const legendary = isLegendary(row.species);
   return (
     <div
       ref={ref}
@@ -29,46 +36,32 @@ const UnitRow = forwardRef(({
       data-tutorial={row.keywords.length === 0 ? 'basic-unit' : undefined}
       {...props}
       className={cn(
-        'flex gap-3 items-center p-2 border-2 border-foreground/40 bg-neutral-900 select-none touch-none',
-        row.deployable ? 'cursor-grab hover:border-foreground' : 'opacity-40 grayscale cursor-not-allowed',
+        'pixel-card relative flex flex-col items-center gap-1.5 pt-3 text-center text-[10px] select-none touch-none',
+        legendary && 'pixel-card-gold',
+        row.deployable ? 'cursor-grab hover:brightness-125' : 'opacity-40 grayscale cursor-not-allowed',
         className,
       )}
     >
-      <div className="flex items-center gap-2 shrink-0">
-        <span className="retro text-xs w-8 text-right">{row.count}x</span>
-        <div className="flex flex-col items-center gap-1">
-          <img
-            src={spritePath(SPECIES_SPRITES[row.species.name].key)}
-            alt=""
-            draggable={false}
-            className="pixelated size-12 object-contain"
-          />
-          {row.wounded && (
-            <div className="w-10 h-1.5 bg-black">
-              <div className="h-full" style={{ width: `${ratio * 100}%`, background: cssColor(FACTION_COLORS[playerFaction]) }} />
-            </div>
-          )}
-        </div>
-      </div>
+      <CountSquare count={row.count} />
+      {legendary && <CornerDecor color="gold" />}
+      {row.speciesHead && row.groupable && (
+        <GroupArrow grouped={row.grouped} onToggle={onToggleGroup} className="-top-1 -right-1" />
+      )}
 
-      <div className="flex flex-col gap-2 min-w-0 text-xs">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="font-bold">{unitName(row.species)}</span>
-          {row.showLevel && <LevelBadge level={row.level} faction={playerFaction} />}
-          <Badge data-tutorial="presence-tag" className="text-[10px] mx-1.5">{TEXT.presenceTag(row.cost)}</Badge>
+      <SpeciesSprite species={row.species} className="size-12" />
+      {row.wounded && (
+        <div className="w-10 h-1.5 bg-black">
+          <div className="h-full" style={{ width: `${ratio * 100}%`, background: cssColor(FACTION_COLORS[playerFaction]) }} />
         </div>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span>
-            ♥ <span style={row.wounded ? { color: cssColor(woundedHpColor(ratio)) } : undefined}>{row.hp}</span>/{row.maxHp}
-          </span>
-          <span>⚔ {formatDamage(row.damage)}</span>
-          {keywordLabels(row).map((label) => (
-            <Badge key={label} variant="secondary" font="normal" className="text-[10px] mx-1.5">
-              {label}
-            </Badge>
-          ))}
-        </div>
+      )}
+
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+        <span>
+          ♥ <span style={row.wounded ? { color: cssColor(woundedHpColor(ratio)) } : undefined}>{row.hp}</span>/{row.maxHp}
+        </span>
+        {row.showLevel && <span className={LEVEL_TEXT_CLASS[playerFaction]}>{TEXT.levels.range(row.minLevel, row.maxLevel)}</span>}
       </div>
+      <Badge data-tutorial="presence-tag" className="text-[10px] mx-1.5">{TEXT.presenceTag(row.cost)}</Badge>
     </div>
   );
 });

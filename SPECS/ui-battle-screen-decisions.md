@@ -68,43 +68,41 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 
 ### 2.2 Section « Vos unités »
 
-Titre « Vos unités », puis **un composant par ligne**, empilés verticalement. La liste **défile** sous la rangée « Ordres » (fixe, au-dessus).
+Titre « Vos unités », puis **une case par ligne de la liste, deux cases par rangée** (retour à la rangée suivante). La liste **défile** sous la rangée « Ordres » (fixe, au-dessus).
 
-#### Composant d'unité
+#### Case d'unité
 
 ```
-┌───────────────┬──────────────────────────────────┐
-│               │ Ver de Lambton   [10 PP]          │  ligne 1 : nom + tag de présence
-│  8x  [sprite] │ ♥ 40/40  ⚔ 8  [Corps-à-corps]     │  ligne 2 : PV + ATK + tags keyword
-└───────────────┴──────────────────────────────────┘
-   colonne 1              colonne 2
+┌──────────────────┐
+│[8x]           > │  carré en haut à gauche : nombre de copies ; flèche (groupe / dégroupe)
+│     [sprite]     │
+│  ♥ 40/40  niv 3  │  PV + niveau
+│     [10 PP]      │  tag de présence
+└──────────────────┘
 ```
 
-- **Colonne 1 :** le nombre de copies (format `8x`, **jamais** `8/12`) + le sprite, côte à côte.
-- **Colonne 2 :**
-  - **Ligne 1 :** le nom + le tag de points de présence.
-  - **Ligne 2 :** les PV + l'ATK **en premier**, puis les tags de keyword.
-  - **Retour à la ligne automatique** si les stats et les keywords ne tiennent pas sur une ligne (ex : Fafnir avec [Légendaire] et [Vol]).
+- **Même panneau que les cases d'unités de l'écran de civilisation** (PanelLarge ; panneau doré et coins dorés pour un [Légendaire]).
+- **Carré en haut à gauche :** le nombre de copies (format `8x`, **jamais** `8/12`), **seulement à partir de 2** (pas de bande pour une unité seule), comme dans l'écran de civilisation.
+- **Puis, centrés :** le sprite, les PV et le niveau, puis le tag de points de présence.
+- **Ni nom, ni ATK, ni keywords** dans la case (consultables dans l'écran de civilisation).
+
+#### Regroupement par espèce
+
+- **Par défaut, une seule case par espèce**, niveaux et PV confondus : son nombre est le total de l'espèce, son niveau est la **tranche des niveaux présents** (« niv 1-5 », ou « niv 3 » si tous ont le même), et ses PV sont ceux du prochain individu déployé. Un drag depuis cette case déploie les individus **par niveau décroissant** (puis PV décroissants à niveau égal).
+- **Flèche en haut à droite** de la première case d'une espèce (seulement si l'espèce a plusieurs lignes) : un clic **dégroupe** l'espèce en une case par ligne (voir « Règle de regroupement » ci-dessous), un nouveau clic la **regroupe**. Dégroupée, le joueur choisit le niveau et les PV de l'individu qu'il déploie.
+- Le choix vaut pour la bataille en cours (rien n'est sauvegardé).
 
 #### Niveaux (jeu normal, `rules.md` 11.6)
 
-- **Une ligne par espèce et par niveau** : les individus d'une même espèce et d'un même niveau sont regroupés (`2x`) ; deux niveaux différents font deux lignes (« Ver de Lambton niv 3 », « Ver de Lambton niv 1 »). Le joueur choisit donc le niveau de l'individu qu'il déploie.
-- Le niveau s'affiche après le nom, sur la ligne 1. Les PV et l'ATK de la ligne 2 sont ceux du niveau.
-- Version clickbait et unités de l'IA : toujours niveau 1, affichage inchangé (pas de mention du niveau).
+- **Espèce dégroupée : une ligne par espèce et par niveau** : les individus d'une même espèce et d'un même niveau sont regroupés (`2x`) ; deux niveaux différents font deux cases (« Ver de Lambton niv 3 », « Ver de Lambton niv 1 »). Le joueur choisit donc le niveau de l'individu qu'il déploie.
+- Le niveau s'affiche à côté des PV, en texte simple (pas de badge) de la même taille que les PV, dans la couleur de la faction. Les PV sont ceux du niveau.
+- Version clickbait et unités de l'IA : toujours niveau 1, pas de mention du niveau.
 
 #### Unités blessées (recommandation acceptée à l'étape 1)
 
 - PV au format **`♥ 25/40`**, avec la valeur actuelle dans une couleur d'alerte (orange ou rouge selon la gravité).
-- Les lignes intactes affichent aussi le format X/Y (`♥ 40/40`) par cohérence.
-- **Mini barre de vie sous le sprite, uniquement sur les lignes d'unités blessées**, avec le même code visuel que les barres de vie au-dessus des unités sur le terrain.
-
-```
-┌───────────────┬──────────────────────────────────┐
-│               │ Ver de Lambton   [10 PP]          │
-│  1x  [sprite] │ ♥ 25/40  ⚔ 8  [Corps-à-corps]     │
-│      ▓▓▓▓░░   │                                   │
-└───────────────┴──────────────────────────────────┘
-```
+- Les cases intactes affichent aussi le format X/Y (`♥ 40/40`) par cohérence.
+- **Mini barre de vie sous le sprite, uniquement sur les cases d'unités blessées**, avec le même code visuel que les barres de vie au-dessus des unités sur le terrain.
 
 #### Règle de regroupement
 

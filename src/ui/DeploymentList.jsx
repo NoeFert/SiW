@@ -3,7 +3,7 @@ import {
   Tooltip, TooltipContent, TooltipTrigger,
 } from '@/components/ui/8bit/tooltip.jsx';
 import { deployPlayerUnit, startDeploymentDrag, endDeploymentDrag } from '../logic/battle.js';
-import { getTowerRows } from '../logic/deployment.js';
+import { getTowerRows, groupTowerRows } from '../logic/deployment.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import {
   CELL_SIZE, GAME_WIDTH, getCanvasRect, screenToGrid,
@@ -54,10 +54,20 @@ export default function DeploymentList({ battle, unitsOnField, playerFaction }) 
   const [drag, setDrag] = useState(null); // { row, x, y } en coordonnées écran
   const [blockedKey, setBlockedKey] = useState(null); // ligne grisée cliquée : tooltip ouvert
   const [message, setMessage] = useState('');
+  // Espèces dont les cases sont dégroupées (flèche de la première case) ; toutes regroupées par
+  // défaut. État de l'écran de bataille seulement, rien n'est sauvegardé.
+  const [ungroupedSpecies, setUngroupedSpecies] = useState(() => new Set());
   const timers = useRef({});
   useEffect(() => () => Object.values(timers.current).forEach(clearTimeout), []);
 
-  const rows = getTowerRows(battle.playerDeployment, 'player', unitsOnField);
+  const rows = groupTowerRows(getTowerRows(battle.playerDeployment, 'player', unitsOnField), ungroupedSpecies);
+
+  const toggleGroup = (species) => setUngroupedSpecies((previous) => {
+    const next = new Set(previous);
+    if (next.has(species)) next.delete(species);
+    else next.add(species);
+    return next;
+  });
 
   // Affiche une info temporaire ; une nouvelle remplace la précédente pour sa pleine durée.
   const flash = (name, setter, value) => {
@@ -111,19 +121,29 @@ export default function DeploymentList({ battle, unitsOnField, playerFaction }) 
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      {message && <p className="text-xs text-red-400">{message}</p>}
+    // Deux cases par rangée (ui-battle-screen-decisions.md 2.2).
+    <div className="grid grid-cols-2 gap-2">
+      {message && <p className="col-span-2 text-xs text-red-400">{message}</p>}
 
       {rows.map((row) => (
         // Tooltip contrôlé : ouvert uniquement par un clic sur une ligne grisée, jamais au survol.
-        <Tooltip key={rowKey(row)} open={blockedKey === rowKey(row)}>
-          <TooltipTrigger>
-            <UnitRow row={row} playerFaction={playerFaction} onPointerDown={(event) => onPointerDown(row, event)} />
-          </TooltipTrigger>
-          <TooltipContent side="top" font="normal" className="max-w-64">
-            {TEXT.notEnoughPresence}
-          </TooltipContent>
-        </Tooltip>
+        // Enveloppe flex-col : TooltipContent (8bitcn) rend toujours une <div> vide, qui sinon
+        // prendrait sa propre case de la grille.
+        <div key={rowKey(row)} className="flex flex-col">
+          <Tooltip open={blockedKey === rowKey(row)}>
+            <TooltipTrigger>
+              <UnitRow
+                row={row}
+                playerFaction={playerFaction}
+                onToggleGroup={() => toggleGroup(row.species)}
+                onPointerDown={(event) => onPointerDown(row, event)}
+              />
+            </TooltipTrigger>
+            <TooltipContent side="top" font="normal" className="max-w-64">
+              {TEXT.notEnoughPresence}
+            </TooltipContent>
+          </Tooltip>
+        </div>
       ))}
 
       {drag && <DragGhost drag={drag} />}

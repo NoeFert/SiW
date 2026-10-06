@@ -60,6 +60,22 @@ export function levelGroups(units) {
   return [...groups.values()];
 }
 
+// Cases d'une espèce dans la grille des unités (technical.md 5.1), comme dans la tour de
+// commandement : regroupée (`grouped`), toute l'espèce tient dans une case, niveaux confondus
+// (`unitIds` du plus haut niveau au plus bas, donc l'individu le plus avancé en premier) ; sinon
+// une case par groupe de `levelGroups`. `minLevel` / `maxLevel` : tranche des niveaux de la case.
+export function speciesTiles(groups, grouped) {
+  if (!grouped || groups.length < 2) {
+    return groups.map((group) => ({ ...group, minLevel: group.level, maxLevel: group.level }));
+  }
+  return [{
+    level: groups[0].level,
+    minLevel: groups.at(-1).level,
+    maxLevel: groups[0].level,
+    unitIds: groups.flatMap((group) => group.unitIds),
+  }];
+}
+
 // rules.md 11.2 : « + » sur un groupe ajoute l'individu le plus avancé en XP qui n'est pas encore
 // dans l'armée ; « − » retire le moins avancé qui y est. null s'il n'y en a pas.
 export function nextToAdd(army, group) {

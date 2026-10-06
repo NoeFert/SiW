@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { ROSTERS } from '../data/rosters.js';
 import {
   ARMY_NAME_MAX_LENGTH, ARMY_PP_CAP, addToArmy, armyCost, canAddToArmy, canRemoveFromArmy,
-  levelGroups, nextToAdd, nextToRemove, removeFromArmy, renameArmy,
+  levelGroups, nextToAdd, nextToRemove, removeFromArmy, renameArmy, speciesTiles,
 } from '../logic/army.js';
 import {
   individualLevel, individualProgress, levelDamage, levelStat, sortByLevel,
@@ -17,6 +17,7 @@ import CornerDecor from '../ui/CornerDecor.jsx';
 import { LevelBadge, XpBar } from '../ui/LevelDisplay.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import SpeciesSprite from '../ui/SpeciesSprite.jsx';
+import { CountSquare, GroupArrow } from '../ui/TileGroupBadges.jsx';
 import { TEXT, keywordLabels, unitName } from '../ui/strings.js';
 
 const T = TEXT.civilization;
@@ -89,32 +90,34 @@ function LegendaryCorners({ species }) {
   return isLegendary(species) ? <CornerDecor color="gold" /> : null;
 }
 
-// Case carrée d'un groupe d'individus strictement identiques (même espèce, même niveau, comme la
-// tour de commandement ; panneau PanelLarge) : sprite, puis nom et niveau. Un groupe de plusieurs
-// individus porte une fine bande en haut (GridPanelInactive du pack) avec leur nombre (« 3x »). Clic -> page de détail
-// du premier individu du groupe (le plus avancé en XP).
+// Case carrée d'une espèce regroupée, ou d'un groupe d'individus strictement identiques si
+// l'espèce est dégroupée (même espèce, même niveau ; voir speciesTiles et la tour de
+// commandement ; panneau PanelLarge) : sprite, puis nom et niveau (tranche « niv 1-5 » pour une
+// case qui regroupe plusieurs niveaux). Nombre d'individus dans un carré en haut à gauche (à
+// partir de 2). `grouping` ({ grouped, onToggle }, première case d'une espèce à plusieurs niveaux
+// seulement) : flèche en haut à droite qui regroupe / sépare l'espèce — hors du <button> de la
+// case (pas de bouton dans un bouton). Clic -> page de détail du premier individu de la case
+// (le plus avancé).
 function UnitTile({
-  group, species, faction, onSelect,
+  tile, species, faction, grouping, onSelect,
 }) {
-  const count = group.unitIds.length;
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`pixel-card relative flex aspect-square flex-col items-center justify-center gap-2 text-[10px] hover:brightness-125 ${legendaryClass(species)}`}
-    >
-      {count > 1 && (
-        <span className="group-band retro absolute inset-x-0 top-0 text-center text-[9px] leading-none">
-          {count}x
+    <div className="relative">
+      <button
+        type="button"
+        onClick={onSelect}
+        className={`pixel-card relative flex aspect-square w-full flex-col items-center justify-center gap-2 text-[10px] hover:brightness-125 ${legendaryClass(species)}`}
+      >
+        <CountSquare count={tile.unitIds.length} />
+        <LegendaryCorners species={species} />
+        <SpeciesSprite species={species} className="size-14" />
+        <span className="flex flex-col items-center gap-1 text-center leading-tight">
+          <span>{unitName(species)}</span>
+          <span className={`retro ${LEVEL_TEXT_CLASS[faction]}`}>{TEXT.levels.range(tile.minLevel, tile.maxLevel)}</span>
         </span>
-      )}
-      <LegendaryCorners species={species} />
-      <SpeciesSprite species={species} className="size-14" />
-      <span className="flex flex-col items-center gap-1 text-center leading-tight">
-        <span>{unitName(species)}</span>
-        <span className={`retro ${LEVEL_TEXT_CLASS[faction]}`}>{TEXT.levels.badge(group.level)}</span>
-      </span>
-    </button>
+      </button>
+      {grouping && <GroupArrow grouped={grouping.grouped} onToggle={grouping.onToggle} className="top-1 right-1" />}
+    </div>
   );
 }
 
@@ -260,6 +263,9 @@ export default function CivilizationScreen({
 }) {
   const [openKey, setOpenKey] = useState(null);
   const [selectedId, setSelectedId] = useState(null); // individu affiché en détail
+  // Espèces dégroupées dans la grille des unités (toutes regroupées par défaut, rien n'est
+  // sauvegardé), comme dans la tour de commandement.
+  const [ungroupedSpecies, setUngroupedSpecies] = useState(() => new Set());
   const [army, setArmy] = useState(getArmy);
   const roster = ROSTERS[playerFaction];
   const [units] = useState(() => getOwnedUnits() ?? []);
@@ -339,13 +345,22 @@ export default function CivilizationScreen({
           if (members.length === 0) {
             return [<EmptySpeciesTile key={key} species={species} onSummon={onOpenSummon} />];
           }
-          return levelGroups(members).map((group) => (
+          const groups = levelGroups(members);
+          const grouped = !ungroupedSpecies.has(key);
+          const toggleGroup = () => setUngroupedSpecies((previous) => {
+            const next = new Set(previous);
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
+            return next;
+          });
+          return speciesTiles(groups, grouped).map((tile, index) => (
             <UnitTile
-              key={`${key}-${group.level}`}
-              group={group}
+              key={`${key}-${tile.minLevel}-${tile.maxLevel}`}
+              tile={tile}
               species={species}
               faction={playerFaction}
-              onSelect={() => setSelectedId(group.unitIds[0])}
+              grouping={index === 0 && groups.length > 1 ? { grouped, onToggle: toggleGroup } : null}
+              onSelect={() => setSelectedId(tile.unitIds[0])}
             />
           ));
         })}

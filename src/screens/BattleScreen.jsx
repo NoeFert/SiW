@@ -11,6 +11,13 @@ import { TEXT } from '../ui/strings.js';
 // Délai entre la victoire et l'affichage de l'écran de victoire.
 const VICTORY_SCREEN_DELAY_MS = 3000;
 
+// Largeur de la tour de commandement : sa largeur de base (300 à 400 px, 24 %), élargie vers la
+// droite de toute la place que le terrain ne peut pas occuper. Le terrain (Phaser FIT, ratio
+// fixe) est limité par la hauteur sur un écran large : la bande vide qu'il laisserait à droite
+// revient à la tour, sans jamais réduire le terrain. L'écran de bataille couvre toute la fenêtre
+// (-inset-game) : 100vw × 100vh est sa taille.
+const TOWER_WIDTH = `max(clamp(300px, 24%, 400px), calc(100vw - 100vh * ${GAME_WIDTH} / ${GAME_HEIGHT}))`;
+
 // technical.md 5.1/5.4 : une bataille repart de zéro à chaque entrée dans cet écran — le Game
 // Phaser est créé au montage et détruit au démontage (React ne touche jamais ses objets internes,
 // juste le conteneur DOM qu'il lui fournit via `containerRef`, technical.md 2.2). L'ID
@@ -81,7 +88,7 @@ export default function BattleScreen({
     // du jeu compris (-inset-game) ; seul « Skip » reste dans le padding.
     <div className="relative h-full w-full">
       <div className="absolute -inset-game flex">
-        <div className="dark flex-none h-full w-[clamp(300px,24%,400px)]">
+        <div className="dark flex-none h-full" style={{ width: TOWER_WIDTH }}>
           <CommandTower playerFaction={playerFaction} />
         </div>
         <div id="phaser-root" ref={containerRef} className="flex-1 min-w-0 h-full" />
