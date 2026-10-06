@@ -51,7 +51,6 @@ export const TEXT = {
     player: (level) => `Niveau ${level}`,
     xp: (xpInLevel, xpForLevel) => `${xpInLevel} / ${xpForLevel} XP`,
     max: 'MAX',
-    xpGained: (xp) => `+${xp} XP`,
     levelUps: 'Montées de niveau',
     levelUp: (from, to) => `niv ${from} → ${to}`,
   },
@@ -119,11 +118,11 @@ export const TEXT = {
     retry: 'Réessayer',
     home: "Retour à l'accueil",
   },
-  // rules.md 11.4 : libellé du bouton d'invocation (clé = résultat de summonAction).
+  // rules.md 11.4 : libellé du bouton d'invocation (clé = résultat de summonAction ; un
+  // [Légendaire] vivant, 'alreadyOwned', est masqué de l'écran Invocation).
   summonActions: {
     summon: 'Invoquer',
     resummon: 'Réinvoquer',
-    alreadyOwned: 'Déjà à vos côtés',
   },
   // Texte des aptitudes (units.md), par nom d'aptitude (`abilities[].name` du roster).
   abilityDescriptions: {

@@ -44,6 +44,13 @@ describe('resolveVictory — bataille 01 (rules.md 11)', () => {
   test('bilan : individus qui ont monté de niveau', () => {
     expect(report.levelUps).toEqual([{ species: 'lambtonWorm', from: 1, to: 2, count: 1 }]);
   });
+
+  test('bilan : unités perdues par espèce, dans l\'ordre du roster (technical.md 5.3)', () => {
+    expect(report.lost).toEqual([
+      { species: WYRMS_ROSTER.lambtonWorm, lost: 1 },
+      { species: WYRMS_ROSTER.fafnir, lost: 1 },
+    ]);
+  });
 });
 
 describe('resolveVictory — bataille 01 passée avec « Skip » (rules.md 11)', () => {
@@ -56,6 +63,7 @@ describe('resolveVictory — bataille 01 passée avec « Skip » (rules.md 11)',
     expect(after.units).toEqual(units);
     expect(after.army).toEqual({ name: 'Armée 1', unitIds: ['w1', 'w2', 'w3', 'f'] });
     expect(report.levelUps).toEqual([]);
+    expect(report.lost).toEqual([]);
   });
 
   test('joueur : 100 XP fixes et la récompense de la bataille 01', () => {
@@ -87,12 +95,12 @@ describe('resolveVictory — batailles suivantes (rules.md 11.5)', () => {
 });
 
 describe('resolveVictory — récompense en Spirit Stones (rules.md 11.7)', () => {
-  test('la récompense s\'ajoute au solde, avec la récompense de niveau', () => {
+  test('la récompense s\'ajoute au solde, avec la récompense de niveau ; le bilan affiche leur total (technical.md 5.3)', () => {
     const save = {
       units, army: createArmy('A', units), playerXp: 450, spiritStones: 5, fallenLegendaryLevel: null,
     };
     const { save: after, report } = resolveVictory(save, [], WYRMS_ROSTER, { firstBattle: false, reward: 60 });
-    expect(report.spiritStonesGained).toBe(60);
+    expect(report.spiritStonesGained).toBe(60 + 100);
     expect(after.spiritStones).toBe(5 + 60 + 100);
   });
 });

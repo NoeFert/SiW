@@ -6,6 +6,7 @@ import {
   victoryPlayerXp,
 } from './levels.js';
 import { fallenLegendaryLevelAfter } from './ownedUnits.js';
+import { lossReport } from './war.js';
 
 // `save` : { units, army, playerXp, spiritStones, fallenLegendaryLevel } avant la bataille.
 // `battleUnits` : toutes les unités de la bataille (battle.units).
@@ -31,14 +32,22 @@ export function resolveVictory(save, battleUnits, roster, { firstBattle, armyNam
   // rules.md 11.2 : armée de départ avec tous les survivants, sinon morts retirés de l'armée.
   const army = firstBattle ? createArmy(armyName, units) : removeDeadFromArmy(save.army, units);
 
+  // technical.md 5.3 : un seul total de Spirit Stones, récompense de victoire + récompenses de niveau.
+  const spiritStonesGained = reward + playerLevelReward(save.playerXp, playerXp);
+
   return {
     save: {
       units,
       army,
       playerXp,
-      spiritStones: save.spiritStones + reward + playerLevelReward(save.playerXp, playerXp),
+      spiritStones: save.spiritStones + spiritStonesGained,
       fallenLegendaryLevel,
     },
-    report: { xpGained, spiritStonesGained: reward, levelUps: levelUps(save.units, units) },
+    report: {
+      xpGained,
+      spiritStonesGained,
+      levelUps: levelUps(save.units, units),
+      lost: lossReport(roster, save.units, xpGains.dead),
+    },
   };
 }

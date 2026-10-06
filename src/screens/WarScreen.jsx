@@ -7,8 +7,8 @@ import { armyUnits } from '../logic/army.js';
 import { SURVIVORS_BONUS_XP, VICTORY_PLAYER_XP } from '../logic/levels.js';
 import { isWarCompleted, victoryReward, warBattleState } from '../logic/war.js';
 import { getArmy, getOwnedUnits, getWonWarBattles } from '../persistence.js';
+import RewardRow from '../ui/RewardRow.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
-import { SpiritStoneIcon } from '../ui/SpiritStonesBalance.jsx';
 import { TEXT } from '../ui/strings.js';
 
 const T = TEXT.war;
@@ -83,16 +83,6 @@ function Connector({ from, to, color }) {
   );
 }
 
-// Une récompense de la bataille sélectionnée : son icône, et la quantité gagnée en dessous.
-function Reward({ icon, amount }) {
-  return (
-    <div className="pixel-panel retro flex min-w-20 flex-col items-center gap-2 px-3 text-xs">
-      {icon}
-      <span>{amount}</span>
-    </div>
-  );
-}
-
 // technical.md 5.1 / rules.md 11.7 : écran « Partir en guerre ». La map 1 en réseau
 // (src/data/warMaps.js) : trois chemins du départ au boss, des passerelles et des impasses, sur
 // le fond de la map en plein écran. Les emplacements qui portent une bataille définie prennent
@@ -161,16 +151,10 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
             {/* Récompenses de la prochaine victoire : Spirit Stones (pleine ou réduite au rejeu,
                 rules.md 11.7) et XP du joueur (100 + jusqu'à 100 selon les PP survivants, 11.5). */}
             {current.state !== 'locked' && (
-              <div className="flex gap-3">
-                <Reward
-                  icon={<SpiritStoneIcon />}
-                  amount={victoryReward(BATTLES[current.battle].reward, current.state === 'won')}
-                />
-                <Reward
-                  icon={<span className="leading-[22px]">{T.xp}</span>}
-                  amount={T.xpRange(VICTORY_PLAYER_XP, VICTORY_PLAYER_XP + SURVIVORS_BONUS_XP)}
-                />
-              </div>
+              <RewardRow
+                spiritStones={victoryReward(BATTLES[current.battle].reward, current.state === 'won')}
+                xp={T.xpRange(VICTORY_PLAYER_XP, VICTORY_PLAYER_XP + SURVIVORS_BONUS_XP)}
+              />
             )}
           </div>
         </div>

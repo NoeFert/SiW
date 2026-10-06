@@ -1,36 +1,36 @@
 # SPECS-REVIEW.md — Revue de cohérence et de complétude
 
-Date : 2026-10-02. Fichiers relus ensemble : `CONCEPT.md`, `rules.md`, `units.md`, `roadmap.md`, `roadmap-mvp.md`, `technical.md`, `POC-SPECS.md`, `GRAPHICS.md`, `AGENTIC-WORKFLOW.md`, `ui-battle-screen-decisions.md`.
+Date : 2026-10-06. Fichiers relus ensemble : `CONCEPT.md`, `rules.md`, `units.md`, `roadmap.md`, `roadmap-mvp.md`, `technical.md`, `POC-SPECS.md`, `GRAPHICS.md`, `AGENTIC-WORKFLOW.md`, `ui-battle-screen-decisions.md`.
 
-Vérifications chiffrées sans écart : dotations de départ (430 / 418 PP), coûts des scripts IA (175 / 159), copies de l'IA suffisantes pour tous les scripts de phase, profils `test-wyrm` (375 / 265 PP, seuils d'XP), courbes de niveau et exemples de 11.4 / 11.6.
+La revue précédente (2026-10-02, commit `d5eda8b`) reste valable : ses 8 points sont toujours réglés dans les specs. Celle-ci traite les écarts apparus depuis, surtout avec les travaux sur l'accueil, l'invocation et « Partir en guerre ».
 
 ## Trous et incohérences traités
 
 | # | Constat | Type | Décision | Fichiers modifiés |
 |---|---|---|---|---|
-| 1 | Une unité au sol vise « l'ennemi le plus proche » à vol d'oiseau, même s'il est inatteignable (couloir voisin dans « Les trois couloirs », unité [Vol] au-dessus d'un mur). Le code peut rester bloqué contre une crête. | Trou | Seuls comptent d'abord les ennemis atteignables en contournant les obstacles du terrain (les unités ne rendent jamais un ennemi inatteignable). S'il ne reste que des ennemis inatteignables, l'unité se dirige quand même vers le plus proche, pour être sur place dès qu'il devient atteignable. [Vol] non concernées. | `rules.md` 3 |
-| 2 | Bataille 01 : « plusieurs phases, à définir » (`roadmap.md`, `rules.md` 7.3) contre « n'a qu'une phase », et « aucun point bloquant ». | Incohérence + trou | La bataille 01 garde **une seule phase** dans le MVP. | `roadmap.md`, `rules.md` 7.3, `POC-SPECS.md` |
-| 3 | Écran de victoire : les montants sont fixés dans `rules.md`, mais `technical.md` les disait « à définir », et rien ne disait comment les afficher. | Incohérence + trou | Victoire du jeu normal : XP du joueur, individus qui ont monté de niveau, bloc « +X » de Spirit Stones (récompense de victoire + récompenses de niveau), puis la liste des unités perdues au format du bilan du clickbait. | `technical.md` 5.1 et 5.3, `roadmap-mvp.md` |
-| 4 | Recharger la page pendant une bataille de « Partir en guerre » annule les pertes. | Trou (cas limite) | Faille acceptée pour le MVP : la bataille est annulée (ni pertes, ni XP, ni récompense). Aucune nouvelle persistance. | `rules.md` 11.7 |
-| 5 | Le sort du compte à rebours de 15 s pendant une transition de phase n'était pas défini. | Trou (cas limite) | **Compte à rebours supprimé partout, pour les deux camps.** Victoire : script de l'IA terminé (dernière phase) et terrain de l'IA vide, dans toutes les batailles. Défaite : plus aucune unité (terrain + réserve) ou abandon. Match nul : les deux au même instant. | `rules.md` 5.2, 7.3, 8 (réécrite), 11.7 ; `POC-SPECS.md` ; `roadmap.md` ; `technical.md` ; `ui-battle-screen-decisions.md` |
-| 6 | « L'armée contient au moins 1 individu » alors que les morts peuvent la vider. | Incohérence | Le minimum interdit seulement de retirer soi-même le dernier individu ; une armée vidée par les morts désactive « Combattre », sans ajout automatique. Renvoi corrigé (« section 2 » devient 11.2). | `rules.md` 11.2 et 11.7 |
-| 7 | `GRAPHICS.md` : la Spirit Fountain est sans barre dans une section, avec une barre dorée dans une autre. | Incohérence | Pas de barre : contenu seul. | `GRAPHICS.md` |
-| 8 | Mentions périmées : « Les trois couloirs » renvoyée à la Suite, section 10 « vide », SummonScreen accessible « depuis le détail d'une espèce », « plus un maximum » (ambigu), « une seule bataille pour la v1 », « aucun point ouvert ». | Incohérences mineures | Toutes corrigées. | `POC-SPECS.md`, `technical.md`, `roadmap-mvp.md`, `roadmap.md` |
+| 1 | [Légendaire] vivant sur l'écran Invocation : « grisé, Déjà à vos côtés » (`rules.md` 11.4, `roadmap-mvp.md`) contre « masqué » (`technical.md` 5.1, code). | Incohérence | **Masqué** tant qu'il est vivant. | `rules.md` 11.4, `roadmap-mvp.md` |
+| 2 | Menu de l'accueil : « soulignées d'un séparateur » (`technical.md` 5.1) contre « ni séparateur » (`GRAPHICS.md`). | Incohérence | **Pas de séparateur.** | `technical.md` 5.1 |
+| 3 | Spirit Fountain vide : « à moitié transparente » et « reste opaque » dans la même section de `GRAPHICS.md`. | Incohérence | **Opaque**, simplement non cliquable. | `GRAPHICS.md` |
+| 4 | Écran de victoire du jeu normal : la puce sur le clickbait coupait la liste, si bien que les Spirit Stones et les pertes se retrouvaient rangées sous le clickbait ; 5.1 et 5.6 parlaient encore d'un écran « minimal ». | Incohérence | Dans l'ordre : 1. une **rangée de récompenses** avec le même composant que le panneau de `WarScreen` (Spirit Stones = victoire + niveaux du joueur, puis XP exacte du joueur) ; 2. les individus qui ont monté de niveau ; 3. les unités perdues. Le clickbait ne change pas. | `technical.md` 5.1, 5.3 et 5.6 ; `roadmap-mvp.md` |
+| 5 | Invocation multiple : « de 1 au maximum payable », sans cas prévu quand le solde ne paie même pas un individu. | Trou (cas limite) | Le nombre reste à 1, et − / + sont désactivés, comme le bouton « Invoquer ». | `technical.md` 5.1 |
+| 6 | Le « tutoriel complet » de `CONCEPT.md` apprenait « les commandes », alors que `STARTER_TUTORIAL` n'enseigne ni Aller ni Attaquer. | Incohérence | Le tutoriel de départ reste celui de `technical.md` 5.5 (déployer, PP, retraite). Il sera complété **après** cette version du jeu. | `CONCEPT.md` |
+| 7 | « Un seul bouton d'action » sur les écrans de fin (`technical.md` 5.3), alors que la défaite de « Partir en guerre » en a deux. | Incohérence | Exception écrite dans 5.3 : pertes + « Réessayer » + « Retour à l'accueil ». | `technical.md` 5.3 |
 
-## Ce qui reste ouvert (déjà signalé comme provisoire dans les specs)
+## Ce qui reste ouvert
 
-Ces valeurs sont écrites et chiffrées, donc un agent peut les implémenter sans rien inventer. Elles restent marquées comme provisoires :
-- économie : somme de départ (0), k (1), multiplicateur du Légendaire (×1), récompenses de victoire, Spirit Fountain, récompense de niveau (`rules.md` 10) ;
-- zones et scripts de l'IA définitifs de « Partir en guerre » (provisoirement ceux de la bataille-clickbait, `rules.md` 11.7) ;
-- emplacements 4 à 10 de la map 1 : verrouillés, sans contenu (rien à implémenter).
+Ces points sont tous écrits et signalés comme provisoires ou à venir dans les specs. Aucun ne pousse à inventer une règle pour le scope actuel :
+- **économie** : somme de départ (0), k (1), multiplicateur du Légendaire (×1), récompenses de victoire, Spirit Fountain, récompense de niveau (`rules.md` 10) ;
+- **zones et scripts définitifs** de « Partir en guerre » (provisoirement ceux de la bataille-clickbait, `rules.md` 11.7) ;
+- **map 1** : les emplacements sans bataille, boss compris, sont verrouillés et n'ont pas de contenu (rien à implémenter) ;
+- **tutoriel** : il sera complété et affiné une fois cette version du jeu terminée. D'ici là, aucune étape n'est à ajouter.
 
-## Écarts code / specs créés par cette revue
+## Écarts code / specs à vérifier
 
-Ces décisions modifient des règles déjà codées. Il faudra les reporter dans le code, chacune dans une étape à part avec ses tests Jest :
-- suppression du compte à rebours de 15 s, et nouvelle condition de victoire de la bataille 01 (`rules.md` 8) ;
-- ciblage des ennemis inatteignables (`rules.md` 3, `src/logic/combat.js`) ;
-- contenu de l'écran de victoire du jeu normal (`technical.md` 5.3).
+Chaque point se traite dans une étape à part, avec ses tests Jest quand il touche `src/logic/` :
+- écran de victoire du jeu normal : rangée de récompenses (composant du panneau `WarScreen`), puis montées de niveau, puis pertes (`technical.md` 5.3) ;
+- invocation multiple avec un solde trop faible pour un seul individu : nombre à 1, − / + désactivés (`technical.md` 5.1) ;
+- `strings.js` : la clé `alreadyOwned` (« Déjà à vos côtés ») n'est plus utilisée depuis que le [Légendaire] vivant est masqué. Il reste à décider s'il faut la supprimer.
 
 ## Conclusion
 
-Un agent IA qui recevrait ces fichiers sans autre contexte n'aurait pas besoin d'inventer de règle pour le scope v1. Les seuls points encore ouverts sont des valeurs provisoires, mais elles sont chiffrées.
+Un agent IA qui recevrait ces fichiers sans autre contexte n'aurait pas besoin d'inventer de règle pour le scope v1. Les seuls points encore ouverts sont des valeurs provisoires déjà chiffrées, du contenu explicitement verrouillé (map 1) et le tutoriel, explicitement reporté.

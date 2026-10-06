@@ -34,7 +34,7 @@ La version clickbait imite une **publicité de jeu de stratégie** : une bataill
 Le clickbait est construit comme une pub ; le MVP est **le jeu complet, construit comme un jeu**. Il reprend le même moteur de bataille et ajoute tout ce qu'une pub laisse de côté (détail dans `ROADMAP.md`) :
 - le **parcours complet** : introduction, choix de faction, bataille, écran de victoire ou de défaite avec « Réessayer », écran d'accueil ;
 - les **pertes définitives** : les monstres tués pendant la bataille sont sauvegardés et restent perdus, visibles sur l'écran de gestion de civilisation ;
-- le **tutoriel complet**, qui apprend aussi les commandes et la retraite ;
+- le **tutoriel de départ** (déployer, points de présence, battre en retraite : `TECHNICAL.md` 5.5), qui sera complété et affiné plus tard, une fois cette version du jeu terminée ;
 - toutes les fonctionnalités de bataille accessibles au joueur, sans les raccourcis propres au format pub ;
 - une **première boucle méta**, organisée autour de l'écran d'accueil (détail dans `roadmap-mvp.md` et `RULES.md` section 11) :
   - la **gestion de civilisation** : consulter ses monstres espèce par espèce, et composer l'**armée** qui partira en guerre (500 points de présence au plus, au-dessus des 150 du terrain : l'armée contient des réserves) ;

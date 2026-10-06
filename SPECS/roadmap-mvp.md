@@ -38,7 +38,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 ### Niveaux (joueur et individus)
 - **Joueur** (`rules.md` 11.5) : XP à chaque victoire (100 + bonus selon les PP survivants de l'armée ; 100 fixes pour la bataille 01), courbe 500 × niveau, sans maximum. Chaque niveau rapporte des Spirit Stones (50 × nouveau niveau, provisoire)
 - **Individus** (`rules.md` 11.6) : XP à la victoire seulement, bataille 01 comprise (+10 par survivant déployé, + coût en PP de chaque ennemi achevé), courbe 50 × niveau, niveau 5 maximum. +10 % de PV et de dégâts par niveau ; coût en PP inchangé
-- **Écran de victoire** (jeu normal seulement, rien ne change dans la version clickbait) : XP gagnée par le joueur, individus qui ont monté de niveau, Spirit Stones gagnées (« +X ») et unités perdues (comme le bilan du clickbait) — `technical.md` 5.3
+- **Écran de victoire** (jeu normal seulement, rien ne change dans la version clickbait) : rangée de récompenses (Spirit Stones et XP du joueur, même composant que le panneau de « Partir en guerre »), individus qui ont monté de niveau, unités perdues (comme le bilan du clickbait) — `technical.md` 5.3
 - **Bataille** : la tour de déploiement affiche une ligne par espèce **et par niveau** (`ui-battle-screen-decisions.md` 2.2)
 
 ### Gestion de civilisation — section Unités
@@ -61,7 +61,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 ### Écran Invocation (nouveau)
 - Achat d'un individu d'une **espèce déjà connue** (roster de la faction du joueur) — pas de gacha
 - **Pas de plafond de possession** pour les unités non légendaires : ce qui freine le joueur, c'est la monnaie ; le plafond d'armée (500 PP) et celui du terrain (150 PP) bornent déjà ce qui combat
-- **[Légendaire] unique** : au plus un exemplaire possédé. Grisé tant qu'il est vivant (« Déjà à vos côtés »), disponible seulement s'il est mort
+- **[Légendaire] unique** : au plus un exemplaire possédé. Masqué de l'écran Invocation tant qu'il est vivant, proposé seulement s'il est mort
 - Rachat et réinvocation sont **la même action** (payer, ajouter un individu) ; seul le libellé change : « Invoquer » pour une unité classique, « Réinvoquer » pour un Légendaire mort. Pas de délai ni de coût croissant d'une réinvocation à l'autre
 - **Niveau gardé** : à la réinvocation, le joueur choisit le niveau du Légendaire, entre 1 et celui qu'il avait à sa mort ; +25 % du prix de base par niveau gardé au-delà du 1 (`rules.md` 11.4). Un individu invoqué autrement est niveau 1
 - **Prix = coût en PP de l'espèce × k**, avec un multiplicateur à part éventuel pour le [Légendaire] (valeurs à définir)
