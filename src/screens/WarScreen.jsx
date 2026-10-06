@@ -2,24 +2,25 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { Button } from '@/components/ui/8bit/button.jsx';
 import { BATTLES, WAR_BATTLE_IDS } from '../data/battles.js';
-import { ROSTERS } from '../data/rosters.js';
 import { WAR_MAP_1 } from '../data/warMaps.js';
-import { ARMY_PP_CAP, armyCost, armyUnits } from '../logic/army.js';
+import { armyUnits } from '../logic/army.js';
+import { SURVIVORS_BONUS_XP, VICTORY_PLAYER_XP } from '../logic/levels.js';
 import { isWarCompleted, victoryReward, warBattleState } from '../logic/war.js';
 import { getArmy, getOwnedUnits, getWonWarBattles } from '../persistence.js';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
-import { SpiritStonesAmount } from '../ui/SpiritStonesBalance.jsx';
+import { SpiritStoneIcon } from '../ui/SpiritStonesBalance.jsx';
 import { TEXT } from '../ui/strings.js';
 
 const T = TEXT.war;
 
 // GRAPHICS.md « Partir en guerre » : map en arbre de compétences (sprites SkillTree du pack, à
-// 2×), dans la couleur du souverain adverse — violet face aux Morts-Vivants, jaune face aux Wyrms.
-const ENEMY_COLOR = { wyrms: 'purple', undead: 'yellow' };
+// 2×), dans la couleur du souverain du joueur — jaune (doré) pour les Wyrms, violet pour les
+// Morts-Vivants, comme les accents de l'interface.
+const PLAYER_COLOR = { wyrms: 'yellow', undead: 'purple' };
 const SLOT = 42; // losange 21×21 à 2×, pointes au milieu des côtés
 const BOSS_SLOT = 56; // losange du boss, plus grand : SkillSlotLarge 28×28 à 2×
 const HALF = SLOT / 2;
-const STEP = 96; // distance entre deux cases de la grille de la map
+const STEP = 80; // distance entre deux cases de la grille de la map
 
 const uiSprite = (name) => `url(/ui/${name}.png)`;
 const slotCenter = ({ col, row }) => ({ x: HALF + col * STEP, y: HALF + row * STEP });
@@ -61,8 +62,8 @@ function Slot({ node, color, selected, onSelect }) {
   );
 }
 
-// Connecteur droit entre deux emplacements qui se suivent (même ligne ou même colonne), de
-// pointe à pointe. Gris vers un emplacement verrouillé.
+// Connecteur droit entre deux emplacements liés (même ligne ou même colonne), de pointe à pointe.
+// Gris dès qu'un des deux bouts est verrouillé.
 function Connector({ from, to, color }) {
   const a = slotCenter(from);
   const b = slotCenter(to);
@@ -82,62 +83,95 @@ function Connector({ from, to, color }) {
   );
 }
 
-// technical.md 5.1 / rules.md 11.7 : écran « Partir en guerre ». L'armée qui partira, puis la
-// map 1 : un losange par emplacement, sur le tracé en lacets (src/data/warMaps.js). Les premiers
-// portent les batailles définies, les suivants sont verrouillés (« À venir »). Un clic sur un
-// losange l'affiche dans le panneau : nom, état, récompense de la prochaine victoire (pleine ou
-// réduite au rejeu) et « Combattre », désactivé si verrouillée ou si l'armée est vide.
+// Une récompense de la bataille sélectionnée : son icône, et la quantité gagnée en dessous.
+function Reward({ icon, amount }) {
+  return (
+    <div className="pixel-panel retro flex min-w-20 flex-col items-center gap-2 px-3 text-xs">
+      {icon}
+      <span>{amount}</span>
+    </div>
+  );
+}
+
+// technical.md 5.1 / rules.md 11.7 : écran « Partir en guerre ». La map 1 en réseau
+// (src/data/warMaps.js) : trois chemins du départ au boss, des passerelles et des impasses, sur
+// le fond de la map en plein écran. Les emplacements qui portent une bataille définie prennent
+// son état ; les autres sont verrouillés (« À venir »). Un clic sur un losange l'affiche dans le
+// panneau : nom, état, récompense de la prochaine victoire (pleine ou réduite au rejeu) et
+// « Combattre », désactivé si verrouillée ou si l'armée est vide.
 export default function WarScreen({ playerFaction, onFight, onBack }) {
-  const roster = ROSTERS[playerFaction];
   const units = getOwnedUnits() ?? [];
-  const army = getArmy();
   const wonIds = getWonWarBattles();
-  const armyIsEmpty = armyUnits(army, units).length === 0;
-  const color = ENEMY_COLOR[playerFaction];
-  const nodes = WAR_MAP_1.slots.map((slot, i) => {
-    const id = WAR_BATTLE_IDS[i] ?? null;
-    return { ...slot, id, state: id ? warBattleState(WAR_BATTLE_IDS, wonIds, id) : 'locked' };
-  });
+  const armyIsEmpty = armyUnits(getArmy(), units).length === 0;
+  const color = PLAYER_COLOR[playerFaction];
+  const nodes = WAR_MAP_1.nodes.map((node) => ({
+    ...node,
+    state: node.battle ? warBattleState(WAR_BATTLE_IDS, wonIds, node.battle) : 'locked',
+  }));
+  const byId = new Map(nodes.map((node) => [node.id, node]));
   // Sélection par défaut : la dernière bataille débloquée, là où en est le joueur.
-  const [selected, setSelected] = useState(() => nodes.findLastIndex((node) => node.state !== 'locked'));
-  const current = nodes[selected];
+  const [selectedId, setSelectedId] = useState(
+    () => nodes.findLast((node) => node.battle && node.state !== 'locked')?.id ?? nodes[0].id,
+  );
+  const current = byId.get(selectedId);
 
   return (
-    <ScreenLayout title={T.title} onBack={onBack}>
+    <ScreenLayout
+      title={T.title}
+      onBack={onBack}
+      // Fond de la map sur tout l'écran, en monochrome contrasté et assombri.
+      background={(
+        <div
+          className="size-full bg-cover bg-center brightness-50 grayscale contrast-150"
+          style={{ backgroundImage: `url(${WAR_MAP_1.background})` }}
+        />
+      )}
+    >
       <div className="flex min-h-full flex-col gap-6">
-        <p className="retro text-xs">{T.armyLine(army.name, armyCost(army, units, roster), ARMY_PP_CAP)}</p>
         {armyIsEmpty && <p className="text-xs text-red-400">{T.emptyArmy}</p>}
         <div className="flex flex-1 items-center justify-center gap-16">
-          {/* Fond de la map en monochrome contrasté et assombri, sur son propre calque (le filtre ne
-              touche pas le tracé), avec une marge autour des losanges. */}
-          <div className="relative shrink-0 p-10">
-            <div
-              className="absolute inset-0 bg-cover bg-center brightness-50 grayscale contrast-150"
-              style={{ backgroundImage: `url(${WAR_MAP_1.background})` }}
-            />
-            <div
-              className="relative"
-              style={{ width: SLOT + (WAR_MAP_1.cols - 1) * STEP, height: SLOT + (WAR_MAP_1.rows - 1) * STEP }}
-            >
-              {nodes.slice(1).map((node, i) => (
-                <Connector key={i} from={nodes[i]} to={node} color={node.state === 'locked' ? 'grey' : color} />
-              ))}
-              {nodes.map((node, i) => (
-                <Slot key={i} node={node} color={color} selected={i === selected} onSelect={() => setSelected(i)} />
-              ))}
-            </div>
+          <div
+            className="relative shrink-0"
+            style={{ width: SLOT + (WAR_MAP_1.cols - 1) * STEP, height: SLOT + (WAR_MAP_1.rows - 1) * STEP }}
+          >
+            {WAR_MAP_1.links.map(([a, b]) => {
+              const from = byId.get(a);
+              const to = byId.get(b);
+              const linkColor = from.state === 'locked' || to.state === 'locked' ? 'grey' : color;
+              return <Connector key={`${a}-${b}`} from={from} to={to} color={linkColor} />;
+            })}
+            {nodes.map((node) => (
+              <Slot
+                key={node.id}
+                node={node}
+                color={color}
+                selected={node.id === selectedId}
+                onSelect={() => setSelectedId(node.id)}
+              />
+            ))}
           </div>
           <div className={`flex w-80 flex-col items-center gap-3 text-center text-xs ${current.state === 'locked' ? 'opacity-50' : ''}`}>
             <div className="flex items-center gap-3">
-              <span className="retro text-sm whitespace-nowrap">{current.id ? T.battleNames[current.id] : T.upcoming}</span>
+              <span className="retro text-sm whitespace-nowrap">{current.battle ? T.battleNames[current.battle] : T.upcoming}</span>
               <Badge variant="secondary" font="normal" className="text-[10px]">{T.states[current.state]}</Badge>
             </div>
-            {current.state !== 'locked' && (
-              <SpiritStonesAmount amount={victoryReward(BATTLES[current.id].reward, current.state === 'won')} />
-            )}
-            <Button size="sm" disabled={current.state === 'locked' || armyIsEmpty} onClick={() => onFight(current.id)}>
+            <Button size="sm" disabled={current.state === 'locked' || armyIsEmpty} onClick={() => onFight(current.battle)}>
               {T.fight}
             </Button>
+            {/* Récompenses de la prochaine victoire : Spirit Stones (pleine ou réduite au rejeu,
+                rules.md 11.7) et XP du joueur (100 + jusqu'à 100 selon les PP survivants, 11.5). */}
+            {current.state !== 'locked' && (
+              <div className="flex gap-3">
+                <Reward
+                  icon={<SpiritStoneIcon />}
+                  amount={victoryReward(BATTLES[current.battle].reward, current.state === 'won')}
+                />
+                <Reward
+                  icon={<span className="leading-[22px]">{T.xp}</span>}
+                  amount={T.xpRange(VICTORY_PLAYER_XP, VICTORY_PLAYER_XP + SURVIVORS_BONUS_XP)}
+                />
+              </div>
+            )}
           </div>
         </div>
         {isWarCompleted(WAR_BATTLE_IDS, wonIds) && <p className="retro text-xs text-center">{T.completed}</p>}

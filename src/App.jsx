@@ -301,11 +301,12 @@ export default function App() {
   return (
     <>
       {/* GRAPHICS.md « Interface » : la faction du joueur choisit la teinte des accents (pixel-ui.css) ;
-          fond des écrans : noir pour l'intro et le choix de faction, dégradé vertical #2a2c2f →
-          #838796 pour les autres (l'accueil le couvre de son château). */}
+          fond des écrans : noir pour l'intro, le choix de faction et la bataille (la marge autour
+          de la tour et du terrain se fond avec eux), dégradé vertical #2a2c2f → #838796 pour les
+          autres (l'accueil le couvre de son château). */}
       <div
         data-faction={playerFaction ?? undefined}
-        className={`h-full p-12 ${screen === 'intro' || screen === 'factionChoice'
+        className={`h-full p-12 ${['intro', 'factionChoice', 'battle'].includes(screen)
           ? 'bg-neutral-900'
           : 'bg-linear-to-b from-[#2a2c2f] to-[#838796]'}`}
       >

@@ -310,7 +310,7 @@ Détail du périmètre et des écrans : `roadmap-mvp.md`. Aucune de ces règles 
 
 ### 11.7 Partir en guerre
 - **Trois batailles**, jouées **en séquence** : la bataille 1 est disponible dès la victoire de la bataille 01 ; la bataille N + 1 se débloque à la première victoire de la bataille N. Noms provisoires : **« La passe »**, **« Les crevasses »**, **« La citadelle »** (`strings.js`).
-- **Map** : les batailles sont les premiers emplacements de la **map 1**, un parcours de **10 emplacements** (`src/data/warMaps.js`). Les emplacements 4 à 10 n'ont pas encore de bataille : ils sont affichés **verrouillés** (« À venir ») et ne se débloquent pas (leurs zones, scripts et récompenses restent à définir). Pas d'autre map ni de changement de map pour l'instant.
+- **Map** : les batailles sont placées sur la **map 1**, un **réseau** d'emplacements (`src/data/warMaps.js`) : trois chemins du départ au boss, des passerelles entre ces chemins et des impasses (19 emplacements). Les trois batailles occupent le départ et les deux emplacements suivants du chemin du bas. Les autres emplacements n'ont pas encore de bataille : ils sont affichés **verrouillés** (« À venir ») et ne se débloquent pas (leurs batailles, zones, scripts, récompenses et l'ordre de déblocage dans le réseau restent à définir). Pas d'autre map ni de changement de map pour l'instant.
 - **Rejeu** : une bataille déjà gagnée reste jouable à volonté, avec une récompense réduite (voir Récompenses).
 - **Armée** : le joueur part avec **son armée** (11.2) ; bouton « Combattre » **désactivé si l'armée est vide** (message « Composez votre armée »).
 - **Zones** (section 7.3) : chaque bataille enchaîne **2 zones** (2 phases). Provisoire, en attendant les zones et scripts définitifs :

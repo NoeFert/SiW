@@ -106,8 +106,9 @@ export const TEXT = {
     title: 'Partir en guerre',
     battleNames: { war1: 'La passe', war2: 'Les crevasses', war3: 'La citadelle' },
     upcoming: 'À venir', // emplacement de la map sans bataille définie (rules.md 11.7)
+    xp: 'XP', // icône de la récompense en XP du joueur
+    xpRange: (min, max) => `${min}–${max}`, // XP du joueur : selon les PP survivants (rules.md 11.5)
     states: { locked: 'Verrouillée', available: 'Disponible', won: 'Gagnée' },
-    armyLine: (name, cost, cap) => `${name} — ${cost} / ${cap} PP`,
     fight: 'Combattre',
     emptyArmy: 'Composez votre armée',
     completed: "D'autres terres à conquérir arrivent bientôt…",
