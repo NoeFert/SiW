@@ -227,7 +227,6 @@ export default class BattleScene extends Phaser.Scene {
     if (this.playerUnits) this.battle.playerDeployment = createDeploymentState(playerRoster, this.playerUnits);
     setUpcomingPhases(this.battle, this.phases.slice(1));
     if (this.battleDefinition.training) setupTraining(this.battle, TRAINING_DUMMY, TRAINING_COPIES);
-    this.battle.victoryWhenScriptCleared = !!this.battleDefinition.victoryWhenScriptCleared;
     const { tutorial, orders = null, surrenderAllowed = true } = this.battleDefinition;
     this.battle.orders = orders;
     this.battle.surrenderAllowed = surrenderAllowed;
@@ -236,12 +235,15 @@ export default class BattleScene extends Phaser.Scene {
     // Publie l'état pour la tour de commandement React (technical.md 2.2) : c'est le seul canal de
     // communication entre les deux couches, aucune ne référence les objets de l'autre.
     interactionState.battle = this.battle;
+    interactionState.unitDisplayCenter = (unit) => {
+      const view = this.unitViews.get(unit.id);
+      return view ? { x: view.container.x, y: view.container.y } : null;
+    };
 
     this.input.mouse.disableContextMenu();
     this.input.on('pointerdown', (pointer) => this.handlePointerDown(pointer));
 
     this.createSelectionIndicator();
-    this.createCountdownBanner();
   }
 
   // rules.md 2 : halo sur la moitié gauche du terrain (zone de déploiement du joueur, voir
@@ -279,39 +281,13 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   // -- Fin de bataille (rules.md 8) --------------------------------------------------------
-  // Le compte à rebours reste ici pour l'instant (son affichage définitif est à concevoir) ;
-  // l'abandon est dans la tour React, l'écran de résultat final dans des écrans React.
-
-  createCountdownBanner() {
-    this.countdownText = this.add.text(this.width / 2, 16, '', {
-      fontSize: '15px', color: '#ffcc00', backgroundColor: '#000000', padding: { x: 10, y: 6 },
-    }).setOrigin(0.5, 0).setVisible(false);
-  }
-
-  updateCountdownBanner() {
-    const playerCountdown = this.battle.playerEndState.countdownRemaining;
-    const enemyCountdown = this.battle.enemyEndState.countdownRemaining;
-
-    if (playerCountdown !== null) {
-      this.countdownText.setText(
-        `⚠ Redéploie une unité avant ${playerCountdown.toFixed(1)}s, ou défaite automatique !`,
-      );
-      this.countdownText.setVisible(true);
-    } else if (enemyCountdown !== null && !this.battle.victoryWhenScriptCleared) {
-      // Bataille-clickbait : l'IA suit un script, inutile d'annoncer son compte à rebours.
-      this.countdownText.setText(`L'IA doit redéployer avant ${enemyCountdown.toFixed(1)}s...`);
-      this.countdownText.setVisible(true);
-    } else {
-      this.countdownText.setVisible(false);
-    }
-  }
+  // L'abandon est dans la tour React, l'écran de résultat final dans des écrans React.
 
   // Cache le HUD encore présent côté Phaser une fois la bataille terminée (rules.md 8 : plus
   // aucune interaction possible). L'écran de résultat lui-même est maintenant VictoryScreen/
   // DefeatScreen (React, technical.md 5) — BattleScreen.jsx navigue vers l'un ou l'autre dès
   // que `battle.outcome` change, cette Scene n'a donc plus qu'à figer son propre affichage.
   hideBattleUi() {
-    this.countdownText.setVisible(false);
     this.selectionIndicator.setVisible(false);
   }
 
@@ -475,7 +451,21 @@ export default class BattleScene extends Phaser.Scene {
       cancelCommand(this.battle);
       return;
     }
-    clickField(this.battle, Math.floor(pointer.x / CELL_SIZE), Math.floor(pointer.y / CELL_SIZE));
+    // Un clic sur le sprite d'une unité vise sa case logique : pendant une pause, le sprite peut
+    // être figé à mi-chemin de la case suivante (déplacement animé gelé).
+    const unit = this.unitUnderPointer(pointer);
+    const x = unit ? unit.x : Math.floor(pointer.x / CELL_SIZE);
+    const y = unit ? unit.y : Math.floor(pointer.y / CELL_SIZE);
+    clickField(this.battle, x, y);
+  }
+
+  // Unité sur le terrain dont le sprite affiché (son bloc de cases) est sous le pointeur, ou null.
+  unitUnderPointer(pointer) {
+    return this.battle.units.find((unit) => {
+      const view = unit.isOnField && this.unitViews.get(unit.id);
+      const half = (unit.size * CELL_SIZE) / 2;
+      return view && Math.abs(pointer.x - view.container.x) < half && Math.abs(pointer.y - view.container.y) < half;
+    }) ?? null;
   }
 
   // -- Signaux visuels de pause (ui-battle-screen-decisions.md 3) ---------------------------
@@ -520,11 +510,7 @@ export default class BattleScene extends Phaser.Scene {
     this.applyPauseColors();
     this.deploymentZone.setVisible(this.battle.pause.interaction === 'deploy');
 
-    if (this.battle.outcome === 'ongoing') {
-      this.updateCountdownBanner();
-    } else {
-      this.hideBattleUi();
-    }
+    if (this.battle.outcome !== 'ongoing') this.hideBattleUi();
   }
 
   syncViews() {

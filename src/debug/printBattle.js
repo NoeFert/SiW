@@ -60,17 +60,9 @@ const OUTCOME_LABELS = {
   draw: 'Match nul',
 };
 
-// rules.md 8 : "en cours" / compte à rebours actif (camp, temps restant) / terminée (résultat).
+// rules.md 8 : "en cours" / terminée (résultat).
 export function renderBattleStatus(battle) {
   if (battle.outcome !== 'ongoing') return `Bataille terminée : ${OUTCOME_LABELS[battle.outcome]}`;
-
-  const counting = [['Joueur', battle.playerEndState], ['IA', battle.enemyEndState]]
-    .find(([, state]) => state.countdownRemaining !== null);
-  if (counting) {
-    const [label, state] = counting;
-    return `Compte à rebours (${label}) : ${state.countdownRemaining.toFixed(1)}s avant défaite automatique`;
-  }
-
   return 'Bataille en cours';
 }
 

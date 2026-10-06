@@ -29,7 +29,7 @@ export const STARTER_TUTORIAL = [
     frozen: false,
     allows: null,
     message: 'autonomous',
-    messageSeconds: 3,
+    messageSeconds: 5,
     continueButton: true,
     next: [{ type: 'elapsed', seconds: 8 }],
   },
@@ -51,14 +51,26 @@ export const STARTER_TUTORIAL = [
     next: [{ type: 'enemyWaveDeployed', fromEnd: 2 }, { type: 'elapsed', seconds: 8 }],
   },
   {
+    // Retraite en deux temps : d'abord le bouton Fuir...
     id: 'flee',
     frozen: true,
-    allows: ['order:flee', 'selectUnit:flee'],
+    allows: ['order:flee'],
     message: 'flee',
-    hand: ['fleeOrder', 'playerUnit'],
+    hand: ['fleeOrder'],
     // Il faut une unité à faire fuir, une fuite hors cooldown, et aucun geste en cours.
     requires: [{ type: 'playerUnitOnField' }, { type: 'fleeAvailable' }, { type: 'noGestureInProgress' }],
+    next: [{ type: 'fleeOrderChosen' }],
+  },
+  {
+    // ... puis l'unité (n'importe laquelle ; la main montre la plus blessée). Fuite donnée :
+    // fin du tutoriel. Fuir annulé : retour au bouton Fuir.
+    id: 'fleeUnit',
+    frozen: true,
+    allows: ['selectUnit:flee'],
+    message: 'fleeUnit',
+    hand: ['weakestPlayerUnit'],
     next: [{ type: 'fleeIssued' }],
+    back: { when: { type: 'noOrderChosen' }, to: 'flee' },
   },
 ];
 

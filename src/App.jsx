@@ -30,10 +30,6 @@ import {
 } from './persistence.js';
 import { TEXT } from './ui/strings.js';
 
-// technical.md 5.2 : pour le Rendu 1, seule la version clickbait (le POC) était jouable ; le MVP
-// est rouvert depuis. Passer à true regriserait le bouton MVP et démarrerait toujours sur l'intro.
-const MVP_LOCKED = false;
-
 // rules.md 11.8 : la Spirit Fountain se met en route, vide, à la première arrivée sur l'accueil.
 function startFountain() {
   if (getFountainLastHarvest() === null) saveFountainLastHarvest(Date.now());
@@ -42,7 +38,6 @@ function startFountain() {
 // technical.md 5.2 : l'écran de départ se déduit de l'état persistant, pas d'un routeur.
 // Une sauvegarde à l'ancien format (technical.md 5.4) est effacée : l'app repart de l'intro.
 function initialScreen() {
-  if (MVP_LOCKED) return 'intro';
   if (isLegacySave()) clearProgress();
   if (!getSavedFaction()) return 'intro';
   if (!hasWonFirstBattle()) return 'battle';
@@ -200,7 +195,7 @@ export default function App() {
     setScreen('intro');
   }, []);
 
-  // technical.md 5.6 : version clickbait, depuis son choix de faction (intro et menu devs).
+  // technical.md 5.6 : version clickbait, depuis son choix de faction (menu devs seulement).
   const startClickbait = useCallback(() => {
     setMode('clickbait');
     setClickbaitFaction(null);
@@ -241,11 +236,7 @@ export default function App() {
   let content;
   if (screen === 'intro') {
     content = (
-      <IntroScreen
-        onContinue={() => setScreen('factionChoice')}
-        onClickbait={startClickbait}
-        mvpLocked={MVP_LOCKED}
-      />
+      <IntroScreen onContinue={() => setScreen('factionChoice')} />
     );
   } else if (screen === 'factionChoice') {
     content = <FactionChoiceScreen onChoose={chooseFaction} />;

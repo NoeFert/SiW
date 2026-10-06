@@ -51,6 +51,7 @@ export default function BattleScreen({
     return () => {
       game.destroy(true);
       interactionState.battle = null;
+      interactionState.unitDisplayCenter = null;
     };
     // playerUnits n'est lu qu'au montage : chaque tentative remonte l'écran (clé battleAttempt).
   }, [playerFaction, battleId]);

@@ -9,7 +9,8 @@ import {
 import { isBattleTimeRunning } from '../../src/logic/pause.js';
 import { setUpcomingPhases, PHASE_TRANSITION_SECONDS } from '../../src/logic/phases.js';
 import {
-  startTutorial, continueTutorial, visibleTutorialStep, tutorialAllows, TUTORIAL_CONDITION_TYPES,
+  startTutorial, continueTutorial, visibleTutorialStep, tutorialAllows, weakestPlayerUnit,
+  TUTORIAL_CONDITION_TYPES,
 } from '../../src/logic/tutorial.js';
 import { STARTER_TUTORIAL, CLICKBAIT_TUTORIAL } from '../../src/data/tutorials.js';
 import { BATTLES, FIRST_BATTLE_ID, CLICKBAIT_BATTLE_ID } from '../../src/data/battles.js';
@@ -86,14 +87,14 @@ describe('tutoriel — étape 1 : déployer (technical.md 5.5)', () => {
 });
 
 describe('tutoriel — étape 1 (suite) : combat autonome', () => {
-  test('le message reste affiché 3 s au plus, la bataille tourne', () => {
+  test('le message reste affiché 5 s au plus, la bataille tourne', () => {
     const battle = newTutorialBattle();
     startDeploymentDrag(battle);
     deployPlayerUnit(battle, ROSTER.fighter, 0, 0);
     endDeploymentDrag(battle);
     tickBattle(battle, 0.1);
 
-    tickBattle(battle, 2.5);
+    tickBattle(battle, 4.5);
     expect(visibleTutorialStep(battle).id).toBe('autonomous');
     tickBattle(battle, 0.5);
     expect(visibleTutorialStep(battle)).toBeNull();
@@ -166,23 +167,44 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
     expect(battle.tutorial.step).toBe('waitingForWave');
   });
 
-  test('seule la fuite est permise ; l\'ordre donné, le tutoriel se termine', () => {
+  test('d\'abord, seul l\'ordre Fuir est permis ; la main ne montre que le bouton Fuir', () => {
     const { battle, unit } = reachFleeTutorial();
     expect(battle.tutorial.step).toBe('flee');
+    expect(visibleTutorialStep(battle).hand).toEqual(['fleeOrder']);
 
     expect(chooseOrder(battle, 'attack')).toBe(false);
+    expect(chooseOrder(battle, 'move')).toBe(false);
     expect(selectUnit(battle, unit)).toBe(false); // aucun ordre choisi
     expect(chooseOrder(battle, 'flee')).toBe(true);
-    expect(selectUnit(battle, unit)).toBe(true);
-    expect(unit.command).toEqual({ type: 'flee' });
+  });
+
+  test('Fuir cliqué : étape suivante, toujours figée, la main montre l\'unité la plus blessée', () => {
+    const { battle } = reachFleeTutorial();
+    chooseOrder(battle, 'flee');
     tickBattle(battle, 0.1);
 
+    expect(battle.tutorial.step).toBe('fleeUnit');
+    expect(visibleTutorialStep(battle).message).toBe('fleeUnit');
+    expect(visibleTutorialStep(battle).hand).toEqual(['weakestPlayerUnit']);
+    expect(isBattleTimeRunning(battle.pause)).toBe(false);
+  });
+
+  test('l\'unité choisie fuit : fin du tutoriel, la bataille reprend aussitôt', () => {
+    const { battle, unit } = reachFleeTutorial();
+    chooseOrder(battle, 'flee');
+    tickBattle(battle, 0.1);
+
+    expect(selectUnit(battle, unit)).toBe(true);
+    expect(unit.command).toEqual({ type: 'flee' });
+    const elapsed = battle.elapsedSeconds;
+    tickBattle(battle, 0.5);
+
     expect(battle.tutorial).toBeNull(); // tutoriel terminé
-    expect(isBattleTimeRunning(battle.pause)).toBe(true);
+    expect(battle.elapsedSeconds).toBe(elapsed + 0.5); // reprise dès ce tick
     expect(togglePlayerPause(battle)).toBe(true);
   });
 
-  test('annuler Fuir laisse l\'étape en place, toujours figée', () => {
+  test('annuler Fuir ramène à la première étape de la retraite, toujours figée', () => {
     const { battle } = reachFleeTutorial();
     chooseOrder(battle, 'flee');
     tickBattle(battle, 0.1);
@@ -192,6 +214,66 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
 
     expect(battle.tutorial.step).toBe('flee');
     expect(isBattleTimeRunning(battle.pause)).toBe(false);
+  });
+
+  test('re-cliquer Fuir annule aussi et ramène à la première étape', () => {
+    const { battle } = reachFleeTutorial();
+    chooseOrder(battle, 'flee');
+    tickBattle(battle, 0.1);
+
+    chooseOrder(battle, 'flee');
+    tickBattle(battle, 0.1);
+
+    expect(battle.tutorial.step).toBe('flee');
+  });
+});
+
+describe('tutoriel — victoire acquise (rules.md 8.1)', () => {
+  test('pendant les 2 s avant l\'écran de victoire, l\'étape de retraite ne se déclenche plus', () => {
+    const { battle } = reachPresenceStep();
+    continueTutorial(battle);
+    tickBattle(battle, 0.5); // étape d'attente : la bataille tourne
+    battle.aiScriptState.nextIndex = battle.enemyScript.length; // script de l'IA fini...
+    for (const u of battle.units) if (u.faction === 'enemy') u.hp = 0; // ... et terrain ennemi vide
+    tickBattle(battle, 0.5); // victoire acquise
+
+    tickBattle(battle, 1);
+    tickBattle(battle, 1);
+
+    expect(battle.tutorial.step).toBe('waitingForWave');
+    expect(battle.outcome).toBe('playerVictory');
+  });
+});
+
+describe('tutoriel — unité la plus blessée (cible de la main)', () => {
+  test('l\'unité du joueur sur le terrain qui a le moins de PV actuels', () => {
+    const battle = newTutorialBattle();
+    startDeploymentDrag(battle);
+    const { unit: first } = deployPlayerUnit(battle, ROSTER.fighter, 0, 0);
+    const { unit: second } = deployPlayerUnit(battle, ROSTER.fighter, 0, 2);
+    const { unit: third } = deployPlayerUnit(battle, ROSTER.fighter, 0, 4);
+    endDeploymentDrag(battle);
+    first.hp = 500;
+    second.hp = 200;
+    third.hp = 900;
+
+    expect(weakestPlayerUnit(battle)).toBe(second);
+  });
+
+  test('égalité : la première déployée ; ignore les unités hors terrain et ennemies', () => {
+    const battle = newTutorialBattle();
+    startDeploymentDrag(battle);
+    const { unit: first } = deployPlayerUnit(battle, ROSTER.fighter, 0, 0);
+    const { unit: second } = deployPlayerUnit(battle, ROSTER.fighter, 0, 2);
+    const { unit: gone } = deployPlayerUnit(battle, ROSTER.fighter, 0, 4);
+    endDeploymentDrag(battle);
+    first.hp = 300;
+    second.hp = 300;
+    gone.hp = 1;
+    gone.hasFled = true;
+
+    expect(weakestPlayerUnit(battle)).toBe(first);
+    expect(weakestPlayerUnit(newTutorialBattle())).toBeNull();
   });
 });
 
@@ -222,12 +304,10 @@ describe('données des tutoriels et des batailles (src/data/)', () => {
   });
 
   test('la bataille-clickbait : bataille à part, 3 phases (champ, mur, fort), tutoriel clickbait', () => {
-    const { phases, tutorial, victoryWhenScriptCleared } = BATTLES[CLICKBAIT_BATTLE_ID];
+    const { phases, tutorial } = BATTLES[CLICKBAIT_BATTLE_ID];
 
     expect(CLICKBAIT_BATTLE_ID).not.toBe(FIRST_BATTLE_ID);
     expect(tutorial).toBe(CLICKBAIT_TUTORIAL);
-    expect(victoryWhenScriptCleared).toBe(true);
-    expect(BATTLES[FIRST_BATTLE_ID].victoryWhenScriptCleared).toBeUndefined(); // bataille 01 : fin habituelle
     expect(phases[0]).toEqual({
       enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_1_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_1_SCRIPT },
       obstacles: BATTLEFIELD_OBSTACLES,

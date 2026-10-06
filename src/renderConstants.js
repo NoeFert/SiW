@@ -44,9 +44,14 @@ export function getCanvasRect() {
 // Inverse de screenToGrid : centre (en px écran) d'un bloc de `size` cases, pour pointer une
 // case du terrain depuis la couche React (main du tutoriel).
 export function gridToScreen(rect, x, y, size = 1) {
-  const scale = rect.width / GAME_WIDTH;
   const center = cellCenter(x, y, size);
-  return { x: rect.left + center.x * scale, y: rect.top + center.y * scale };
+  return canvasToScreen(rect, center.x, center.y);
+}
+
+// Point du canevas (px du jeu) -> px écran.
+export function canvasToScreen(rect, x, y) {
+  const scale = rect.width / GAME_WIDTH;
+  return { x: rect.left + x * scale, y: rect.top + y * scale };
 }
 
 export function screenToGrid(rect, clientX, clientY) {

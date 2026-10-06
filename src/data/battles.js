@@ -15,8 +15,6 @@ import { TRAINING_ROSTER } from './training.js';
 //   obstacles (src/data/battlefield.js) et `flippedBackground` : image de fond affichée dans
 //   l'autre sens (la même image sert à toutes les zones).
 // - tutorial : étapes du tutoriel de cette bataille (technical.md 5.5), ou null.
-// - victoryWhenScriptCleared : victoire dès que l'IA a fini le script de la dernière phase et
-//   n'a plus d'unité vivante (rules.md 7.3), au lieu de la fin de bataille habituelle (8).
 // - orders : ordres proposés dans la rangée « Ordres » de la tour (rules.md 5), tous par défaut.
 // - surrenderAllowed : bouton Abandonner disponible (rules.md 8.2), vrai par défaut.
 // - playerRoster : roster déployable par le joueur, celui de sa faction par défaut.
@@ -55,7 +53,6 @@ function warBattle(zones, reward) {
     phases: zones.map((zone) => WAR_ZONES[zone]),
     zones,
     tutorial: null,
-    victoryWhenScriptCleared: true,
     reward,
   };
 }
@@ -94,7 +91,6 @@ export const BATTLES = {
       },
     ],
     tutorial: CLICKBAIT_TUTORIAL,
-    victoryWhenScriptCleared: true,
     // POC-SPECS.md : seul l'ordre Fuir, pas d'abandon.
     orders: ['flee'],
     surrenderAllowed: false,

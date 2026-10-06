@@ -13,7 +13,7 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
     expect(IDS.map((id) => BATTLES[id].zones)).toEqual([['field', 'wall'], ['wall', 'lanes'], ['lanes', 'fort']]);
     for (const id of IDS) {
       expect(BATTLES[id].phases).toHaveLength(2);
-      expect(BATTLES[id]).toMatchObject({ victoryWhenScriptCleared: true, tutorial: null });
+      expect(BATTLES[id].tutorial).toBeNull();
       expect(BATTLES[id].orders).toBeUndefined(); // les trois ordres
       expect(BATTLES[id].surrenderAllowed).toBeUndefined(); // abandon possible
     }

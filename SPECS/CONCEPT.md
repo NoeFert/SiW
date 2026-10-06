@@ -48,4 +48,4 @@ Le clickbait est construit comme une pub ; le MVP est **le jeu complet, construi
 
 La boucle méta donne son poids à l'objectif du joueur : chaque monstre perdu devra être racheté, et chaque Spirit Stone dépensée à reconstruire l'armée ne sert pas à la renforcer. Les niveaux renforcent encore cet enjeu : perdre un monstre, c'est aussi perdre son expérience, et un vétéran racheté repart de zéro.
 
-Pour le Rendu 1, seule la version clickbait est jouable : le bouton « MVP » de l'écran d'introduction est grisé (`TECHNICAL.md` section 5.2).
+Pour le Rendu 1, seule la version clickbait était jouable. Depuis, l'écran d'introduction mène au jeu normal (bouton « Commencer ») et la version clickbait n'est plus accessible qu'en développement (`TECHNICAL.md` sections 5.2 et 5.6).

@@ -66,18 +66,16 @@ describe.each(Object.entries(PAUSES))('gel de tous les compteurs — %s (rules.m
     expect(closeEnemy.hp).toBe(closeEnemy.species.maxHp);
   });
 
-  test('le compte à rebours de 15 s est gelé', () => {
+  test('le délai de 2 s avant l\'écran de victoire est gelé (rules.md 8.1)', () => {
     const battle = newBattle([{ time: 0, species: ENEMY_ROSTER.grunt }]);
-    const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
-    unit.hp = 0; // terrain du joueur de nouveau vide, réserves restantes : compte à rebours lancé
-    tickBattle(battle, 1);
-    const countdown = battle.playerEndState.countdownRemaining;
-    expect(countdown).not.toBeNull();
+    deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
+    tickBattle(battle, 0.1);
+    for (const u of battle.units) if (u.faction === 'enemy') u.hp = 0;
+    tickBattle(battle, 0.1); // victoire acquise
     pause(battle);
 
     tickBattle(battle, 30);
 
-    expect(battle.playerEndState.countdownRemaining).toBe(countdown);
     expect(battle.outcome).toBe('ongoing');
   });
 });

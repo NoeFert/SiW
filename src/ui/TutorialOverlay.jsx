@@ -1,14 +1,17 @@
-import { Pointer } from 'lucide-react';
 import { Button } from '@/components/ui/8bit/button.jsx';
 import {
   Item, ItemActions, ItemContent, ItemDescription,
 } from '@/components/ui/8bit/item.jsx';
-import { continueTutorial, visibleTutorialStep } from '../logic/tutorial.js';
-import { getCanvasRect, gridToScreen } from '../renderConstants.js';
+import { continueTutorial, visibleTutorialStep, weakestPlayerUnit } from '../logic/tutorial.js';
+import { canvasToScreen, getCanvasRect, gridToScreen } from '../renderConstants.js';
+import { interactionState } from '../state/interactionState.js';
 import { useBattle } from './useBattle.js';
 import { TEXT } from './strings.js';
 
-const HAND_SIZE = 48;
+// Main blanche des curseurs (assets/ui, 18×24 déjà agrandie ×2), affichée encore ×2 ; le bout
+// de l'index est au même point chaud que le curseur CSS (7, 1), ×2.
+const HAND_SCALE = 2;
+const HAND_TIP = { x: 7 * HAND_SCALE, y: 1 * HAND_SCALE };
 const HAND_PERIOD_MS = 6500; // durée d'un aller-retour de la main
 
 // Centre à l'écran d'un élément de la tour repéré par `data-tutorial`.
@@ -27,11 +30,18 @@ const HAND_TARGETS = {
   // Centre de la zone de déploiement du joueur (moitié gauche du terrain).
   deploymentZone: (battle, canvasRect) => canvasRect
     && gridToScreen(canvasRect, Math.floor(battle.grid.width / 4), Math.floor(battle.grid.height / 2)),
-  playerUnit: (battle, canvasRect) => {
-    const unit = battle.units.find((u) => u.faction === 'player' && u.isOnField);
-    return canvasRect && unit ? gridToScreen(canvasRect, unit.x, unit.y, unit.size) : null;
-  },
+  playerUnit: (battle, canvasRect) => unitOnScreen(
+    canvasRect, battle.units.find((u) => u.faction === 'player' && u.isOnField),
+  ),
+  weakestPlayerUnit: (battle, canvasRect) => unitOnScreen(canvasRect, weakestPlayerUnit(battle)),
 };
+
+// Centre à l'écran du sprite affiché de `unit` (publié par la Scene), sinon de sa case.
+function unitOnScreen(canvasRect, unit) {
+  if (!canvasRect || !unit) return null;
+  const shown = interactionState.unitDisplayCenter?.(unit);
+  return shown ? canvasToScreen(canvasRect, shown.x, shown.y) : gridToScreen(canvasRect, unit.x, unit.y, unit.size);
+}
 
 // Position de la main à l'instant `now` : aller-retour doux entre deux points, ou petit
 // tapotement vertical sur un point unique.
@@ -81,11 +91,12 @@ export default function TutorialOverlay() {
       )}
 
       {hand && (
-        // Le bout de l'index de l'icône Pointer est à ~1/3 de sa largeur, en haut.
-        <Pointer
-          className="absolute fill-white text-black drop-shadow-[2px_2px_0_#000]"
-          size={HAND_SIZE}
-          style={{ left: hand.x - HAND_SIZE / 3, top: hand.y }}
+        <img
+          src="/ui/cursor-hand-white.png"
+          alt=""
+          draggable={false}
+          className="pixelated absolute"
+          style={{ left: hand.x - HAND_TIP.x, top: hand.y - HAND_TIP.y, width: 18 * HAND_SCALE, height: 24 * HAND_SCALE }}
         />
       )}
     </div>

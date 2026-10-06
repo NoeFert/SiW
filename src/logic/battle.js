@@ -6,8 +6,12 @@ import {
   createDeploymentState, deployUnit, recordReturn, consumeFreshCopy, isValidDeploymentPosition,
 } from './deployment.js';
 import {
-  createFactionState, updateFactionEndState, evaluateBattleOutcome, surrender, isEliminated,
+  createFactionState, evaluateBattleOutcome, surrender, isEliminated,
 } from './battleEnd.js';
+
+// rules.md 8.1 : la victoire est acquise à la mort du dernier ennemi, mais la bataille tourne
+// encore ce temps (de bataille) avant l'écran de victoire.
+export const VICTORY_DELAY_SECONDS = 2;
 import {
   createPauseState, isBattleTimeRunning, startInteraction, endInteraction, canStartDeploymentDuringPause,
   recordPlayerAction, toggleMainPause,
@@ -38,9 +42,8 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     phaseStartSeconds: 0,
     upcomingPhases: [],
     phaseTransition: null,
-    // rules.md 7.3 : si vrai, victoire dès que l'IA a fini le script de la dernière phase et
-    // n'a plus d'unité vivante (sans le compte à rebours de 15 s de rules.md 8.2).
-    victoryWhenScriptCleared: false,
+    // rules.md 8.1 : temps restant avant que la victoire acquise ne devienne `outcome`, ou null.
+    victoryDelayRemaining: null,
     // Ordres proposés dans la tour de commandement (null = tous, voir commandSelection.js) et
     // bouton Abandonner disponible ou non (rules.md 8.2) — la version clickbait restreint les deux.
     orders: null,
@@ -72,7 +75,7 @@ export function setupTraining(battle, dummySpecies, copies) {
 // rules.md 8.2, dernière clause : abandon explicite du joueur, possible à tout moment. Le
 // verdict est posé tout de suite : pendant une pause, aucun tick ne viendrait le calculer.
 export function surrenderPlayer(battle) {
-  if (battle.outcome !== 'ongoing' || !battle.surrenderAllowed) return;
+  if (battle.outcome !== 'ongoing' || !battle.surrenderAllowed || isVictoryAcquired(battle)) return;
   endSurrenderConfirm(battle);
   surrender(battle.playerEndState);
   battle.outcome = evaluateOutcome(battle);
@@ -183,14 +186,9 @@ function unitsOnFieldOf(battle, faction) {
   return battle.units.filter((u) => u.faction === faction && u.isOnField);
 }
 
-// rules.md 8.2 : le compte à rebours ne concerne qu'un camp qui a déjà eu au moins une unité sur
-// le terrain (les unités mortes ou enfuies restent dans battle.units).
-function updateEndState(battle, faction, deltaSeconds) {
-  if (!battle.units.some((u) => u.faction === faction)) return;
-  const [factionState, deployment] = faction === 'player'
-    ? [battle.playerEndState, battle.playerDeployment]
-    : [battle.enemyEndState, battle.enemyDeployment];
-  updateFactionEndState(factionState, unitsOnFieldOf(battle, faction), deployment, deltaSeconds);
+// rules.md 8.1 : victoire acquise, en attente de l'écran de victoire (VICTORY_DELAY_SECONDS).
+export function isVictoryAcquired(battle) {
+  return battle.victoryDelayRemaining !== null;
 }
 
 function evaluateOutcome(battle) {
@@ -231,16 +229,28 @@ export function tickBattle(battle, deltaSeconds) {
     }
     return battle.outcome;
   }
-  // rules.md 7.3 : dernière phase finie -> l'IA est vaincue tout de suite, réserves ou non
-  // (match nul si le joueur tombe au même instant, rules.md 8.1).
-  if (battle.victoryWhenScriptCleared && isEnemyScriptCleared(battle)) surrender(battle.enemyEndState);
-  if (battle.training) return battle.outcome; // entraînement : ni compte à rebours ni fin
+  if (battle.training) return battle.outcome; // entraînement : jamais de fin
 
-  updateEndState(battle, 'player', deltaSeconds);
-  updateEndState(battle, 'enemy', deltaSeconds);
+  // rules.md 8.1 : victoire acquise -> plus rien ne change le verdict ; la bataille tourne
+  // encore VICTORY_DELAY_SECONDS avant l'écran de victoire. Le tutoriel n'avance plus (une
+  // étape figée bloquerait l'écran de victoire).
+  if (isVictoryAcquired(battle)) {
+    battle.victoryDelayRemaining -= deltaSeconds;
+    if (battle.victoryDelayRemaining <= 0) battle.outcome = 'playerVictory';
+    return battle.outcome;
+  }
+
+  // rules.md 7.3 / 8.1 : dernière phase finie -> l'IA est vaincue tout de suite, réserves ou non
+  // (match nul si le joueur tombe au même instant).
+  if (isEnemyScriptCleared(battle)) surrender(battle.enemyEndState);
+  const verdict = evaluateOutcome(battle);
+  if (verdict === 'playerVictory') {
+    battle.victoryDelayRemaining = VICTORY_DELAY_SECONDS;
+    return battle.outcome;
+  }
+  battle.outcome = verdict;
 
   // Les délais du tutoriel se comptent une fois le temps de ce tick écoulé.
   updateTutorial(battle, deltaSeconds);
-  battle.outcome = evaluateOutcome(battle);
   return battle.outcome;
 }

@@ -192,7 +192,7 @@ Une bataille peut enchaîner plusieurs **phases**, chacune avec son propre scrip
 - **Murs** : les rochers d'un mur se touchent par un côté. Une unité au sol ne coupe jamais le coin d'un rocher (section 3).
 - **Ce qui est conservé** : les morts restent perdus, les PV perdus ne reviennent pas. La réserve du joueur (copies jamais déployées, unités revenues de fuite) reste déployable dans la moitié gauche de la nouvelle zone, avec le même plafond de 150 points. Le cooldown de la fuite continue.
 - **Script de la phase suivante** : ses instants sont comptés depuis le début de la phase.
-- **Victoire de la bataille-clickbait** : dès que l'IA est à la fin du script de la **dernière** phase et qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (règle commune à toutes les batailles, section 8.1). Si le joueur est éliminé au même instant, c'est un match nul (section 8.1).
+- **Victoire de la bataille-clickbait** : dès que l'IA est à la fin du script de la **dernière** phase et qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (règle commune à toutes les batailles, avec la fin 2 s plus tard, section 8.1). Si le joueur est éliminé au même instant, c'est un match nul (section 8.1).
 
 **Scripts provisoires des phases 1 à 3** (à ajuster), instants comptés depuis le début de chaque phase.
 
@@ -214,6 +214,7 @@ Pas de compte à rebours (l'ancien délai de 15 s quand un terrain se vide est s
 
 ### 8.1 Victoire, défaite et match nul
 - **Victoire du joueur** (toutes les batailles : bataille 01, bataille-clickbait, « Partir en guerre ») : dès que l'IA a déployé tout le script de sa **dernière** phase (une seule phase pour la bataille 01) **et** qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (elle ne les redéploie jamais).
+  - **Fin 2 s plus tard** : la victoire est **acquise** dès cet instant, mais la bataille continue de tourner encore **2 secondes** (temps de bataille) avant l'écran de victoire, pour laisser voir la fin du combat. Pendant ces 2 s, plus rien ne peut changer le verdict (ni abandon, ni perte d'unité).
 - **Défaite du joueur** : quand il n'a plus **aucune unité**, ni sur le terrain ni en réserve (toutes ses copies sont mortes), ou quand il abandonne (section 8.2).
 - **Match nul :** la résolution simultanée des dégâts (section 4.1) rend possible une élimination mutuelle au même instant — le joueur perd sa dernière unité au moment où la condition de victoire est remplie. Dans ce cas, la bataille se termine sur un **match nul**, sans vainqueur. Aucune règle de départage n'est nécessaire : un match nul ne rapporte aucune récompense (section 11.3). Un match nul n'est pas une victoire : la bataille tutoriel n'est pas validée, le joueur voit un écran « Match nul » et peut réessayer, comme après une défaite (voir `technical.md` 5.1).
 - Un joueur dont le terrain est vide mais qui a encore des unités en réserve n'a **aucun délai** : il redéploie quand il veut, pendant que l'IA continue son script.

@@ -1,6 +1,5 @@
 import {
-  createFactionState, surrender, updateFactionEndState, evaluateBattleOutcome,
-  RESERVE_DEPLOY_COUNTDOWN_SECONDS,
+  createFactionState, surrender, evaluateBattleOutcome, isEliminated,
 } from '../../src/logic/battleEnd.js';
 import { createDeploymentState, deployUnit, recordReturn } from '../../src/logic/deployment.js';
 
@@ -41,91 +40,41 @@ describe('victoire immédiate (rules.md 8.1)', () => {
   });
 });
 
-describe('compte à rebours (rules.md 8.2)', () => {
-  test('se déclenche quand le terrain est vide avec des réserves restantes', () => {
-    const factionState = createFactionState();
-    updateFactionEndState(factionState, [], emptyDeployment(), 0);
+describe('pas de compte à rebours (rules.md 8)', () => {
+  test('un terrain vide avec des réserves ne met jamais fin à la bataille', () => {
+    const player = { factionState: createFactionState(), unitsOnField: [], deploymentState: emptyDeployment() };
+    const enemy = { factionState: createFactionState(), unitsOnField: ['unite'], deploymentState: emptyDeployment() };
 
-    expect(factionState.countdownRemaining).toBe(RESERVE_DEPLOY_COUNTDOWN_SECONDS);
-    expect(factionState.defeated).toBe(false);
+    expect(evaluateBattleOutcome(player, enemy)).toBe('ongoing');
+    expect(player.factionState.defeated).toBe(false);
   });
 
-  test('ne se déclenche pas quand les réserves sont épuisées (c\'est une élimination, 8.1)', () => {
-    const factionState = createFactionState();
-    updateFactionEndState(factionState, [], depletedDeployment(), 0);
-
-    expect(factionState.countdownRemaining).toBeNull();
-  });
-
-  test('un redéploiement (terrain non vide) annule le compte à rebours', () => {
-    const factionState = createFactionState();
-    updateFactionEndState(factionState, [], emptyDeployment(), 0);
-    expect(factionState.countdownRemaining).toBe(15);
-
-    updateFactionEndState(factionState, ['unite-redéployée'], emptyDeployment(), 1);
-
-    expect(factionState.countdownRemaining).toBeNull();
-    expect(factionState.defeated).toBe(false);
-  });
-
-  test('défaite automatique une fois le délai écoulé sans redéploiement', () => {
-    const factionState = createFactionState();
-    const deployment = emptyDeployment();
-
-    updateFactionEndState(factionState, [], deployment, 0);
-    updateFactionEndState(factionState, [], deployment, RESERVE_DEPLOY_COUNTDOWN_SECONDS);
-
-    expect(factionState.defeated).toBe(true);
-  });
-
-  test('les réserves restantes après cette défaite ne sont pas marquées comme perdues', () => {
-    const factionState = createFactionState();
-    const deployment = emptyDeployment(); // 2 copies fraîches de Grunt
-
-    updateFactionEndState(factionState, [], deployment, 0);
-    updateFactionEndState(factionState, [], deployment, RESERVE_DEPLOY_COUNTDOWN_SECONDS);
-
-    expect(factionState.defeated).toBe(true);
-    // Toujours déployable : la défaite n'a pas touché la réserve réelle.
-    const result = deployUnit(deployment, 'player', ROSTER.grunt, 0, 0, []);
-    expect(result.success).toBe(true);
-  });
-
-  test('le verdict global reflète la défaite automatique une fois déclenchée', () => {
-    const player = { factionState: createFactionState(), unitsOnField: ['unite-joueur'], deploymentState: emptyDeployment() };
-    const enemyDeployment = emptyDeployment();
-    const enemyFactionState = createFactionState();
-    updateFactionEndState(enemyFactionState, [], enemyDeployment, 0);
-    updateFactionEndState(enemyFactionState, [], enemyDeployment, RESERVE_DEPLOY_COUNTDOWN_SECONDS);
-    const enemy = { factionState: enemyFactionState, unitsOnField: [], deploymentState: enemyDeployment };
-
-    expect(evaluateBattleOutcome(player, enemy)).toBe('playerVictory');
-  });
-
-  test('expiration simultanée des deux comptes à rebours : défaite du joueur, pas un match nul', () => {
-    const [player, enemy] = [0, 1].map(() => ({
-      factionState: createFactionState(), unitsOnField: [], deploymentState: emptyDeployment(),
-    }));
-    for (const side of [player, enemy]) {
-      updateFactionEndState(side.factionState, [], side.deploymentState, 0);
-      updateFactionEndState(side.factionState, [], side.deploymentState, RESERVE_DEPLOY_COUNTDOWN_SECONDS);
-    }
+  test('défaite du joueur seulement quand il n\'a plus aucune unité, terrain et réserve', () => {
+    const player = { factionState: createFactionState(), unitsOnField: [], deploymentState: depletedDeployment() };
+    const enemy = { factionState: createFactionState(), unitsOnField: ['unite'], deploymentState: emptyDeployment() };
 
     expect(evaluateBattleOutcome(player, enemy)).toBe('enemyVictory');
+  });
+
+  test('élimination des deux camps au même instant : match nul', () => {
+    const [player, enemy] = [0, 1].map(() => ({
+      factionState: createFactionState(), unitsOnField: [], deploymentState: depletedDeployment(),
+    }));
+
+    expect(evaluateBattleOutcome(player, enemy)).toBe('draw');
   });
 });
 
 describe('mort vs fuite au niveau des réserves (rules.md 2/4.4)', () => {
-  test('une unité qui fuit reste disponible et compte comme réserve pour le compte à rebours', () => {
-    const deployment = emptyDeployment();
+  test('une unité qui fuit reste disponible : son camp n\'est pas éliminé', () => {
+    const deployment = depletedDeployment();
+    deployment.bySpecies.get(ROSTER.grunt).freshRemaining = 1;
     const { unit } = deployUnit(deployment, 'player', ROSTER.grunt, 0, 0, []);
     unit.hp = 7; // dégâts subis avant la fuite
 
     recordReturn(deployment, unit);
 
-    const factionState = createFactionState();
-    updateFactionEndState(factionState, [], deployment, 0);
-    expect(factionState.countdownRemaining).toBe(RESERVE_DEPLOY_COUNTDOWN_SECONDS); // toujours des réserves
+    expect(isEliminated([], deployment)).toBe(false); // toujours une réserve
   });
 });
 

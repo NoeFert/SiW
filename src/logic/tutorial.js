@@ -27,7 +27,19 @@ const CONDITIONS = {
   fleeAvailable: (battle) => canFlee(battle.playerFleeState, battle.elapsedSeconds),
   fleeIssued: (battle) => !canFlee(battle.playerFleeState, battle.elapsedSeconds),
   noGestureInProgress: (battle) => battle.pause.interaction === null && battle.commandSelection === null,
+  fleeOrderChosen: (battle) => battle.commandSelection?.order === 'flee',
+  noOrderChosen: (battle) => battle.commandSelection === null,
 };
+
+// Unité du joueur sur le terrain qui a le moins de PV actuels (la première déployée en cas
+// d'égalité), ou null : cible de la main à l'étape « choisis l'unité qui fuit ».
+export function weakestPlayerUnit(battle) {
+  let weakest = null;
+  for (const unit of battle.units) {
+    if (unit.faction === 'player' && unit.isOnField && (!weakest || unit.hp < weakest.hp)) weakest = unit;
+  }
+  return weakest;
+}
 
 export const TUTORIAL_CONDITION_TYPES = Object.keys(CONDITIONS);
 

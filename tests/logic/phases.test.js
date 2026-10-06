@@ -1,7 +1,8 @@
 import Grid from '../../src/logic/grid.js';
 import Unit from '../../src/logic/unit.js';
 import {
-  createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag, togglePlayerPause,
+  createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag, togglePlayerPause, surrenderPlayer,
+  isVictoryAcquired,
 } from '../../src/logic/battle.js';
 import { chooseOrder } from '../../src/logic/commandSelection.js';
 import { isBattleTimeRunning } from '../../src/logic/pause.js';
@@ -69,7 +70,7 @@ describe('fin de phase (rules.md 7.3)', () => {
     expect(battle.phaseTransition).toBeNull();
   });
 
-  test('sans phase suivante, rien ne change : la fin de bataille habituelle s\'applique', () => {
+  test('sans phase suivante, pas de transition : la victoire est acquise (rules.md 8.1)', () => {
     const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, PHASE_1_SCRIPT, () => 0);
     deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
     tickBattle(battle, 0.1);
@@ -78,7 +79,7 @@ describe('fin de phase (rules.md 7.3)', () => {
     tickBattle(battle, 0.1);
 
     expect(battle.phaseTransition).toBeNull();
-    expect(battle.enemyEndState.countdownRemaining).not.toBeNull(); // rules.md 8.2
+    expect(isVictoryAcquired(battle)).toBe(true);
   });
 
   test('joueur éliminé au même instant : défaite immédiate, sans transition', () => {
@@ -197,7 +198,6 @@ describe('trois phases (rules.md 7.3)', () => {
 describe('victoire à la fin du script (rules.md 7.3)', () => {
   function lastPhaseCleared() {
     const { battle } = twoPhaseBattle();
-    battle.victoryWhenScriptCleared = true;
     killEnemies(battle);
     tickBattle(battle, 0.1);
     finishTransition(battle);
@@ -205,19 +205,50 @@ describe('victoire à la fin du script (rules.md 7.3)', () => {
     return battle;
   }
 
-  test('script de la dernière phase fini et plus aucun ennemi vivant : victoire immédiate', () => {
+  test('script de la dernière phase fini et plus aucun ennemi vivant : victoire acquise, écran 2 s plus tard', () => {
     const battle = lastPhaseCleared();
     expect(battle.outcome).toBe('ongoing');
 
     killEnemies(battle);
     tickBattle(battle, 0.1);
 
-    expect(battle.outcome).toBe('playerVictory'); // sans le compte à rebours de 15 s
+    expect(isVictoryAcquired(battle)).toBe(true);
+    expect(battle.outcome).toBe('ongoing'); // la bataille tourne encore
+    const elapsed = battle.elapsedSeconds;
+    tickBattle(battle, 1.5);
+    expect(battle.elapsedSeconds).toBeCloseTo(elapsed + 1.5, 5);
+    expect(battle.outcome).toBe('ongoing');
+    tickBattle(battle, 0.5);
+    expect(battle.outcome).toBe('playerVictory');
+  });
+
+  test('pendant les 2 s, rien ne change le verdict : ni perte du joueur, ni abandon', () => {
+    const battle = lastPhaseCleared();
+    killEnemies(battle);
+    tickBattle(battle, 0.1);
+
+    surrenderPlayer(battle);
+    expect(battle.outcome).toBe('ongoing');
+    for (const u of battle.units) if (u.faction === 'player') u.hp = 0;
+    tickBattle(battle, 1);
+    tickBattle(battle, 1);
+
+    expect(battle.outcome).toBe('playerVictory');
+  });
+
+  test('le joueur éliminé à l\'instant même de la victoire : match nul, sans délai (rules.md 8.1)', () => {
+    const battle = lastPhaseCleared();
+    killEnemies(battle);
+    for (const u of battle.units) if (u.faction === 'player') u.hp = 0;
+    battle.playerDeployment.bySpecies.forEach((s) => { s.freshRemaining = 0; s.returning = []; });
+
+    tickBattle(battle, 0.1);
+
+    expect(battle.outcome).toBe('draw');
   });
 
   test('pas de victoire pendant la phase 1, même terrain ennemi vide', () => {
     const { battle } = twoPhaseBattle();
-    battle.victoryWhenScriptCleared = true;
     killEnemies(battle);
 
     tickBattle(battle, 0.1);
@@ -228,7 +259,6 @@ describe('victoire à la fin du script (rules.md 7.3)', () => {
 
   test('pas de victoire tant que l\'IA a encore des unités du script à déployer', () => {
     const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
-    battle.victoryWhenScriptCleared = true;
     deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
     tickBattle(battle, 0.1);
     killEnemies(battle);
