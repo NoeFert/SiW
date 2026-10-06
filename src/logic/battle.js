@@ -1,5 +1,5 @@
 import { resolveCombatTick } from './combat.js';
-import { createCommandState, commandAttack, commandMoveTo, commandFlee } from './commands.js';
+import { createFleeState, commandAttack, commandMoveTo, commandFlee } from './commands.js';
 import { createAiScriptState, deployScheduledUnits } from './aiScript.js';
 import {
   createDeploymentState, deployUnit, recordReturn, consumeFreshCopy, isValidDeploymentPosition,
@@ -29,7 +29,7 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     elapsedSeconds: 0,
     outcome: 'ongoing',
     pause: createPauseState(), // rules.md 5.2, voir pause.js
-    commandSelection: null, // barre de commandes ouverte, voir commandSelection.js
+    commandSelection: null, // commande en cours de sélection, voir commandSelection.js
     tutorial: null, // étape du tutoriel en cours (première bataille seulement), voir tutorial.js
     // Phases (rules.md 7.3, phases.js) : une seule par défaut. `enemyScript` est celui de la
     // phase en cours, compté depuis `phaseStartSeconds`.
@@ -40,11 +40,11 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     // rules.md 7.3 : si vrai, victoire dès que l'IA a fini le script de la dernière phase et
     // n'a plus d'unité vivante (sans le compte à rebours de 15 s de rules.md 8.2).
     victoryWhenScriptCleared: false,
-    // Ordres proposés dans la barre de commandes (null = tous, voir commandSelection.js) et
+    // Ordres proposés dans la tour de commandement (null = tous, voir commandSelection.js) et
     // bouton Abandonner disponible ou non (rules.md 8.2) — la version clickbait restreint les deux.
     orders: null,
     surrenderAllowed: true,
-    playerCommandState: createCommandState(),
+    playerFleeState: createFleeState(),
     aiScriptState: createAiScriptState(),
     enemyScript,
     playerDeployment: createDeploymentState(playerRoster),
@@ -120,17 +120,18 @@ export function deployPlayerUnit(battle, species, x, y, copyChoice) {
   return result;
 }
 
-// rules.md 5 : commandes du joueur, gatées par le cooldown global de battle.playerCommandState.
+// rules.md 5 : commandes du joueur ; seule la fuite passe par le cooldown de
+// battle.playerFleeState (rules.md 5.1).
 export function issuePlayerAttack(battle, unit, target) {
-  return commandAttack(battle.playerCommandState, battle.elapsedSeconds, unit, target);
+  return commandAttack(unit, target);
 }
 
 export function issuePlayerMoveTo(battle, unit, x, y) {
-  return commandMoveTo(battle.playerCommandState, battle.elapsedSeconds, unit, x, y);
+  return commandMoveTo(unit, x, y);
 }
 
 export function issuePlayerFlee(battle, unit) {
-  return commandFlee(battle.playerCommandState, battle.elapsedSeconds, unit);
+  return commandFlee(battle.playerFleeState, battle.elapsedSeconds, unit);
 }
 
 // rules.md 7 : déploiements scriptés de l'IA — le plafond vivant et la case sont vérifiés par

@@ -3,7 +3,7 @@ import Unit from '../../src/logic/unit.js';
 import {
   createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag, togglePlayerPause,
 } from '../../src/logic/battle.js';
-import { openCommandBar } from '../../src/logic/commandSelection.js';
+import { chooseOrder } from '../../src/logic/commandSelection.js';
 import { isBattleTimeRunning } from '../../src/logic/pause.js';
 import {
   setUpcomingPhases, PHASE_TRANSITION_SECONDS,
@@ -99,7 +99,7 @@ describe('fin de phase (rules.md 7.3)', () => {
     tickBattle(battle, 0.1);
 
     expect(startDeploymentDrag(battle)).toBe(false);
-    expect(openCommandBar(battle)).toBe(false);
+    expect(chooseOrder(battle, 'attack')).toBe(false);
     expect(togglePlayerPause(battle)).toBe(false);
   });
 });

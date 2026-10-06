@@ -20,15 +20,13 @@ export const TEXT = {
     clickbaitDeploy: 'Déploie tes unités pour anéantir tes ennemis.',
     clickbaitAutonomous: 'Ton unité va combattre d\'elle-même les ennemis. Certaines espèces de créatures tirent à distance, d\'autres au corps-à-corps.',
     clickbaitPresence: 'Chaque unité possède des points de présence (PP). Tu ne peux pas dépasser une présence de 150 sur le terrain. Choisis bien tes unités déployées !',
-    clickbaitOpenCommands: 'Si tu veux récupérer une unité blessée ou libérer de la place sur le terrain, tu peux ordonner à l\'une de tes unités de battre en retraite.',
-    clickbaitFlee: 'Choisis une unité et ordonne-lui de battre en retraite.',
+    clickbaitFlee: 'Si tu veux récupérer une unité blessée ou libérer de la place sur le terrain, ordonne-lui de battre en retraite : clique sur Fuir, puis sur ton unité.',
 
     // Tutoriel de départ (bataille 01 du jeu normal).
     deploy: 'Déploie ta 1ère unité.',
     autonomous: 'Ton unité va combattre d\'elle-même les ennemis. Certaines espèces de créatures tirent à distance, d\'autres au corps-à-corps.',
     presence: 'Chaque unité possède des points de présence (PP). Tu ne peux pas dépasser une présence de 150 sur le terrain. Choisis bien tes unités déployées !',
-    openCommands: 'Si tu veux récupérer une unité blessée ou libérer de la place sur le terrain, tu peux ordonner à l\'une de tes unités de battre en retraite.',
-    flee: 'Choisis une unité et ordonne-lui de battre en retraite.',
+    flee: 'Si tu veux récupérer une unité blessée ou libérer de la place sur le terrain, ordonne-lui de battre en retraite : clique sur Fuir, puis sur ton unité.',
 
     continue: 'Continuer', // bouton commun à tous les tutoriels
   },
@@ -145,11 +143,12 @@ export const TEXT = {
     noCopiesLeft: 'Plus aucune copie disponible.',
   },
 
-  commands: 'Commandes',
+  ordersTitle: 'Ordres',
   cancel: 'Annuler',
   back: 'Retour', // en-tête des écrans de la couche méta (ScreenLayout)
   skip: 'Skip', // passer la bataille 01 (rules.md 11)
   orders: { move: 'Aller', attack: 'Attaquer', flee: 'Fuir' },
+  fleeCooldown: (seconds) => `Fuir (${seconds.toFixed(1)} s)`, // rules.md 5.1
 
   pause: 'Pause (Espace)',
   resume: 'Reprendre (Espace)',

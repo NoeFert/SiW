@@ -158,3 +158,39 @@
   height: 22px;
   background: url("/ui/spirit-stone.png") 0 0 / 198px 22px;
 }
+
+/* Barre de défilement (FormElements/ScrollbarVertical + ScrollbarHandle, pré-agrandies ×2) :
+   liste des unités de la tour de commandement. Rail noir (Black) de 3 px centré dans 7 px,
+   extrémités arrondies gardées ; poignée violette par défaut (pas de variante verte dans le
+   pack), dorée chez les Wyrms (Orange recolorée), losange plein au survol. Pas de style image
+   sous Firefox : couleur seule. */
+.pixel-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+.pixel-scrollbar::-webkit-scrollbar-track {
+  border-style: solid;
+  border-width: 2px 0;
+  border-image: url("/ui/scrollbar-track.png") 2 0 fill / 2px 0 stretch;
+}
+.pixel-scrollbar::-webkit-scrollbar-thumb {
+  background: url("/ui/scrollbar-handle-purple.png") center / 14px 14px no-repeat;
+}
+.pixel-scrollbar::-webkit-scrollbar-thumb:hover,
+.pixel-scrollbar::-webkit-scrollbar-thumb:active {
+  background-image: url("/ui/scrollbar-handle-highlighted-purple.png");
+}
+[data-faction="wyrms"] .pixel-scrollbar::-webkit-scrollbar-thumb {
+  background-image: url("/ui/scrollbar-handle-gold.png");
+}
+[data-faction="wyrms"] .pixel-scrollbar::-webkit-scrollbar-thumb:hover,
+[data-faction="wyrms"] .pixel-scrollbar::-webkit-scrollbar-thumb:active {
+  background-image: url("/ui/scrollbar-handle-highlighted-gold.png");
+}
+@supports not selector(::-webkit-scrollbar) {
+  .pixel-scrollbar {
+    scrollbar-color: #8061e6 transparent;
+  }
+  [data-faction="wyrms"] .pixel-scrollbar {
+    scrollbar-color: #eeb632 transparent;
+  }
+}

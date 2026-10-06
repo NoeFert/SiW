@@ -58,7 +58,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
     expect(result.reason).toBe('invalidPosition');
   });
 
-  test('issuePlayerFlee passe par le cooldown de battle.playerCommandState', () => {
+  test('issuePlayerFlee passe par le cooldown de battle.playerFleeState', () => {
     const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
     const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
 

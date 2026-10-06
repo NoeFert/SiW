@@ -35,7 +35,7 @@ Le POC est un aperçu du MVP modifié pour le format d'une pub : il n'en utilise
 - Mouvement autonome + pathfinding + règles d'engagement corps-à-corps et à distance (voir `rules.md` sections 3 et 4)
 - Combat autonome (dégâts, PV, mort définitive)
 - Aptitudes automatiques propres à certaines unités (voir `rules.md` section 6 et `units.md`)
-- Commandes du joueur (attaquer, aller à, fuir), déclenchées via un bouton "Commandes" dédié qui met le jeu en pause, avec cooldown de 5 secondes en temps de bataille, gelé pendant les pauses (voir `rules.md` section 5)
+- Commandes du joueur (attaquer, aller à, fuir), déclenchées depuis la rangée « Ordres » de la tour (le clic sur un ordre met le jeu en pause), cooldown de 5 secondes en temps de bataille sur Fuir uniquement, gelé pendant les pauses (voir `rules.md` section 5)
 - **Bataille 01 en une seule phase** (terrain de `rules.md` section 1, script 7.1) : les batailles en plusieurs phases sont celles de la version clickbait et de « Partir en guerre » (`rules.md` 7.3 et 11.7)
 - IA adverse scriptée (bataille 01, puis batailles de « Partir en guerre » : `rules.md` 7 et 11.7), script symétrique selon la faction jouée par l'IA ; les unités IA entrent par le bord droit du terrain, sur une rangée choisie au moment du déploiement selon la situation du terrain (voir `rules.md` section 7)
 - Conditions de fin de bataille : victoire dès la fin du script de l'IA avec son terrain vide, défaite quand le joueur n'a plus aucune unité ou abandonne, match nul ; pas de compte à rebours (voir `rules.md` section 8)
@@ -81,8 +81,8 @@ Le POC est un aperçu du MVP modifié pour le format d'une pub : il n'en utilise
 |---|---|
 | Découpage du temps de bataille | Temps continu (delta-time) ; chaque unité agit selon son propre timer de vitesse d'attaque |
 | Dégâts simultanés (même frame) | Toutes les attaques du frame sont calculées puis appliquées ensemble — pas d'ordre d'initiative |
-| Limitation des commandes | Bouton "Commandes" dédié qui met le jeu en pause ; cooldown de 5 secondes en temps de bataille entre deux activations, gelé pendant les pauses |
-| Pause principale | Interrupteur ⏸ / ▶ (barre Espace), gèle tous les compteurs ; déploiements multiples et une seule commande possibles pendant la pause |
+| Limitation des commandes | Le clic sur un ordre met le jeu en pause ; cooldown de 5 secondes en temps de bataille entre deux fuites (Aller et Attaquer sans cooldown), gelé pendant les pauses |
+| Pause principale | Interrupteur ⏸ / ▶ (barre Espace), gèle tous les compteurs ; déploiements multiples, Aller/Attaquer illimités et une seule fuite possibles pendant la pause |
 | Retraite d'une unité engagée | Toujours possible immédiatement ; l'ennemi engagé peut placer une dernière attaque au désengagement |
 | Adjacence d'une unité 4-cases | Adjacente dès qu'une de ses 4 cases touche une case adjacente à la cible |
 | Pathfinding d'une unité 4-cases | Bloc 2×2 rigide, chemin le plus court |

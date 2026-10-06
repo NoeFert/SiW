@@ -10,9 +10,6 @@
 // Choix par défaut encore à valider par le design (ui-battle-screen-decisions.md 2.3 / 3) :
 // regroupés ici pour pouvoir les basculer sans toucher au reste du code.
 export const PAUSE_DEFAULTS = {
-  // true : la pause d'interaction démarre dès l'ouverture de la barre de commandes ;
-  // false : seulement au premier choix (ordre ou unité).
-  pauseOnCommandBarOpen: true,
   // true : plusieurs déploiements possibles pendant une même pause principale.
   multipleDeploymentsPerMainPause: true,
   // false : après un déploiement/une commande pendant la pause principale, le jeu reste en pause.

@@ -78,11 +78,9 @@ Ce fichier couvre le **scope v1** : le moteur de bataille (sections 1 à 9) et l
   1. **Attaquer** : désigner une cible ennemie précise
   2. **Se déplacer** : désigner une case du terrain à atteindre. Si cette case est inatteignable (obstacle, case occupée, bloc 2×2 qui déborderait du terrain), l'unité s'arrête au plus près possible et reprend son comportement autonome.
   3. **Fuir** : l'unité doit atteindre le bord du terrain pour quitter la bataille et revenir dans la liste du joueur ; elle ne récupère pas ses points de vie avant la fin de la bataille
-- Donner une commande **met le jeu en pause** (pause d'interaction, section 5.2) : l'ouverture de la barre de commandes arrête le temps dès le clic sur "Commandes", pendant que le joueur choisit l'ordre, l'unité et la cible ; la bataille reprend dès que la commande est donnée ou annulée, **sauf** si la pause principale est active (décision prise après tests de jeu).
-- **Déroulé d'une commande** (après ouverture de la barre) :
-  - **Voie 1 (guidée)** : choisir l'ordre (Aller, Attaquer, Fuir), puis une unité du joueur, puis la cible — un ennemi pour Attaquer, une case pour Aller, aucune pour Fuir.
-  - **Voie 2 (raccourci)** : cliquer directement une unité du joueur sans choisir d'ordre ; l'ordre est déduit de la cible (ennemi = Attaquer, case = Aller). Fuir n'est jamais déduit : il passe obligatoirement par la voie 1.
-  - **Annulation** possible à n'importe quel stade : aucune commande n'est émise et le cooldown n'est pas consommé.
+- Donner une commande **met le jeu en pause** (pause d'interaction, section 5.2) : le clic sur un ordre (rangée « Ordres » de la tour de commandement) arrête le temps pendant que le joueur choisit l'unité et la cible ; la bataille reprend dès que la commande est donnée ou annulée, **sauf** si la pause principale est active (décision prise après tests de jeu).
+- **Déroulé d'une commande** : cliquer l'ordre (Aller, Attaquer, Fuir), puis une unité du joueur sur le terrain, puis la cible — un ennemi pour Attaquer, une case pour Aller, aucune pour Fuir (l'unité fuit dès qu'elle est sélectionnée). Il n'y a pas de raccourci : sans ordre choisi, un clic sur le terrain ne fait rien. Cliquer un autre ordre en cours de route remplace l'ordre (l'unité est à resélectionner).
+  - **Annulation** possible à n'importe quel stade (re-clic sur l'ordre en cours, clic droit sur le terrain ou touche Échap) : aucune commande n'est émise et le cooldown de la fuite n'est pas consommé.
 - Les commandes sont **optionnelles** : une unité sans commande agit de façon autonome (se déplace vers l'ennemi le plus proche, attaque à portée).
 - **Priorité des commandes :** une unité n'a qu'une commande à la fois. La **dernière commande donnée remplace toujours la précédente**, quelle qu'elle soit (Aller, Attaquer ou Fuir).
 - **Commande Aller :** pendant le trajet, l'unité **ne combat pas** (ni attaque ni riposte), même si elle est frappée. Arrivée sur la case, la commande prend fin et l'unité reprend son comportement autonome.
@@ -97,18 +95,18 @@ Ce fichier couvre le **scope v1** : le moteur de bataille (sections 1 à 9) et l
   - Une nouvelle commande (Aller, Attaquer) donnée à une unité en fuite remplace la fuite (priorité à la dernière commande, voir plus haut).
 
 ### 5.1 Limitation des commandes
-- Le nombre de commandes est limité par un **cooldown** entre deux commandes (pas de quota fixe par bataille en v1).
-- Durée du cooldown : **5 secondes** de temps de bataille entre deux commandes. Le cooldown **ne s'écoule pas pendant les pauses** (section 5.2). Pendant le cooldown, la barre de commandes ne peut pas s'ouvrir.
+- Seul l'ordre **Fuir** est limité, par un **cooldown** entre deux fuites (pas de quota fixe par bataille en v1). **Aller et Attaquer n'ont pas de cooldown.**
+- Durée du cooldown : **5 secondes** de temps de bataille entre deux fuites, peu importe l'unité. Le cooldown **ne s'écoule pas pendant les pauses** (section 5.2). Pendant le cooldown, le bouton Fuir ne peut pas être cliqué.
 - Cette limitation de cooldown diminuera avec le niveau du joueur (11.5) dans la Suite (`roadmap-mvp.md`) : **dans le MVP, le cooldown reste fixe à 5 s, quel que soit le niveau du joueur**.
 
 ### 5.2 Pauses
 Deux familles de pause, indépendantes et combinables. Le temps de bataille ne s'écoule que si **aucune** n'est active.
 
 - **Pause principale** : interrupteur activé et désactivé par le joueur (bouton ⏸ / ▶, raccourci barre Espace). Pendant cette pause, le joueur peut encore déployer et donner une commande.
-- **Pause d'interaction** : automatique pendant un glisser-déposer de déploiement (section 2), pendant la sélection d'une commande (dès l'ouverture de la barre, section 5) et pendant la confirmation d'abandon (section 8.2 ; une commande en cours de sélection est alors annulée). Elle se termine d'elle-même à la fin ou à l'annulation du geste.
+- **Pause d'interaction** : automatique pendant un glisser-déposer de déploiement (section 2), pendant la sélection d'une commande (dès le clic sur un ordre, section 5) et pendant la confirmation d'abandon (section 8.2 ; une commande en cours de sélection est alors annulée). Elle se termine d'elle-même à la fin ou à l'annulation du geste.
 - **Gel du tutoriel** (`technical.md` 5.5) : pendant une étape qui demande ou explique quelque chose, la bataille est figée comme pendant une pause, et seule l'action demandée est possible.
-- Pendant toute pause, **tous les compteurs sont gelés** : timers d'attaque, mouvements, cooldown des commandes et script de l'IA (section 7). Les animations des unités sont gelées elles aussi.
-- Le cooldown étant gelé, **une seule commande est possible par pause principale**.
+- Pendant toute pause, **tous les compteurs sont gelés** : timers d'attaque, mouvements, cooldown de la fuite et script de l'IA (section 7). Les animations des unités sont gelées elles aussi.
+- Le cooldown étant gelé, **une seule fuite est possible par pause principale** ; Aller et Attaquer restent possibles autant de fois que voulu.
 - Le déploiement reste possible **plusieurs fois** pendant une pause principale, dans la limite du plafond de points de présence (section 2).
 - Après un déploiement ou une commande effectués pendant la pause principale, le jeu **reste en pause** jusqu'à ce que le joueur la relance.
 
@@ -192,7 +190,7 @@ Une bataille peut enchaîner plusieurs **phases**, chacune avec son propre scrip
   - **Phase 3 — « Le fort »** (provisoire, fond normal) : une ruine en fer à cheval côté joueur, salle intérieure de 4×4 cases, ouverte vers l'ennemi par une entrée de deux cases. Elle protège du corps-à-corps mais pas des tirs. C'est un cul-de-sac assumé : exception à la règle « pas de cul-de-sac » de la section 1, qui ne vaut que pour la bataille 01.
   - **« Les trois couloirs »** (validé ; utilisé par les batailles 2 et 3 de « Partir en guerre », 11.7) : deux crêtes qui séparent trois couloirs, franchissables seulement en volant.
 - **Murs** : les rochers d'un mur se touchent par un côté. Une unité au sol ne coupe jamais le coin d'un rocher (section 3).
-- **Ce qui est conservé** : les morts restent perdus, les PV perdus ne reviennent pas. La réserve du joueur (copies jamais déployées, unités revenues de fuite) reste déployable dans la moitié gauche de la nouvelle zone, avec le même plafond de 150 points. Le cooldown des commandes continue.
+- **Ce qui est conservé** : les morts restent perdus, les PV perdus ne reviennent pas. La réserve du joueur (copies jamais déployées, unités revenues de fuite) reste déployable dans la moitié gauche de la nouvelle zone, avec le même plafond de 150 points. Le cooldown de la fuite continue.
 - **Script de la phase suivante** : ses instants sont comptés depuis le début de la phase.
 - **Victoire de la bataille-clickbait** : dès que l'IA est à la fin du script de la **dernière** phase et qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (règle commune à toutes les batailles, section 8.1). Si le joueur est éliminé au même instant, c'est un match nul (section 8.1).
 

@@ -51,23 +51,14 @@ export const STARTER_TUTORIAL = [
     next: [{ type: 'enemyWaveDeployed', fromEnd: 2 }, { type: 'elapsed', seconds: 8 }],
   },
   {
-    id: 'openCommands',
-    frozen: true,
-    allows: ['openCommandBar'],
-    message: 'openCommands',
-    hand: ['commandsButton'],
-    // Il faut une unité à faire fuir, une barre qui peut s'ouvrir, et aucun geste en cours.
-    requires: [{ type: 'playerUnitOnField' }, { type: 'commandAvailable' }, { type: 'noGestureInProgress' }],
-    next: [{ type: 'commandBarOpen' }],
-  },
-  {
     id: 'flee',
     frozen: true,
     allows: ['order:flee', 'selectUnit:flee'],
     message: 'flee',
     hand: ['fleeOrder', 'playerUnit'],
-    next: [{ type: 'commandIssued' }],
-    back: { when: { type: 'commandBarClosed' }, to: 'openCommands' },
+    // Il faut une unité à faire fuir, une fuite hors cooldown, et aucun geste en cours.
+    requires: [{ type: 'playerUnitOnField' }, { type: 'fleeAvailable' }, { type: 'noGestureInProgress' }],
+    next: [{ type: 'fleeIssued' }],
   },
 ];
 
@@ -112,22 +103,13 @@ export const CLICKBAIT_TUTORIAL = [
     next: [{ type: 'phaseElapsed', phaseIndex: 1, seconds: 6 }],
   },
   {
-    id: 'openCommands',
-    frozen: true,
-    allows: ['openCommandBar'],
-    message: 'clickbaitOpenCommands',
-    hand: ['commandsButton'],
-    // Il faut une unité à faire fuir, une barre qui peut s'ouvrir, et aucun geste en cours.
-    requires: [{ type: 'playerUnitOnField' }, { type: 'commandAvailable' }, { type: 'noGestureInProgress' }],
-    next: [{ type: 'commandBarOpen' }],
-  },
-  {
     id: 'flee',
     frozen: true,
     allows: ['order:flee', 'selectUnit:flee'],
     message: 'clickbaitFlee',
     hand: ['fleeOrder', 'playerUnit'],
-    next: [{ type: 'commandIssued' }],
-    back: { when: { type: 'commandBarClosed' }, to: 'openCommands' },
+    // Il faut une unité à faire fuir, une fuite hors cooldown, et aucun geste en cours.
+    requires: [{ type: 'playerUnitOnField' }, { type: 'fleeAvailable' }, { type: 'noGestureInProgress' }],
+    next: [{ type: 'fleeIssued' }],
   },
 ];

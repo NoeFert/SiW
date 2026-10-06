@@ -29,6 +29,7 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 - `war-slot-{yellow,purple,grey}.png`, `war-slot-won-{yellow,purple}.png`, `war-selector-{yellow,purple,grey}.png`, `war-connector-{vertical,horizontal}-{yellow,purple,grey}.png` — "Partir en guerre" map (SkillTree: SkillSlotSharp, SkillSlotSharpPlaceholder, SelectorSharp, ConnectorVertical/Horizontal)
 - `war-boss-slot-{yellow,purple,grey}.png`, `war-boss-slot-won-{yellow,purple}.png`, `war-boss-selector-{yellow,purple,grey}.png` — larger boss slot on the war map (SkillTree: SkillSlotLarge, SkillSlotLargePlaceholder, SelectorLarge)
 - `corner-{gold,purple}-{top,bottom}-{left,right}.png` — decorative corners (Decorators/Gold and Purple/BorderC): gold on a legendary unit tile; gold (Wyrms) or purple (Undead) around the selected species on the summon screen
+- `scrollbar-track.png`, `scrollbar-handle-{purple,gold}.png`, `scrollbar-handle-highlighted-{purple,gold}.png` — command tower scrollbar (track: FormElements/Black/ScrollbarVertical padded to 7 px wide; handles: Purple and Orange recolored to gold ScrollbarHandle, ScrollbarHandleHighlighted; pre-scaled 2×)
 - `spirit-stone.png` — Spirit Stones icon (Black/Jewel_Spin, 9 frames of 11×11; only the first frame is shown)
 
 ## effect/

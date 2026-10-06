@@ -5,13 +5,46 @@ import {
 import { deployPlayerUnit, startDeploymentDrag, endDeploymentDrag } from '../logic/battle.js';
 import { getTowerRows } from '../logic/deployment.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
-import { getCanvasRect, screenToGrid } from '../renderConstants.js';
+import {
+  CELL_SIZE, GAME_WIDTH, getCanvasRect, screenToGrid,
+} from '../renderConstants.js';
 import UnitRow from './UnitRow.jsx';
 import { TEXT } from './strings.js';
 
 const MESSAGE_DURATION_MS = 2500;
 
 const rowKey = (row) => `${row.species.name}-${row.level}-${row.hp}`;
+
+// Fantôme tenu pendant le drag : à la taille réelle de l'unité sur le terrain affiché (taille
+// d'une case à l'écran x `size`, sprite à 90 % comme dans BattleScene.createUnitView), tourné
+// vers la droite comme les unités du joueur. Le curseur est au centre de la case haut-gauche du
+// bloc : c'est elle que screenToGrid vise au relâché, donc le fantôme couvre exactement les
+// cases où l'unité sera déployée.
+function DragGhost({ drag }) {
+  const rect = getCanvasRect();
+  const cell = rect ? (CELL_SIZE * rect.width) / GAME_WIDTH : 48;
+  const footprint = cell * drag.row.species.size;
+  const { key, facing } = SPECIES_SPRITES[drag.row.species.name];
+  return (
+    <div
+      className="pointer-events-none fixed z-50 flex items-center justify-center"
+      style={{
+        left: drag.x - cell / 2, top: drag.y - cell / 2, width: footprint, height: footprint,
+      }}
+    >
+      <img
+        src={spritePath(key)}
+        alt=""
+        className="pixelated opacity-80"
+        style={{
+          width: footprint * 0.9,
+          height: footprint * 0.9,
+          transform: facing !== null && facing !== 'right' ? 'scaleX(-1)' : undefined,
+        }}
+      />
+    </div>
+  );
+}
 
 // rules.md 2 : liste des unités déployables de la tour. Le drag part de n'importe où sur une
 // ligne (Pointer Events suivis sur `window`) et se termine sur le canevas (repéré par son
@@ -93,14 +126,7 @@ export default function DeploymentList({ battle, unitsOnField, playerFaction }) 
         </Tooltip>
       ))}
 
-      {drag && (
-        <img
-          src={spritePath(SPECIES_SPRITES[drag.row.species.name].key)}
-          alt=""
-          className="pixelated size-12 opacity-80 pointer-events-none fixed z-50"
-          style={{ left: drag.x - 24, top: drag.y - 24 }}
-        />
-      )}
+      {drag && <DragGhost drag={drag} />}
     </div>
   );
 }

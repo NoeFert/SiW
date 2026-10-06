@@ -109,7 +109,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des unit�
 - Déblocage progressif d'emplacements d'armée supplémentaires, **à certains niveaux du joueur** (niveaux à définir)
 - **Hausse ponctuelle du plafond de l'armée** (500 PP) à certains niveaux du joueur (niveaux et montants à définir)
 - **Amélioration** permettant à un individu de dépasser le niveau 5 (forme et coût à définir)
-- **Cooldown des commandes réduit** selon le niveau du joueur (`rules.md` 5.1 ; courbe à définir)
+- **Cooldown de la fuite réduit** selon le niveau du joueur (`rules.md` 5.1 ; courbe à définir)
 - Personnalisation des individus — le modèle `{ id, species, xp }` est prévu pour l'accueillir sans migration de sauvegarde
 - Réinvocation avec délai ou coût croissant
 - Gacha

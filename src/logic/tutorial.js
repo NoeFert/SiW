@@ -1,16 +1,16 @@
-import { canIssueCommand } from './commands.js';
+import { canFlee } from './commands.js';
 
 // technical.md 5.5 : moteur de tutoriel. Le contenu d'un tutoriel (ses étapes) est une donnée
 // propre à chaque bataille (src/data/tutorials.js) ; ce module ne fait que le dérouler.
 //
 // Une étape figée (`frozen`) arrête la bataille (`pause.tutorial`) et n'autorise que les
 // actions listées dans `allows` (null = toutes). Noms d'action : 'deploy', 'mainPause',
-// 'openCommandBar', 'order:<ordre>', 'selectUnit:<ordre ou none>', 'selectTarget'. L'abandon
+// 'order:<ordre>', 'selectUnit:<ordre>', 'selectTarget'. L'abandon
 // n'est jamais bloqué (rules.md 8.2).
 //
 // Passage à l'étape suivante : dès qu'UNE des conditions de `next` est remplie, et que TOUTES
 // les conditions `requires` de l'étape suivante le sont aussi. `back` ramène à une étape
-// précédente (ex. barre de commandes refermée avant d'avoir donné l'ordre).
+// précédente.
 
 // Conditions utilisables dans les données, par `type`. `tutorial.stepSeconds` est du temps
 // de bataille : il n'avance pas pendant une pause.
@@ -24,11 +24,9 @@ const CONDITIONS = {
   // début réel de la phase (transition non comptée) ; toujours vraie dans une phase ultérieure.
   phaseElapsed: (battle, { phaseIndex, seconds }) => battle.phaseIndex > phaseIndex
     || (battle.phaseIndex === phaseIndex && battle.elapsedSeconds - battle.phaseStartSeconds >= seconds),
-  commandAvailable:(battle) => canIssueCommand(battle.playerCommandState, battle.elapsedSeconds),
-  commandIssued: (battle) => !canIssueCommand(battle.playerCommandState, battle.elapsedSeconds),
+  fleeAvailable: (battle) => canFlee(battle.playerFleeState, battle.elapsedSeconds),
+  fleeIssued: (battle) => !canFlee(battle.playerFleeState, battle.elapsedSeconds),
   noGestureInProgress: (battle) => battle.pause.interaction === null && battle.commandSelection === null,
-  commandBarOpen: (battle) => battle.commandSelection !== null,
-  commandBarClosed: (battle) => battle.commandSelection === null,
 };
 
 export const TUTORIAL_CONDITION_TYPES = Object.keys(CONDITIONS);

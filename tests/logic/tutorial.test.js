@@ -4,7 +4,7 @@ import {
   surrenderPlayer,
 } from '../../src/logic/battle.js';
 import {
-  openCommandBar, cancelCommand, chooseOrder, selectUnit,
+  cancelCommand, chooseOrder, selectUnit,
 } from '../../src/logic/commandSelection.js';
 import { isBattleTimeRunning } from '../../src/logic/pause.js';
 import { setUpcomingPhases, PHASE_TRANSITION_SECONDS } from '../../src/logic/phases.js';
@@ -68,7 +68,7 @@ describe('tutoriel — étape 1 : déployer (technical.md 5.5)', () => {
     expect(battle.units).toHaveLength(0); // l'IA n'a pas encore déployé sa vague de t=0
     expect(visibleTutorialStep(battle).id).toBe('deploy');
     expect(togglePlayerPause(battle)).toBe(false);
-    expect(openCommandBar(battle)).toBe(false);
+    expect(chooseOrder(battle, 'flee')).toBe(false);
     expect(startDeploymentDrag(battle)).toBe(true);
   });
 
@@ -124,7 +124,7 @@ describe('tutoriel — étape 2 : points de présence', () => {
     tickBattle(battle, 3);
     expect(battle.elapsedSeconds).toBe(elapsed);
     expect(startDeploymentDrag(battle)).toBe(false);
-    expect(openCommandBar(battle)).toBe(false);
+    expect(chooseOrder(battle, 'flee')).toBe(false);
 
     continueTutorial(battle);
     tickBattle(battle, 1);
@@ -139,7 +139,7 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
   test('se déclenche à l\'avant-dernière vague de l\'IA si elle arrive avant 8 s d\'attente', () => {
     const { battle } = reachFleeTutorial(EARLY_WAVE_SCRIPT);
 
-    expect(battle.tutorial.step).toBe('openCommands');
+    expect(battle.tutorial.step).toBe('flee');
     expect(battle.aiScriptState.nextIndex).toBe(EARLY_WAVE_SCRIPT.length - 1);
     expect(battle.elapsedSeconds).toBeGreaterThanOrEqual(10);
     expect(battle.elapsedSeconds).toBeLessThan(8 + 8);
@@ -150,7 +150,7 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
   test('sinon, se déclenche au bout de 8 s d\'attente au plus', () => {
     const { battle } = reachFleeTutorial(); // avant-dernière vague à t=20
 
-    expect(battle.tutorial.step).toBe('openCommands');
+    expect(battle.tutorial.step).toBe('flee');
     expect(battle.aiScriptState.nextIndex).toBeLessThan(SCRIPT.length - 1);
     expect(battle.elapsedSeconds).toBeCloseTo(8 + 8, 5);
     expect(battle.elapsedSeconds).toBeLessThan(20);
@@ -168,12 +168,10 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
 
   test('seule la fuite est permise ; l\'ordre donné, le tutoriel se termine', () => {
     const { battle, unit } = reachFleeTutorial();
-    expect(openCommandBar(battle)).toBe(true);
-    tickBattle(battle, 0.1);
     expect(battle.tutorial.step).toBe('flee');
 
     expect(chooseOrder(battle, 'attack')).toBe(false);
-    expect(selectUnit(battle, unit)).toBe(false); // voie 2 bloquée : Fuir est demandé
+    expect(selectUnit(battle, unit)).toBe(false); // aucun ordre choisi
     expect(chooseOrder(battle, 'flee')).toBe(true);
     expect(selectUnit(battle, unit)).toBe(true);
     expect(unit.command).toEqual({ type: 'flee' });
@@ -184,15 +182,16 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
     expect(togglePlayerPause(battle)).toBe(true);
   });
 
-  test('refermer la barre avec [X] ramène à l\'ouverture de la barre', () => {
+  test('annuler Fuir laisse l\'étape en place, toujours figée', () => {
     const { battle } = reachFleeTutorial();
-    openCommandBar(battle);
+    chooseOrder(battle, 'flee');
     tickBattle(battle, 0.1);
 
     cancelCommand(battle);
     tickBattle(battle, 0.1);
 
-    expect(battle.tutorial.step).toBe('openCommands');
+    expect(battle.tutorial.step).toBe('flee');
+    expect(isBattleTimeRunning(battle.pause)).toBe(false);
   });
 });
 
@@ -311,7 +310,7 @@ describe('moteur de tutoriel — réutilisable pour une autre bataille', () => {
 
     expect(battle.tutorial).toBeNull();
     expect(tutorialAllows(battle, 'deploy')).toBe(true);
-    expect(openCommandBar(battle)).toBe(true);
+    expect(chooseOrder(battle, 'attack')).toBe(true);
   });
 });
 
@@ -358,7 +357,7 @@ describe('tutoriel clickbait (bataille-clickbait)', () => {
 
   test('étapes : déployer, combat autonome, points de présence, battre en retraite', () => {
     expect(CLICKBAIT_TUTORIAL.map((step) => step.id)).toEqual(
-      ['deploy', 'autonomous', 'presence', 'waitingForWall', 'openCommands', 'flee'],
+      ['deploy', 'autonomous', 'presence', 'waitingForWall', 'flee'],
     );
   });
 
@@ -383,7 +382,7 @@ describe('tutoriel clickbait (bataille-clickbait)', () => {
     expect(battle.tutorial.step).toBe('waitingForWall');
     expect(visibleTutorialStep(battle)).toBeNull();
     expect(isBattleTimeRunning(battle.pause)).toBe(true);
-    expect(openCommandBar(battle)).toBe(true);
+    expect(chooseOrder(battle, 'attack')).toBe(true);
   });
 
   test('pendant la phase 1, la retraite ne se déclenche jamais', () => {
@@ -404,8 +403,8 @@ describe('tutoriel clickbait (bataille-clickbait)', () => {
     expect(battle.tutorial.step).toBe('waitingForWall');
     tickBattle(battle, 0.5);
 
-    expect(battle.tutorial.step).toBe('openCommands');
-    expect(visibleTutorialStep(battle).message).toBe('clickbaitOpenCommands');
+    expect(battle.tutorial.step).toBe('flee');
+    expect(visibleTutorialStep(battle).message).toBe('clickbaitFlee');
     expect(isBattleTimeRunning(battle.pause)).toBe(false);
     expect(startDeploymentDrag(battle)).toBe(false);
   });
@@ -419,19 +418,15 @@ describe('tutoriel clickbait (bataille-clickbait)', () => {
     expect(battle.tutorial.step).toBe('waitingForWall');
   });
 
-  test('seule la fuite est permise ; [X] ramène à l\'ouverture de la barre ; l\'ordre donné, fin du tutoriel', () => {
+  test('seule la fuite est permise ; annuler laisse l\'étape en place ; l\'ordre donné, fin du tutoriel', () => {
     const { battle, unit } = reachClickbaitFlee();
-    expect(openCommandBar(battle)).toBe(true);
-    tickBattle(battle, 0.1);
     expect(battle.tutorial.step).toBe('flee');
-    expect(visibleTutorialStep(battle).message).toBe('clickbaitFlee');
+    expect(chooseOrder(battle, 'flee')).toBe(true);
 
     cancelCommand(battle);
     tickBattle(battle, 0.1);
-    expect(battle.tutorial.step).toBe('openCommands');
+    expect(battle.tutorial.step).toBe('flee');
 
-    openCommandBar(battle);
-    tickBattle(battle, 0.1);
     expect(chooseOrder(battle, 'attack')).toBe(false);
     expect(chooseOrder(battle, 'flee')).toBe(true);
     expect(selectUnit(battle, unit)).toBe(true);

@@ -15,15 +15,15 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 
 ```
 ┌────────────────┬──────────────────────────────────────┐
-│ [⏸]            │                                      │  fixe
+│     [Abandon.] │                                      │  fixe
 │   ( jauge )    │                                      │  fixe
-│  VOS UNITÉS    │   camp du joueur  │   camp de l'IA    │
-│  ┌──────────┐  │   (déploiement)   │                   │
-│  │ unité    │  │                   │                   │  ↕ la liste défile
-│  ├──────────┤  │        ──── sens d'attaque ───▶        │
-│  │ unité    │  │                                      │
-│  └──────────┘  │         CHAMP DE BATAILLE            │
-│ [ COMMANDES ]  │         (canevas Phaser)             │  fixe, collé en bas
+│  ORDRES        │   camp du joueur  │   camp de l'IA    │
+│ [⏸][➜][⚔][🏳] │   (déploiement)   │                   │  fixe
+│  VOS UNITÉS    │        ──── sens d'attaque ───▶        │
+│  ┌──────────┐  │                                      │
+│  │ unité    │  │                                      │  ↕ la liste défile
+│  ├──────────┤  │         CHAMP DE BATAILLE            │
+│  │ unité    │  │         (canevas Phaser)             │
 └────────────────┴──────────────────────────────────────┘
 ```
 
@@ -47,8 +47,8 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 - L'œil commence en haut à gauche : il tombe d'abord sur les actions possibles.
 - **Coût accepté :** le bouton Pause n'est pas à sa place la plus conventionnelle (en haut à droite de l'écran).
 
-> ⏸ **✅ Bouton Pause : coin haut-droit de la tour**, collé au terrain, avec la jauge qui reste centrée.
-> - Il est proche du regard du joueur : le ▶ qui pulse reste dans sa vision périphérique.
+> ⏸ **✅ Bouton Pause : premier bouton de la rangée « Ordres »** (section 2.3), sous la jauge.
+> - Il est regroupé avec les ordres : tout ce qui agit sur le déroulé de la bataille est au même endroit.
 > - **Raccourci clavier : barre Espace** pour mettre en pause et reprendre.
 >
 > **Test rapide suggéré :** montrer la maquette 5 secondes à 3 à 5 personnes et leur demander par où elles attaquent et où sont leurs unités.
@@ -68,7 +68,7 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 
 ### 2.2 Section « Vos unités »
 
-Titre « Vos unités », puis **un composant par ligne**, empilés verticalement. La liste **défile** entre la jauge (fixe en haut) et le bouton Commandes (fixe en bas).
+Titre « Vos unités », puis **un composant par ligne**, empilés verticalement. La liste **défile** sous la rangée « Ordres » (fixe, au-dessus).
 
 #### Composant d'unité
 
@@ -134,69 +134,45 @@ Une ligne regroupe uniquement des unités **strictement identiques**. Toute diff
 - **Drag & drop depuis n'importe quel endroit du composant** vers le terrain.
 - Le début du geste déclenche la pause d'interaction (voir section 3).
 
-### 2.3 Bouton Commandes (en bas)
+### 2.3 Rangée « Ordres » (entre la jauge et la liste)
 
-**Emplacement retenu :** dans la tour, **fixé en bas**, sous la liste d'unités qui défile.
-L'option alternative, un bouton flottant dans un coin du champ de bataille, a été écartée pour quatre raisons :
-- il cachait des cases du terrain et gênait les clics de commande ;
-- il brouillait le modèle mental « tour = moi / terrain = mes troupes » ;
-- il contredisait le principe « UI jamais superposée au canevas » ;
-- en bas de la tour, le bouton reste de toute façon juste à côté du coin bas-gauche du terrain, dans le camp du joueur.
-
-La barre de commandes se déroule **vers la droite**, donc en direction du terrain. C'est cohérent avec le sens de lecture de l'écran.
-
-#### État fermé
+**Emplacement retenu :** dans la tour, **entre la jauge de présence et « Vos unités »**, fixe (ne défile pas). Elle remplace l'ancien bouton « Commandes » en bas de la tour, qui se déroulait en menu burger.
 
 ```
-[        COMMANDES        ]      ← affiche le cooldown quand il tourne
+ORDRES
+[ ⏸ ] [ ➜ ][ ⚔ ][ 🏳 ]
+ Pause Aller Attaquer Fuir
 ```
 
-#### État ouvert (après un clic sur Commandes)
-
-```
-[ X ] [ ➜ ][ ⚔ ][ 🏳 ]
-       Aller Attaquer Fuir
-```
-
-- Fonctionnement **type menu burger** : le **[X] remplace [Commandes] au même endroit**, et les ordres se déroulent **sur une seule ligne, vers la droite**.
-- Ordres affichés sous forme d'**icônes**. Un **tooltip avec le nom de l'ordre** s'affiche **au-dessus** du bouton quand la souris reste dessus.
+- **Bouton Pause** en premier (section 3), puis les trois ordres sous forme d'**icônes**, toujours visibles. Un **tooltip avec le nom de l'ordre** s'affiche **au-dessus** du bouton quand la souris reste dessus.
   - Les icônes ➜ / ⚔ / 🏳 sont provisoires, à définir.
-- **[X] = Annuler**, à **n'importe quel stade** de la commande : barre ouverte, ordre choisi, unité sélectionnée. Il referme la barre et remet le bouton Commandes.
-- **Ordre sélectionné :** le bouton de l'ordre choisi reste **surligné** pendant la sélection de l'unité et de la cible.
+- **Ordre sélectionné :** le bouton de l'ordre choisi est **surligné dans la couleur de la faction du joueur** pendant la sélection de l'unité et de la cible.
+- La version clickbait n'affiche que Pause et Fuir (`technical.md` 5.6).
 
 #### Cooldown
 
-- **5 secondes** entre deux commandes (`rules.md` 5.1). Il est affiché dans le bouton Commandes.
-- **Clic pendant le cooldown : rien ne se passe.**
+- **5 secondes entre deux fuites**, sur **Fuir uniquement** (`rules.md` 5.1). Aller et Attaquer n'ont pas de cooldown.
+- Pendant le cooldown, le bouton Fuir est **grisé** et se **remplit de bas en haut** ; son tooltip affiche le temps restant. **Clic pendant le cooldown : rien ne se passe.**
 
 #### Déroulé d'une commande
 
-Dans tous les cas, le joueur **ouvre d'abord la barre** (clic sur Commandes).
-
 ```
-Clic sur [COMMANDES] → la barre s'ouvre
-        │
-        ├─ Voie 1 (guidée, pour les novices)
-        │     clic sur un ordre (Aller / Attaquer / Fuir)
-        │        → clic sur une de mes unités
-        │        → clic sur une case (Aller) ou un ennemi (Attaquer)
-        │          (aucune cible pour Fuir)
-        │
-        └─ Voie 2 (raccourci, pour les joueurs expérimentés)
-              clic direct sur une de mes unités (sans choisir d'ordre)
-                 → clic sur un ennemi  = Attaquer
-                 → clic sur une case   = Aller
-              Fuir passe obligatoirement par la voie 1.
+Clic sur un ordre (Aller / Attaquer / Fuir) → le jeu se met en pause
+   → clic sur une de mes unités (cadre de la couleur de ma faction)
+   → clic sur une case (Aller) ou un ennemi (Attaquer)
+     (aucune cible pour Fuir : l'unité fuit dès qu'elle est sélectionnée)
 ```
 
-- Les **deux voies coexistent**. La barre d'ordres sert de rappel pour le joueur qui a oublié ce qu'il peut faire.
+- **Pas de raccourci** (l'ancienne « voie 2 » est supprimée) : sans ordre choisi, un clic sur le terrain ne fait rien.
+- Cliquer **un autre ordre** en cours de route change d'ordre ; l'unité est à resélectionner.
+- **Annuler**, à **n'importe quel stade** : re-cliquer l'ordre surligné, clic droit sur le terrain, ou touche **Échap**.
 
 #### Moment de la pause d'interaction
 
-> **✅ Validé (`rules.md` 5) :** la pause d'interaction démarre **dès l'ouverture de la barre**, pas au choix de l'ordre.
-> - Ouvrir la barre signifie « je réfléchis à un ordre » : laisser le temps courir pendant la lecture des icônes recrée du stress.
+> **✅ Validé (`rules.md` 5) :** la pause d'interaction démarre **dès le clic sur un ordre**.
+> - Cliquer un ordre signifie « je donne un ordre » : laisser le temps courir pendant la sélection de l'unité et de la cible recrée du stress.
 > - C'est cohérent avec le déploiement, où la pause démarre dès le début du geste.
-> - Fermer avec [X] ou terminer la commande relance le temps, **sauf** si la pause principale est active.
+> - Annuler ou terminer la commande relance le temps, **sauf** si la pause principale est active.
 
 ---
 
@@ -208,7 +184,7 @@ Clic sur [COMMANDES] → la barre s'ouvre
 
 | | Pause d'interaction | Pause principale (bouton ⏸) |
 |---|---|---|
-| Déclenchement | Automatique : début d'un drag de déploiement, ouverture de la barre de commandes | Manuel, par le joueur |
+| Déclenchement | Automatique : début d'un drag de déploiement, clic sur un ordre | Manuel, par le joueur |
 | Fin | Automatique, à la fin ou à l'annulation de l'interaction | Manuelle : le joueur reclique pour reprendre |
 | But | Laisser le temps d'exécuter un geste | Laisser le temps de réfléchir et de planifier |
 | Pendant cette pause | Seulement l'interaction en cours | Déployer et commander restent possibles |
@@ -216,8 +192,8 @@ Clic sur [COMMANDES] → la barre s'ouvre
 ### Règles de la pause principale
 
 - **Bouton unique ⏸ / ▶** : un interrupteur, **pas un menu modal**, car le joueur doit pouvoir agir sur le terrain et la tour pendant la pause.
-- **Tous les compteurs sont gelés** : cooldown des commandes, timers d'attaque, script de l'IA.
-- Le cooldown étant gelé, le joueur ne peut donner **qu'une seule commande** par pause.
+- **Tous les compteurs sont gelés** : cooldown de la fuite, timers d'attaque, script de l'IA.
+- Le cooldown de la fuite étant gelé, le joueur ne peut ordonner **qu'une seule fuite** par pause ; Aller et Attaquer restent illimités.
 - **Intention :** laisser aux joueurs plus lents le temps de réfléchir et d'élaborer leur stratégie si le combat va trop vite, pour éviter un stress constant et l'abandon du jeu par frustration.
 
 - **✅ Confirmé (`rules.md` 5.2) :** le joueur peut déployer **plusieurs** unités pendant la pause principale (le déploiement n'a pas de cooldown, seulement le budget de présence).
@@ -258,7 +234,7 @@ Contrainte : pendant la pause, le terrain doit rester entièrement visible et cl
 - **Disponible en permanence**, **y compris pendant la bataille tutoriel**. La v1 est une bêta, et toutes les fonctionnalités doivent pouvoir être testées.
 - L'abandon entraîne une défaite. Les unités en réserve ne sont pas exterminées (`rules.md` 8.2).
 - **✅ Confirmation** avant d'abandonner (`rules.md` 8.2), par exemple : « Abandonner la bataille ? Vos unités en réserve seront conservées. » Pendant la confirmation, la bataille est en pause d'interaction (`rules.md` 5.2).
-- **Emplacement : provisoire, à côté du bouton Pause** en haut de la tour (`technical.md` 2.2). La première idée (dans un menu de pause modal) a été retirée, car la pause principale n'ouvre pas de menu.
+- **Emplacement : coin haut-droit de la tour** (`technical.md` 2.2) ; le bouton Pause est passé dans la rangée « Ordres ». La première idée (dans un menu de pause modal) a été retirée, car la pause principale n'ouvre pas de menu.
 
 ---
 

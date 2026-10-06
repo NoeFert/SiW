@@ -3,7 +3,7 @@ import Unit from '../../src/logic/unit.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 import { resolveCombatTick } from '../../src/logic/combat.js';
 import {
-  createCommandState, commandAttack, commandMoveTo, commandFlee, COMMAND_COOLDOWN_SECONDS,
+  createFleeState, commandAttack, commandMoveTo, commandFlee, FLEE_COOLDOWN_SECONDS,
 } from '../../src/logic/commands.js';
 
 // Ennemi inerte (ne bouge pas, n'attaque jamais dans la fenêtre d'un test, PV élevés).
@@ -14,12 +14,11 @@ const INERT = {
 describe('commandAttack — override du comportement autonome (rules.md 5)', () => {
   test('force le ciblage d\'un ennemi précis même si un autre est plus proche', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
     const closeEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 1, 0); // adjacent, ciblé par défaut
     const farEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 10, 0);
 
-    expect(commandAttack(state, 0, unit, farEnemy)).toBe(true);
+    expect(commandAttack(unit, farEnemy)).toBe(true);
     resolveCombatTick([unit, closeEnemy, farEnemy], grid, 0.5);
 
     expect(unit.target).toBe(farEnemy);
@@ -28,14 +27,13 @@ describe('commandAttack — override du comportement autonome (rules.md 5)', () 
 
   test('l\'emporte sur un engagement en cours : l\'unité quitte son combat', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
     const engagedEnemy = new Unit(INERT, 'enemy', 4, 5);
     const farEnemy = new Unit(INERT, 'enemy', 15, 5);
     resolveCombatTick([unit, engagedEnemy, farEnemy], grid, 0.1);
     expect(unit.status).toBe('engaged');
 
-    commandAttack(state, 0, unit, farEnemy);
+    commandAttack(unit, farEnemy);
     resolveCombatTick([unit, engagedEnemy, farEnemy], grid, 2);
 
     expect(unit.target).toBe(farEnemy);
@@ -45,11 +43,10 @@ describe('commandAttack — override du comportement autonome (rules.md 5)', () 
 
   test('une unité à distance avance jusqu\'à avoir la cible à portée, puis tire', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const shooter = new Unit(WYRMS_ROSTER.amphiptere, 'player', 0, 5);
     const target = new Unit(INERT, 'enemy', 10, 5);
 
-    commandAttack(state, 0, shooter, target);
+    commandAttack(shooter, target);
     for (let i = 0; i < 60; i++) resolveCombatTick([shooter, target], grid, 0.1);
 
     expect(shooter.x).toBe(10 - WYRMS_ROSTER.amphiptere.range); // s'arrête à portée
@@ -61,12 +58,11 @@ describe('commandAttack — override du comportement autonome (rules.md 5)', () 
     ['fuit le terrain', (target) => { target.hasFled = true; }],
   ])('prend fin quand la cible %s : retour au comportement autonome', (_, removeTarget) => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 5);
     const target = new Unit(INERT, 'enemy', 10, 5);
     const other = new Unit(INERT, 'enemy', 0, 15);
 
-    commandAttack(state, 0, unit, target);
+    commandAttack(unit, target);
     resolveCombatTick([unit, target, other], grid, 0.1);
     removeTarget(target);
     resolveCombatTick([unit, target, other], grid, 0.1);
@@ -79,14 +75,14 @@ describe('commandAttack — override du comportement autonome (rules.md 5)', () 
 describe('priorité à la dernière commande (rules.md 5)', () => {
   test('une commande Aller donnée pendant une fuite remplace la fuite', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
+    const state = createFleeState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 10, 10);
 
     commandFlee(state, 0, unit);
     resolveCombatTick([unit], grid, 0.1);
     expect(unit.status).toBe('fleeing');
 
-    commandMoveTo(state, COMMAND_COOLDOWN_SECONDS, unit, 12, 10);
+    commandMoveTo(unit, 12, 10);
     for (let i = 0; i < 40; i++) resolveCombatTick([unit], grid, 0.1);
 
     expect({ x: unit.x, y: unit.y, hasFled: unit.hasFled }).toEqual({ x: 12, y: 10, hasFled: false });
@@ -94,13 +90,13 @@ describe('priorité à la dernière commande (rules.md 5)', () => {
 
   test('une commande Fuir donnée pendant une attaque remplace l\'attaque', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
+    const state = createFleeState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 10);
     const target = new Unit(INERT, 'enemy', 15, 10);
 
-    commandAttack(state, 0, unit, target);
+    commandAttack(unit, target);
     resolveCombatTick([unit, target], grid, 0.1);
-    commandFlee(state, COMMAND_COOLDOWN_SECONDS, unit);
+    commandFlee(state, 0, unit);
     for (let i = 0; i < 20; i++) resolveCombatTick([unit, target], grid, 0.1);
 
     expect(unit.hasFled).toBe(true);
@@ -110,10 +106,9 @@ describe('priorité à la dernière commande (rules.md 5)', () => {
 describe('commandMoveTo (rules.md 5)', () => {
   test('déplace l\'unité vers la case désignée puis termine la commande à l\'arrivée', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0); // vitesse 2.5 cases/s
 
-    expect(commandMoveTo(state, 0, unit, 5, 0)).toBe(true);
+    expect(commandMoveTo(unit, 5, 0)).toBe(true);
 
     resolveCombatTick([unit], grid, 1); // 2,5 cases : pas encore arrivé
     expect(unit.command).not.toBeNull();
@@ -128,12 +123,11 @@ describe('commandMoveTo (rules.md 5)', () => {
 
   test('pendant le trajet, l\'unité ne combat pas, même frappée', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
     const enemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // la poursuit et la frappe
     resolveCombatTick([unit, enemy], grid, 0.1); // engagement mutuel
 
-    commandMoveTo(state, 0, unit, 5, 15);
+    commandMoveTo(unit, 5, 15);
     for (let i = 0; i < 40 && unit.command; i++) resolveCombatTick([unit, enemy], grid, 0.1);
 
     expect(unit.hp).toBeLessThan(unit.species.maxHp);
@@ -142,11 +136,10 @@ describe('commandMoveTo (rules.md 5)', () => {
 
   test('destination sur un obstacle : s\'arrête au plus près puis reprend le combat autonome', () => {
     const grid = new Grid(20, 20, [{ x: 5, y: 0 }]);
-    const state = createCommandState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
     const enemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 10, 5);
 
-    commandMoveTo(state, 0, unit, 5, 0);
+    commandMoveTo(unit, 5, 0);
     for (let i = 0; i < 60; i++) resolveCombatTick([unit, enemy], grid, 0.1);
 
     expect(unit.command).toBeNull();
@@ -155,10 +148,9 @@ describe('commandMoveTo (rules.md 5)', () => {
 
   test('bloc 2x2 envoyé sur la dernière colonne (il n\'y tient pas) : la commande se termine', () => {
     const grid = new Grid(20, 20);
-    const state = createCommandState();
     const fafnir = new Unit(WYRMS_ROSTER.fafnir, 'player', 10, 5);
 
-    commandMoveTo(state, 0, fafnir, 19, 5);
+    commandMoveTo(fafnir, 19, 5);
     for (let i = 0; i < 150; i++) resolveCombatTick([fafnir], grid, 0.1);
 
     expect(fafnir.x).toBe(18); // au plus près possible
@@ -169,7 +161,7 @@ describe('commandMoveTo (rules.md 5)', () => {
 describe('commandFlee — atteindre le bord (rules.md 5 et 2)', () => {
   test('l\'unité quitte le terrain une fois le bord atteint, PV conservés', () => {
     const grid = new Grid(10, 10);
-    const state = createCommandState();
+    const state = createFleeState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 5); // à 1 case du bord gauche
     unit.hp = 17; // PV déjà réduits, doivent être conservés tels quels
 
@@ -183,7 +175,7 @@ describe('commandFlee — atteindre le bord (rules.md 5 et 2)', () => {
 
   test('depuis un état engagé : désengagement immédiat mais l\'adversaire porte une dernière attaque', () => {
     const grid = new Grid(10, 10);
-    const state = createCommandState();
+    const state = createFleeState();
     const a = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
     const b = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // adjacente à a
 
@@ -206,7 +198,7 @@ describe('commandFlee — atteindre le bord (rules.md 5 et 2)', () => {
 
   test('chaque ennemi engagé sur l\'unité porte sa dernière attaque, une seule fois', () => {
     const grid = new Grid(10, 10);
-    const state = createCommandState();
+    const state = createFleeState();
     const a = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
     const left = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 4, 5);
     const right = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5);
@@ -222,7 +214,7 @@ describe('commandFlee — atteindre le bord (rules.md 5 et 2)', () => {
 
   test('bord le plus proche bloqué : contourne vers une autre case de bord', () => {
     const grid = new Grid(10, 10);
-    const state = createCommandState();
+    const state = createFleeState();
     const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
     const blockers = [[0, 0], [1, 0], [2, 0], [0, 1], [0, 2]]
       .map(([x, y]) => new Unit(WYRMS_ROSTER.lambtonWorm, 'player', x, y)); // alliées, immobiles
@@ -243,7 +235,7 @@ describe('fuite sans aucun bord atteignable (rules.md 5)', () => {
     const walls = [[4, 4], [5, 4], [6, 4], [6, 5], [4, 6], [5, 6], [6, 6]]
       .map(([x, y]) => new Unit(INERT, 'player', x, y));
     const units = [unit, enemy, ...walls];
-    commandFlee(createCommandState(), 0, unit);
+    commandFlee(createFleeState(), 0, unit);
     return { grid, unit, enemy, walls, units };
   }
 
@@ -280,17 +272,28 @@ describe('fuite sans aucun bord atteignable (rules.md 5)', () => {
   });
 });
 
-describe('cooldown des commandes (rules.md 5.1)', () => {
-  test('bloque toute nouvelle commande avant 5 secondes, peu importe l\'unité ciblée', () => {
-    const state = createCommandState();
+describe('cooldown de la fuite (rules.md 5.1)', () => {
+  test('bloque toute nouvelle fuite avant 5 secondes, peu importe l\'unité', () => {
+    const state = createFleeState();
+    const unitA = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const unitB = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
+
+    expect(commandFlee(state, 0, unitA)).toBe(true);
+    expect(commandFlee(state, 2, unitB)).toBe(false); // 2s < 5s, autre unité pourtant
+    expect(unitB.command).toBeNull();
+
+    expect(commandFlee(state, FLEE_COOLDOWN_SECONDS, unitB)).toBe(true);
+  });
+
+  test('Aller et Attaquer n\'ont pas de cooldown, même juste après une fuite', () => {
+    const state = createFleeState();
     const unitA = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
     const unitB = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
     const target = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 5, 5);
 
-    expect(commandAttack(state, 0, unitA, target)).toBe(true);
-    expect(commandMoveTo(state, 2, unitB, 3, 3)).toBe(false); // 2s < 5s, autre unité pourtant
-    expect(unitB.command).toBeNull();
-
-    expect(commandMoveTo(state, COMMAND_COOLDOWN_SECONDS, unitB, 3, 3)).toBe(true);
+    commandFlee(state, 0, unitA);
+    expect(commandAttack(unitB, target)).toBe(true);
+    expect(commandMoveTo(unitB, 3, 3)).toBe(true);
+    expect(commandAttack(unitB, target)).toBe(true);
   });
 });

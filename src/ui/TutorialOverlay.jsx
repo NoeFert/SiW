@@ -23,7 +23,6 @@ const HAND_TARGETS = {
   basicUnitRow: () => elementCenter('[data-tutorial="basic-unit"]'),
   basicUnitPresenceTag: () => elementCenter('[data-tutorial="basic-unit"] [data-tutorial="presence-tag"]'),
   presenceGauge: () => elementCenter('[data-tutorial="presence-gauge"]'),
-  commandsButton: () => elementCenter('[data-tutorial="commands-button"]'),
   fleeOrder: () => elementCenter('[data-tutorial="order-flee"]'),
   // Centre de la zone de déploiement du joueur (moitié gauche du terrain).
   deploymentZone: (battle, canvasRect) => canvasRect

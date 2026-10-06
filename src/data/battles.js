@@ -16,7 +16,7 @@ import { STARTER_TUTORIAL, CLICKBAIT_TUTORIAL } from './tutorials.js';
 // - tutorial : étapes du tutoriel de cette bataille (technical.md 5.5), ou null.
 // - victoryWhenScriptCleared : victoire dès que l'IA a fini le script de la dernière phase et
 //   n'a plus d'unité vivante (rules.md 7.3), au lieu de la fin de bataille habituelle (8).
-// - orders : ordres proposés dans la barre de commandes (rules.md 5), tous par défaut.
+// - orders : ordres proposés dans la rangée « Ordres » de la tour (rules.md 5), tous par défaut.
 // - surrenderAllowed : bouton Abandonner disponible (rules.md 8.2), vrai par défaut.
 // rules.md 11.7 : zones des batailles de « Partir en guerre », avec leurs scripts IA provisoires
 // (ceux de la bataille-clickbait : champ = phase 1, « Le mur » et « Les trois couloirs » =

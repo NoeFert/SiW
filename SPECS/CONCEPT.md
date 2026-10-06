@@ -11,7 +11,7 @@ Le joueur incarne un souverain : la **Souveraine des Wyrms** (dragons et vers g�
 Une bataille se joue sur une grille de 24 × 14 cases (`RULES.md` section 1) :
 - le joueur **déploie** ses monstres dans sa moitié gauche du terrain, par glisser-déposer ;
 - les monstres **se battent seuls** : ils avancent vers l'ennemi le plus proche, contournent les obstacles, frappent au corps-à-corps ou tirent à distance ;
-- le joueur garde un **contrôle limité** : il peut ordonner à une unité d'attaquer une cible, d'aller sur une case ou de fuir, mais une seule commande toutes les 5 secondes (`RULES.md` section 5).
+- le joueur garde un **contrôle limité** : il peut ordonner à une unité d'attaquer une cible, d'aller sur une case ou de fuir, mais une seule fuite toutes les 5 secondes (`RULES.md` section 5).
 
 Le vrai choix stratégique se fait **avant et pendant le déploiement** : chaque monstre coûte des points de présence, et le terrain n'en accepte jamais plus de 150 à la fois (`RULES.md` section 2). Déployer un dragon légendaire, c'est renoncer à une dizaine de petites unités.
 

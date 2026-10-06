@@ -5,8 +5,10 @@ import {
   startSurrenderConfirm, endSurrenderConfirm,
 } from '../../src/logic/battle.js';
 import { toggleMainPause, isBattleTimeRunning, PAUSE_DEFAULTS } from '../../src/logic/pause.js';
-import { openCommandBar, cancelCommand, chooseOrder, selectUnit } from '../../src/logic/commandSelection.js';
-import { canIssueCommand, getCooldownRemaining } from '../../src/logic/commands.js';
+import {
+  cancelCommand, chooseOrder, selectUnit, selectCell, canChooseOrder,
+} from '../../src/logic/commandSelection.js';
+import { canFlee, getFleeCooldownRemaining } from '../../src/logic/commands.js';
 
 const PLAYER_ROSTER = {
   fighter: {
@@ -30,7 +32,7 @@ function newBattle(script = []) {
 const PAUSES = {
   'pause principale': (battle) => toggleMainPause(battle.pause),
   'pause d\'interaction (drag de déploiement)': (battle) => startDeploymentDrag(battle),
-  'pause d\'interaction (barre de commandes)': (battle) => openCommandBar(battle),
+  'pause d\'interaction (sélection d\'une commande)': (battle) => chooseOrder(battle, 'attack'),
   'pause d\'interaction (confirmation d\'abandon)': (battle) => startSurrenderConfirm(battle),
 };
 
@@ -86,16 +88,16 @@ describe.each([
   ['pause principale', PAUSES['pause principale']],
   ['drag de déploiement', PAUSES["pause d'interaction (drag de déploiement)"]],
   ['confirmation d\'abandon', PAUSES["pause d'interaction (confirmation d'abandon)"]],
-])('gel du cooldown des commandes — %s (rules.md 5.1)', (_, pause) => {
+])('gel du cooldown de la fuite — %s (rules.md 5.1)', (_, pause) => {
   test('le cooldown ne s\'écoule pas', () => {
     const battle = newBattle();
-    battle.playerCommandState.lastCommandTime = 0; // commande donnée à t=0
+    battle.playerFleeState.lastFleeTime = 0; // fuite ordonnée à t=0
     tickBattle(battle, 2);
     pause(battle);
 
     tickBattle(battle, 10);
 
-    expect(getCooldownRemaining(battle.playerCommandState, battle.elapsedSeconds)).toBe(3);
+    expect(getFleeCooldownRemaining(battle.playerFleeState, battle.elapsedSeconds)).toBe(3);
   });
 });
 
@@ -103,7 +105,7 @@ describe('combinaison des deux pauses (rules.md 5.2)', () => {
   test('le temps ne reprend que lorsque les deux pauses sont levées', () => {
     const battle = newBattle();
     toggleMainPause(battle.pause);
-    openCommandBar(battle);
+    chooseOrder(battle, 'attack');
 
     cancelCommand(battle); // fin de l'interaction, la pause principale reste
     expect(isBattleTimeRunning(battle.pause)).toBe(false);
@@ -141,18 +143,32 @@ describe('actions pendant la pause principale (rules.md 5.2)', () => {
     expect(PAUSE_DEFAULTS.multipleDeploymentsPerMainPause).toBe(true);
   });
 
-  test('une seule commande par pause principale : le cooldown gelé empêche la deuxième', () => {
+  test('une seule fuite par pause principale : le cooldown gelé empêche la deuxième', () => {
     const battle = newBattle();
     const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
     toggleMainPause(battle.pause);
 
-    openCommandBar(battle);
     chooseOrder(battle, 'flee');
     expect(selectUnit(battle, unit)).toBe(true);
 
     expect(battle.pause.main).toBe(true); // reste en pause après la commande
-    expect(canIssueCommand(battle.playerCommandState, battle.elapsedSeconds)).toBe(false);
-    expect(openCommandBar(battle)).toBe(false);
+    expect(canFlee(battle.playerFleeState, battle.elapsedSeconds)).toBe(false);
+    expect(chooseOrder(battle, 'flee')).toBe(false);
+  });
+
+  test('Aller et Attaquer n\'ont pas de cooldown : plusieurs commandes par pause principale', () => {
+    const battle = newBattle();
+    const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
+    toggleMainPause(battle.pause);
+
+    for (const x of [2, 3, 4]) {
+      chooseOrder(battle, 'move');
+      selectUnit(battle, unit);
+      expect(selectCell(battle, x, 0)).toBe(true);
+    }
+
+    expect(unit.command).toEqual({ type: 'moveTo', x: 4, y: 0 });
+    expect(canChooseOrder(battle, 'attack')).toBe(true);
   });
 
   test('le déploiement reste limité par le budget de présence pendant la pause', () => {
@@ -198,13 +214,13 @@ describe('confirmation d\'abandon (rules.md 5.2 / 8.2)', () => {
 
   test('ouvrir la confirmation annule la commande en cours, sans consommer le cooldown', () => {
     const battle = newBattle();
-    openCommandBar(battle);
+    chooseOrder(battle, 'flee');
 
     startSurrenderConfirm(battle);
     endSurrenderConfirm(battle);
 
     expect(battle.commandSelection).toBeNull();
     expect(isBattleTimeRunning(battle.pause)).toBe(true);
-    expect(canIssueCommand(battle.playerCommandState, battle.elapsedSeconds)).toBe(true);
+    expect(canFlee(battle.playerFleeState, battle.elapsedSeconds)).toBe(true);
   });
 });

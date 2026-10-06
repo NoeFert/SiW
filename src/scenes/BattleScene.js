@@ -44,7 +44,7 @@ const PROJECTILE_FLIGHT_MS = 220;
 
 // Cette Scene gère exclusivement le champ de bataille (technical.md 2.2) : grille, sprites,
 // animations, clics sur le terrain pendant la sélection d'une commande, signaux visuels de
-// pause. Le déploiement (glisser-déposer) et la barre de commandes vivent dans la tour de
+// pause. Le déploiement (glisser-déposer) et les ordres (rangée « Ordres ») vivent dans la tour de
 // commandement React (src/ui/) ; le choix de faction et l'écran de résultat vivent dans des écrans React
 // séparés (src/screens/, technical.md 5) — cette Scene est recréée par BattleScreen.jsx à
 // chaque entrée dans l'écran de bataille, faction déjà connue (voir `init`). Les deux couches
@@ -198,17 +198,36 @@ export default class BattleScene extends Phaser.Scene {
 
   // rules.md 2 : halo sur la moitié gauche du terrain (zone de déploiement du joueur, voir
   // isValidDeploymentPosition), visible uniquement pendant un glisser depuis la tour. Les cases
-  // de rochers en sont exclues : on n'y déploie pas.
+  // de rochers en sont exclues : on n'y déploie pas. Couleur de la faction du joueur ; le liseré
+  // suit le contour de la zone, rochers compris, tracé à l'intérieur des cases de la zone.
   drawDeploymentZone(obstacles) {
     const grid = new Grid(GRID_WIDTH, GRID_HEIGHT, obstacles);
     const zoneColumns = Math.floor(grid.width / 2);
-    this.deploymentZone.clear().fillStyle(0x3fa9f5, 0.12);
+    const inZone = (x, y) => x < zoneColumns && grid.isFree(x, y);
+    const color = FACTION_COLORS[this.playerFaction];
+    const border = 3;
+    const far = CELL_SIZE - border;
+    const zone = this.deploymentZone.clear();
     for (let x = 0; x < zoneColumns; x++) {
       for (let y = 0; y < grid.height; y++) {
-        if (grid.isFree(x, y)) this.deploymentZone.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        if (!inZone(x, y)) continue;
+        const px = x * CELL_SIZE;
+        const py = y * CELL_SIZE;
+        zone.fillStyle(color, 0.15).fillRect(px, py, CELL_SIZE, CELL_SIZE);
+        zone.fillStyle(color, 0.9);
+        if (!inZone(x, y - 1)) zone.fillRect(px, py, CELL_SIZE, border);
+        if (!inZone(x, y + 1)) zone.fillRect(px, py + far, CELL_SIZE, border);
+        if (!inZone(x - 1, y)) zone.fillRect(px, py, border, CELL_SIZE);
+        if (!inZone(x + 1, y)) zone.fillRect(px + far, py, border, CELL_SIZE);
+        // Coins rentrants (case en diagonale hors zone, ses deux voisines dedans) : sans ce
+        // carré, le liseré aurait un trou à l'angle d'un rocher.
+        for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          if (inZone(x + dx, y) && inZone(x, y + dy) && !inZone(x + dx, y + dy)) {
+            zone.fillRect(dx < 0 ? px : px + far, dy < 0 ? py : py + far, border, border);
+          }
+        }
       }
     }
-    this.deploymentZone.lineStyle(4, 0x3fa9f5).strokeRect(0, 0, zoneColumns * CELL_SIZE, this.height);
   }
 
   // -- Fin de bataille (rules.md 8) --------------------------------------------------------
@@ -343,14 +362,15 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   // -- Sélection et input sur le terrain (rules.md 5) --------------------------------------
-  // La barre de commandes est ouverte par la tour React ; tant qu'elle l'est, chaque clic sur
-  // le terrain est transmis à commandSelection.js, qui décide de l'étape (unité, cible, ordre
-  // déduit). Clic droit : annule la commande en cours.
+  // L'ordre est choisi dans la tour React ; tant qu'une commande est en cours de sélection,
+  // chaque clic sur le terrain est transmis à commandSelection.js, qui décide de l'étape
+  // (unité, puis cible). Clic droit : annule la commande en cours.
 
   createSelectionIndicator() {
-    this.selectionIndicator = this.add.rectangle(0, 0, CELL_SIZE, CELL_SIZE, 0xffff00, 0)
+    const color = FACTION_COLORS[this.playerFaction]; // seules les unités du joueur sont sélectionnables
+    this.selectionIndicator = this.add.rectangle(0, 0, CELL_SIZE, CELL_SIZE, color, 0.2)
       .setOrigin(0, 0)
-      .setStrokeStyle(3, 0xffff00)
+      .setStrokeStyle(3, color)
       .setVisible(false);
   }
 
