@@ -7,6 +7,7 @@ import { getOwnedUnits } from '../persistence.js';
 
 const CROWD_SIZE = 3;
 const PICK_INTERVAL_MS = 5 * 60 * 1000;
+const ENTRY_GAP_MS = 2000; // décalage entre les entrées des unités d'un groupe
 const SPEED = 3; // en % de la largeur du couloir par seconde
 const OUTSIDE_LEFT = -6; // positions (en %) hors de l'écran, pour entrer et sortir
 const OUTSIDE_RIGHT = 106;
@@ -23,10 +24,13 @@ function pickCrowd(roster) {
   return picked.map((unit) => roster[unit.species]);
 }
 
-// Une unité qui erre : elle entre par un bord, va et vient au hasard dans le couloir (pauses de 1
-// à 4 s entre deux trajets), et sort par le bord le plus proche quand `leaving` passe à vrai —
-// puis `onLeft`. Elle regarde dans le sens de sa marche ; un clic la fait sursauter.
-function Wanderer({ species, leaving, onLeft }) {
+// Une unité qui erre : elle entre par un bord après `entryDelay` ms, va et vient au hasard dans
+// le couloir (pauses de 1 à 4 s entre deux trajets), et sort par le bord le plus proche quand
+// `leaving` passe à vrai — puis `onLeft`. Elle regarde dans le sens de sa marche ; un clic la fait
+// sursauter.
+function Wanderer({
+  species, entryDelay, leaving, onLeft,
+}) {
   const { key, facing } = SPECIES_SPRITES[species.name];
   const [move, setMove] = useState(() => ({
     x: Math.random() < 0.5 ? OUTSIDE_LEFT : OUTSIDE_RIGHT, duration: 0, towardsLeft: true,
@@ -35,6 +39,8 @@ function Wanderer({ species, leaving, onLeft }) {
   const spriteRef = useRef(null);
   const pause = useRef(null);
   const leavingRef = useRef(leaving);
+  const entered = useRef(false); // vrai dès que l'entrée a commencé
+  const entry = useRef({ timeout: null, frame: null }); // entrée programmée
 
   // Position actuelle (en %), y compris en plein trajet : lue sur la mise en page. `left` est le
   // centre de l'unité (elle est recentrée par -translate-x-1/2, ignoré par offsetLeft).
@@ -45,22 +51,36 @@ function Wanderer({ species, leaving, onLeft }) {
   }, []);
 
   useEffect(() => {
-    // Laisse le navigateur placer l'unité hors de l'écran avant son entrée.
-    const frame = requestAnimationFrame(() => moveTo(randomBetween(5, 95)));
+    // Attend son tour (les unités d'un groupe entrent l'une après l'autre, sans se superposer),
+    // puis une frame pour que le navigateur ait placé l'unité hors de l'écran avant son entrée.
+    entry.current.timeout = setTimeout(() => {
+      entry.current.frame = requestAnimationFrame(() => {
+        entered.current = true;
+        moveTo(randomBetween(5, 95));
+      });
+    }, entryDelay);
     return () => {
-      cancelAnimationFrame(frame);
+      clearTimeout(entry.current.timeout);
+      cancelAnimationFrame(entry.current.frame);
       clearTimeout(pause.current);
     };
-  }, [moveTo]);
+  }, [moveTo, entryDelay]);
 
   useEffect(() => {
     leavingRef.current = leaving;
     if (!leaving) return;
     clearTimeout(pause.current);
+    // Pas encore entrée : elle n'entrera pas, elle est déjà dehors.
+    if (!entered.current) {
+      clearTimeout(entry.current.timeout);
+      cancelAnimationFrame(entry.current.frame);
+      onLeft();
+      return;
+    }
     const button = buttonRef.current;
     const onLeftHalf = button.offsetLeft < button.parentElement.offsetWidth / 2;
     moveTo(onLeftHalf ? OUTSIDE_LEFT : OUTSIDE_RIGHT);
-  }, [leaving, moveTo]);
+  }, [leaving, moveTo, onLeft]);
 
   const arrived = (event) => {
     if (event.propertyName !== 'left') return;
@@ -139,7 +159,13 @@ export default function HomeWanderer({ playerFaction }) {
     // Découpé sur les côtés seulement (unités hors écran cachées), pas en haut : le sursaut dépasse.
     <div className="pointer-events-none absolute -right-game -bottom-0.5 -left-game h-14.5 overflow-x-clip">
       {crowd.species.map((species, i) => (
-        <Wanderer key={`${crowd.id}-${i}`} species={species} leaving={leaving} onLeft={onLeft} />
+        <Wanderer
+          key={`${crowd.id}-${i}`}
+          species={species}
+          entryDelay={i * ENTRY_GAP_MS}
+          leaving={leaving}
+          onLeft={onLeft}
+        />
       ))}
     </div>
   );

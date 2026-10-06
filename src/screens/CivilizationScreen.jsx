@@ -261,7 +261,9 @@ function ArmyName({ name, onRename }) {
 export default function CivilizationScreen({
   playerFaction, section, onBack, onOpenSummon,
 }) {
-  const [openKey, setOpenKey] = useState(null);
+  // Accordéons de l'armée ouverts : tous par défaut, pour que les boutons − / + se voient tout de
+  // suite (technical.md 5.1) ; chacun se ferme et se rouvre indépendamment (rien n'est sauvegardé).
+  const [openKeys, setOpenKeys] = useState(() => new Set(Object.keys(ROSTERS[playerFaction])));
   const [selectedId, setSelectedId] = useState(null); // individu affiché en détail
   // Espèces dégroupées dans la grille des unités (toutes regroupées par défaut, rien n'est
   // sauvegardé), comme dans la tour de commandement.
@@ -276,7 +278,11 @@ export default function CivilizationScreen({
     saveArmy(newArmy);
     setArmy(newArmy);
   };
-  const toggle = (key) => setOpenKey((current) => (current === key ? null : key));
+  const toggle = (key) => setOpenKeys((current) => {
+    const next = new Set(current);
+    if (!next.delete(key)) next.add(key);
+    return next;
+  });
 
   const selected = units.find((unit) => unit.id === selectedId);
   // Tous les individus, dans l'ordre de la grille des unités (roster, puis niveaux décroissants,
@@ -312,10 +318,10 @@ export default function CivilizationScreen({
                 key={key}
                 species={species}
                 owned={members.length}
-                open={openKey === key}
+                open={openKeys.has(key)}
                 onToggle={() => toggle(key)}
               >
-                {openKey === key && levelGroups(members).map((group) => {
+                {openKeys.has(key) && levelGroups(members).map((group) => {
                   const addId = nextToAdd(army, group);
                   const removeId = nextToRemove(army, group);
                   return (
