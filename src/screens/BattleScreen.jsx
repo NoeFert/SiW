@@ -77,15 +77,19 @@ export default function BattleScreen({
   return (
     // ui-battle-screen-decisions.md 1 : tour de commandement à gauche, terrain à droite,
     // côte à côte (jamais superposés). `dark` : thème sombre des composants 8bitcn de la tour.
-    <div className="relative flex w-full h-full min-h-[720px]">
-      <div className="dark flex-none h-full w-[clamp(300px,24%,400px)]">
-        <CommandTower playerFaction={playerFaction} />
+    // GRAPHICS.md « Interface » : la tour et le terrain vont jusqu'au bord de la fenêtre, padding
+    // du jeu compris (-inset-game) ; seul « Skip » reste dans le padding.
+    <div className="relative h-full w-full">
+      <div className="absolute -inset-game flex">
+        <div className="dark flex-none h-full w-[clamp(300px,24%,400px)]">
+          <CommandTower playerFaction={playerFaction} />
+        </div>
+        <div id="phaser-root" ref={containerRef} className="flex-1 min-w-0 h-full" />
+        <TutorialOverlay />
+        {onSkip && (
+          <Button onClick={onSkip} className="absolute top-game right-game z-50">{TEXT.skip}</Button>
+        )}
       </div>
-      <div id="phaser-root" ref={containerRef} className="flex-1 min-w-0 h-full" />
-      <TutorialOverlay />
-      {onSkip && (
-        <Button onClick={onSkip} className="absolute top-0 right-0 z-50">{TEXT.skip}</Button>
-      )}
     </div>
   );
 }

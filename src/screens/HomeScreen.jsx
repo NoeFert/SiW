@@ -66,9 +66,9 @@ export default function HomeScreen({
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 text-white">
-      {/* Fond jusqu'au bord de la fenêtre, padding de 30 px compris (-inset-7.5), sans lissage. */}
+      {/* Fond jusqu'au bord de la fenêtre, padding du jeu compris (-inset-game), sans lissage. */}
       <div
-        className="pixelated absolute -inset-7.5 bg-cover bg-center"
+        className="pixelated absolute -inset-game bg-cover bg-center"
         style={{ backgroundImage: `url(${HOME_BACKGROUNDS[playerFaction]})` }}
       />
       <SpiritStonesBalance amount={spiritStones} />
@@ -95,8 +95,8 @@ export default function HomeScreen({
         <MenuItem onClick={onOpenSummon}>{TEXT.home.summon}</MenuItem>
       </nav>
       <HomeWanderer playerFaction={playerFaction} />
-      {/* Fontaine posée sur le sol du château du fond : son bas à 40 px du bas de la fenêtre (le
-          padding du jeu en fait déjà 30). */}
+      {/* Fontaine posée sur le sol du château du fond, dans le padding du jeu comme le reste du
+          contenu. */}
       <div className="absolute left-2 -bottom-0.5">
         <SpiritFountain playerLevel={progress.level} onHarvest={collect} />
       </div>

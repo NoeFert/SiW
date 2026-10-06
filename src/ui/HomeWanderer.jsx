@@ -135,9 +135,9 @@ export default function HomeWanderer({ playerFaction }) {
 
   if (crowd.species.length === 0) return null;
   return (
-    // Couloir sur toute la largeur de la fenêtre (padding de 30 px compris), en bas de l'accueil.
+    // Couloir sur toute la largeur de la fenêtre (padding du jeu compris), en bas de l'accueil.
     // Découpé sur les côtés seulement (unités hors écran cachées), pas en haut : le sursaut dépasse.
-    <div className="pointer-events-none absolute -right-7.5 -bottom-0.5 -left-7.5 h-14.5 overflow-x-clip">
+    <div className="pointer-events-none absolute -right-game -bottom-0.5 -left-game h-14.5 overflow-x-clip">
       {crowd.species.map((species, i) => (
         <Wanderer key={`${crowd.id}-${i}`} species={species} leaving={leaving} onLeft={onLeft} />
       ))}

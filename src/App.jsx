@@ -306,7 +306,7 @@ export default function App() {
           autres (l'accueil le couvre de son château). */}
       <div
         data-faction={playerFaction ?? undefined}
-        className={`h-full p-12 ${['intro', 'factionChoice', 'battle'].includes(screen)
+        className={`h-full p-game ${['intro', 'factionChoice', 'battle'].includes(screen)
           ? 'bg-neutral-900'
           : 'bg-linear-to-b from-[#2a2c2f] to-[#838796]'}`}
       >

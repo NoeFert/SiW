@@ -34,12 +34,16 @@ function FactionColumn({ faction, onChoose }) {
 
 // technical.md 5.1 : affiché une seule fois, au tout début d'une partie. Purement React, aucune
 // dépendance à Phaser (rules.md 9 : le choix détermine le roster joué et celui de l'IA).
+// Les deux colonnes (souverains en fond, séparateur) vont jusqu'au bord de la fenêtre, padding du
+// jeu compris (-inset-game) ; leur contenu reste centré, loin des bords.
 export default function FactionChoiceScreen({ onChoose }) {
   return (
-    <div className="relative h-full w-full flex text-white">
-      <FactionColumn faction="wyrms" onChoose={onChoose} />
-      <div className="w-1 bg-white/20" />
-      <FactionColumn faction="undead" onChoose={onChoose} />
+    <div className="relative h-full w-full text-white">
+      <div className="absolute -inset-game flex">
+        <FactionColumn faction="wyrms" onChoose={onChoose} />
+        <div className="w-1 bg-white/20" />
+        <FactionColumn faction="undead" onChoose={onChoose} />
+      </div>
       <h1 className="retro absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-3 bg-neutral-900 text-lg whitespace-nowrap pointer-events-none">
         {TEXT.chooseFaction}
       </h1>
