@@ -1,6 +1,9 @@
 import {
-  warBattleState, isWarCompleted, victoryReward, lossReport, resolveWarDefeat,
+  warBattleState, isWarCompleted, victoryReward, lossReport, resolveWarDefeat, invaderSpecies,
+  invadersRepelled,
 } from '../../src/logic/war.js';
+import { WAR_MAP_1 } from '../../src/data/warMaps.js';
+import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
 import { createArmy } from '../../src/logic/army.js';
 import { BATTLES, WAR_BATTLE_IDS } from '../../src/data/battles.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
@@ -112,5 +115,27 @@ describe('défaite dans « Partir en guerre » (rules.md 11.7)', () => {
   test('armée entièrement tuée : armée vide', () => {
     const { save: wiped } = resolveWarDefeat(save, units.map((u) => deployed(u.id, { alive: false })), WYRMS_ROSTER);
     expect(wiped.army.unitIds).toEqual([]);
+  });
+});
+
+describe('envahisseurs de la map 1 (rules.md 11.7)', () => {
+  test('trois emplacements d\'envahisseur : intersection du haut, intersection de droite, boss', () => {
+    const invaders = WAR_MAP_1.nodes.filter((node) => node.invader);
+    expect(invaders.map(({ id, invader }) => [id, invader])).toEqual([
+      ['low4', 'basic'], ['top3', 'flying'], ['boss', 'legendary'],
+    ]);
+  });
+
+  test('chaque rôle désigne l\'espèce ennemie correspondante', () => {
+    expect(['basic', 'flying', 'legendary'].map((role) => invaderSpecies(WYRMS_ROSTER, role).name))
+      .toEqual(['Lambton Worm', 'Amphiptère', 'Fafnir the Cursed One']);
+    expect(['basic', 'flying', 'legendary'].map((role) => invaderSpecies(UNDEAD_ROSTER, role).name))
+      .toEqual(['New-reborn Skeleton', 'Necromant Initiate', 'Athos the Lord of Pain']);
+  });
+
+  test('compte les envahisseurs repoussés : emplacements d\'envahisseur dont la bataille est gagnée', () => {
+    expect(invadersRepelled(WAR_MAP_1.nodes, IDS)).toEqual({ repelled: 0, total: 3 });
+    const nodes = [{ invader: 'basic', battle: 'b1' }, { invader: 'flying', battle: 'b2' }, { battle: 'b3' }];
+    expect(invadersRepelled(nodes, ['b1', 'b3'])).toEqual({ repelled: 1, total: 2 });
   });
 });

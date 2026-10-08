@@ -128,6 +128,7 @@ export const TEXT = {
     fight: 'Combattre',
     emptyArmy: 'Composez votre armée',
     completed: "D'autres terres à conquérir arrivent bientôt…",
+    invaders: (repelled, total) => `Repousse l'envahisseur ${repelled}/${total}`, // objectif de la map (rules.md 11.7)
   },
   defeat: {
     title: 'Défaite',

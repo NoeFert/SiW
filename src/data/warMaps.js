@@ -3,7 +3,9 @@
 // bas) et les liens qui les relient. Deux emplacements liés sont toujours sur la même ligne ou la
 // même colonne, sans autre emplacement ni autre lien entre eux (connecteur droit). `battle` :
 // bataille de WAR_BATTLE_IDS (src/data/battles.js) portée par l'emplacement ; les autres sont
-// affichés verrouillés, en attendant leurs batailles.
+// affichés verrouillés, en attendant leurs batailles. `invader` : emplacement d'une bataille de boss,
+// surmonté d'un envahisseur — le sprite de l'espèce ennemie de ce rôle ('basic', 'flying' ou
+// 'legendary', voir invaderSpecies dans src/logic/war.js).
 //
 // Map 1 : trois chemins du départ (en bas à gauche) au boss (en haut à droite), de longueurs
 // inégales — par la gauche puis le haut, par le milieu, par le bas puis la droite —, deux
@@ -18,7 +20,7 @@ export const WAR_MAP_1 = {
     { id: 'low1', col: 2, row: 6, battle: 'war2' },
     { id: 'low2', col: 4, row: 6, battle: 'war3' },
     { id: 'low3', col: 7, row: 6 },
-    { id: 'low4', col: 7, row: 4 },
+    { id: 'low4', col: 7, row: 4, invader: 'basic' },
     { id: 'low5', col: 9, row: 4 },
     // Chemin du milieu (part du chemin du bas, le rejoint avant le boss).
     { id: 'mid1', col: 2, row: 4 },
@@ -28,11 +30,11 @@ export const WAR_MAP_1 = {
     // Chemin de gauche, puis du haut.
     { id: 'top1', col: 0, row: 2 },
     { id: 'top2', col: 3, row: 2 },
-    { id: 'top3', col: 3, row: 0 },
+    { id: 'top3', col: 3, row: 0, invader: 'flying' },
     { id: 'top4', col: 6, row: 0 },
     { id: 'top5', col: 6, row: 1 },
     // Arrivée commune : la bataille de boss.
-    { id: 'boss', col: 9, row: 1, boss: true },
+    { id: 'boss', col: 9, row: 1, boss: true, invader: 'legendary' },
     // Impasses.
     { id: 'deadA', col: 2, row: 3 },
     { id: 'deadB', col: 9, row: 6 },

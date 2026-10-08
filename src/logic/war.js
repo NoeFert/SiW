@@ -19,6 +19,26 @@ export function isWarCompleted(battleIds, wonIds) {
   return battleIds.every((id) => wonIds.includes(id));
 }
 
+// rules.md 11.7 : espèce ennemie qui surmonte un emplacement d'envahisseur, selon son rôle —
+// 'legendary' ([Légendaire]), 'flying' ([Vol], hors [Légendaire]) ou 'basic' (sans keyword).
+export function invaderSpecies(enemyRoster, role) {
+  return Object.values(enemyRoster).find(({ keywords }) => {
+    if (role === 'legendary') return keywords.includes('legendary');
+    if (role === 'flying') return keywords.includes('flying') && !keywords.includes('legendary');
+    return keywords.length === 0;
+  });
+}
+
+// rules.md 11.7 : objectif de la map, repousser ses envahisseurs — nombre d'emplacements
+// d'envahisseur dont la bataille est gagnée, sur leur total.
+export function invadersRepelled(nodes, wonIds) {
+  const invaders = nodes.filter((node) => node.invader);
+  return {
+    repelled: invaders.filter((node) => wonIds.includes(node.battle)).length,
+    total: invaders.length,
+  };
+}
+
 // rules.md 11.7 : Spirit Stones d'une victoire — pleine la première fois, REPLAY_REWARD_PERCENT
 // au rejeu (arrondi à l'entier inférieur ; 0 actuellement).
 export function victoryReward(fullReward, alreadyWon) {

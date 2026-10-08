@@ -1,11 +1,12 @@
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 
-export default function SpeciesSprite({ species, className }) {
+export default function SpeciesSprite({ species, className, style }) {
   return (
     <img
       src={spritePath(SPECIES_SPRITES[species.name].key)}
       alt=""
       className={`pixelated object-contain ${className}`}
+      style={style}
     />
   );
 }

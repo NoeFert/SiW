@@ -5,10 +5,15 @@ import { BATTLES, WAR_BATTLE_IDS } from '../data/battles.js';
 import { WAR_MAP_1 } from '../data/warMaps.js';
 import { armyUnits } from '../logic/army.js';
 import { victoryPlayerXp } from '../logic/levels.js';
-import { isWarCompleted, victoryReward, warBattleState } from '../logic/war.js';
+import { ROSTERS } from '../data/rosters.js';
+import { SPECIES_SPRITES } from '../data/sprites.js';
+import {
+  invaderSpecies, invadersRepelled, isWarCompleted, victoryReward, warBattleState,
+} from '../logic/war.js';
 import { getArmy, getOwnedUnits, getWonWarBattles } from '../persistence.js';
 import RewardRow from '../ui/RewardRow.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
+import SpeciesSprite from '../ui/SpeciesSprite.jsx';
 import { TEXT } from '../ui/strings.js';
 
 const T = TEXT.war;
@@ -62,6 +67,28 @@ function Slot({ node, color, selected, onSelect }) {
   );
 }
 
+// Envahisseur posé au-dessus de son emplacement : le sprite de l'espèce ennemie, tourné vers la
+// gauche comme l'IA en bataille (rules.md 2), plus grand pour le [Légendaire], à INVADER_GAP de la
+// pointe haute du losange. Assombri, il s'éclaire quand son losange est sélectionné, pour montrer
+// qu'ils vont ensemble.
+const INVADER_SIZE = { basic: 40, flying: 40, legendary: 64 };
+const INVADER_GAP = 5;
+function Invader({ node, enemyRoster, selected }) {
+  const species = invaderSpecies(enemyRoster, node.invader);
+  const size = INVADER_SIZE[node.invader];
+  const { x, y } = slotCenter(node);
+  const flip = SPECIES_SPRITES[species.name].facing === 'right' ? '-scale-x-100' : '';
+  return (
+    <SpeciesSprite
+      species={species}
+      className={`pointer-events-none absolute ${flip} ${selected ? 'brightness-125' : 'brightness-75'}`}
+      style={{
+        left: x - size / 2, top: y - slotSize(node) / 2 - INVADER_GAP - size, width: size, height: size,
+      }}
+    />
+  );
+}
+
 // Connecteur droit entre deux emplacements liés (même ligne ou même colonne), de pointe à pointe.
 // Gris dès qu'un des deux bouts est verrouillé.
 function Connector({ from, to, color }) {
@@ -105,6 +132,15 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
   );
   const current = byId.get(selectedId);
   const replay = current.state === 'won'; // rules.md 11.7 : rejeu d'une bataille déjà gagnée
+  const enemyRoster = ROSTERS[playerFaction === 'wyrms' ? 'undead' : 'wyrms'];
+  const invaders = invadersRepelled(nodes, wonIds);
+  // Marges de la map, pour que rien ne dépasse et que la mise en page ne bouge pas avec la
+  // sélection : en haut, les envahisseurs de la ligne du haut ; en bas, le sélecteur (une fois et
+  // demie le losange) d'un emplacement de la ligne du bas.
+  const mapMarginTop = Math.max(0, ...nodes.filter((node) => node.invader).map(
+    (node) => INVADER_SIZE[node.invader] + INVADER_GAP + slotSize(node) / 2 - slotCenter(node).y,
+  ));
+  const mapMarginBottom = SLOT / 4;
 
   return (
     <ScreenLayout
@@ -118,12 +154,18 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
         />
       )}
     >
-      <div className="flex min-h-full flex-col gap-6">
+      <div className="flex min-h-full flex-col gap-2">
         {armyIsEmpty && <p className="text-xs text-red-400">{T.emptyArmy}</p>}
+        <p className="retro text-sm">{T.invaders(invaders.repelled, invaders.total)}</p>
         <div className="flex flex-1 items-center justify-center gap-16">
           <div
             className="relative shrink-0"
-            style={{ width: SLOT + (WAR_MAP_1.cols - 1) * STEP, height: SLOT + (WAR_MAP_1.rows - 1) * STEP }}
+            style={{
+              width: SLOT + (WAR_MAP_1.cols - 1) * STEP,
+              height: SLOT + (WAR_MAP_1.rows - 1) * STEP,
+              marginTop: mapMarginTop,
+              marginBottom: mapMarginBottom,
+            }}
           >
             {WAR_MAP_1.links.map(([a, b]) => {
               const from = byId.get(a);
@@ -138,6 +180,14 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
                 color={color}
                 selected={node.id === selectedId}
                 onSelect={() => setSelectedId(node.id)}
+              />
+            ))}
+            {nodes.filter((node) => node.invader).map((node) => (
+              <Invader
+                key={`invader-${node.id}`}
+                node={node}
+                enemyRoster={enemyRoster}
+                selected={node.id === selectedId}
               />
             ))}
           </div>
