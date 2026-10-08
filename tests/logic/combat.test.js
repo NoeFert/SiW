@@ -178,6 +178,19 @@ describe('resolveCombatTick — attaque à distance (rules.md 4.5)', () => {
     const meleeEvents = resolveCombatTick([fafnirMelee, adjacentDummy], grid, fafnirMelee.species.attackSpeed);
     expect(meleeEvents.some((e) => e.type === 'rangedAttack')).toBe(false);
   });
+
+  test('un coup au corps-à-corps émet un évènement meleeAttack, pas un tir', () => {
+    const grid = new Grid(10, 10);
+    const fafnirMelee = new Unit(WYRMS_ROSTER.fafnir, 'player', 0, 0);
+    const adjacentDummy = new Unit(DUMMY, 'enemy', 2, 0);
+    const events = resolveCombatTick([fafnirMelee, adjacentDummy], grid, fafnirMelee.species.attackSpeed);
+    expect(events).toContainEqual({ type: 'meleeAttack', unit: fafnirMelee, target: adjacentDummy });
+
+    const shooter = new Unit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
+    const farDummy = new Unit(DUMMY, 'enemy', 3, 0);
+    const rangedEvents = resolveCombatTick([shooter, farDummy], grid, shooter.species.attackSpeed);
+    expect(rangedEvents.some((e) => e.type === 'meleeAttack')).toBe(false);
+  });
 });
 
 describe('aptitudes automatiques (rules.md 6, units.md)', () => {

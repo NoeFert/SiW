@@ -207,8 +207,9 @@ function processMoveCommand(unit, grid, aliveUnits, deltaSeconds) {
 // rules.md 4.1 : toutes les attaques du tick sont calculées (queueAttack) avant d'être appliquées
 // ici ensemble — aucune unité ne peut mourir "avant" une autre au sein du même tick. Renvoie la
 // liste des évènements d'aptitude déclenchés ce tick (voir applyPeriodicAbilities), plus un
-// évènement 'rangedAttack' par tir à distance porté (rules.md 4.5), pour un éventuel feedback
-// visuel côté Phaser — combat.js ne sait rien du rendu lui-même.
+// évènement 'rangedAttack' par tir à distance porté (rules.md 4.5) ou 'meleeAttack' par coup au
+// corps-à-corps porté (rules.md 4.2), pour le feedback visuel côté Phaser — combat.js ne sait
+// rien du rendu lui-même.
 // Le résultat ne dépend jamais de l'ordre des attaques dans la liste : une paralysie posée ce
 // tick ne vise que les attaques suivantes (ticks suivants), et quand plusieurs attaques du même
 // tick tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal pour
@@ -226,7 +227,7 @@ function applyAttacks(pendingAttacks) {
       continue;
     }
 
-    if (mode === 'ranged') events.push({ type: 'rangedAttack', unit: attacker, target });
+    events.push({ type: mode === 'ranged' ? 'rangedAttack' : 'meleeAttack', unit: attacker, target });
     const baseDamage = damageFor(attacker, mode);
     if (!free) attacker.attacksLanded += 1;
     const { damage, paralyzes, triggered } = free

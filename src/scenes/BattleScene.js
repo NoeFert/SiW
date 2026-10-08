@@ -43,17 +43,24 @@ const PROJECTILE_EFFECTS = {
 };
 const PROJECTILE_FLIGHT_MS = 220;
 
+// GRAPHICS.md « Corps-à-corps » : entaille blanche (6e ligne de assets/effect/hit-slash.png, 8 étapes)
+// jouée une fois sur la victime à chaque coup au corps-à-corps, à la taille de son emprise.
+const MELEE_EFFECT = {
+  key: 'hit-slash', path: 'effect/hit-slash.png', frames: 8, row: 5, scale: 1,
+};
+const MELEE_EFFECT_MS = 300;
+
 // GRAPHICS.md « Aptitudes » : animation jouée sur l'unité touchée par une aptitude, tirée des
 // mêmes planches d'effets (64 × 64, une ligne par couleur). `scale` : taille par rapport à
 // l'emprise de l'unité ; `repeat` : -1 = en boucle.
 const ABILITY_EFFECTS = {
   // Vert, Frappe paralysante (Athos) : en boucle sur la victime tant qu'elle est paralysée.
   paralyze: {
-    key: 'effect-133', path: 'effect/133.png', frames: 12, row: 3, scale: 1, repeat: -1,
+    key: 'hit-swirl', path: 'effect/hit-swirl.png', frames: 12, row: 3, scale: 1, repeat: -1,
   },
   // Orange, Attaque dévastatrice (Fafnir) : une fois, sur la victime.
   bonusDamage: {
-    key: 'effect-527', path: 'effect/527.png', frames: 13, row: 0, scale: 2, repeat: 0,
+    key: 'hit-spikes', path: 'effect/hit-spikes.png', frames: 13, row: 0, scale: 2, repeat: 0,
   },
 };
 const ABILITY_EFFECT_MS = 1500;
@@ -100,7 +107,9 @@ export default class BattleScene extends Phaser.Scene {
     for (const color of Object.values(ABILITY_COUNTER_COLORS)) {
       for (const part of ['background', 'fill']) this.load.image(`step-slot-${color}-${part}`, `ui/step-slot-${color}-${part}.png`);
     }
-    for (const { key, path } of [...Object.values(PROJECTILE_EFFECTS), ...Object.values(ABILITY_EFFECTS)]) {
+    for (const { key, path } of [
+      ...Object.values(PROJECTILE_EFFECTS), ...Object.values(ABILITY_EFFECTS), MELEE_EFFECT,
+    ]) {
       this.load.spritesheet(key, path, { frameWidth: CELL_SIZE, frameHeight: CELL_SIZE });
     }
   }
@@ -125,6 +134,14 @@ export default class BattleScene extends Phaser.Scene {
         frames: this.anims.generateFrameNumbers(key, { start: row * frames, end: row * frames + frames - 1 }),
         duration: ABILITY_EFFECT_MS,
         repeat,
+      });
+    }
+    if (!this.anims.exists(MELEE_EFFECT.key)) {
+      const { key, frames, row } = MELEE_EFFECT;
+      this.anims.create({
+        key,
+        frames: this.anims.generateFrameNumbers(key, { start: row * frames, end: row * frames + frames - 1 }),
+        duration: MELEE_EFFECT_MS,
       });
     }
     // Cases du compteur d'aptitude : pixel art agrandi, sans lissage.
@@ -316,6 +333,8 @@ export default class BattleScene extends Phaser.Scene {
         this.pulseHealthBar(event.unit);
       } else if (event.type === 'rangedAttack') {
         this.fireProjectile(event.unit, event.target);
+      } else if (event.type === 'meleeAttack') {
+        this.playAbilityEffect(event.target, MELEE_EFFECT, 0);
       }
     }
   }

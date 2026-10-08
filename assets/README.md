@@ -40,8 +40,9 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 Effect spritesheets: 64×64 frames, one row per color (9 colors), one column per animation step.
 - `missile-burst.png` — Wyrms missile (15 frames; orange row)
 - `missile-streak.png` — Undead missile (8 frames; green row)
-- `133.png` — hit effect on a unit paralyzed by Athos (12 frames; green row)
-- `527.png` — hit effect on a unit struck by Fafnir's devastating attack (13 frames; orange row, the first one)
+- `hit-slash.png` — slash on a unit hit in melee (8 frames; white row, the 6th)
+- `hit-swirl.png` — swirl on a unit paralyzed by Athos (12 frames; green row)
+- `hit-spikes.png` — spikes on a unit struck by Fafnir's devastating attack (13 frames; orange row, the first one)
 
 ## backgrounds/
 - `battlefield-01.png` — First battlefield background (v1 scripted battle)
