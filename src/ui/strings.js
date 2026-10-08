@@ -41,7 +41,7 @@ export const TEXT = {
   defaultArmyName: 'Armée 1', // rules.md 10 : nom de l'armée de départ
   // Tooltip provisoire de la Spirit Fountain (rules.md 11.8) : `seconds` = durée de production
   // d'une Spirit Stone.
-  fountainTooltip: (seconds) => `Cette statue génère des Spirit Stones toutes les ${seconds} secondes. Puisse le souverain faire bon usage de cette ressource précieuse.`,
+  fountainTooltip: (amount, seconds) => `Cette statue génère ${amount} Spirit Stones toutes les ${seconds} secondes. Puisse le souverain faire bon usage de cette ressource précieuse.`,
   spiritStones: (amount) => `${amount} Spirit Stones`, // nom provisoire (rules.md 11.3)
   // Niveaux (rules.md 11.5 et 11.6).
   levels: {

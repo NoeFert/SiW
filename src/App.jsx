@@ -113,7 +113,7 @@ export default function App() {
 
   // technical.md 5.4 : dans la bataille 01, pertes et XP ne sont comptées qu'à la victoire — une
   // tentative ratée ne sauvegarde rien. La victoire (resolveVictory, rules.md 11) retire les
-  // morts, donne l'XP et la récompense (réduite au rejeu, 11.7), crée l'armée de départ après la
+  // morts, donne l'XP et la récompense (réduites au rejeu, 11.7), crée l'armée de départ après la
   // bataille 01, retient les batailles de guerre gagnées. Rien n'est sauvegardé en mode
   // clickbait : on y affiche à la place le bilan des unités en vie/perdues.
   // `battleUnits` : unités de la bataille (battle.units) ; vide quand la bataille 01 est passée
@@ -134,6 +134,7 @@ export default function App() {
         firstBattle: battleId === FIRST_BATTLE_ID,
         armyName: TEXT.defaultArmyName,
         reward: victoryReward(BATTLES[battleId].reward, wonIds.includes(battleId)),
+        replay: wonIds.includes(battleId),
       },
     );
     saveOwnedUnits(save.units);

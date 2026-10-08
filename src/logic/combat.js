@@ -211,8 +211,9 @@ function processMoveCommand(unit, grid, aliveUnits, deltaSeconds) {
 // visuel côté Phaser — combat.js ne sait rien du rendu lui-même.
 // Le résultat ne dépend jamais de l'ordre des attaques dans la liste : une paralysie posée ce
 // tick ne vise que les attaques suivantes (ticks suivants), et quand plusieurs attaques du même
-// tick tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal —
-// sauf s'il meurt lui-même ce tick (un mort ne se soigne pas).
+// tick tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal pour
+// les aptitudes — sauf s'il meurt lui-même ce tick (un mort ne se soigne pas) — mais un seul
+// gagne l'XP du coup fatal (rules.md 11.6).
 function applyAttacks(pendingAttacks) {
   const events = [];
   const landed = [];
@@ -240,14 +241,25 @@ function applyAttacks(pendingAttacks) {
   // units.md : une nouvelle paralysie remet le compteur à sa valeur, sans cumul.
   for (const { target, attacks } of toParalyze) target.paralyzedAttacks = attacks;
 
-  const credited = new Set();
-  for (const { attacker, target, targetWasAlive } of landed) {
-    const key = `${attacker.id}->${target.id}`;
-    if (!targetWasAlive || target.isAlive || !attacker.isAlive || credited.has(key)) continue;
-    credited.add(key);
-    attacker.killXp += target.species.cost; // rules.md 11.6 : XP du coup fatal, chaque tueur
-    const healed = applyOnKillAbilities(attacker);
-    if (healed > 0) events.push({ type: 'heal', unit: attacker, amount: healed });
+  // Tueurs de chaque cible tuée ce tick (vivants), avec les dégâts qu'ils lui ont infligés ce tick.
+  const killers = new Map(); // cible -> Map(attaquant -> dégâts)
+  for (const { attacker, target, damage, targetWasAlive } of landed) {
+    if (!targetWasAlive || target.isAlive || !attacker.isAlive) continue;
+    if (!killers.has(target)) killers.set(target, new Map());
+    const byAttacker = killers.get(target);
+    byAttacker.set(attacker, (byAttacker.get(attacker) ?? 0) + damage);
+  }
+
+  for (const [target, byAttacker] of killers) {
+    // rules.md 4.1 : chaque tueur compte pour les aptitudes au coup fatal (Soif de sang).
+    for (const attacker of byAttacker.keys()) {
+      const healed = applyOnKillAbilities(attacker);
+      if (healed > 0) events.push({ type: 'heal', unit: attacker, amount: healed });
+    }
+    // rules.md 11.6 : un seul tueur gagne l'XP — le plus de dégâts ce tick, puis le premier
+    // déployé (identifiant d'unité le plus petit : les identifiants suivent l'ordre de création).
+    const [xpKiller] = [...byAttacker].sort(([a, da], [b, db]) => db - da || a.id - b.id)[0];
+    xpKiller.killXp += target.species.cost;
   }
 
   return events;

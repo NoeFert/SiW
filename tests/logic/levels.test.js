@@ -55,10 +55,19 @@ const battleUnit = (individualId, { alive = true, killXp = 0, level = 1, faction
 });
 
 describe('XP des individus à la victoire (rules.md 11.6)', () => {
-  test('+10 pour un individu déployé et vivant, + coût des ennemis achevés', () => {
+  test('+40 pour un individu déployé et vivant, + coût des ennemis achevés', () => {
     const { gains } = individualXpGains([battleUnit('a'), battleUnit('b', { killXp: 16 })]);
+    expect(gains.get('a')).toBe(40);
+    expect(gains.get('b')).toBe(56);
+  });
+
+  test('rejeu : 25 % du total (survie + kills), arrondi inférieur', () => {
+    const { gains, dead } = individualXpGains([
+      battleUnit('a'), battleUnit('b', { killXp: 16 }), battleUnit('c', { alive: false, level: 2 }),
+    ], true);
     expect(gains.get('a')).toBe(10);
-    expect(gains.get('b')).toBe(26);
+    expect(gains.get('b')).toBe(14); // 56 × 25 % = 14
+    expect(dead.get('c')).toBe(2); // les morts restent comptés
   });
 
   test('un individu mort ne gagne rien, même s\'il avait tué ; son niveau est retenu', () => {
@@ -69,7 +78,7 @@ describe('XP des individus à la victoire (rules.md 11.6)', () => {
 
   test('plusieurs déploiements (fuite puis retour) : kills cumulés, survie comptée une fois', () => {
     const { gains } = individualXpGains([battleUnit('a', { killXp: 6 }), battleUnit('a', { killXp: 25 })]);
-    expect(gains.get('a')).toBe(41);
+    expect(gains.get('a')).toBe(71);
   });
 
   test('mort après une fuite et un redéploiement : rien', () => {
@@ -150,6 +159,12 @@ describe('niveau du joueur (rules.md 11.5)', () => {
     expect(victoryPlayerXp(375, 375)).toBe(200);
     expect(victoryPlayerXp(375, 0)).toBe(100);
     expect(victoryPlayerXp(300, 199)).toBe(166);
+  });
+
+  test('rejeu : 25 % de ce gain, arrondi inférieur (25 à 50 XP)', () => {
+    expect(victoryPlayerXp(375, 375, true)).toBe(50);
+    expect(victoryPlayerXp(375, 0, true)).toBe(25);
+    expect(victoryPlayerXp(300, 199, true)).toBe(41); // 166 × 25 %
   });
 
   test('récompense : 50 × nouveau niveau, chaque niveau franchi compté', () => {

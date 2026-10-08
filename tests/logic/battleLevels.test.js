@@ -119,16 +119,48 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     expect(worm.killXp).toBe(6);
   });
 
-  test('coup fatal simultané : chaque tueur gagne la totalité du coût', () => {
+  test('coup fatal simultané, mêmes dégâts : seul le premier déployé gagne le coût', () => {
     const grid = new Grid(10, 10);
     const left = striker(0);
     const right = striker(2);
     const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
-    resolveCombatTick([left, right, skeleton], grid, 0.02);
+    resolveCombatTick([right, left, skeleton], grid, 0.02); // l'ordre de la liste ne compte pas
 
     expect(left.killXp).toBe(6);
+    expect(right.killXp).toBe(0);
+  });
+
+  test('coup fatal simultané : le tueur qui inflige le plus de dégâts gagne le coût', () => {
+    const grid = new Grid(10, 10);
+    const left = striker(0);
+    const right = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 2, 0, 5); // niveau 5 : 11 dégâts
+    right.status = 'engaged';
+    right.attackTimer = right.species.attackSpeed - 0.01;
+    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    skeleton.hp = 1;
+
+    resolveCombatTick([left, right, skeleton], grid, 0.02);
+
+    expect(left.killXp).toBe(0);
+    expect(right.killXp).toBe(6);
+  });
+
+  test('coup fatal simultané : un tueur qui meurt au même instant est écarté', () => {
+    const grid = new Grid(10, 10);
+    const left = striker(0);
+    left.hp = 1;
+    const right = striker(2);
+    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    skeleton.hp = 1;
+    skeleton.status = 'engaged';
+    skeleton.target = left;
+    skeleton.attackTimer = skeleton.species.attackSpeed - 0.01;
+
+    resolveCombatTick([left, right, skeleton], grid, 0.02);
+
+    expect(left.isAlive).toBe(false);
     expect(right.killXp).toBe(6);
   });
 

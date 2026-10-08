@@ -12,10 +12,13 @@ import { lossReport } from './war.js';
 // `battleUnits` : toutes les unités de la bataille (battle.units).
 // `firstBattle` : bataille 01 — XP du joueur fixe, et armée de départ créée avec tous les
 // survivants (`armyName`) ; sinon, bonus selon les PP survivants de l'armée, morts retirés de
-// l'armée. `reward` : Spirit Stones de la victoire (rules.md 11.7, déjà réduite au rejeu).
+// l'armée. `reward` : Spirit Stones de la victoire (rules.md 11.7, déjà nulle au rejeu).
+// `replay` : rejeu d'une bataille déjà gagnée — XP du joueur et des individus à 25 % (11.5, 11.6).
 // Renvoie la nouvelle sauvegarde et le bilan affiché sur l'écran de victoire (technical.md 5.3).
-export function resolveVictory(save, battleUnits, roster, { firstBattle, armyName, reward = 0 }) {
-  const xpGains = individualXpGains(battleUnits);
+export function resolveVictory(save, battleUnits, roster, {
+  firstBattle, armyName, reward = 0, replay = false,
+}) {
+  const xpGains = individualXpGains(battleUnits, replay);
   // rules.md 11.1 / 11.6 : morts retirés, XP des survivants déployés.
   const units = applyVictoryToUnits(save.units, xpGains);
 
@@ -26,7 +29,7 @@ export function resolveVictory(save, battleUnits, roster, { firstBattle, armyNam
   // rules.md 11.5 : XP du joueur (100 fixes pour la bataille 01).
   const xpGained = firstBattle
     ? FIRST_BATTLE_PLAYER_XP
-    : victoryPlayerXp(armyCost(save.army, save.units, roster), armyCost(save.army, units, roster));
+    : victoryPlayerXp(armyCost(save.army, save.units, roster), armyCost(save.army, units, roster), replay);
   const playerXp = save.playerXp + xpGained;
 
   // rules.md 11.2 : armée de départ avec tous les survivants, sinon morts retirés de l'armée.

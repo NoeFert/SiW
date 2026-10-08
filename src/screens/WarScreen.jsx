@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { BATTLES, WAR_BATTLE_IDS } from '../data/battles.js';
 import { WAR_MAP_1 } from '../data/warMaps.js';
 import { armyUnits } from '../logic/army.js';
-import { SURVIVORS_BONUS_XP, VICTORY_PLAYER_XP } from '../logic/levels.js';
+import { victoryPlayerXp } from '../logic/levels.js';
 import { isWarCompleted, victoryReward, warBattleState } from '../logic/war.js';
 import { getArmy, getOwnedUnits, getWonWarBattles } from '../persistence.js';
 import RewardRow from '../ui/RewardRow.jsx';
@@ -104,6 +104,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
     () => nodes.findLast((node) => node.battle && node.state !== 'locked')?.id ?? nodes[0].id,
   );
   const current = byId.get(selectedId);
+  const replay = current.state === 'won'; // rules.md 11.7 : rejeu d'une bataille déjà gagnée
 
   return (
     <ScreenLayout
@@ -148,12 +149,15 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
             <Button size="sm" disabled={current.state === 'locked' || armyIsEmpty} onClick={() => onFight(current.battle)}>
               {T.fight}
             </Button>
-            {/* Récompenses de la prochaine victoire : Spirit Stones (pleine ou réduite au rejeu,
-                rules.md 11.7) et XP du joueur (100 + jusqu'à 100 selon les PP survivants, 11.5). */}
+            {/* Récompenses de la prochaine victoire : Spirit Stones (0 au rejeu, rules.md 11.7) et
+                XP du joueur (100 + jusqu'à 100 selon les PP survivants, 25 % au rejeu, 11.5). */}
             {current.state !== 'locked' && (
               <RewardRow
-                spiritStones={victoryReward(BATTLES[current.battle].reward, current.state === 'won')}
-                xp={T.xpRange(VICTORY_PLAYER_XP, VICTORY_PLAYER_XP + SURVIVORS_BONUS_XP)}
+                spiritStones={victoryReward(BATTLES[current.battle].reward, replay)}
+                xp={T.xpRange(
+                  victoryPlayerXp(1, 0, replay),
+                  victoryPlayerXp(1, 1, replay),
+                )}
               />
             )}
           </div>

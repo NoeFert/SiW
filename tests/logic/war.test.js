@@ -19,6 +19,35 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
     }
   });
 
+  test('scripts propres à « Partir en guerre » (11.7), coût en PP par zone selon la faction de l\'IA', () => {
+    const cost = (script) => script.reduce((sum, { species }) => sum + species.cost, 0);
+    const costs = (faction) => IDS.map((id) => BATTLES[id].phases.map((p) => cost(p.enemyScripts[faction])));
+    expect(costs('wyrms')).toEqual([[75, 65], [75, 75], [75, 150]]);
+    expect(costs('undead')).toEqual([[67, 67], [79, 79], [79, 239]]);
+  });
+
+  test('scripts : triés par instant, légendaire seulement au Fort, copies de units.md suffisantes par bataille', () => {
+    for (const id of IDS) {
+      for (const faction of ['wyrms', 'undead']) {
+        const scripts = BATTLES[id].phases.map((p) => p.enemyScripts[faction]);
+        for (const script of scripts) {
+          expect(script.map((e) => e.time)).toEqual([...script.map((e) => e.time)].sort((a, b) => a - b));
+        }
+        const all = scripts.flat();
+        for (const species of new Set(all.map((e) => e.species))) {
+          expect(all.filter((e) => e.species === species).length).toBeLessThanOrEqual(species.copies);
+        }
+        const legendaries = all.filter((e) => e.species.keywords.includes('legendary'));
+        expect(legendaries).toHaveLength(id === 'war3' ? 1 : 0);
+      }
+    }
+  });
+
+  test('le clickbait garde ses propres scripts', () => {
+    expect(BATTLES.clickbaitBattle.phases[1].enemyScripts.wyrms).toHaveLength(3);
+    expect(BATTLES.war1.phases[1].enemyScripts.wyrms).not.toBe(BATTLES.clickbaitBattle.phases[1].enemyScripts.wyrms);
+  });
+
   test('récompenses provisoires : 50 pour la bataille 01, 60 / 80 / 100 ensuite', () => {
     expect(BATTLES.firstBattle.reward).toBe(50);
     expect(IDS.map((id) => BATTLES[id].reward)).toEqual([60, 80, 100]);
@@ -41,10 +70,9 @@ describe('déblocage en séquence (rules.md 11.7)', () => {
 });
 
 describe('récompense de victoire (rules.md 11.7)', () => {
-  test('pleine la première fois, 25 % au rejeu, arrondi inférieur', () => {
+  test('pleine la première fois, rien au rejeu', () => {
     expect(victoryReward(60, false)).toBe(60);
-    expect([60, 80, 100].map((r) => victoryReward(r, true))).toEqual([15, 20, 25]);
-    expect(victoryReward(50, true)).toBe(12);
+    expect([60, 80, 100].map((r) => victoryReward(r, true))).toEqual([0, 0, 0]);
   });
 });
 

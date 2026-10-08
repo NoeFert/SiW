@@ -2,6 +2,7 @@ import {
   WYRMS_AI_SCRIPT, UNDEAD_AI_SCRIPT, WYRMS_CLICKBAIT_PHASE_1_SCRIPT, UNDEAD_CLICKBAIT_PHASE_1_SCRIPT,
   WYRMS_CLICKBAIT_PHASE_2_SCRIPT, UNDEAD_CLICKBAIT_PHASE_2_SCRIPT,
   WYRMS_CLICKBAIT_PHASE_3_SCRIPT, UNDEAD_CLICKBAIT_PHASE_3_SCRIPT,
+  WAR1_FIELD_SCRIPTS, WAR1_WALL_SCRIPTS, WAR2_SCRIPTS, WAR3_FORT_SCRIPTS,
 } from './battleScript.js';
 import {
   BATTLEFIELD_OBSTACLES, WALL_ZONE_OBSTACLES, LANES_ZONE_OBSTACLES, FORT_ZONE_OBSTACLES,
@@ -19,39 +20,23 @@ import { TRAINING_ROSTER } from './training.js';
 // - surrenderAllowed : bouton Abandonner disponible (rules.md 8.2), vrai par défaut.
 // - playerRoster : roster déployable par le joueur, celui de sa faction par défaut.
 // - training : bataille d'entraînement du menu devs (voir setupTraining, src/logic/battle.js).
-// rules.md 11.7 : zones des batailles de « Partir en guerre », avec leurs scripts IA provisoires
-// (ceux de la bataille-clickbait : champ = phase 1, « Le mur » et « Les trois couloirs » =
-// phase 2, « Le fort » = phase 3), en attendant les zones et scripts définitifs.
+// rules.md 11.7 : zones des batailles de « Partir en guerre » (obstacles et sens du fond) ; les
+// scripts de l'IA sont propres à chaque bataille (src/data/battleScript.js).
 const WAR_ZONES = {
-  field: {
-    enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_1_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_1_SCRIPT },
-    obstacles: BATTLEFIELD_OBSTACLES,
-    flippedBackground: false,
-  },
-  wall: {
-    enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_2_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_2_SCRIPT },
-    obstacles: WALL_ZONE_OBSTACLES,
-    flippedBackground: true,
-  },
-  lanes: {
-    enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_2_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_2_SCRIPT },
-    obstacles: LANES_ZONE_OBSTACLES,
-    flippedBackground: false,
-  },
-  fort: {
-    enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_3_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_3_SCRIPT },
-    obstacles: FORT_ZONE_OBSTACLES,
-    flippedBackground: false,
-  },
+  field: { obstacles: BATTLEFIELD_OBSTACLES, flippedBackground: false },
+  wall: { obstacles: WALL_ZONE_OBSTACLES, flippedBackground: true },
+  lanes: { obstacles: LANES_ZONE_OBSTACLES, flippedBackground: false },
+  fort: { obstacles: FORT_ZONE_OBSTACLES, flippedBackground: false },
 };
 
 // rules.md 11.7 : une bataille de « Partir en guerre » — deux zones, victoire dès la fin du script
-// de la dernière zone, commandes complètes et abandon, pas de tutoriel. `zones` : clés de
-// WAR_ZONES ; `reward` : Spirit Stones de la première victoire.
+// de la dernière zone, commandes complètes et abandon, pas de tutoriel. `zones` : [clé de
+// WAR_ZONES, scripts de l'IA { wyrms, undead }] par zone ; `reward` : Spirit Stones de la
+// première victoire.
 function warBattle(zones, reward) {
   return {
-    phases: zones.map((zone) => WAR_ZONES[zone]),
-    zones,
+    phases: zones.map(([zone, enemyScripts]) => ({ ...WAR_ZONES[zone], enemyScripts })),
+    zones: zones.map(([zone]) => zone),
     tutorial: null,
     reward,
   };
@@ -96,10 +81,10 @@ export const BATTLES = {
     surrenderAllowed: false,
   },
   // rules.md 11.7 : les trois batailles de « Partir en guerre », en séquence (zones et
-  // récompenses provisoires).
-  war1: warBattle(['field', 'wall'], 60),
-  war2: warBattle(['wall', 'lanes'], 80),
-  war3: warBattle(['lanes', 'fort'], 100),
+  // récompenses provisoires), plus dures à mesure qu'on approche du boss.
+  war1: warBattle([['field', WAR1_FIELD_SCRIPTS], ['wall', WAR1_WALL_SCRIPTS]], 60),
+  war2: warBattle([['wall', WAR2_SCRIPTS], ['lanes', WAR2_SCRIPTS]], 80),
+  war3: warBattle([['lanes', WAR2_SCRIPTS], ['fort', WAR3_FORT_SCRIPTS]], 100),
   // Menu devs (hors specs) : entraînement, pour tester les attaques et animations des unités.
   // Terrain sans obstacle, aucun script IA (le mannequin est posé par setupTraining), toutes les
   // espèces des deux factions déployables, pas d'abandon (on en sort par le menu devs).

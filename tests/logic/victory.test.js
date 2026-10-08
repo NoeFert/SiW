@@ -21,9 +21,9 @@ describe('resolveVictory — bataille 01 (rules.md 11)', () => {
   const battleUnits = [deployed('w1', { killXp: 6 }), deployed('w2', { alive: false }), deployed('f', { alive: false, level: 4 })];
   const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { firstBattle: true, armyName: 'Armée 1' });
 
-  test('morts retirés ; XP : +10 de survie + coût des ennemis achevés, jamais-déployés inchangés', () => {
+  test('morts retirés ; XP : +40 de survie + coût des ennemis achevés, jamais-déployés inchangés', () => {
     expect(after.units).toEqual([
-      { id: 'w1', species: 'lambtonWorm', xp: 56 },
+      { id: 'w1', species: 'lambtonWorm', xp: 86 },
       { id: 'w3', species: 'lambtonWorm', xp: 0 },
     ]);
   });
@@ -91,6 +91,20 @@ describe('resolveVictory — batailles suivantes (rules.md 11.5)', () => {
     expect(after.playerXp).toBe(650); // niveau 2 atteint
     expect(after.spiritStones).toBe(5 + 100);
     expect(after.fallenLegendaryLevel).toBe(2);
+  });
+});
+
+describe('resolveVictory — rejeu (rules.md 11.5, 11.6, 11.7)', () => {
+  test('XP du joueur et des individus à 25 % ; les morts sont quand même perdus', () => {
+    const army = createArmy('A', units); // 140 PP
+    const save = {
+      units, army, playerXp: 0, spiritStones: 0, fallenLegendaryLevel: null,
+    };
+    const battleUnits = [deployed('w1', { killXp: 6 }), deployed('w2', { alive: false })];
+    const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { firstBattle: false, replay: true });
+    expect(report.xpGained).toBe(Math.floor((100 + Math.floor((100 * 130) / 140)) / 4)); // 192 → 48
+    expect(after.units.find((u) => u.id === 'w1').xp).toBe(40 + 11); // 46 × 25 % = 11
+    expect(after.units.map((u) => u.id)).toEqual(['w1', 'w3', 'f']);
   });
 });
 

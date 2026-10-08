@@ -234,10 +234,10 @@ Les stats précises de chaque unité (points de vie, dégâts, coût, vitesses, 
 
 Les valeurs de la bataille sont tranchées. Restent ouvertes, pour la couche méta (section 11) :
 - somme de départ en Spirit Stones : **0, provisoire**, donnée au choix de la faction (montant définitif au second passage de `roadmap-mvp.md`) ;
-- récompenses de victoire en Spirit Stones : bataille 01 : **50** ; « Partir en guerre » : **60 / 80 / 100** à la première victoire, **25 %** au rejeu — **provisoires** (11.7) ;
+- récompenses de victoire en Spirit Stones : bataille 01 : **50** ; « Partir en guerre » : **60 / 80 / 100** à la première victoire, **rien** au rejeu — **provisoires** (11.7) ;
 - coefficient de prix k : **1, provisoire** ; multiplicateur du [Légendaire] : **aucun (×1), provisoire** (valeurs définitives au second passage de `roadmap-mvp.md`) ;
 - nom par défaut de l'armée de départ : **« Armée 1 »** (tranché) ;
-- Spirit Fountain : **1 Spirit Stone par minute**, capacité **20 + 10 × niveau du joueur** — **provisoires** (11.8) ;
+- Spirit Fountain : **3 Spirit Stones par minute**, capacité **80 + 10 × niveau du joueur** — **provisoires** (11.8) ;
 - récompense de niveau du joueur : **50 × le nouveau niveau** en Spirit Stones, **provisoire** (revue avec k au second passage de `roadmap-mvp.md`) ; les autres valeurs de niveau (XP, courbes, bonus de stats, prix des niveaux gardés) sont tranchées en 11.5, 11.6 et 11.4 ;
 - zones et scripts de l'IA définitifs des batailles de « Partir en guerre » (**provisoires**, 11.7).
 
@@ -289,6 +289,7 @@ Détail du périmètre et des écrans : `roadmap-mvp.md`. Aucune de ces règles 
 ### 11.5 Niveau du joueur
 - Le joueur a un **XP** cumulé, qui détermine son **niveau** (niveau 1 à 0 XP).
 - **Gain d'XP à la victoire** d'une bataille de « Partir en guerre » : **100 XP**, plus un bonus de **100 × (PP des survivants / PP de l'armée)**, arrondi à l'entier inférieur. Les deux totaux portent sur **toute l'armée emmenée** en bataille (individus déployés ou restés en réserve) ; un survivant est un individu de l'armée encore en vie à la fin. Victoire sans perte : 200 XP.
+- **Rejeu** d'une bataille déjà gagnée (11.7) : **25 %** de ce gain, arrondi à l'entier inférieur (25 à 50 XP), pour que rejouer ne rapporte pas plus de 2 fois la Spirit Fountain par minute en récompenses de niveau (`BALANCE-REVIEW.md`).
 - **Bataille 01 (tutoriel)** : **100 XP fixes**, sans bonus (l'armée n'existe pas encore, et le tutoriel garde ainsi moins de facteurs variables).
 - **Défaite, abandon ou match nul** : aucun XP.
 - **Courbe** : passer du niveau N au niveau N + 1 demande **500 × N XP** (500 XP du niveau 1 au 2, 1 000 du 2 au 3, etc. — 1 500 XP cumulés pour le niveau 3). **Pas de niveau maximum.**
@@ -299,8 +300,9 @@ Détail du périmètre et des écrans : `roadmap-mvp.md`. Aucune de ces règles 
 ### 11.6 Niveau des individus
 - Chaque individu du joueur a un **XP** cumulé, qui détermine son **niveau**, de **1 à 5**.
 - **Gain d'XP**, compté **seulement à la victoire** (comme les pertes, 11.1 : une défaite, un abandon ou un match nul ne changent rien), **bataille 01 comprise** :
-  - **+10 XP** pour chaque individu déployé au moins une fois pendant la bataille et **vivant à la fin** (sur le terrain ou revenu en réserve après une fuite) ;
-  - **+ le coût en PP de chaque ennemi qu'il a achevé** (coup fatal, section 4.1 ; ex : un New-reborn Skeleton rapporte 6, Athos 110). Coup fatal simultané (4.1) : chacun des individus qui ont achevé l'ennemi au même instant gagne la totalité de son coût. Un individu mort pendant la bataille ne gagne rien (mort définitive).
+  - **+40 XP** (relevé de 10 à 40 pour qu'une unité basique atteigne le niveau 5 en 8 à 12 victoires, `BALANCE-REVIEW.md`) pour chaque individu déployé au moins une fois pendant la bataille et **vivant à la fin** (sur le terrain ou revenu en réserve après une fuite) ;
+  - **+ le coût en PP de chaque ennemi qu'il a achevé** (coup fatal, section 4.1 ; ex : un New-reborn Skeleton rapporte 6, Athos 110). Coup fatal simultané (4.1) : **un seul** des attaquants qui ont achevé l'ennemi au même instant gagne son coût — celui qui a infligé le plus de dégâts à la cible à cet instant ; à égalité, celui qui a été déployé le premier (dans cette bataille). Un attaquant qui meurt lui-même à cet instant est écarté. Cette règle ne concerne que l'XP : pour les aptitudes déclenchées au coup fatal (Soif de sang), chacun compte toujours comme ayant porté le coup fatal (4.1). Sans elle, des unités qui frappent en rythme (ex : plusieurs Vers déployés ensemble) gagnaient chacune les 110 d'Athos (`BALANCE-REVIEW.md`). Un individu mort pendant la bataille ne gagne rien (mort définitive).
+  - **Rejeu** d'une bataille de « Partir en guerre » déjà gagnée (11.7) : chaque individu gagne **25 %** de son total (survie + ennemis achevés), arrondi à l'entier inférieur, pour qu'une unité basique ne passe pas du niveau 1 au niveau 5 en moins de 30 minutes de rejeu (`BALANCE-REVIEW.md`).
 - **Courbe** : passer du niveau N au niveau N + 1 demande **50 × N XP** (50, 100, 150, 200 — niveau 5 à 500 XP cumulés). Au niveau 5, l'XP n'augmente plus (plafonnée à 500).
 - **Effet du niveau** : **+10 % de PV max et de dégâts par niveau au-dessus du 1** (+40 % au niveau 5), **arrondi à l'entier le plus proche** (0,5 arrondi au-dessus ; calcul en entiers : base × (9 + niveau) / 10, pour éviter les erreurs de virgule). Ex : dégâts du Ver de Lambton 8 / 9 / 10 / 10 / 11, PV 40 / 44 / 48 / 52 / 56 ; dégâts du New-reborn Skeleton 5 / 6 / 6 / 7 / 7. Pour une attaque hybride, les deux valeurs de dégâts sont augmentées. Les vitesses, la portée, la taille et le **coût en PP ne changent pas**. Le niveau ne change jamais pendant une bataille : l'XP n'étant comptée qu'à la victoire, un individu combat toute la bataille avec les stats du niveau qu'il avait au début.
 - **Aptitudes** : les aptitudes qui multiplient les dégâts (Attaque dévastatrice de Fafnir) s'appliquent aux dégâts du niveau ; la régénération de Soif de sang (Athos) reste de 40 PV, plafonnée aux PV max du niveau.
@@ -310,25 +312,46 @@ Détail du périmètre et des écrans : `roadmap-mvp.md`. Aucune de ces règles 
 ### 11.7 Partir en guerre
 - **Trois batailles**, jouées **en séquence** : la bataille 1 est disponible dès la victoire de la bataille 01 ; la bataille N + 1 se débloque à la première victoire de la bataille N. Noms provisoires : **« La passe »**, **« Les crevasses »**, **« La citadelle »** (`strings.js`).
 - **Map** : les batailles sont placées sur la **map 1**, un **réseau** d'emplacements (`src/data/warMaps.js`) : trois chemins du départ au boss, des passerelles entre ces chemins et des impasses (19 emplacements). Les trois batailles occupent le départ et les deux emplacements suivants du chemin du bas. Les autres emplacements n'ont pas encore de bataille : ils sont affichés **verrouillés** (« À venir ») et ne se débloquent pas (leurs batailles, zones, scripts, récompenses et l'ordre de déblocage dans le réseau restent à définir). Pas d'autre map ni de changement de map pour l'instant.
-- **Rejeu** : une bataille déjà gagnée reste jouable à volonté, avec une récompense réduite (voir Récompenses).
+- **Difficulté selon la distance au boss** (règle de conception des scripts, pas une mécanique calculée par le jeu) : plus un emplacement est proche du boss, plus sa bataille est dure, quel que soit le chemin.
+  - **Distance au boss** : nombre minimal de liens à parcourir dans le réseau de la map (`src/data/warMaps.js`) pour aller de l'emplacement au boss. Les impasses suivent la même règle que les emplacements des chemins.
+  - **Cible** : le script de chaque emplacement est écrit à la main (comme ceux des batailles 1 à 3, ci-dessous) pour que les **pertes moyennes**, en PP de l'armée, d'un joueur passif avec l'**armée de départ niveau 1** suivent la table ci-dessous, mesurées avec l'outil d'équilibrage (`/balancer`, `npm run balance`).
+
+    | Distance | Emplacements de la map 1 | Pertes visées |
+    |---|---|---|
+    | 7 | deadA | 1 % |
+    | 6 | start (bataille 1), mid1 | 5 % |
+    | 5 | low1 (bataille 2), mid2, top1 | 9 % |
+    | 4 | low2 (bataille 3), mid3, top2, deadB, deadC | 13 % |
+    | 3 | low3, mid4, top3 | 17 % |
+    | 2 | low4, top4 | 21 % |
+    | 1 | low5, top5 | 25 % |
+    | 0 | boss | 30 % |
+
+  - **Mesure** : pertes moyennes en **victoire seulement** (une défaite est mesurée par le taux de victoire), en moyenne sur les **4 stratégies** du bot (`basics`, `flyers`, `mixed`, `legendaryFirst`), **séparément pour chaque faction** du joueur, avec **N = 50** batailles par configuration et le seed 1.
+  - **Conformité** : pour chacune des deux factions, pertes à **±3 points** de la cible (ex : 10 à 16 % pour 13 %), et taux de victoire du bot d'au moins **90 %**, sauf au **boss : au moins 60 %** (le boss peut demander de vraies commandes ou une armée vétérane).
+  - Un script qui n'est pas conforme est retouché avant d'être ajouté à la map. La table vaut pour toute nouvelle bataille de la map 1 ; une autre map aura sa propre table.
+- **Rejeu** : une bataille déjà gagnée reste jouable à volonté, sans Spirit Stones (voir Récompenses) et avec l'XP du joueur (11.5) et des individus (11.6) réduite à 25 % : le rejeu entraîne l'armée, mais lentement.
 - **Armée** : le joueur part avec **son armée** (11.2) ; bouton « Combattre » **désactivé si l'armée est vide** (message « Composez votre armée »).
 - **Zones** (section 7.3) : chaque bataille enchaîne **2 zones** (2 phases). Provisoire, en attendant les zones et scripts définitifs :
   - bataille 1 : le champ (bataille 01) → « Le mur » ;
   - bataille 2 : « Le mur » → « Les trois couloirs » ;
   - bataille 3 : « Les trois couloirs » → « Le fort ».
-- **Scripts de l'IA** (provisoires) : ceux de la bataille-clickbait, par zone — champ : phase 1, « Le mur » et « Les trois couloirs » : phase 2, « Le fort » : phase 3 (section 7.3). Transition entre zones, conservation des morts, des PV et de la réserve : comme la bataille-clickbait (7.3).
+- **Scripts de l'IA** (provisoires), propres à « Partir en guerre », instants comptés depuis le début de chaque zone. La difficulté monte à mesure qu'on approche du boss : pertes visées pour un joueur passif avec l'armée de départ niveau 1, 5 % au départ → environ 30 % au boss (`BALANCE-REVIEW.md`). Transition entre zones, conservation des morts, des PV et de la réserve : section 7.3.
+  - **Bataille 1** — champ : IA Wyrms : t=0s 1 Ver de Lambton, t=4s 1 Amphiptère, t=10s 1 Ver de Lambton, t=14s 3 Vers de Lambton ; IA Morts-Vivants : t=0s 1 New-reborn Skeleton, t=4s 1 Necromant Initiate, t=10s 1 New-reborn Skeleton, t=14s 3 New-reborn Skeletons, t=18s 2 New-reborn Skeletons. « Le mur » : IA Wyrms : t=0s 2 Vers de Lambton, t=5s 1 Amphiptère, t=12s 2 Vers de Lambton ; IA Morts-Vivants : t=0s 2 New-reborn Skeletons, t=5s 1 Necromant Initiate, t=12s 3 New-reborn Skeletons, t=18s 2 New-reborn Skeletons.
+  - **Bataille 2** — « Le mur » puis « Les trois couloirs », même script dans les deux zones : IA Wyrms : t=0s 3 Vers de Lambton, t=5s 1 Amphiptère, t=12s 2 Vers de Lambton ; IA Morts-Vivants : t=0s 3 New-reborn Skeletons, t=5s 1 Necromant Initiate, t=12s 3 New-reborn Skeletons, t=18s 3 New-reborn Skeletons.
+  - **Bataille 3** — « Les trois couloirs » : script de la bataille 2. « Le fort » : IA Wyrms : t=0s 4 Vers de Lambton, t=10s Fafnir ; IA Morts-Vivants : t=0s 6 New-reborn Skeletons, t=10s 3 Necromant Initiates, t=15s 3 New-reborn Skeletons, t=20s Athos (il attend sous le plafond de 150 points, section 7.1).
 - **Commandes et abandon** : comme la bataille 01 — les trois ordres (Aller, Attaquer, Fuir), bouton Abandonner disponible ; pas de tutoriel.
 - **Victoire** : dès que l'IA a fini le script de la **dernière zone** et n'a plus aucune unité vivante sur le terrain (section 8.1). Conséquences : pertes (11.1), XP (11.5, 11.6), récompense en Spirit Stones (ci-dessous).
 - **Défaite, abandon ou match nul** : les individus **tués pendant la bataille sont perdus quand même** (mort définitive, retirés de la liste et de l'armée), et le niveau du [Légendaire] mort est mémorisé (11.4). **Aucune** XP, **aucune** récompense. L'écran de défaite liste les unités perdues et propose **« Réessayer »** (même bataille, avec l'armée telle qu'elle reste) et **« Retour à l'accueil »** (pour réinvoquer et recomposer l'armée). Si l'armée est vide, « Réessayer » est désactivé.
 - **Page rechargée ou fermée pendant une bataille** (tout le jeu normal) : la bataille est annulée, comme si elle n'avait jamais eu lieu. Aucune perte, aucune XP, aucune récompense : l'état d'une bataille en cours n'est pas sauvegardé (`technical.md` 5.4). Faille assumée pour le MVP.
-- **Récompenses** en Spirit Stones (provisoires, section 10) : bataille 01 : **50** ; batailles 1 / 2 / 3 : **60 / 80 / 100** à la **première** victoire, puis **25 %** de ce montant à chaque victoire suivante (arrondi à l'entier inférieur : 15 / 20 / 25).
+- **Récompenses** en Spirit Stones (provisoires, section 10) : bataille 01 : **50** ; batailles 1 / 2 / 3 : **60 / 80 / 100** à la **première** victoire seulement ; **aucune** aux victoires suivantes (rejeu).
 - **Fin du contenu** : une fois les trois batailles gagnées, l'écran « Partir en guerre » affiche « D'autres terres à conquérir arrivent bientôt… » ; les trois batailles restent rejouables.
 
 ### 11.8 Spirit Fountain
 - Objet de l'**écran d'accueil** qui **génère des Spirit Stones en continu**, que le joueur récolte d'un clic. Elle garantit qu'un joueur qui a perdu toutes ses unités pourra toujours en réinvoquer (elle remplace l'ancien « filet de sécurité »).
 - **Mise en route** : à la **première arrivée sur l'accueil** (après la victoire de la bataille 01), **vide**.
-- **Production** : **1 Spirit Stone par minute**, en **temps réel** — y compris jeu fermé ou pendant une bataille. Le contenu vaut le nombre de **minutes entières** écoulées depuis la dernière récolte (ou la mise en route), **plafonné à la capacité**.
-- **Capacité** : **20 + 10 × niveau du joueur** (11.5 ; 30 au niveau 1, 50 au niveau 3). La capacité est toujours celle du niveau **actuel** : monter de niveau l'augmente immédiatement.
+- **Production** : **3 Spirit Stones par minute**, en **temps réel** — y compris jeu fermé ou pendant une bataille. Le contenu vaut **3 × le nombre de minutes entières** écoulées depuis la dernière récolte (ou la mise en route), **plafonné à la capacité**.
+- **Capacité** : **80 + 10 × niveau du joueur** (11.5 ; 90 au niveau 1, 110 au niveau 3 : une Fountain pleine au niveau 1, en 30 minutes, suffit à réinvoquer une armée qui gagne la bataille 1 de « Partir en guerre », et la Fountain reste un complément des batailles, `BALANCE-REVIEW.md`). La capacité est toujours celle du niveau **actuel** : monter de niveau l'augmente immédiatement.
 - **Récolte** : un clic sur la fontaine ajoute **tout son contenu** au solde et la vide. Sans effet si elle est vide. La minute entamée n'est pas perdue (la production continue là où elle en était) ; si la fontaine était **pleine**, ce qui aurait dépassé la capacité est perdu et la production repart de la récolte.
 - **Horloge reculée** (heure de l'appareil changée) : le contenu n'est jamais négatif (0).
 - Valeurs de production et de capacité **provisoires** (section 10).

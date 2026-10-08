@@ -4,7 +4,15 @@
 // --- Individus (rules.md 11.6) ---
 
 export const INDIVIDUAL_MAX_LEVEL = 5;
-export const SURVIVAL_XP = 10;
+export const SURVIVAL_XP = 40;
+
+// rules.md 11.5 / 11.6 : au rejeu d'une bataille de « Partir en guerre » déjà gagnée, le joueur
+// et les individus gagnent 25 % de leur XP, arrondi à l'entier inférieur.
+export const REPLAY_XP_PERCENT = 25;
+
+export function replayXp(xp) {
+  return Math.floor((xp * REPLAY_XP_PERCENT) / 100);
+}
 
 // XP cumulée pour atteindre `level` : passer de N à N + 1 demande 50 × N (0, 50, 150, 300, 500).
 export function individualXpForLevel(level) {
@@ -46,10 +54,11 @@ export function levelDamage(damage, level) {
 
 // rules.md 11.6 : XP gagnée par chaque individu du joueur à la victoire, à partir des unités de
 // la bataille (`battle.units` : une instance par déploiement, qui reste dans la liste après une
-// mort ou une fuite). Un individu déployé et vivant à la fin gagne 10 + le coût des ennemis
+// mort ou une fuite). Un individu déployé et vivant à la fin gagne 40 + le coût des ennemis
 // qu'il a achevés (`killXp`, cumulé sur tous ses déploiements) ; un individu mort ne gagne rien.
+// `replay` : rejeu d'une bataille déjà gagnée, gains réduits à 25 % (replayXp).
 // Renvoie aussi les individus morts et leur niveau (mémoire du [Légendaire], rules.md 11.4).
-export function individualXpGains(battleUnits) {
+export function individualXpGains(battleUnits, replay = false) {
   const deployed = battleUnits.filter((u) => u.faction === 'player' && u.individualId);
   const dead = new Map(); // individualId -> niveau à la mort
   for (const unit of deployed) if (!unit.isAlive) dead.set(unit.individualId, unit.level);
@@ -60,6 +69,7 @@ export function individualXpGains(battleUnits) {
     const previous = gains.get(unit.individualId) ?? SURVIVAL_XP;
     gains.set(unit.individualId, previous + unit.killXp);
   }
+  if (replay) for (const [id, xp] of gains) gains.set(id, replayXp(xp));
   return { gains, dead };
 }
 
@@ -120,9 +130,10 @@ export function playerProgress(xp) {
 }
 
 // rules.md 11.5 : victoire d'une bataille de « Partir en guerre » — 100 + 100 × (PP des
-// survivants / PP de l'armée emmenée), arrondi à l'entier inférieur.
-export function victoryPlayerXp(armyCost, survivorsCost) {
-  return VICTORY_PLAYER_XP + Math.floor((SURVIVORS_BONUS_XP * survivorsCost) / armyCost);
+// survivants / PP de l'armée emmenée), arrondi à l'entier inférieur ; 25 % au rejeu (`replay`).
+export function victoryPlayerXp(armyCost, survivorsCost, replay = false) {
+  const xp = VICTORY_PLAYER_XP + Math.floor((SURVIVORS_BONUS_XP * survivorsCost) / armyCost);
+  return replay ? replayXp(xp) : xp;
 }
 
 // rules.md 11.5 : chaque niveau atteint rapporte 50 × le nouveau niveau en Spirit Stones

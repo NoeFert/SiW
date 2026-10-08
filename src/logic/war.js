@@ -4,8 +4,8 @@ import { removeDeadFromArmy } from './army.js';
 import { individualXpGains } from './levels.js';
 import { countUnitsBySpecies, fallenLegendaryLevelAfter } from './ownedUnits.js';
 
-// rules.md 11.7 : au rejeu, 25 % de la récompense de la première victoire (provisoire).
-export const REPLAY_REWARD_PERCENT = 25;
+// rules.md 11.7 : au rejeu, aucune Spirit Stone (provisoire).
+export const REPLAY_REWARD_PERCENT = 0;
 
 // rules.md 11.7 : 'won' (déjà gagnée), 'available' (première, ou précédente gagnée) ou 'locked'.
 // `battleIds` : les batailles dans l'ordre de déblocage ; `wonIds` : celles déjà gagnées.
@@ -19,8 +19,8 @@ export function isWarCompleted(battleIds, wonIds) {
   return battleIds.every((id) => wonIds.includes(id));
 }
 
-// rules.md 11.7 : Spirit Stones d'une victoire — pleine la première fois, 25 % au rejeu (arrondi
-// à l'entier inférieur).
+// rules.md 11.7 : Spirit Stones d'une victoire — pleine la première fois, REPLAY_REWARD_PERCENT
+// au rejeu (arrondi à l'entier inférieur ; 0 actuellement).
 export function victoryReward(fullReward, alreadyWon) {
   return alreadyWon ? Math.floor((fullReward * REPLAY_REWARD_PERCENT) / 100) : fullReward;
 }
