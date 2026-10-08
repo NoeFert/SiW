@@ -10,6 +10,7 @@ import HomeScreen from './screens/HomeScreen.jsx';
 import CivilizationScreen from './screens/CivilizationScreen.jsx';
 import SummonScreen from './screens/SummonScreen.jsx';
 import WarScreen from './screens/WarScreen.jsx';
+import CodexScreen from './screens/CodexScreen.jsx';
 import DevMenu from './dev/DevMenu.jsx';
 import { TEST_PROFILES, loadTestProfile } from './dev/testProfiles.js';
 import { ROSTERS } from './data/rosters.js';
@@ -294,6 +295,8 @@ export default function App() {
         }}
       />
     );
+  } else if (screen === 'codex') {
+    content = <CodexScreen onBack={goHome} />;
   } else if (screen === 'summon') {
     content = (
       <SummonScreen
@@ -317,6 +320,7 @@ export default function App() {
           setSummonBack('home');
           setScreen('summon');
         }}
+        onOpenCodex={() => setScreen('codex')}
         onResetGame={restartGame}
         justSummoned={summonedSinceHome}
         onArrived={() => setSummonedSinceHome(false)}

@@ -74,6 +74,7 @@ export const TEXT = {
   // Menu des paramètres de l'accueil (engrenage à côté du solde).
   settings: {
     title: 'Paramètres',
+    codex: 'Codex des mots-clés',
     resetGame: 'Réinitialiser le jeu',
     resetTitle: 'Réinitialiser le jeu ?',
     resetDescription: 'Toute ta progression sera perdue : unités, armée, Spirit Stones et niveaux.',
@@ -186,6 +187,13 @@ export const TEXT = {
     ranged: 'Tirs',
     legendary: 'Légendaire',
     flying: 'Vol',
+  },
+  // Codex des mots-clés (menu des paramètres) : effet de chaque tag, d'après rules.md.
+  keywordEffects: {
+    melee: 'Frappe au contact : l\'unité va au contact de l\'ennemi le plus proche et l\'attaque depuis une case adjacente. Une fois engagée, elle ne change pas de cible tant que l\'ennemi n\'est pas mort.',
+    ranged: 'Tire à distance sur l\'ennemi dès qu\'il est à portée. Ne peut pas tirer sur une cible collée à elle : une unité qui ne fait que tirer recule alors pour se remettre à distance.',
+    legendary: 'Tu ne possèdes qu\'une seule unité légendaire, et une seule peut être sur le terrain à la fois. Morte, elle peut être réinvoquée jusqu\'au niveau qu\'elle avait à sa mort.',
+    flying: 'Survole les obstacles du terrain et peut s\'arrêter au-dessus. Les autres unités lui barrent toujours le passage.',
   },
 };
 

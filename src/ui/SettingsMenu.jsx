@@ -6,9 +6,9 @@ import {
 import { TEXT } from './strings.js';
 
 // technical.md 5.1 : menu des paramètres de l'accueil, ouvert par l'icône d'engrenage à côté du
-// solde de Spirit Stones. Une seule entrée : réinitialiser le jeu (technical.md 5.4), après
-// confirmation.
-export default function SettingsMenu({ onReset }) {
+// solde de Spirit Stones. Deux entrées : le codex des mots-clés, et réinitialiser le jeu
+// (technical.md 5.4), après confirmation.
+export default function SettingsMenu({ onOpenCodex, onReset }) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
 
@@ -27,7 +27,14 @@ export default function SettingsMenu({ onReset }) {
         <>
           {/* Un clic n'importe où ailleurs referme le menu. */}
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="pixel-panel absolute right-0 top-full z-50 mt-2 flex flex-col p-3">
+          <div className="pixel-panel absolute right-0 top-full z-50 mt-2 flex flex-col items-start gap-3 p-3">
+            <button
+              type="button"
+              onClick={onOpenCodex}
+              className="pixel-menu-item retro whitespace-nowrap text-xs"
+            >
+              {TEXT.settings.codex}
+            </button>
             <button
               type="button"
               onClick={() => {

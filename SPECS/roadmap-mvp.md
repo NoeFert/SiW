@@ -15,7 +15,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 ## Inclus dans le MVP
 
 ### Écran d'accueil (point central du jeu après la bataille 01)
-- Solde de **Spirit Stones** affiché en haut à droite (nom provisoire, libellé dans `strings.js`), suivi d'une icône d'engrenage : menu des paramètres avec **« Réinitialiser le jeu »** (efface la sauvegarde après confirmation, `technical.md` 5.4)
+- Solde de **Spirit Stones** affiché en haut à droite (nom provisoire, libellé dans `strings.js`), suivi d'une icône d'engrenage : menu des paramètres avec **« Codex des mots-clés »** (page listant chaque mot-clé des unités et son effet en quelques mots, `technical.md` 5.1) et **« Réinitialiser le jeu »** (efface la sauvegarde après confirmation, `technical.md` 5.4)
 - **Niveau du joueur** et barre d'XP, en haut à gauche à côté du portrait du souverain (`rules.md` 11.5)
 - **Spirit Fountain** (`rules.md` 11.8) : produit 3 Spirit Stones par minute en temps réel, jusqu'à une capacité de 80 + 10 × niveau du joueur ; un clic récolte. Garantit qu'on peut toujours réinvoquer après avoir tout perdu
 - Quatre entrées de menu, sur le bord gauche de l'écran : **Partir en guerre**, un bouton au **nom de la faction** suivi du nombre d'individus possédés (« Wyrms (21) », section Unités), **Armées** (section Armée), **Invocation**. Les deux sections de la gestion de civilisation sont des écrans séparés
