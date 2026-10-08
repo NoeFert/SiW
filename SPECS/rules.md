@@ -269,7 +269,7 @@ Détail du périmètre et des écrans : `roadmap-mvp.md`. Aucune de ces règles 
 - **Mort d'un individu** : il est retiré de l'armée en même temps que de la liste des individus possédés (11.1).
 
 ### 11.3 Spirit Stones
-- Monnaie du jeu (nom provisoire). Le solde est un **nombre entier**, jamais négatif, affiché en haut à droite de l'écran d'accueil.
+- Monnaie du jeu, appelée **« gemmes obscures »** dans les textes affichés au joueur (« Spirit Stones » reste le nom interne des specs et du code). Le solde est un **nombre entier**, jamais négatif, affiché en haut à droite de l'écran d'accueil.
 - **Gains** : une somme de départ, puis une récompense à chaque victoire (bataille 01, puis batailles de « Partir en guerre »), une récompense à chaque niveau du joueur (11.5), et la Spirit Fountain (11.8). Montants : section 10.
 - **Défaite, abandon ou match nul** : aucune récompense.
 - **Spirit Fountain** : revenu continu, récolté depuis l'accueil (11.8). Elle garantit qu'un joueur qui a tout perdu pourra toujours réinvoquer.

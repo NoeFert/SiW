@@ -3,7 +3,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/8bit/tooltip.jsx';
 import {
-  FOUNTAIN_MINUTE_MS, FOUNTAIN_STONES_PER_MINUTE, fountainCapacity, fountainContent, harvestFountain,
+  FOUNTAIN_STONES_PER_MINUTE, fountainCapacity, fountainContent, harvestFountain,
 } from '../logic/fountain.js';
 import { getFountainLastHarvest, saveFountainLastHarvest } from '../persistence.js';
 import { spritePath } from '../data/sprites.js';
@@ -56,7 +56,7 @@ export default function SpiritFountain({ playerLevel, onHarvest }) {
           </span>
         </TooltipTrigger>
         <TooltipContent side="bottom" font="normal" className="max-w-64 text-center">
-          {TEXT.fountainTooltip(FOUNTAIN_STONES_PER_MINUTE, FOUNTAIN_MINUTE_MS / 1000)}
+          {TEXT.fountainTooltip(FOUNTAIN_STONES_PER_MINUTE)}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

@@ -1,5 +1,10 @@
 // Textes affichés au joueur (introduction, choix de faction, écran de bataille), regroupés pour
 // une traduction future (le jeu sera en anglais à terme ; français pour l'instant).
+// Nom affiché des Spirit Stones (rules.md 11.3) : singulier pour 0 et 1, comme en français.
+function gems(amount) {
+  return `${amount} ${amount > 1 ? 'gemmes obscures' : 'gemme obscure'}`;
+}
+
 export const TEXT = {
   // Titre du jeu, découpé pour la mise en forme ("in" plus petit, voir IntroScreen).
   title: { first: 'Sovereign', middle: 'in', last: 'War' },
@@ -39,10 +44,10 @@ export const TEXT = {
 
   // Couche méta (rules.md 11).
   defaultArmyName: 'Armée 1', // rules.md 10 : nom de l'armée de départ
-  // Tooltip provisoire de la Spirit Fountain (rules.md 11.8) : `seconds` = durée de production
-  // d'une Spirit Stone.
-  fountainTooltip: (amount, seconds) => `Cette statue génère ${amount} Spirit Stones toutes les ${seconds} secondes. Puisse le souverain faire bon usage de cette ressource précieuse.`,
-  spiritStones: (amount) => `${amount} Spirit Stones`, // nom provisoire (rules.md 11.3)
+  // Tooltip provisoire de la Spirit Fountain (rules.md 11.8) : `amount` gemmes produites d'un coup
+  // à chaque minute entière.
+  fountainTooltip: (amount) => `Cette statue génère ${gems(amount)} par minute. Puisse le souverain faire bon usage de cette ressource précieuse.`,
+  spiritStones: (amount) => gems(amount), // Spirit Stones, affichées « gemmes obscures » (rules.md 11.3)
   // Niveaux (rules.md 11.5 et 11.6).
   levels: {
     badge: (level) => `niv ${level}`,
@@ -77,7 +82,7 @@ export const TEXT = {
     codex: 'Codex des mots-clés',
     resetGame: 'Réinitialiser le jeu',
     resetTitle: 'Réinitialiser le jeu ?',
-    resetDescription: 'Toute ta progression sera perdue : unités, armée, Spirit Stones et niveaux.',
+    resetDescription: 'Toute ta progression sera perdue : unités, armée, gemmes obscures et niveaux.',
     resetCancel: 'Annuler',
     resetConfirm: 'Réinitialiser',
   },
@@ -111,7 +116,7 @@ export const TEXT = {
   },
   summon: {
     title: 'Invocation',
-    confirmResummon: (name, level, price) => `Réinvoquer ${name} niveau ${level} pour ${price} Spirit Stones ?`,
+    confirmResummon: (name, level, price) => `Réinvoquer ${name} niveau ${level} pour ${gems(price)} ?`,
     keptLevel: 'Niveau gardé :',
     levelPrice: (level, price) => `niv ${level} — ${price}`,
     less: 'Invoquer un individu de moins',
