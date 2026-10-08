@@ -124,6 +124,11 @@ Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un spri
 |---|---|---|
 | Bouton | ButtonA (34 × 18) | Repos : liseré gris (secondaire) ou blanc (principal), rouge pour « destructive ». Survol : liseré blanc, violet pour le bouton principal. Clic : enfoncé. |
 | Carte | PanelLarge noir (48 × 48) | Panneau noir à liseré gris ; le contenu passe en thème sombre. Plus utilisée par les écrans de la couche méta (voir ci-dessous). |
+| Panneau de ligne ou de case | PanelLarge noir (48 × 48) | Lignes des bilans de victoire et de défaite, lignes de la liste d'invocation (éclaircies au survol), accordéons des espèces (Armées), cases des monstres du choix de faction. |
+| Panneau uni | Panel noir (48 × 48) | Solde de Spirit Stones, menu des paramètres, titre « Choisis ta faction », champ de renommage d'une armée. |
+| Boîte de confirmation | PanelLarge noir (48 × 48), boutons ButtonA | Réinitialiser le jeu, abandonner la bataille, réinvoquer le [Légendaire] : cadre du pack, contenu en thème sombre ; « Annuler » au liseré gris, l'action au liseré blanc. |
+| Infobulle | SpeechTooltip noir (32 × 32) | Liseré gris, fond noir, sans flèche : liste de déploiement, ordres de la tour, Spirit Fountain. |
+| Bulle de tutoriel | Speech blanc (32 × 32) | Liseré blanc, fond noir (`technical.md` 5.5). |
 | Badge | Bannières (64 × 15), hauteur fixe 30 px | Liseré blanc (par défaut), gris (secondaire), doré ou menthe (niveaux, faction du joueur). |
 | Barre d'XP | RegularBarA | Couleur de la faction du joueur. |
 | Case d'un groupe d'individus (écran des unités) | PanelLarge noir (48 × 48) | Case carrée par groupe d'individus strictement identiques (même niveau) : sprite, puis nom et « niv X » en couleur de la faction ; un groupe de plusieurs individus porte une **fine bande** en haut de la case (Panels/Black/GridPanelInactive du pack) avec leur nombre (« 3x ») — rien pour un individu seul ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |

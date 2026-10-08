@@ -41,13 +41,11 @@ export function TutorialHand({ position }) {
   );
 }
 
-// Bulle de message (composant Item 8bitcn) ; `action` : bouton éventuel à droite du texte.
+// Bulle de message (composant Item 8bitcn, dans la bulle blanche du pack, pixel-speech) ;
+// `action` : bouton éventuel à droite du texte.
 export function TutorialBubble({ children, action = null }) {
   return (
-    <Item
-      variant="outline"
-      className="pointer-events-auto max-w-2xl rounded-none border-4 border-white bg-neutral-950 text-white shadow-[6px_6px_0_#000]"
-    >
+    <Item className="pixel-speech pointer-events-auto max-w-2xl rounded-none text-white">
       <ItemContent>
         <ItemDescription className="line-clamp-none whitespace-pre-line text-xs leading-relaxed text-white">
           {children}

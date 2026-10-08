@@ -18,7 +18,7 @@ function FactionColumn({ faction, onChoose }) {
       </Button>
       <div className="relative grid grid-cols-3 gap-2">
         {Object.values(ROSTERS[faction]).map((species) => (
-          <div key={species.name} className="size-20 border-4 border-white/70 bg-black/60 flex items-center justify-center">
+          <div key={species.name} className="pixel-card size-20 flex items-center justify-center">
             <img
               src={spritePath(SPECIES_SPRITES[species.name].key)}
               alt={unitName(species)}
@@ -44,7 +44,7 @@ export default function FactionChoiceScreen({ onChoose }) {
         <div className="w-1 bg-white/20" />
         <FactionColumn faction="undead" onChoose={onChoose} />
       </div>
-      <h1 className="retro absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-3 bg-neutral-900 text-lg whitespace-nowrap pointer-events-none">
+      <h1 className="retro absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pixel-panel px-4 text-lg whitespace-nowrap pointer-events-none">
         {TEXT.chooseFaction}
       </h1>
     </div>

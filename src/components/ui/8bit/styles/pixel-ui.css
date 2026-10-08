@@ -114,6 +114,27 @@
   padding-block: 4px;
 }
 
+/* Infobulle (Tooltips/Black/SpeechTooltip, 32×32) : liseré gris, fond noir. La flèche de
+   l'infobulle shadcn est masquée : le cadre du pack n'en a pas. */
+.pixel-tooltip {
+  border-style: solid;
+  border-width: 8px;
+  border-image: url("/ui/tooltip.png") 4 fill / 8px stretch;
+  image-rendering: pixelated;
+}
+.pixel-tooltip > span:has(> svg) {
+  display: none;
+}
+
+/* Bulle de message blanche (Tooltips/White/Speech, 32×32) : liseré blanc, fond noir — bulle des
+   tutoriels. */
+.pixel-speech {
+  border-style: solid;
+  border-width: 8px;
+  border-image: url("/ui/speech-white.png") 4 fill / 8px stretch;
+  image-rendering: pixelated;
+}
+
 /* Bande du nombre d'individus d'un groupe (Panels/Black/GridPanelInactive, 16×16), en haut des
    cases de la grille des unités. */
 .group-band {

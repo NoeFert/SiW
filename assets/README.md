@@ -20,8 +20,10 @@ Sprites copied from the purchased "Pixel UI & HUD" pack (Dead Revolver, itch.io)
 `src/components/ui/8bit/styles/pixel-ui.css` (see `SPECS/GRAPHICS.md`, "Interface").
 - `button.png`, `button-pressed.png`, `button-highlighted-{white,purple,gold,red}.png` — ButtonA states (gold: Wyrms player)
 - `group-band.png` — band showing the number of individuals on a group tile of the units grid (Black/GridPanelInactive)
-- `panel-plain.png` — plain dark panel around the Spirit Stones balance (home and summon screens) (Black/Panel)
-- `panel.png`, `panel-gold.png` — card / unit tile panel (Black and Gold/PanelLarge; gold for a legendary unit)
+- `panel-plain.png` — plain dark panel: Spirit Stones balance, settings menu, faction choice title, army rename field (Black/Panel)
+- `tooltip.png` — tooltip frame (Tooltips/Black/SpeechTooltip)
+- `speech-white.png` — tutorial speech bubble (Tooltips/White/Speech)
+- `panel.png`, `panel-gold.png` — card / unit tile / row / confirmation dialog panel (Black and Gold/PanelLarge; gold for a legendary unit)
 - `badge.png`, `badge-secondary.png`, `badge-wyrms.png`, `badge-undead.png` — badge banners
 - `bar-background.png`, `bar-foreground.png`, `bar-fill-{purple,undead,wyrms}.png` — value bars (RegularBarA): Spirit Fountain (purple), XP (Green; Orange recolored to gold for Wyrms)
 - `divider-black.png` — separator between the header and the content of the meta screens (Decorators/Gold/DividerD recolored to dark grey: no black variant in the pack)

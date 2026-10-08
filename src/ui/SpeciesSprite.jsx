@@ -17,7 +17,7 @@ export function SpeciesCountRow({
   count, species, spriteClassName = 'size-10', className = '', children,
 }) {
   return (
-    <div className={`flex items-center gap-3 border-2 border-white/30 bg-black/40 px-3 py-2 ${className}`}>
+    <div className={`pixel-card flex items-center gap-3 px-3 py-2 ${className}`}>
       <span className="retro text-xs w-8 text-right">{count}x</span>
       <SpeciesSprite species={species} className={spriteClassName} />
       {children}

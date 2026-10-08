@@ -90,7 +90,7 @@ export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
               key={key}
               type="button"
               onClick={() => selectSpecies(key)}
-              className="relative flex items-center gap-4 border-2 border-white/30 bg-black/40 px-4 py-3 text-left hover:border-white/70"
+              className="pixel-card relative flex items-center gap-4 px-4 py-3 text-left hover:brightness-125"
             >
               {key === focusKey && <CornerDecor color={SELECTION_CORNERS[playerFaction]} />}
               <SpeciesSprite species={roster[key]} className="size-20" />

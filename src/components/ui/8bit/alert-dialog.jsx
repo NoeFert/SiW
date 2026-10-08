@@ -64,6 +64,8 @@ function AlertDialogOverlay({
   return <ShadcnAlertDialogOverlay className={cn(className)} {...props} />;
 }
 
+// GRAPHICS.md « Interface » : cadre noir PanelLarge du pack Pixel UI & HUD (pixel-card,
+// styles/pixel-ui.css) ; les tokens shadcn du contenu passent en thème sombre.
 function AlertDialogContent({
   className,
   children,
@@ -73,23 +75,17 @@ function AlertDialogContent({
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
-      <>
-        <ShadcnAlertDialogContent
-          className={cn(
-            "rounded-none border-y-6 border-foreground dark:border-ring",
-            font !== "normal" && "retro",
-            className
-          )}
-          {...props}
-        >
-          {children}
-
-          <div
-            className="absolute inset-0 border-x-6 -mx-1.5 border-foreground dark:border-ring pointer-events-none"
-            aria-hidden="true"
-          />
-        </ShadcnAlertDialogContent>
-      </>
+      <ShadcnAlertDialogContent
+        className={cn(
+          // Plus large que shadcn (max-w-sm) : les deux boutons en police rétro doivent tenir côte à côte.
+          "dark pixel-card rounded-none bg-transparent ring-0 text-white data-[size=default]:sm:max-w-md",
+          font !== "normal" && "retro",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </ShadcnAlertDialogContent>
     </AlertDialogPortal>
   );
 }
@@ -107,7 +103,11 @@ function AlertDialogFooter({
 }) {
   return (
     <ShadcnAlertDialogFooter
-      className={cn("flex flex-col-reverse sm:flex-row gap-4", className)}
+      // Pas de bande de fond propre (celle de shadcn débordait du cadre du pack).
+      className={cn(
+        "m-0 flex flex-col-reverse sm:flex-row gap-4 rounded-none border-t-0 bg-transparent p-0 pt-2",
+        className
+      )}
       {...props}
     />
   );
@@ -127,67 +127,22 @@ function AlertDialogDescription({
   return <ShadcnAlertDialogDescription className={cn(className)} {...props} />;
 }
 
+// Boutons de la boîte : le bouton ButtonA du pack (pixel-button), comme Button — liseré blanc
+// pour l'action (variante "default"), gris pour l'annulation ("outline").
+const PIXEL_BUTTON = "pixel-button rounded-none bg-transparent hover:bg-transparent text-white ring-0";
+
 function AlertDialogAction({
   className,
   ...props
 }) {
-  return (
-    <ShadcnAlertDialogAction
-      className={cn(
-        "rounded-none active:translate-y-1 transition-transform relative bg-primary",
-        "ring-0 border-none",
-        className
-      )}
-      {...props}
-    >
-      {props.children}
-      {/* Pixelated border */}
-      <div className="absolute -top-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute -top-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute bottom-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute bottom-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-1.5 -left-1.5 h-2/3 w-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-1.5 -right-1.5 h-2/3 w-1.5 bg-foreground dark:bg-ring" />
-      {/* Top shadow */}
-      <div className="absolute top-0 left-0 w-full h-1.5 bg-foreground/20" />
-      <div className="absolute top-1.5 left-0 w-3 h-1.5 bg-foreground/20" />
-      {/* Bottom shadow */}
-      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-foreground/20" />
-      <div className="absolute bottom-1.5 right-0 w-3 h-1.5 bg-foreground/20" />
-    </ShadcnAlertDialogAction>
-  );
+  return <ShadcnAlertDialogAction className={cn(PIXEL_BUTTON, className)} {...props} />;
 }
 
 function AlertDialogCancel({
   className,
   ...props
 }) {
-  return (
-    <ShadcnAlertDialogCancel
-      className={cn(
-        "rounded-none active:translate-y-1 transition-transform relative bg-background",
-        "ring-0 border-none",
-        className
-      )}
-      {...props}
-    >
-      {props.children}
-      <div className="absolute -top-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute -top-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute bottom-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute bottom-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-1.5 -left-1.5 h-2/3 w-1.5 bg-foreground dark:bg-ring" />
-      <div className="absolute top-1.5 -right-1.5 h-2/3 w-1.5 bg-foreground dark:bg-ring" />
-    </ShadcnAlertDialogCancel>
-  );
+  return <ShadcnAlertDialogCancel className={cn(PIXEL_BUTTON, className)} {...props} />;
 }
 
 export {

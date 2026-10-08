@@ -36,7 +36,7 @@ function SpeciesAccordion({
   species, owned, open, onToggle, children,
 }) {
   return (
-    <div className="border-2 border-white/30 bg-black/40">
+    <div className="pixel-card">
       <div className="flex items-center gap-3 px-3 py-2">
         <button
           type="button"
@@ -53,7 +53,7 @@ function SpeciesAccordion({
           </div>
         </button>
       </div>
-      {open && owned > 0 && <div className="flex flex-col gap-1 border-t-2 border-white/20 p-2">{children}</div>}
+      {open && owned > 0 && <div className="flex flex-col gap-1 p-2">{children}</div>}
     </div>
   );
 }
@@ -241,7 +241,7 @@ function ArmyName({ name, onRename }) {
           if (e.key === 'Enter') confirm();
           if (e.key === 'Escape') setDraft(null);
         }}
-        className="retro text-sm bg-black/60 border-2 border-white/60 px-2 py-1 outline-none focus:border-white"
+        className="pixel-panel retro text-sm px-2 outline-none"
       />
       <button type="button" onClick={confirm} title={T.confirmRename} className="hover:text-white/70">✓</button>
     </div>
