@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { Button } from '@/components/ui/8bit/button.jsx';
 import { BATTLES, WAR_BATTLE_IDS } from '../data/battles.js';
@@ -25,6 +25,8 @@ const PLAYER_COLOR = { wyrms: 'yellow', undead: 'purple' };
 const SLOT = 42; // losange 21×21 à 2×, pointes au milieu des côtés
 const BOSS_SLOT = 56; // losange du boss, plus grand : SkillSlotLarge 28×28 à 2×
 const HALF = SLOT / 2;
+const PANEL_WIDTH = 320; // panneau de l'emplacement sélectionné, à droite de la map
+const PANEL_GAP = 64; // entre la map et le panneau
 const STEP = 80; // distance entre deux cases de la grille de la map
 
 const uiSprite = (name) => `url(/ui/${name}.png)`;
@@ -141,6 +143,24 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
     (node) => INVADER_SIZE[node.invader] + INVADER_GAP + slotSize(node) / 2 - slotCenter(node).y,
   ));
   const mapMarginBottom = SLOT / 4;
+  const mapWidth = SLOT + (WAR_MAP_1.cols - 1) * STEP;
+  const mapHeight = SLOT + (WAR_MAP_1.rows - 1) * STEP;
+  // Map réduite (jamais agrandie) pour tenir, avec le panneau, dans la place laissée par la
+  // fenêtre : aucune barre de défilement, quelle que soit la taille de l'écran.
+  const rowRef = useRef(null);
+  const [rowSize, setRowSize] = useState(null);
+  useLayoutEffect(() => {
+    const observer = new ResizeObserver(([entry]) => {
+      setRowSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    observer.observe(rowRef.current);
+    return () => observer.disconnect();
+  }, []);
+  const mapScale = rowSize ? Math.max(0, Math.min(
+    1,
+    (rowSize.width - PANEL_WIDTH - PANEL_GAP) / mapWidth,
+    rowSize.height / (mapMarginTop + mapHeight + mapMarginBottom),
+  )) : 1;
 
   return (
     <ScreenLayout
@@ -154,44 +174,46 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
         />
       )}
     >
-      <div className="flex min-h-full flex-col gap-2">
+      <div className="flex h-full flex-col gap-2">
         {armyIsEmpty && <p className="text-xs text-red-400">{T.emptyArmy}</p>}
         <p className="retro text-sm">{T.invaders(invaders.repelled, invaders.total)}</p>
-        <div className="flex flex-1 items-center justify-center gap-16">
+        <div ref={rowRef} className="flex min-h-0 flex-1 items-center justify-center" style={{ gap: PANEL_GAP }}>
           <div
-            className="relative shrink-0"
-            style={{
-              width: SLOT + (WAR_MAP_1.cols - 1) * STEP,
-              height: SLOT + (WAR_MAP_1.rows - 1) * STEP,
-              marginTop: mapMarginTop,
-              marginBottom: mapMarginBottom,
-            }}
+            className="shrink-0"
+            style={{ width: mapWidth * mapScale, height: (mapMarginTop + mapHeight + mapMarginBottom) * mapScale }}
           >
-            {WAR_MAP_1.links.map(([a, b]) => {
-              const from = byId.get(a);
-              const to = byId.get(b);
-              const linkColor = from.state === 'locked' || to.state === 'locked' ? 'grey' : color;
-              return <Connector key={`${a}-${b}`} from={from} to={to} color={linkColor} />;
-            })}
-            {nodes.map((node) => (
-              <Slot
-                key={node.id}
-                node={node}
-                color={color}
-                selected={node.id === selectedId}
-                onSelect={() => setSelectedId(node.id)}
-              />
-            ))}
-            {nodes.filter((node) => node.invader).map((node) => (
-              <Invader
-                key={`invader-${node.id}`}
-                node={node}
-                enemyRoster={enemyRoster}
-                selected={node.id === selectedId}
-              />
-            ))}
+            <div
+              className="relative origin-top-left"
+              style={{
+                width: mapWidth, height: mapHeight, top: mapMarginTop * mapScale, transform: `scale(${mapScale})`,
+              }}
+            >
+              {WAR_MAP_1.links.map(([a, b]) => {
+                const from = byId.get(a);
+                const to = byId.get(b);
+                const linkColor = from.state === 'locked' || to.state === 'locked' ? 'grey' : color;
+                return <Connector key={`${a}-${b}`} from={from} to={to} color={linkColor} />;
+              })}
+              {nodes.map((node) => (
+                <Slot
+                  key={node.id}
+                  node={node}
+                  color={color}
+                  selected={node.id === selectedId}
+                  onSelect={() => setSelectedId(node.id)}
+                />
+              ))}
+              {nodes.filter((node) => node.invader).map((node) => (
+                <Invader
+                  key={`invader-${node.id}`}
+                  node={node}
+                  enemyRoster={enemyRoster}
+                  selected={node.id === selectedId}
+                />
+              ))}
+            </div>
           </div>
-          <div className={`flex w-80 flex-col items-center gap-3 text-center text-xs ${current.state === 'locked' ? 'opacity-50' : ''}`}>
+          <div style={{ width: PANEL_WIDTH }} className={`flex shrink-0 flex-col items-center gap-3 text-center text-xs ${current.state === 'locked' ? 'opacity-50' : ''}`}>
             <div className="flex items-center gap-3">
               <span className="retro text-sm whitespace-nowrap">{current.battle ? T.battleNames[current.battle] : T.upcoming}</span>
               <Badge variant="secondary" font="normal" className="text-[10px]">{T.states[current.state]}</Badge>

@@ -12,7 +12,7 @@ export default function DefeatScreen({
   isDraw, onRetry, lost = null, onHome = null, canRetry = true,
 }) {
   return (
-    <div className="min-h-full w-full flex flex-col items-center justify-center gap-8 py-8 text-white">
+    <div className="h-full w-full flex flex-col items-center justify-center gap-6 text-white">
       <h1 className="text-3xl font-bold">{isDraw ? TEXT.defeat.draw : TEXT.defeat.title}</h1>
       {lost && (lost.length > 0
         ? <ReportList title={TEXT.report.lost} rows={lost} count={(row) => row.lost} lost />

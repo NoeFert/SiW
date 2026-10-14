@@ -108,7 +108,8 @@ export const TEXT = {
     abilities: 'Aptitudes',
     army: 'Gestion d\'armée',
     armyCost: (cost, cap) => `${cost} / ${cap} PP`,
-    armySummary: (inArmy, owned) => `${inArmy} / ${owned} dans l'armée`,
+    // Espaces insécables : au plus deux lignes, « 1 / 1 » puis « dans l'armée » (colonnes étroites).
+    armySummary: (inArmy, owned) => `${inArmy} / ${owned} dans l'armée`,
     removeOne: "Retirer un individu de l'armée",
     addOne: "Ajouter un individu à l'armée",
     rename: 'Renommer',

@@ -124,7 +124,12 @@ tests/
 - **Le jeu s'adapte à la taille de la fenêtre du navigateur, desktop uniquement** — pas de layout mobile/tactile à prévoir pour la v1.
 - **Le canevas Phaser garde toujours son ratio d'aspect (24:14)** : il ne s'étire jamais de façon à déformer la grille ou les sprites. Utiliser le Scale Manager de Phaser en mode `Phaser.Scale.FIT` avec un parent redimensionnable (`Phaser.Scale.RESIZE` sur le conteneur, ou écoute de `resize` window + `scale.resize()`), pour que le canevas grandisse ou rétrécisse en conservant ses proportions.
 - **La tour de commandement React s'adapte plus librement** autour du canevas (largeur en `%` ou `rem`, pas de ratio imposé), tant qu'elle reste entièrement visible à côté du terrain, jamais superposée ni coupée.
-- **Taille de fenêtre minimale** : définir une largeur/hauteur minimale raisonnable (ex : 1280×720) en dessous de laquelle le jeu n'essaie pas de rétrécir davantage (scroll ou simple troncature du surplus plutôt que des éléments illisibles) — pas de vraie réflexion "petit écran" nécessaire pour la v1, desktop uniquement.
+- **Aucune barre de défilement non voulue** : chaque écran tient dans la fenêtre du navigateur, de la fenêtre d'un petit portable (**1024×560**, taille minimale) aux grands écrans. Ce qui ne tient pas se réduit ou se réorganise :
+  - la map de « Partir en guerre » rétrécit (jamais au-delà de sa taille normale) pour tenir avec son panneau ;
+  - sur une fenêtre de moins de 1280 px de large, le titre « Choisis ta faction » remonte au-dessus des souverains pour ne pas couvrir les monstres ;
+  - écrans de victoire : « Montées de niveau » et « Unités perdues » côte à côte ; une liste exceptionnellement longue défile dans sa propre colonne, jamais la page.
+- **Défilements voulus** : la liste des unités de la tour de commandement (barre de défilement du pack, `GRAPHICS.md`), et une colonne de bilan trop longue (ci-dessus).
+- **Taille de fenêtre minimale : 1024×560** — en dessous, le jeu ne rétrécit pas davantage : le surplus défile plutôt que d'écraser les éléments. Pas de mode mobile ni tactile.
 - Les positions de jeu (grille, coordonnées d'unités) restent exprimées dans le référentiel fixe de 1536×896 dans `src/logic/` — seule la couche Phaser convertit vers la taille d'affichage réelle au moment du rendu ; aucune règle de `rules.md` ne dépend de la résolution d'écran.
 
 ---

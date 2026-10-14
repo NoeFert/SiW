@@ -65,8 +65,8 @@ function ArmyGroupRow({
   group, faction, inArmy, onRemove, onAdd,
 }) {
   return (
-    <div className="flex items-center gap-2 px-1 text-xs">
-      <span className="retro w-8 text-right">{group.unitIds.length > 1 && `${group.unitIds.length}x`}</span>
+    <div className="flex items-center gap-1.5 text-xs">
+      <span className="retro w-7 shrink-0 text-right">{group.unitIds.length > 1 && `${group.unitIds.length}x`}</span>
       <LevelBadge level={group.level} faction={faction} />
       <span className="flex-1 text-white/70">{T.armySummary(inArmy, group.unitIds.length)}</span>
       <Button size="icon" disabled={!onRemove} onClick={onRemove} aria-label={T.removeOne}>−</Button>

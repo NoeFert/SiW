@@ -44,7 +44,7 @@ export default function FactionChoiceScreen({ onChoose }) {
         <div className="w-1 bg-white/20" />
         <FactionColumn faction="undead" onChoose={onChoose} />
       </div>
-      <h1 className="retro absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pixel-panel px-4 text-lg whitespace-nowrap pointer-events-none">
+      <h1 className="retro absolute left-1/2 top-[15%] xl:top-1/2 -translate-x-1/2 -translate-y-1/2 pixel-panel px-4 text-lg whitespace-nowrap pointer-events-none">
         {TEXT.chooseFaction}
       </h1>
     </div>

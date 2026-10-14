@@ -8,15 +8,16 @@
       /* technical.md 5.4 : un seul point de montage React — App.jsx choisit l'écran affiché
          (technical.md 5), et BattleScreen.jsx définit lui-même son propre layout canevas +
          sidebar (technical.md 2.2/3.1) le temps qu'il est monté.
-         Desktop uniquement : sous la taille minimale, le surplus scrolle plutôt que d'écraser
+         Desktop uniquement : tous les écrans tiennent sans défilement à partir de 1024×560 (fenêtre
+         de navigateur d'un petit portable) ; en dessous, le surplus scrolle plutôt que d'écraser
          les éléments (pas de mode "petit écran" pour la v1, technical.md 3.1). */
       html, body, #root {
         height: 100%;
         margin: 0;
       }
       body {
-        min-width: 1280px;
-        min-height: 720px;
+        min-width: 1024px;
+        min-height: 560px;
         /* Même noir que le fond des écrans (GRAPHICS.md « Interface », bg-neutral-900) : aucune
            bande visible si la page dépasse la fenêtre. */
         background: #171717;
