@@ -63,10 +63,11 @@ Problèmes à résoudre (feedback) :
 - [x] `assets/ui/` rangé par couleur : neutres à la racine, `gold/`, `purple/` (palettes des factions, mêmes noms de fichiers), `white/`, `red/`, `green/`, `grey/`, `black/` ; `tests/ui/factionTheme.test.js` vérifie les palettes et tous les chemins `/ui/…` du code
 - [ ] Option, si Noémie la veut : ordonner la déclaration de `createBattle` en sections commentées, une par rôle, sans renommer de champ
 
-### Étape 5 — Store de la bataille
-- [ ] Un store Zustand de la bataille en cours remplace l'objet global `interactionState`
-- [ ] Il remplace aussi les deux boucles `requestAnimationFrame` (`useBattle.js`, `BattleScreen.jsx`)
-- [ ] `battle` reste un objet modifié en place par le moteur (60 fois par seconde) : le store en porte la référence et un compteur de frame incrémenté par la Scene
+### Étape 5 — Partage de la bataille entre la Scene et React
+- [ ] `BattleScreen` crée la bataille (`createBattleFromDefinition`) et en est propriétaire : il la transmet à la Scene au démarrage et à la tour de commandement par les props
+- [ ] Après chaque `tickBattle`, la Scene émet un événement Phaser (`battleFrame`) ; un petit hook React s'y abonne pour redessiner la tour, et `BattleScreen` y détecte la fin de bataille
+- [ ] Supprimer l'objet global `interactionState` et les deux boucles `requestAnimationFrame` (`useBattle.js`, `BattleScreen.jsx`) ; la position affichée des sprites (main du tutoriel) se demande directement à la Scene
+- [ ] `battle` reste un objet modifié en place par le moteur ; aucune nouvelle dépendance
 
 ### Étape 6 — Découpage de BattleScene
 - [ ] Classes de vue simples qui reçoivent la Scene : `BattlefieldView` (fond, rochers, phases), `DeploymentZoneView`, `UnitViews` (sprites, barre de vie, compteur d'aptitude, déplacements), `CombatEffects` (missiles, entailles, aptitudes, textes flottants), `PauseTint` (désaturation), `FieldInput` (clics sur le terrain, indicateur de sélection)
@@ -168,3 +169,5 @@ Changements apportés au plan initial, du plus ancien au plus récent.
   - Ajout de Noémie : les données de chaque faction dans un seul fichier (un fichier par faction, choix de Noémie). Le nom de la faction et le titre du souverain restent dans `src/ui/strings.js` (choix de Noémie, comme pour les noms de batailles).
   - Armée de départ séparée des stats (`startingArmy`, choix de Noémie) : `createDeploymentState(roster, startingArmy, individuals)`, `createStartingUnits(startingArmy)`, `createBattle(grid, player, enemy, …)` avec des factions. Dans les tests, les espèces fictives gardent `copies` pour rester courtes ; `tests/logic/battles/testFaction.js` en tire la faction de test.
   - Ajout de Noémie : couleur principale et palette d'interface dans les données de faction, et `assets/ui/` rangé par couleur. Les assets propres à une faction (badge et barre d'XP, dans sa couleur principale) vont dans le dossier de sa palette, nommés `*-faction.png` ; les assets jaunes de la map de guerre rejoignent `gold/` (choix de Noémie). Les classes `text-faction-wyrms`… deviennent `text-faction` / `bg-faction`, et les props `faction` devenues inutiles sont retirées. La couleur principale est maintenant donnée en hexadécimal (avant : oklch dans index.css et hexadécimal dans renderConstants.js, deux définitions).
+- **2026-10-15 — Étape 5 replanifiée (avant de la commencer)**
+  - Le store Zustand de la bataille est abandonné : la bataille est un objet modifié en place 60 fois par seconde, le store n'aurait servi qu'à porter sa référence et un compteur de frames ; le plan supposait aussi les sous-objets de l'étape 4, abandonnés. Même objectif (plus d'objet global ni de boucles qui relisent en permanence), moyen plus simple permis par l'étape 3 : `BattleScreen` crée la bataille et la transmet, la Scene signale chaque frame par un événement Phaser.
