@@ -4,7 +4,9 @@ import {
   TUTO_BATTLE_PLAYER_XP, playerXpForLevel, playerLevel, playerProgress, victoryPlayerXp,
   playerLevelReward,
 } from '../../src/logic/levels.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 describe('courbe des individus (rules.md 11.6)', () => {
   test('50 × N XP pour passer du niveau N à N + 1 : seuils cumulés 0 / 50 / 150 / 300 / 500', () => {

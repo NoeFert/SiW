@@ -6,7 +6,7 @@ import { phaseTransitionProgress } from '../logic/battles/phases.js';
 import { clickField, cancelOrder, getClickableHighlights } from '../logic/battles/orderSelection.js';
 import { BATTLES } from '../data/battles/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
-import { CELL_SIZE, FACTION_COLORS, cellCenter } from '../renderConstants.js';
+import { CELL_SIZE, cellCenter, factionColor } from '../renderConstants.js';
 import { interactionState } from '../state/interactionState.js';
 
 // Quadrillage de debug : repère de case utile en dev, pas pour le joueur. Passer à true pour
@@ -102,7 +102,7 @@ export default class BattleScene extends Phaser.Scene {
     for (const { key } of Object.values(SPECIES_SPRITES)) this.load.image(key, spritePath(key));
     this.load.image('rocks', 'sprites/rocks.png');
     for (const color of Object.values(ABILITY_COUNTER_COLORS)) {
-      for (const part of ['background', 'fill']) this.load.image(`step-slot-${color}-${part}`, `ui/step-slot-${color}-${part}.png`);
+      for (const part of ['background', 'fill']) this.load.image(`step-slot-${color}-${part}`, `ui/${color}/step-slot-${part}.png`);
     }
     for (const { key, path } of [
       ...Object.values(PROJECTILE_EFFECTS), ...Object.values(ABILITY_EFFECTS), MELEE_EFFECT,
@@ -254,7 +254,7 @@ export default class BattleScene extends Phaser.Scene {
     const { grid } = this.battle; // grille de la phase affichée
     const zoneColumns = Math.floor(grid.width / 2);
     const inZone = (x, y) => x < zoneColumns && grid.isFree(x, y);
-    const color = FACTION_COLORS[this.playerFaction];
+    const color = factionColor(this.playerFaction);
     const border = 3;
     const far = CELL_SIZE - border;
     const zone = this.deploymentZone.clear();
@@ -426,7 +426,7 @@ export default class BattleScene extends Phaser.Scene {
   // (unité, puis cible). Clic droit : annule l'ordre en cours.
 
   createSelectionIndicator() {
-    const color = FACTION_COLORS[this.playerFaction]; // seules les unités du joueur sont sélectionnables
+    const color = factionColor(this.playerFaction); // seules les unités du joueur sont sélectionnables
     this.selectionIndicator = this.add.rectangle(0, 0, CELL_SIZE, CELL_SIZE, color, 0.2)
       .setOrigin(0, 0)
       .setStrokeStyle(3, color)
@@ -550,7 +550,7 @@ export default class BattleScene extends Phaser.Scene {
     const barY = -footprintSize / 2 - 10;
     const barBackground = this.add.rectangle(0, barY, barWidth, 6, 0x000000).setOrigin(0.5);
     // Barre de vie dans la couleur principale de la faction de l'unité.
-    const barColor = FACTION_COLORS[unit.faction === 'player' ? this.playerFaction : this.enemyFaction];
+    const barColor = factionColor(unit.faction === 'player' ? this.playerFaction : this.enemyFaction);
     const barFill = this.add.rectangle(-barWidth / 2, barY, barWidth, 6, barColor).setOrigin(0, 0.5);
     container.add(barBackground);
     container.add(barFill);

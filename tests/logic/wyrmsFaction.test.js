@@ -1,8 +1,10 @@
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 // Vérifie que les données transcrites correspondent exactement à units.md,
 // pour détecter toute erreur de transcription des stats.
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 
-describe('WYRMS_ROSTER (units.md)', () => {
+describe('faction wyrms — roster (units.md)', () => {
   test('Lambton Worm', () => {
     expect(WYRMS_ROSTER.lambtonWorm).toMatchObject({
       size: 1,
@@ -12,7 +14,6 @@ describe('WYRMS_ROSTER (units.md)', () => {
       moveSpeed: 1.25,
       attackSpeed: 1.0,
       range: null,
-      copies: 12,
     });
   });
 
@@ -25,7 +26,6 @@ describe('WYRMS_ROSTER (units.md)', () => {
       moveSpeed: 2,
       attackSpeed: 1.3,
       range: 4,
-      copies: 8,
     });
     expect(WYRMS_ROSTER.amphiptere.keywords).toContain('flying');
   });
@@ -39,11 +39,21 @@ describe('WYRMS_ROSTER (units.md)', () => {
       moveSpeed: 0.75,
       attackSpeed: 1.8,
       range: 3,
-      copies: 1,
     });
     expect(WYRMS_ROSTER.fafnir.keywords).toEqual(expect.arrayContaining(['legendary', 'flying']));
     expect(WYRMS_ROSTER.fafnir.abilities).toEqual([
       { trigger: 'periodic', every: 5, type: 'bonusDamage', multiplier: 2, name: 'Attaque dévastatrice' },
     ]);
+  });
+});
+
+describe('faction wyrms — identité et armée de départ', () => {
+  test('id et sprite du souverain', () => {
+    expect(FACTIONS.wyrms.id).toBe('wyrms');
+    expect(FACTIONS.wyrms.sovereignSprite).toBe('wyrm_sovereign');
+  });
+
+  test('armée de départ : les « Copies de départ » de units.md', () => {
+    expect(FACTIONS.wyrms.startingArmy).toEqual({ lambtonWorm: 12, amphiptere: 8, fafnir: 1 });
   });
 });

@@ -13,7 +13,7 @@ import { TEXT } from './strings.js';
 // bord de la fenêtre, son contenu reste à la distance du padding du jeu (game, 48 px) en haut, à
 // gauche et en bas. À droite (côté terrain) : 16 px ; dans la liste, la scrollbar (14 px,
 // gouttière toujours réservée) + 2 px.
-export default function CommandTower({ playerFaction }) {
+export default function CommandTower() {
   const battle = useBattle();
   if (!battle) return null;
 
@@ -27,16 +27,16 @@ export default function CommandTower({ playerFaction }) {
             <SurrenderButton battle={battle} />
           </div>
           <div className="pt-8">
-            <PresenceGauge used={getPresenceUsed('player', unitsOnField)} playerFaction={playerFaction} />
+            <PresenceGauge used={getPresenceUsed('player', unitsOnField)} />
           </div>
           <div className="mt-4">
-            <OrdersRow battle={battle} playerFaction={playerFaction} />
+            <OrdersRow battle={battle} />
           </div>
           <h2 className="retro text-xs mt-4">{TEXT.yourUnits}</h2>
         </div>
 
         <div className="pixel-scrollbar flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable] pl-game pr-0.5 pt-2 pb-game">
-          <DeploymentList battle={battle} unitsOnField={unitsOnField} playerFaction={playerFaction} />
+          <DeploymentList battle={battle} unitsOnField={unitsOnField} />
         </div>
       </div>
     </TooltipProvider>

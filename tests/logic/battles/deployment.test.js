@@ -4,6 +4,7 @@ import {
   createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, getTowerRows, groupTowerRows,
   PRESENCE_CAP,
 } from '../../../src/logic/battles/deployment.js';
+import { startingArmyOf } from './testFaction.js';
 
 // Roster fictif minimal, isolé de units.md, pour piloter précisément plafond/copies/légendaire.
 const ROSTER = {
@@ -23,7 +24,7 @@ const ROSTER = {
 
 describe('deployUnit — plafond de points de présence (rules.md 2)', () => {
   test('accepte des déploiements tant que le total ne dépasse pas 150', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const onField = [];
 
     for (let i = 0; i < 3; i++) { // 3 x 50 = 150, exactement le plafond
@@ -36,7 +37,7 @@ describe('deployUnit — plafond de points de présence (rules.md 2)', () => {
   });
 
   test('refuse un déploiement qui dépasserait le plafond', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const onField = [];
     for (let i = 0; i < 3; i++) {
       onField.push(deployUnit(state, 'player', ROSTER.grunt, i, 0, onField).unit);
@@ -49,7 +50,7 @@ describe('deployUnit — plafond de points de présence (rules.md 2)', () => {
   });
 
   test('les points se libèrent dès qu\'une unité meurt ou fuit (le plafond est vivant)', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     let onField = [];
     for (let i = 0; i < 3; i++) {
       onField.push(deployUnit(state, 'player', ROSTER.grunt, i, 0, onField).unit);
@@ -65,7 +66,7 @@ describe('deployUnit — plafond de points de présence (rules.md 2)', () => {
 
 describe('deployUnit — copies et fuite (rules.md 2)', () => {
   test('épuise les copies disponibles d\'une espèce', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     expect(deployUnit(state, 'player', ROSTER.lonely, 0, 0, []).success).toBe(true);
 
     const result = deployUnit(state, 'player', ROSTER.lonely, 1, 0, []);
@@ -75,7 +76,7 @@ describe('deployUnit — copies et fuite (rules.md 2)', () => {
   });
 
   test('redéploie une copie revenue de fuite avec ses PV réduits conservés', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const { unit } = deployUnit(state, 'player', ROSTER.lonely, 0, 0, []);
     unit.hp = 3; // dégâts subis avant la fuite
 
@@ -89,7 +90,7 @@ describe('deployUnit — copies et fuite (rules.md 2)', () => {
 
 describe('deployUnit — choix explicite de la copie (sidebar : lignes séparées par variante)', () => {
   function stateWithOneWoundedGrunt() {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const { unit } = deployUnit(state, 'player', ROSTER.grunt, 0, 0, []);
     unit.hp = 7; // dégâts subis avant la fuite
     recordReturn(state, unit);
@@ -117,7 +118,7 @@ describe('deployUnit — choix explicite de la copie (sidebar : lignes séparée
   });
 
   test('copyChoice "fresh" est refusé s\'il ne reste aucune copie fraîche, sans repli automatique', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     state.bySpecies.get(ROSTER.grunt).freshRemaining = 0;
     const wounded = new BattleUnit(ROSTER.grunt, 'player', 0, 0);
     wounded.hp = 5;
@@ -149,7 +150,7 @@ describe('deployUnit — choix explicite de la copie (sidebar : lignes séparée
 
 describe('deployUnit — limite du [Légendaire] (rules.md 2)', () => {
   test('bloque un second exemplaire simultané, indépendamment du budget disponible', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const first = deployUnit(state, 'player', ROSTER.champion, 0, 0, []);
     expect(first.success).toBe(true);
 
@@ -160,7 +161,7 @@ describe('deployUnit — limite du [Légendaire] (rules.md 2)', () => {
   });
 
   test('une tentative refusée ne consomme pas de copie', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const first = deployUnit(state, 'player', ROSTER.champion, 0, 0, []);
     deployUnit(state, 'player', ROSTER.champion, 5, 5, [first.unit]); // refusé
 
@@ -168,7 +169,7 @@ describe('deployUnit — limite du [Légendaire] (rules.md 2)', () => {
   });
 
   test('redevient déployable une fois le premier exemplaire retiré du terrain', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     deployUnit(state, 'player', ROSTER.champion, 0, 0, []);
 
     const result = deployUnit(state, 'player', ROSTER.champion, 5, 5, []); // plus personne sur le terrain
@@ -179,7 +180,7 @@ describe('deployUnit — limite du [Légendaire] (rules.md 2)', () => {
 
 describe('deployUnit — signal de pause tactique (rules.md 2)', () => {
   test('un déploiement réussi signale une pause ; le vrai contrôle du temps viendra de Phaser', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const result = deployUnit(state, 'player', ROSTER.grunt, 0, 0, []);
     expect(result.timeControl).toBe('pause');
   });
@@ -221,7 +222,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   }
 
   test('une ligne par espèce en réserve, les espèces épuisées disparaissent', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     state.bySpecies.get(ROSTER.lonely).freshRemaining = 0;
 
     const rows = getTowerRows(state, 'player', []);
@@ -233,7 +234,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   });
 
   test('les unités sur le terrain ne sont pas dans la liste', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const { unit } = deployUnit(state, 'player', ROSTER.grunt, 0, 0, []);
 
     const rows = getTowerRows(state, 'player', [unit]);
@@ -242,7 +243,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   });
 
   test('regroupement strict : même espèce et mêmes PV seulement', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     state.bySpecies.get(ROSTER.grunt).freshRemaining = 2;
     returnWithHp(state, ROSTER.grunt, 20); // fuite sans blessure : rejoint le groupe intact
     returnWithHp(state, ROSTER.grunt, 12);
@@ -255,7 +256,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   });
 
   test('un blessé apparaît juste sous le groupe de son espèce, avant l\'espèce suivante', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     returnWithHp(state, ROSTER.grunt, 5);
 
     const names = getTowerRows(state, 'player', []).map((r) => `${r.species.name}:${r.hp}`);
@@ -264,7 +265,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   });
 
   test('la ligne intacte reste déployable même si elle ne contient que des copies revenues de fuite', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     state.bySpecies.get(ROSTER.lonely).freshRemaining = 0;
     returnWithHp(state, ROSTER.lonely, 10);
     const [row] = getTowerRows(state, 'player', []).filter((r) => r.species === ROSTER.lonely);
@@ -276,7 +277,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   });
 
   test('indicateur "déployable" faux si le coût dépasse le budget de présence restant', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const onField = [];
     for (let x = 0; x < 2; x++) onField.push(deployUnit(state, 'player', ROSTER.grunt, x, 0, onField).unit); // 100/150
 
@@ -287,7 +288,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
   });
 
   test('indicateur "déployable" faux pour un [Légendaire] déjà sur le terrain', () => {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     const { unit } = deployUnit(state, 'player', ROSTER.champion, 0, 0, []);
 
     const champion = getTowerRows(state, 'player', [unit]).find((r) => r.species === ROSTER.champion);
@@ -299,7 +300,7 @@ describe('getTowerRows — liste des unités déployables de la tour (ui-battle-
 describe('groupTowerRows — cases de la tour, regroupées par espèce (ui-battle-screen-decisions.md 2.2)', () => {
   // 3 Grunts intacts, puis un blessé à 12 PV ; Champion et Lonely en une seule ligne chacun.
   function stateWithWoundedGrunt() {
-    const state = createDeploymentState(ROSTER);
+    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
     state.bySpecies.get(ROSTER.grunt).freshRemaining = 3;
     const unit = new BattleUnit(ROSTER.grunt, 'player', 0, 0);
     unit.hp = 12;

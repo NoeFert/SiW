@@ -29,11 +29,12 @@ import { isPhaseOver, startPhaseTransition, updatePhaseTransition } from './phas
 //    - battleEnd.js : victoire, défaite, match nul, abandon
 
 // L'objet bataille : un seul objet modifié en place, lu par la Scene Phaser et la tour React.
-// `rng` : source d'aléa du choix de case de l'IA (rules.md 7.2), injectable en test.
-// `playerUnits` : individus du joueur engagés (rules.md 2 et 11.6), qui forment sa réserve avec
-// leur niveau ; sans eux, la réserve est faite des copies de units.md, niveau 1.
+// `player` / `enemy` : faction de chaque camp (src/data/factions/), dont on lit le roster et
+// l'armée de départ. `rng` : source d'aléa du choix de case de l'IA (rules.md 7.2), injectable en
+// test. `playerUnits` : individus du joueur engagés (rules.md 2 et 11.6), qui forment sa réserve
+// avec leur niveau ; sans eux, sa réserve est son armée de départ, niveau 1.
 // Pour une bataille du jeu, passer plutôt par createBattleFromDefinition (battleSetup.js).
-export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng = Math.random, playerUnits = null) {
+export function createBattle(grid, player, enemy, enemyScript, rng = Math.random, playerUnits = null) {
   return {
     grid,
     rng,
@@ -54,8 +55,8 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     playerFleeState: createFleeState(),
     aiScriptState: createAiScriptState(),
     enemyScript,
-    playerDeployment: createDeploymentState(playerRoster, playerUnits),
-    enemyDeployment: createDeploymentState(enemyRoster),
+    playerDeployment: createDeploymentState(player.roster, player.startingArmy, playerUnits),
+    enemyDeployment: createDeploymentState(enemy.roster, enemy.startingArmy),
     playerEndState: createFactionState(),
     enemyEndState: createFactionState(),
     onFieldById: new Map(), // détecte les fuites qui viennent d'aboutir (transition on-field -> off-field)

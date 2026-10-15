@@ -1,9 +1,11 @@
 import Grid from '../../../src/logic/battles/grid.js';
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
-import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
 import { updateUnitBehaviors } from '../../../src/logic/battles/unitBehavior.js';
 import { createFleeState, FLEE_COOLDOWN_SECONDS } from '../../../src/logic/battles/fleeCooldown.js';
 import { issuePlayerAttack, issuePlayerMoveTo, issuePlayerFlee } from '../../../src/logic/battles/playerActions.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 // Ennemi inerte (ne bouge pas, n'attaque jamais dans la fenêtre d'un test, PV élevés).
 const INERT = {

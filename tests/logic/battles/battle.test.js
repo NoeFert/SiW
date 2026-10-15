@@ -7,6 +7,7 @@ import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { getReserve } from '../../../src/logic/battles/deployment.js';
 import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import { deployPlayerUnit, issuePlayerFlee, surrenderPlayer } from '../../../src/logic/battles/playerActions.js';
+import { testFaction } from './testFaction.js';
 
 const PLAYER_ROSTER = {
   fighter: {
@@ -26,7 +27,7 @@ const ENEMY_SCRIPT = [{ time: 0, species: ENEMY_ROSTER.grunt }];
 
 describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   test('deployPlayerUnit ajoute l\'unité à la bataille et signale la pause', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
 
     const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
 
@@ -36,7 +37,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('une bataille minimale se termine par une victoire du joueur une fois l\'IA éliminée', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
     deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
 
     let outcome = 'ongoing';
@@ -49,7 +50,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('deployPlayerUnit refuse une position hors de la moitié du joueur (rules.md 2)', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
 
     const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 7, 5); // moitié IA (x >= 5)
 
@@ -58,7 +59,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('issuePlayerFlee passe par le cooldown de battle.playerFleeState', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
     const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
 
     expect(issuePlayerFlee(battle.playerFleeState, battle.elapsedSeconds, unit)).toBe(true);
@@ -66,7 +67,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('surrenderPlayer déclenche une défaite immédiate (rules.md 8.2)', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
     deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
 
     surrenderPlayer(battle);
@@ -76,7 +77,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('une unité tuée au tick où elle fuit ne revient pas en réserve (rules.md 2/4.4)', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, []);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), []);
     const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 5); // déjà sur le bord
     const enemy = new BattleUnit(ENEMY_ROSTER.grunt, 'enemy', 1, 5);
     enemy.hp = 1000;
@@ -92,7 +93,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('un déploiement scripté de l\'IA ne chevauche jamais une unité déjà présente (rules.md 1/7)', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
     const intruder = new BattleUnit(PLAYER_ROSTER.fighter, 'player', 5, 5); // dans la moitié IA
     battle.units.push(intruder);
 
@@ -105,7 +106,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('pas de compte à rebours : un terrain du joueur vide avec des réserves ne finit jamais la bataille (rules.md 8)', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
 
     tickBattle(battle, 20); // jamais déployé
     expect(battle.outcome).toBe('ongoing');
@@ -118,7 +119,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   });
 
   test('tickBattle expose les évènements d\'aptitude du tick dans battle.abilityEvents', () => {
-    const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
+    const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
     deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
 
     tickBattle(battle, 1);

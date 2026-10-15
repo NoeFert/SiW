@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/8bit/button.jsx';
-import { ROSTERS } from '../data/rosters.js';
+import { FACTIONS } from '../data/factions/index.js';
 import { LevelBadge } from '../ui/LevelDisplay.jsx';
 import { SpeciesCountRow } from '../ui/SpeciesSprite.jsx';
 import RewardRow from '../ui/RewardRow.jsx';
@@ -39,7 +39,7 @@ function LossReport({ rows }) {
 // (« 2x [sprite] Ver de Lambton niv 1 → 2 », bloc absent s'il n'y en a aucun), puis unités perdues
 // (rules.md 11.5 et 11.6). Niveaux gagnés et pertes côte à côte, pour tenir en hauteur.
 function ProgressReport({ progress, playerFaction }) {
-  const roster = ROSTERS[playerFaction];
+  const roster = FACTIONS[playerFaction].roster;
   return (
     <>
       <RewardRow spiritStones={progress.spiritStonesGained} xp={progress.xpGained} />
@@ -50,7 +50,7 @@ function ProgressReport({ progress, playerFaction }) {
             {progress.levelUps.map(({ species, from, to, count }) => (
               <SpeciesCountRow key={`${species}-${from}-${to}`} count={count} species={roster[species]}>
                 <span className="flex-1 text-sm">{unitName(roster[species])}</span>
-                <LevelBadge level={to} faction={playerFaction} label={TEXT.levels.levelUp(from, to)} />
+                <LevelBadge level={to} label={TEXT.levels.levelUp(from, to)} />
               </SpeciesCountRow>
             ))}
           </section>

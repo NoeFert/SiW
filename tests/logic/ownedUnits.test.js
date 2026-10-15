@@ -1,8 +1,10 @@
 import {
   createUnit, createStartingUnits, countUnitsBySpecies,
 } from '../../src/logic/ownedUnits.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
+const UNDEAD_ROSTER = FACTIONS.undead.roster;
 
 describe('createUnit — individu (rules.md 11.1)', () => {
   test('un individu a un identifiant, une espèce et une XP (niveau 1, 0 XP par défaut)', () => {
@@ -19,18 +21,17 @@ describe('createUnit — individu (rules.md 11.1)', () => {
 
 describe('createStartingUnits — dotation de départ (rules.md 11.1)', () => {
   test('Wyrms : 12 Vers de Lambton, 8 Amphiptères, 1 Fafnir', () => {
-    const units = createStartingUnits(WYRMS_ROSTER);
+    const units = createStartingUnits(FACTIONS.wyrms.startingArmy);
     expect(countUnitsBySpecies(WYRMS_ROSTER, units)).toEqual({ lambtonWorm: 12, amphiptere: 8, fafnir: 1 });
   });
 
-  test('Morts-Vivants : autant d\'individus que les copies de départ', () => {
-    const units = createStartingUnits(UNDEAD_ROSTER);
-    const expected = Object.fromEntries(Object.entries(UNDEAD_ROSTER).map(([k, s]) => [k, s.copies]));
-    expect(countUnitsBySpecies(UNDEAD_ROSTER, units)).toEqual(expected);
+  test('Morts-Vivants : autant d\'individus que l\'armée de départ de la faction', () => {
+    const units = createStartingUnits(FACTIONS.undead.startingArmy);
+    expect(countUnitsBySpecies(UNDEAD_ROSTER, units)).toEqual(FACTIONS.undead.startingArmy);
   });
 
   test('tous les identifiants sont distincts', () => {
-    const units = createStartingUnits(WYRMS_ROSTER);
+    const units = createStartingUnits(FACTIONS.wyrms.startingArmy);
     expect(new Set(units.map((u) => u.id)).size).toBe(units.length);
   });
 });

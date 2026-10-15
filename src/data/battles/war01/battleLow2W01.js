@@ -1,6 +1,8 @@
-import { WYRMS_ROSTER as W } from '../../wyrmsRoster.js';
-import { UNDEAD_ROSTER as U } from '../../undeadRoster.js';
+import { FACTIONS } from '../../factions/index.js';
 import { waves } from '../waves.js';
+
+const W = FACTIONS.wyrms.roster;
+const U = FACTIONS.undead.roster;
 
 // Guerre 01, bataille de l'emplacement « low2 » de la map (rules.md 11.7) : « Les trois
 // couloirs », puis « Le fort ».

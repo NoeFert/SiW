@@ -2,6 +2,7 @@ import {
   createFactionState, surrender, evaluateBattleOutcome, isEliminated,
 } from '../../../src/logic/battles/battleEnd.js';
 import { createDeploymentState, deployUnit, recordReturn } from '../../../src/logic/battles/deployment.js';
+import { startingArmyOf } from './testFaction.js';
 
 // Roster fictif minimal, isolé de units.md, pour piloter précisément les réserves.
 const ROSTER = {
@@ -12,11 +13,11 @@ const ROSTER = {
 };
 
 function emptyDeployment() {
-  return createDeploymentState(ROSTER);
+  return createDeploymentState(ROSTER, startingArmyOf(ROSTER));
 }
 
 function depletedDeployment() {
-  const state = createDeploymentState(ROSTER);
+  const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
   state.bySpecies.get(ROSTER.grunt).freshRemaining = 0;
   return state;
 }

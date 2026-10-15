@@ -3,10 +3,12 @@ import {
   invadersRepelled,
 } from '../../src/logic/war.js';
 import { WAR_MAP_01 } from '../../src/data/battles/war01/warMap01.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
 import { createArmy } from '../../src/logic/army.js';
 import { BATTLES, WAR_BATTLE_IDS } from '../../src/data/battles/index.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const UNDEAD_ROSTER = FACTIONS.undead.roster;
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 const IDS = ['battleStartW01', 'battleLow1W01', 'battleLow2W01'];
 
@@ -34,8 +36,9 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
           expect(script.map((e) => e.time)).toEqual([...script.map((e) => e.time)].sort((a, b) => a - b));
         }
         const all = scripts.flat();
-        for (const species of new Set(all.map((e) => e.species))) {
-          expect(all.filter((e) => e.species === species).length).toBeLessThanOrEqual(species.copies);
+        const { roster, startingArmy } = FACTIONS[faction];
+        for (const [key, species] of Object.entries(roster)) {
+          expect(all.filter((e) => e.species === species).length).toBeLessThanOrEqual(startingArmy[key]);
         }
         const legendaries = all.filter((e) => e.species.keywords.includes('legendary'));
         expect(legendaries).toHaveLength(id === 'battleLow2W01' ? 1 : 0);

@@ -9,6 +9,7 @@ import {
   cancelOrder, chooseOrder, selectUnit, selectCell, canChooseOrder,
 } from '../../../src/logic/battles/orderSelection.js';
 import { canFlee, getFleeCooldownRemaining } from '../../../src/logic/battles/fleeCooldown.js';
+import { testFaction } from './testFaction.js';
 
 const PLAYER_ROSTER = {
   fighter: {
@@ -25,7 +26,7 @@ const ENEMY_ROSTER = {
 };
 
 function newBattle(script = []) {
-  return createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, script);
+  return createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), script);
 }
 
 // Les trois façons de mettre la bataille en pause, pour vérifier chaque compteur sous chacune.

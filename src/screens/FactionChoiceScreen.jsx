@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/8bit/button.jsx';
-import { ROSTERS } from '../data/rosters.js';
-import { SPECIES_SPRITES, SOVEREIGN_SPRITES, spritePath } from '../data/sprites.js';
+import { FACTIONS } from '../data/factions/index.js';
+import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import { TEXT, unitName } from '../ui/strings.js';
 
 // Une colonne par faction : le souverain en fond, le bouton de choix, puis une rangée de 3
@@ -9,7 +9,7 @@ function FactionColumn({ faction, onChoose }) {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center gap-8 overflow-hidden">
       <img
-        src={spritePath(SOVEREIGN_SPRITES[faction])}
+        src={spritePath(FACTIONS[faction].sovereignSprite)}
         alt=""
         className="pixelated absolute inset-0 m-auto h-full max-h-[90%] w-auto object-contain opacity-40 pointer-events-none"
       />
@@ -17,7 +17,7 @@ function FactionColumn({ faction, onChoose }) {
         {TEXT.factions[faction]}
       </Button>
       <div className="relative grid grid-cols-3 gap-2">
-        {Object.values(ROSTERS[faction]).map((species) => (
+        {Object.values(FACTIONS[faction].roster).map((species) => (
           <div key={species.name} className="pixel-card size-20 flex items-center justify-center">
             <img
               src={spritePath(SPECIES_SPRITES[species.name].key)}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { Button } from '@/components/ui/8bit/button.jsx';
-import { ROSTERS } from '../data/rosters.js';
+import { FACTIONS } from '../data/factions/index.js';
 import {
   ARMY_NAME_MAX_LENGTH, ARMY_PP_CAP, addToArmy, armyCost, canAddToArmy, canRemoveFromArmy,
   levelGroups, nextToAdd, nextToRemove, removeFromArmy, renameArmy, speciesTiles,
@@ -62,25 +62,18 @@ function SpeciesAccordion({
 // tour de commandement) : nombre, niveau, combien sont dans l'armée, et − / + pour en retirer
 // ou en ajouter un. `onRemove` / `onAdd` : null si impossible.
 function ArmyGroupRow({
-  group, faction, inArmy, onRemove, onAdd,
+  group, inArmy, onRemove, onAdd,
 }) {
   return (
     <div className="flex items-center gap-1.5 text-xs">
       <span className="retro w-7 shrink-0 text-right">{group.unitIds.length > 1 && `${group.unitIds.length}x`}</span>
-      <LevelBadge level={group.level} faction={faction} />
+      <LevelBadge level={group.level} />
       <span className="flex-1 text-white/70">{T.armySummary(inArmy, group.unitIds.length)}</span>
       <Button size="icon" disabled={!onRemove} onClick={onRemove} aria-label={T.removeOne}>−</Button>
       <Button size="icon" disabled={!onAdd} onClick={onAdd} aria-label={T.addOne}>+</Button>
     </div>
   );
 }
-
-// GRAPHICS.md « Niveaux » : niveau d'un individu dans la couleur de la faction du joueur.
-// Classes littérales (Tailwind ne détecte pas les noms construits dynamiquement).
-const LEVEL_TEXT_CLASS = {
-  wyrms: 'text-faction-wyrms',
-  undead: 'text-faction-undead',
-};
 
 // GRAPHICS.md « Interface » : la case d'une espèce [Légendaire] a un panneau doré
 // (Gold/PanelLarge) et des coins dorés (Decorators/Gold/BorderC).
@@ -99,7 +92,7 @@ function LegendaryCorners({ species }) {
 // case (pas de bouton dans un bouton). Clic -> page de détail du premier individu de la case
 // (le plus avancé).
 function UnitTile({
-  tile, species, faction, grouping, onSelect,
+  tile, species, grouping, onSelect,
 }) {
   return (
     <div className="relative">
@@ -113,7 +106,7 @@ function UnitTile({
         <SpeciesSprite species={species} className="size-14" />
         <span className="flex flex-col items-center gap-1 text-center leading-tight">
           <span>{unitName(species)}</span>
-          <span className={`retro ${LEVEL_TEXT_CLASS[faction]}`}>{TEXT.levels.range(tile.minLevel, tile.maxLevel)}</span>
+          <span className="retro text-faction">{TEXT.levels.range(tile.minLevel, tile.maxLevel)}</span>
         </span>
       </button>
       {grouping && <GroupArrow grouped={grouping.grouped} onToggle={grouping.onToggle} className="top-1 right-1" />}
@@ -156,7 +149,7 @@ function statRows(species, level) {
 // hauteur, vers l'individu précédent / suivant dans l'ordre de la grille (`onPrevious` /
 // `onNext` : null au bout).
 function IndividualDetail({
-  unit, species, faction, onPrevious, onNext,
+  unit, species, onPrevious, onNext,
 }) {
   const level = individualLevel(unit.xp);
   return (
@@ -181,10 +174,10 @@ function IndividualDetail({
           <div className="flex flex-1 flex-col gap-3">
             <span className="retro text-sm">{unitName(species)}</span>
             <div className="flex flex-wrap items-center gap-y-1">
-              <LevelBadge level={level} faction={faction} />
+              <LevelBadge level={level} />
               <Keywords species={species} />
             </div>
-            <XpBar progress={individualProgress(unit.xp)} faction={faction} />
+            <XpBar progress={individualProgress(unit.xp)} />
           </div>
         </div>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-1">
@@ -263,14 +256,14 @@ export default function CivilizationScreen({
 }) {
   // Accordéons de l'armée ouverts : tous par défaut, pour que les boutons − / + se voient tout de
   // suite (technical.md 5.1) ; chacun se ferme et se rouvre indépendamment (rien n'est sauvegardé).
-  const [openKeys, setOpenKeys] = useState(() => new Set(Object.keys(ROSTERS[playerFaction])));
+  const [openKeys, setOpenKeys] = useState(() => new Set(Object.keys(FACTIONS[playerFaction].roster)));
   const [selectedId, setSelectedId] = useState(null); // individu affiché en détail
   // Espèces dégroupées dans la grille des unités (toutes regroupées par défaut, rien n'est
   // sauvegardé), comme dans la tour de commandement.
   const [ungroupedSpecies, setUngroupedSpecies] = useState(() => new Set());
   const army = useProfileStore((profile) => profile.army);
   const units = useProfileStore((profile) => profile.units);
-  const roster = ROSTERS[playerFaction];
+  const roster = FACTIONS[playerFaction].roster;
   const armyIds = new Set(army?.unitIds ?? []);
   const speciesUnits = (key) => sortByLevel(units.filter((unit) => unit.species === key));
 
@@ -293,7 +286,6 @@ export default function CivilizationScreen({
       <IndividualDetail
         unit={selected}
         species={roster[selected.species]}
-        faction={playerFaction}
         onPrevious={goTo(selectedIndex - 1)}
         onNext={goTo(selectedIndex + 1)}
       />
@@ -324,7 +316,6 @@ export default function CivilizationScreen({
                     <ArmyGroupRow
                       key={group.level}
                       group={group}
-                      faction={playerFaction}
                       inArmy={group.unitIds.filter((id) => armyIds.has(id)).length}
                       onAdd={addId && canAddToArmy(army, units, roster, addId)
                         ? () => setArmy(addToArmy(army, units, roster, addId)) : null}
@@ -360,7 +351,6 @@ export default function CivilizationScreen({
               key={`${key}-${tile.minLevel}-${tile.maxLevel}`}
               tile={tile}
               species={species}
-              faction={playerFaction}
               grouping={index === 0 && groups.length > 1 ? { grouped, onToggle: toggleGroup } : null}
               onSelect={() => setSelectedId(tile.unitIds[0])}
             />

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ROSTERS } from '../data/rosters.js';
-import { SOVEREIGN_SPRITES, spritePath } from '../data/sprites.js';
+import { FACTIONS } from '../data/factions/index.js';
+import { spritePath } from '../data/sprites.js';
 import { homeTipToShow } from '../logic/homeTips.js';
 import { playerProgress } from '../logic/levels.js';
 import { useProfileStore, markHomeTipSeen } from '../state/profileStore.js';
@@ -55,7 +55,8 @@ export default function HomeScreen({
       justSummoned,
       units: profile.units,
       army: profile.army,
-      roster: ROSTERS[playerFaction],
+      roster: FACTIONS[playerFaction].roster,
+      startingArmy: FACTIONS[playerFaction].startingArmy,
       spiritStones: profile.spiritStones,
     });
   });
@@ -91,13 +92,12 @@ export default function HomeScreen({
       </div>
       <div className="absolute top-0 left-0 flex items-center gap-4">
         <div className="pixel-frame size-24">
-          <img src={spritePath(SOVEREIGN_SPRITES[playerFaction])} alt="" className="size-full object-contain" />
+          <img src={spritePath(FACTIONS[playerFaction].sovereignSprite)} alt="" className="size-full object-contain" />
         </div>
         <div className="flex w-64 flex-col gap-2">
           <span className="retro text-xs">{TEXT.sovereignName[playerFaction]}</span>
           <XpBar
             progress={progress}
-            faction={playerFaction}
             label={TEXT.levels.player(progress.level)}
             className="retro"
           />

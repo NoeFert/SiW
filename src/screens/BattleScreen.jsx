@@ -86,7 +86,7 @@ export default function BattleScreen({
     <div className="relative h-full w-full">
       <div className="absolute -inset-game flex">
         <div className="dark flex-none h-full" style={{ width: TOWER_WIDTH }}>
-          <CommandTower playerFaction={playerFaction} />
+          <CommandTower />
         </div>
         <div id="phaser-root" ref={containerRef} className="flex-1 min-w-0 h-full" />
         <TutorialOverlay />

@@ -4,7 +4,7 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/8bit/alert-dialog.jsx';
 import { Button } from '@/components/ui/8bit/button.jsx';
-import { ROSTERS } from '../data/rosters.js';
+import { FACTIONS } from '../data/factions/index.js';
 import { countUnitsBySpecies } from '../logic/ownedUnits.js';
 import {
   canSummon, maxSummonCount, resummonPrice, summonAction, summonPrice,
@@ -18,8 +18,6 @@ import { TEXT, unitName } from '../ui/strings.js';
 
 const T = TEXT.summon;
 
-// GRAPHICS.md « Interface » : coins de l'espèce sélectionnée, dans l'accent de la faction du joueur.
-const SELECTION_CORNERS = { wyrms: 'gold', undead: 'purple' };
 
 // technical.md 5.1 / rules.md 11.4 : deux colonnes (1/3 – 2/3). À gauche, une ligne par espèce de
 // la faction (sprite, nom, prix), sauf un [Légendaire] encore vivant ; un clic la met en avant à
@@ -31,7 +29,7 @@ const SELECTION_CORNERS = { wyrms: 'gold', undead: 'purple' };
 // niveau gardé (de 1 à son niveau à sa mort), avec le prix de chaque niveau ; l'annuler ne
 // dépense rien.
 export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
-  const roster = ROSTERS[playerFaction];
+  const roster = FACTIONS[playerFaction].roster;
   const units = useProfileStore((profile) => profile.units);
   const spiritStones = useProfileStore((profile) => profile.spiritStones);
   const [confirm, setConfirm] = useState(null); // { key, level } : [Légendaire] à réinvoquer
@@ -86,7 +84,7 @@ export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
               onClick={() => selectSpecies(key)}
               className="pixel-card relative flex items-center gap-4 px-4 py-3 text-left hover:brightness-125"
             >
-              {key === focusKey && <CornerDecor color={SELECTION_CORNERS[playerFaction]} />}
+              {key === focusKey && <CornerDecor color={FACTIONS[playerFaction].uiColor} />}
               <SpeciesSprite species={roster[key]} className="size-20" />
               <span className="flex flex-1 flex-col gap-2 text-sm">
                 <span className="text-base font-bold">{unitName(roster[key])}</span>

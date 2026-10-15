@@ -9,11 +9,11 @@ export const PRESENCE_CAP = 150;
 // déployées) restent, et la liste des copies revenues de fuite (PV réduits conservés,
 // redéployables). Une copie tuée n'est jamais remise dans l'une ou l'autre : elle est perdue
 // définitivement (rules.md 2/4.4) simplement en n'y étant jamais rajoutée.
-// `individuals` (jeu normal, rules.md 2 et 11.6) : individus possédés du joueur { id, species,
-// xp } — chaque copie fraîche est alors un individu précis, avec son niveau
-// (`freshIndividuals`, niveaux décroissants). Sans eux (IA), les copies de `units.md`, anonymes
-// et niveau 1.
-export function createDeploymentState(roster, individuals = null) {
+// `individuals` (joueur, rules.md 2 et 11.6) : individus possédés engagés { id, species, xp } —
+// chaque copie fraîche est alors un individu précis, avec son niveau (`freshIndividuals`,
+// niveaux décroissants). Sans eux (IA), `startingArmy` donne le nombre de copies de chaque
+// espèce (armée de départ de la faction, units.md), anonymes et niveau 1.
+export function createDeploymentState(roster, startingArmy, individuals = null) {
   const bySpecies = new Map();
   for (const [key, species] of Object.entries(roster)) {
     const freshIndividuals = individuals && individuals
@@ -21,7 +21,7 @@ export function createDeploymentState(roster, individuals = null) {
       .map((unit) => ({ individualId: unit.id, level: individualLevel(unit.xp) }))
       .sort((a, b) => b.level - a.level);
     bySpecies.set(species, {
-      freshRemaining: freshIndividuals ? freshIndividuals.length : species.copies,
+      freshRemaining: freshIndividuals ? freshIndividuals.length : startingArmy[key],
       returning: [],
       freshIndividuals,
     });

@@ -1,7 +1,9 @@
 import Grid from '../../../src/logic/battles/grid.js';
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
-import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
 import { findNearestEnemy, findPath, chebyshevDistance } from '../../../src/logic/battles/pathfinding.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 function lastStep(path) {
   return path[path.length - 1];

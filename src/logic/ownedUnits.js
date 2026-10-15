@@ -8,10 +8,11 @@ export function createUnit(species, xp = 0) {
   return { id: crypto.randomUUID(), species, xp };
 }
 
-// rules.md 11.1 : dotation de départ = « Copies de départ » de chaque espèce (units.md).
-export function createStartingUnits(roster) {
-  return Object.entries(roster).flatMap(
-    ([key, species]) => Array.from({ length: species.copies }, () => createUnit(key)),
+// rules.md 11.1 : dotation de départ = l'armée de départ de la faction (`startingArmy`,
+// src/data/factions/), un individu niveau 1 par copie.
+export function createStartingUnits(startingArmy) {
+  return Object.entries(startingArmy).flatMap(
+    ([key, count]) => Array.from({ length: count }, () => createUnit(key)),
   );
 }
 

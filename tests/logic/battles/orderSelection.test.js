@@ -7,6 +7,7 @@ import {
   getClickableHighlights,
 } from '../../../src/logic/battles/orderSelection.js';
 import { canFlee } from '../../../src/logic/battles/fleeCooldown.js';
+import { testFaction } from './testFaction.js';
 
 const ROSTER = {
   fighter: {
@@ -17,7 +18,7 @@ const ROSTER = {
 
 // Bataille avec une unité du joueur en (1, 1) et un ennemi en (8, 8).
 function setup() {
-  const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, []);
+  const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), []);
   const { unit } = deployPlayerUnit(battle, ROSTER.fighter, 1, 1);
   const enemy = new BattleUnit(ROSTER.fighter, 'enemy', 8, 8);
   battle.units.push(enemy);

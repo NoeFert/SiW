@@ -4,9 +4,10 @@ import Grid, { parseObstacleMap } from '../logic/battles/grid.js';
 import { footprint } from '../logic/battles/pathfinding.js';
 import { createBattle, tickBattle } from '../logic/battles/battle.js';
 import { deployPlayerUnit, issuePlayerFlee } from '../logic/battles/playerActions.js';
-import { WYRMS_ROSTER } from '../data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../data/undeadRoster.js';
 import { BATTLES } from '../data/battles/index.js';
+import { FACTIONS } from '../data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 // Terrain et script de l'IA (Morts-Vivants) de la bataille tutoriel.
 const FIRST_PHASE = BATTLES.battleTuto.phases[0];
@@ -83,7 +84,7 @@ export function printBattle(battle) {
 // une commande de fuite en cours de route, jusqu'à la fin de bataille ou t=45s.
 function runFullBattleDemo() {
   const grid = new Grid(24, 14, BATTLEFIELD_OBSTACLES);
-  const battle = createBattle(grid, WYRMS_ROSTER, UNDEAD_ROSTER, UNDEAD_AI_SCRIPT);
+  const battle = createBattle(grid, FACTIONS.wyrms, FACTIONS.undead, UNDEAD_AI_SCRIPT);
 
   const deployAt = (species, x, y) => {
     const result = deployPlayerUnit(battle, species, x, y);

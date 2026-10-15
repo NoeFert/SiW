@@ -2,12 +2,14 @@
 // espèce et niveau, XP des coups fatals.
 import Grid from '../../../src/logic/battles/grid.js';
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
-import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
 import { updateUnitBehaviors } from '../../../src/logic/battles/unitBehavior.js';
 import {
   createDeploymentState, deployUnit, getTowerRows, groupTowerRows, recordReturn,
 } from '../../../src/logic/battles/deployment.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
+const UNDEAD_ROSTER = FACTIONS.undead.roster;
 
 describe('BattleUnit — stats du niveau (rules.md 11.6)', () => {
   test('niveau 1 par défaut : stats de units.md, sans individu', () => {
@@ -37,13 +39,13 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
   ];
 
   test('une copie par individu possédé (pas les copies de units.md)', () => {
-    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     expect(state.bySpecies.get(WYRMS_ROSTER.lambtonWorm).freshRemaining).toBe(3);
     expect(state.bySpecies.get(WYRMS_ROSTER.amphiptere).freshRemaining).toBe(0);
   });
 
   test('tour : une ligne par espèce et niveau, niveaux décroissants, stats du niveau', () => {
-    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const rows = getTowerRows(state, 'player', []);
     expect(rows.map((r) => [r.species.name, r.level, r.count, r.hp])).toEqual([
       ['Lambton Worm', 3, 1, 48],
@@ -54,12 +56,12 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
   });
 
   test('sans individus : niveau 1, pas d\'affichage du niveau', () => {
-    const rows = getTowerRows(createDeploymentState(WYRMS_ROSTER), 'player', []);
+    const rows = getTowerRows(createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy), 'player', []);
     expect(rows.every((r) => r.level === 1 && r.showLevel === false)).toBe(true);
   });
 
   test('regroupée, l\'espèce déploie ses individus par niveau décroissant', () => {
-    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const [lambtons] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
     expect(lambtons).toMatchObject({ count: 3, minLevel: 1, maxLevel: 3 }); // affiché « niv 1-3 »
     const deployLambton = () => {
@@ -71,7 +73,7 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
   });
 
   test('déployer une ligne déploie un individu de ce niveau, avec ses stats', () => {
-    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const [row] = getTowerRows(state, 'player', []);
     const { unit } = deployUnit(state, 'player', row.species, 0, 0, [], row.copyChoice);
     expect(unit).toMatchObject({ individualId: 'b', level: 3, hp: 48, maxHp: 48 });
@@ -79,7 +81,7 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
   });
 
   test('une unité revenue de fuite garde son niveau et son individu, sur sa propre ligne si blessée', () => {
-    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const [row] = getTowerRows(state, 'player', []);
     const { unit } = deployUnit(state, 'player', row.species, 0, 0, [], row.copyChoice);
     unit.hp = 20;
@@ -92,7 +94,7 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
   });
 
   test('un niveau absent de la réserve est refusé', () => {
-    const state = createDeploymentState(WYRMS_ROSTER, individuals);
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const result = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 2, hp: 44 });
     expect(result).toMatchObject({ success: false, reason: 'noCopiesLeft' });
   });

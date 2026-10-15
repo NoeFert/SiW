@@ -9,7 +9,7 @@ import { resolveVictory } from '../../logic/victory.js';
 import { victoryReward } from '../../logic/war.js';
 import { summonPrice } from '../../logic/summon.js';
 import { BATTLES } from '../../data/battles/index.js';
-import { ROSTERS } from '../../data/rosters.js';
+import { FACTIONS } from '../../data/factions/index.js';
 import { botDeploy } from './bot.js';
 
 export const TICK_SECONDS = 0.05;
@@ -38,13 +38,13 @@ export function buildArmy(groups) {
 
 // Dotation de départ de la faction (units.md), toute au même niveau.
 export function starterArmy(faction, level) {
-  return Object.entries(ROSTERS[faction]).map(([species, def]) => ({ species, count: def.copies, level }));
+  return Object.entries(FACTIONS[faction].startingArmy).map(([species, count]) => ({ species, count, level }));
 }
 
 // Une bataille complète. `config` : { faction, battleId, strategy, individuals, seed, replay,
 // playerXp }. Renvoie l'issue et ses mesures.
 export function runBattle({ faction, battleId, strategy, individuals, seed, replay = false, playerXp = 0 }) {
-  const roster = ROSTERS[faction];
+  const roster = FACTIONS[faction].roster;
   const definition = BATTLES[battleId];
   // Pas de tutoriel : le bot ne cliquerait jamais sur « Continuer ».
   const battle = createBattleFromDefinition(definition, faction, individuals, {
@@ -126,7 +126,7 @@ export function runConfig(config, n, seed) {
     // Mesures de victoire : moyennes sur les victoires seulement.
     xpPerSurvivor: wins.length ? wins.reduce((s, r) => s + r.survivorXp, 0) / Math.max(1, wins.reduce((s, r) => s + r.survivors, 0)) : 0,
     // XP moyenne par survivant déployé de chaque espèce, sur les victoires.
-    xpPerSurvivorBySpecies: Object.fromEntries(Object.keys(ROSTERS[config.faction]).map((species) => {
+    xpPerSurvivorBySpecies: Object.fromEntries(Object.keys(FACTIONS[config.faction].roster).map((species) => {
       const entries = wins.map((run) => run.xpBySpecies[species]).filter(Boolean);
       const survivors = entries.reduce((s, e) => s + e.survivors, 0);
       return [species, survivors ? entries.reduce((s, e) => s + e.xp, 0) / survivors : 0];

@@ -1,7 +1,9 @@
 /* GRAPHICS.md « Interface » : sprites du pack Pixel UI & HUD (assets/ui/), affichés à 2× en
    9-slice (border-image), sans lissage. Largeur de bordure = découpe × 2.
-   Accents violets par défaut (Morts-Vivants, écrans d'avant le choix de faction), dorés quand
-   le joueur joue les Wyrms ([data-faction="wyrms"] posé à la racine par App.jsx). */
+   Assets rangés par couleur (assets/ui/<couleur>/). Ce qui suit la faction du joueur lit les
+   variables CSS posées sur <html> par src/ui/factionTheme.js (--faction-color, --ui-*,
+   --cursor-*), tirées de ses données (src/data/factions/) ; sans faction (intro, choix de
+   faction), valeurs par défaut : accents violets, curseurs blancs. */
 
 .pixel-button,
 .pixel-card,
@@ -24,19 +26,16 @@
   color: white;
 }
 .pixel-button[data-variant="default"] {
-  border-image-source: url("/ui/button-highlighted-white.png");
+  border-image-source: url("/ui/white/button-highlighted.png");
 }
 .pixel-button[data-variant="destructive"] {
-  border-image-source: url("/ui/button-highlighted-red.png");
+  border-image-source: url("/ui/red/button-highlighted.png");
 }
 .pixel-button:hover:not(:disabled) {
-  border-image-source: url("/ui/button-highlighted-white.png");
+  border-image-source: url("/ui/white/button-highlighted.png");
 }
 .pixel-button[data-variant="default"]:hover:not(:disabled) {
-  border-image-source: url("/ui/button-highlighted-purple.png");
-}
-[data-faction="wyrms"] .pixel-button[data-variant="default"]:hover:not(:disabled) {
-  border-image-source: url("/ui/button-highlighted-gold.png");
+  border-image-source: var(--ui-button-highlighted, url("/ui/purple/button-highlighted.png"));
 }
 .pixel-button:active:not(:disabled) {
   border-image-source: url("/ui/button-pressed.png");
@@ -50,7 +49,7 @@
 }
 /* Variante dorée (Gold/PanelLarge) : case d'une espèce [Légendaire]. */
 .pixel-card-gold {
-  border-image-source: url("/ui/panel-gold.png");
+  border-image-source: url("/ui/gold/panel.png");
 }
 
 /* Badges (bannières, 64×15) : hauteur fixe 30 px pour garder les pointes nettes. */
@@ -64,18 +63,15 @@
 .pixel-badge[data-variant="secondary"] {
   border-image-source: url("/ui/badge-secondary.png");
 }
-.pixel-badge[data-variant="wyrms"] {
-  border-image-source: url("/ui/badge-wyrms.png");
-  color: var(--faction-wyrms);
-}
-.pixel-badge[data-variant="undead"] {
-  border-image-source: url("/ui/badge-undead.png");
-  color: black;
+/* Badge de la faction du joueur (niveaux) : dans sa couleur. */
+.pixel-badge[data-variant="faction"] {
+  border-image-source: var(--ui-badge-faction);
+  color: var(--ui-badge-faction-text);
 }
 
 /* Barre de valeur (RegularBarA, 16×8) : fond et cadre en 9-slice, remplissage 12×4 étiré,
-   en retrait de 2 px (4 px à l'écran). Remplissage violet par défaut (doré chez les Wyrms),
-   ou couleur de la faction (data-faction sur la barre, barres d'XP) : menthe = barre verte du pack, doré = barre orange recolorée. */
+   en retrait de 2 px (4 px à l'écran). Remplissage dans la couleur de la faction du joueur
+   (menthe = barre verte du pack, doré = barre orange recolorée), violet sans faction. */
 .pixel-bar {
   position: relative;
   height: 16px;
@@ -88,15 +84,8 @@
   top: -2px;
   bottom: -2px;
   left: -2px;
-  background: url("/ui/bar-fill-purple.png") 0 0 / 100% 100%;
+  background: var(--ui-bar-fill-faction, url("/ui/purple/bar-fill.png")) 0 0 / 100% 100%;
   image-rendering: pixelated;
-}
-[data-faction="wyrms"] .pixel-bar-fill,
-.pixel-bar-fill[data-faction="wyrms"] {
-  background-image: url("/ui/bar-fill-wyrms.png");
-}
-.pixel-bar-fill[data-faction="undead"] {
-  background-image: url("/ui/bar-fill-undead.png");
 }
 .pixel-bar-frame {
   position: absolute;
@@ -131,7 +120,7 @@
 .pixel-speech {
   border-style: solid;
   border-width: 8px;
-  border-image: url("/ui/speech-white.png") 4 fill / 8px stretch;
+  border-image: url("/ui/white/speech.png") 4 fill / 8px stretch;
   image-rendering: pixelated;
 }
 
@@ -159,15 +148,12 @@
   min-width: 96px;
   border-style: solid;
   border-width: 0 24px;
-  border-image: url("/ui/divider-black.png") 0 12 fill / 0 24px stretch;
+  border-image: url("/ui/black/divider.png") 0 12 fill / 0 24px stretch;
 }
 
-/* Entrée du menu de l'accueil : violet clair au survol, doré chez les Wyrms. */
+/* Entrée du menu de l'accueil : couleur de la palette de la faction au survol. */
 .pixel-menu-item:hover {
-  color: #c4b5fd;
-}
-[data-faction="wyrms"] .pixel-menu-item:hover {
-  color: var(--faction-wyrms);
+  color: var(--ui-menu-hover, #c4b5fd);
 }
 
 /* Spirit Stone (Black/Jewel_Spin, 9 images de 11×11) : gemme noire fixe, première image de la
@@ -182,9 +168,8 @@
 
 /* Barre de défilement (FormElements/ScrollbarVertical + ScrollbarHandle, pré-agrandies ×2) :
    liste des unités de la tour de commandement. Rail noir (Black) de 3 px centré dans 7 px,
-   extrémités arrondies gardées ; poignée violette par défaut (pas de variante verte dans le
-   pack), dorée chez les Wyrms (Orange recolorée), losange plein au survol. Pas de style image
-   sous Firefox : couleur seule. */
+   extrémités arrondies gardées ; poignée de la palette de la faction (violette par défaut),
+   losange plein au survol. Pas de style image sous Firefox : couleur seule. */
 .pixel-scrollbar::-webkit-scrollbar {
   width: 14px;
 }
@@ -194,55 +179,32 @@
   border-image: url("/ui/scrollbar-track.png") 2 0 fill / 2px 0 stretch;
 }
 .pixel-scrollbar::-webkit-scrollbar-thumb {
-  background: url("/ui/scrollbar-handle-purple.png") center / 14px 14px no-repeat;
+  background: var(--ui-scrollbar-handle, url("/ui/purple/scrollbar-handle.png")) center / 14px 14px no-repeat;
 }
 .pixel-scrollbar::-webkit-scrollbar-thumb:hover,
 .pixel-scrollbar::-webkit-scrollbar-thumb:active {
-  background-image: url("/ui/scrollbar-handle-highlighted-purple.png");
-}
-[data-faction="wyrms"] .pixel-scrollbar::-webkit-scrollbar-thumb {
-  background-image: url("/ui/scrollbar-handle-gold.png");
-}
-[data-faction="wyrms"] .pixel-scrollbar::-webkit-scrollbar-thumb:hover,
-[data-faction="wyrms"] .pixel-scrollbar::-webkit-scrollbar-thumb:active {
-  background-image: url("/ui/scrollbar-handle-highlighted-gold.png");
+  background-image: var(--ui-scrollbar-handle-highlighted, url("/ui/purple/scrollbar-handle-highlighted.png"));
 }
 @supports not selector(::-webkit-scrollbar) {
   .pixel-scrollbar {
-    scrollbar-color: #8061e6 transparent;
-  }
-  [data-faction="wyrms"] .pixel-scrollbar {
-    scrollbar-color: #eeb632 transparent;
+    scrollbar-color: var(--ui-scrollbar-color, #8061e6) transparent;
   }
 }
 
 /* Curseurs (Cursors du pack, pré-agrandis ×2 pour la taille d'un curseur système : un curseur
-   CSS ne se met pas à l'échelle). Couleur selon la faction du joueur, posée sur <html> par App.jsx
-   (data-cursor) pour couvrir aussi les fenêtres affichées hors de l'app (tooltips, dialogues) :
-   doré pour les Wyrms, violet pour les Morts-Vivants, blanc tant qu'il n'a pas de faction (intro,
-   choix de faction).
+   CSS ne se met pas à l'échelle). Blancs par défaut (intro, choix de faction) ; ensuite ceux de la
+   palette de la faction du joueur, posés sur <html> par src/ui/factionTheme.js pour couvrir aussi
+   les fenêtres affichées hors de l'app (tooltips, dialogues).
    Flèche partout par défaut ; main sur ce qui est cliquable (cursor-pointer), main fermée sur ce
    qui se glisse (cursor-grab), « interdit » sur ce qui est indisponible (cursor-not-allowed).
    Hors @layer : l'emporte sur les utilitaires Tailwind du même nom. Les boutons gardent la
    flèche, comme avant. */
 html {
-  --cursor-arrow: url("/ui/cursor-arrow-white.png");
-  --cursor-hand: url("/ui/cursor-hand-white.png");
-  --cursor-grab: url("/ui/cursor-grab-white.png");
-  --cursor-unavailable: url("/ui/cursor-unavailable-white.png");
+  --cursor-arrow: url("/ui/white/cursor-arrow.png");
+  --cursor-hand: url("/ui/white/cursor-hand.png");
+  --cursor-grab: url("/ui/white/cursor-grab.png");
+  --cursor-unavailable: url("/ui/white/cursor-unavailable.png");
   cursor: var(--cursor-arrow) 0 0, default;
-}
-html[data-cursor="wyrms"] {
-  --cursor-arrow: url("/ui/cursor-arrow-gold.png");
-  --cursor-hand: url("/ui/cursor-hand-gold.png");
-  --cursor-grab: url("/ui/cursor-grab-gold.png");
-  --cursor-unavailable: url("/ui/cursor-unavailable-gold.png");
-}
-html[data-cursor="undead"] {
-  --cursor-arrow: url("/ui/cursor-arrow-purple.png");
-  --cursor-hand: url("/ui/cursor-hand-purple.png");
-  --cursor-grab: url("/ui/cursor-grab-purple.png");
-  --cursor-unavailable: url("/ui/cursor-unavailable-purple.png");
 }
 button,
 [role="button"] {

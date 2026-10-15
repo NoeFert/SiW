@@ -1,7 +1,9 @@
-import { WYRMS_ROSTER as W } from '../wyrmsRoster.js';
-import { UNDEAD_ROSTER as U } from '../undeadRoster.js';
+import { FACTIONS } from '../factions/index.js';
 import { STARTER_TUTORIAL } from '../tutorials.js';
 import { waves } from './waves.js';
+
+const W = FACTIONS.wyrms.roster;
+const U = FACTIONS.undead.roster;
 
 // Bataille tutoriel (la « bataille 01 » de rules.md) : la première bataille du jeu, avec le
 // tutoriel de départ. Une seule phase.

@@ -3,7 +3,9 @@ import {
   createArmy, armyUnits, ARMY_PP_CAP, armyCost, canAddToArmy, addToArmy, canRemoveFromArmy,
   removeFromArmy, renameArmy, removeDeadFromArmy, levelGroups, nextToAdd, nextToRemove, speciesTiles,
 } from '../../src/logic/army.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 describe('createArmy — armée (rules.md 11.2)', () => {
   test('nom + identifiants des individus', () => {

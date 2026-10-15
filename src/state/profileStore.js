@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { BATTLES, TUTO_BATTLE_ID } from '../data/battles/index.js';
-import { ROSTERS } from '../data/rosters.js';
+import { FACTIONS } from '../data/factions/index.js';
 import { harvestFountain } from '../logic/fountain.js';
 import { markTipSeen } from '../logic/homeTips.js';
 import { createStartingUnits } from '../logic/ownedUnits.js';
@@ -46,7 +46,7 @@ const updateProfile = useProfileStore.setState;
 export function chooseFaction(faction) {
   updateProfile({
     faction,
-    units: createStartingUnits(ROSTERS[faction]),
+    units: createStartingUnits(FACTIONS[faction].startingArmy),
     spiritStones: STARTING_SPIRIT_STONES,
   });
 }
@@ -59,7 +59,7 @@ export function applyVictory(battleId, battleUnits) {
   const profile = getProfile();
   const tutoBattle = battleId === TUTO_BATTLE_ID;
   const replay = profile.wonWarBattles.includes(battleId);
-  const { save, report } = resolveVictory(profile, battleUnits, ROSTERS[profile.faction], {
+  const { save, report } = resolveVictory(profile, battleUnits, FACTIONS[profile.faction].roster, {
     tutoBattle,
     armyName: TEXT.defaultArmyName,
     reward: victoryReward(BATTLES[battleId].reward, replay),
@@ -77,7 +77,7 @@ export function applyVictory(battleId, battleUnits) {
 // individus tués sont perdus quand même. Renvoie les pertes affichées sur l'écran de défaite.
 export function applyWarDefeat(battleUnits) {
   const profile = getProfile();
-  const { save, lost } = resolveWarDefeat(profile, battleUnits, ROSTERS[profile.faction]);
+  const { save, lost } = resolveWarDefeat(profile, battleUnits, FACTIONS[profile.faction].roster);
   updateProfile(save);
   return lost;
 }
@@ -86,7 +86,7 @@ export function applyWarDefeat(battleUnits) {
 // false si c'est impossible (solde insuffisant…).
 export function summonUnits(speciesKey, count) {
   const { faction, units, spiritStones } = getProfile();
-  return applySummon(summonMany(ROSTERS[faction], units, spiritStones, speciesKey, count));
+  return applySummon(summonMany(FACTIONS[faction].roster, units, spiritStones, speciesKey, count));
 }
 
 // rules.md 11.4 : réinvoque le [Légendaire] mort, au niveau gardé `level` (de 1 à son niveau à
@@ -95,7 +95,7 @@ export function resummonLegendary(speciesKey, level) {
   const {
     faction, units, spiritStones, fallenLegendaryLevel,
   } = getProfile();
-  return applySummon(summon(ROSTERS[faction], units, spiritStones, speciesKey, level, fallenLegendaryLevel ?? 1));
+  return applySummon(summon(FACTIONS[faction].roster, units, spiritStones, speciesKey, level, fallenLegendaryLevel ?? 1));
 }
 
 // Enregistre le résultat d'une invocation (`null` : impossible). technical.md 5.5 : invoquer de

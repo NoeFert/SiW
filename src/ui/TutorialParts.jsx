@@ -30,7 +30,7 @@ export function handPosition(targets, now) {
 export function TutorialHand({ position }) {
   return (
     <img
-      src="/ui/cursor-hand-white.png"
+      src="/ui/white/cursor-hand.png"
       alt=""
       draggable={false}
       className="pixelated pointer-events-none absolute"

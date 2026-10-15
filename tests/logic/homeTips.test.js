@@ -2,18 +2,21 @@ import { createUnit, createStartingUnits } from '../../src/logic/ownedUnits.js';
 import { createArmy } from '../../src/logic/army.js';
 import { summonPrice } from '../../src/logic/summon.js';
 import { HOME_TIPS, homeTipToShow, markTipSeen } from '../../src/logic/homeTips.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 // technical.md 5.5 : tutoriel de l'accueil — des conseils un par un, chacun une seule fois.
 // Par défaut : dotation de départ intacte (aucune perte), toute dans l'armée, aucun solde.
 function context(overrides = {}) {
-  const units = createStartingUnits(WYRMS_ROSTER);
+  const units = createStartingUnits(FACTIONS.wyrms.startingArmy);
   return {
     seen: [],
     justSummoned: false,
     units,
     army: createArmy('Armée 1', units),
     roster: WYRMS_ROSTER,
+    startingArmy: FACTIONS.wyrms.startingArmy,
     spiritStones: 0,
     ...overrides,
   };
@@ -21,7 +24,7 @@ function context(overrides = {}) {
 
 // Dotation de départ moins un Ver de Lambton (mort en bataille), armée à jour.
 function afterLosingALambton(overrides = {}) {
-  const units = createStartingUnits(WYRMS_ROSTER);
+  const units = createStartingUnits(FACTIONS.wyrms.startingArmy);
   units.splice(units.findIndex((u) => u.species === 'lambtonWorm'), 1);
   return context({ units, army: createArmy('Armée 1', units), ...overrides });
 }

@@ -1,6 +1,8 @@
 import { resolveVictory } from '../../src/logic/victory.js';
 import { createArmy } from '../../src/logic/army.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 // Unité de bataille minimale (voir src/logic/battles/battleUnit.js).
 const deployed = (individualId, { alive = true, killXp = 0, level = 1 } = {}) => ({

@@ -1,3 +1,5 @@
+import { FACTIONS } from './data/factions/index.js';
+
 // Constantes et conversions de rendu partagées entre la Scene Phaser (champ de bataille) et la
 // couche React (glisser-déposer : pixel écran -> case de grille). Ni Phaser ni React ne
 // dépendent l'un de l'autre : les deux importent seulement ce fichier neutre.
@@ -11,13 +13,12 @@ export const GRID_HEIGHT = 14;
 export const GAME_WIDTH = GRID_WIDTH * CELL_SIZE; // 1536
 export const GAME_HEIGHT = GRID_HEIGHT * CELL_SIZE; // 896
 
-// GRAPHICS.md « Palettes des factions » : couleur principale de chaque faction, celle des barres de
-// vie de ses unités sur le terrain (Phaser) et dans la tour (React, voir `cssColor`). Mêmes
-// teintes que --faction-wyrms / --faction-undead de index.css, converties en hexadécimal.
-export const FACTION_COLORS = {
-  wyrms: 0xeab532, // doré
-  undead: 0x73ecbc, // menthe
-};
+// GRAPHICS.md « Palettes des factions » : couleur principale d'une faction (champ `color` de
+// src/data/factions/), en nombre 0xRRGGBB pour Phaser : barres de vie, zone de déploiement,
+// indicateur de sélection.
+export function factionColor(factionId) {
+  return Number.parseInt(FACTIONS[factionId].color.slice(1), 16);
+}
 
 // Couleur d'alerte des PV d'une unité blessée dans la tour : rouge au même seuil que la barre.
 export function woundedHpColor(ratio) {

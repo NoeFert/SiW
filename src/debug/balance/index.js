@@ -16,7 +16,7 @@
 import { STRATEGIES } from './bot.js';
 import { buildArmy, runConfig, starterArmy } from './simulate.js';
 import { WAR_BATTLE_IDS } from '../../data/battles/index.js';
-import { ROSTERS } from '../../data/rosters.js';
+import { FACTIONS } from '../../data/factions/index.js';
 
 function parseArgs(argv) {
   const args = {};
@@ -60,7 +60,7 @@ for (const faction of factions) {
         const stats = runConfig({
           faction, battleId, strategy, individuals: buildArmy(groups), replay, playerXp,
         }, n, seed);
-        const armyCost = groups.reduce((sum, g) => sum + ROSTERS[faction][g.species].cost * g.count, 0);
+        const armyCost = groups.reduce((sum, g) => sum + FACTIONS[faction].roster[g.species].cost * g.count, 0);
         rows.push({ faction, battleId, strategy, level, armyCost, ...stats });
       }
     }

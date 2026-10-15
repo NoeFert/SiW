@@ -19,6 +19,7 @@ import {
   useProfileStore, chooseFaction, applyVictory, applyWarDefeat, startFountain, resetProfile,
   replaceProfile,
 } from './state/profileStore.js';
+import { applyFactionTheme } from './ui/factionTheme.js';
 
 // technical.md 5.2 : l'écran de départ se déduit du profil sauvegardé, pas d'un routeur.
 function initialScreen() {
@@ -50,11 +51,11 @@ export default function App() {
   const army = useProfileStore((profile) => profile.army);
   const isWarBattle = WAR_BATTLE_IDS.includes(battleId);
 
-  // GRAPHICS.md « Curseur de la souris » : couleur du curseur selon la faction (pixel-ui.css),
-  // posée sur <html> pour couvrir aussi les tooltips et dialogues rendus hors de l'app. Sans
-  // faction (intro, choix de faction) : curseur blanc.
+  // GRAPHICS.md « Palettes des factions » : couleurs, curseurs et accents de l'interface selon la
+  // faction du joueur (src/ui/factionTheme.js) ; sans faction (intro, choix de faction) : thème
+  // par défaut.
   useEffect(() => {
-    document.documentElement.dataset.cursor = playerFaction ?? 'none';
+    applyFactionTheme(playerFaction);
   }, [playerFaction]);
 
   const startBattle = useCallback(() => {
@@ -209,12 +210,10 @@ export default function App() {
 
   return (
     <>
-      {/* GRAPHICS.md « Interface » : la faction du joueur choisit la teinte des accents (pixel-ui.css) ;
-          fond des écrans : noir pour l'intro, le choix de faction et la bataille (la marge autour
+      {/* GRAPHICS.md « Interface » : fond des écrans : noir pour l'intro, le choix de faction et la bataille (la marge autour
           de la tour et du terrain se fond avec eux), dégradé vertical #2a2c2f → #838796 pour les
           autres (l'accueil le couvre de son château). */}
       <div
-        data-faction={playerFaction ?? undefined}
         className={`h-full p-game ${['intro', 'factionChoice', 'battle'].includes(screen)
           ? 'bg-neutral-900'
           : 'bg-linear-to-b from-[#2a2c2f] to-[#838796]'}`}

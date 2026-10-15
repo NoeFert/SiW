@@ -2,7 +2,7 @@ import Grid, { parseObstacleMap } from './grid.js';
 import { createBattle } from './battle.js';
 import { setUpcomingPhases } from './phases.js';
 import { startTutorial } from './tutorial.js';
-import { ROSTERS } from '../../data/rosters.js';
+import { FACTIONS } from '../../data/factions/index.js';
 
 // rules.md 9 : l'IA joue toujours la faction que le joueur n'a pas choisie.
 export function opposingFaction(faction) {
@@ -20,7 +20,7 @@ export function resolvePhases(definition, enemyFaction) {
 }
 
 // Prépare une bataille du jeu à partir de sa définition (src/data/battles/) : grille de la
-// première zone, rosters des deux factions, réserve du joueur faite de ses individus
+// première zone, factions des deux camps, réserve du joueur faite de ses individus
 // (`playerUnits`, rules.md 2), phases suivantes (rules.md 7.3) et tutoriel (technical.md 5.5).
 // `rng` : source d'aléa de l'IA ; `withTutorial` : false pour les simulations sans joueur
 // humain (outil d'équilibrage), qui ne cliqueraient jamais sur « Continuer ».
@@ -33,7 +33,7 @@ export function createBattleFromDefinition(definition, playerFaction, playerUnit
   const grid = new Grid(map[0].length, map.length, firstPhase.obstacles);
 
   const battle = createBattle(
-    grid, ROSTERS[playerFaction], ROSTERS[enemyFaction], firstPhase.enemyScript, rng, playerUnits,
+    grid, FACTIONS[playerFaction], FACTIONS[enemyFaction], firstPhase.enemyScript, rng, playerUnits,
   );
   setUpcomingPhases(battle, nextPhases);
   if (withTutorial && definition.tutorial) startTutorial(battle, definition.tutorial);

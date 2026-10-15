@@ -1,5 +1,7 @@
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
-import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 describe('BattleUnit', () => {
   test('spawns with full HP from its species and the given position/faction', () => {

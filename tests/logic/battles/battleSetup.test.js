@@ -3,8 +3,10 @@ import { getReserve } from '../../../src/logic/battles/deployment.js';
 import { tutorialAllows } from '../../../src/logic/battles/tutorial.js';
 import { BATTLES } from '../../../src/data/battles/index.js';
 import { STARTER_TUTORIAL } from '../../../src/data/tutorials.js';
-import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
+const UNDEAD_ROSTER = FACTIONS.undead.roster;
 
 const PLAYER_UNITS = [
   { id: 'w1', species: 'lambtonWorm', xp: 0 },

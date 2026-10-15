@@ -15,19 +15,15 @@ import { TEXT } from './strings.js';
 // Icônes provisoires (ui-battle-screen-decisions.md 2.3).
 const ORDER_ICONS = { move: MoveRight, attack: Swords, flee: Flag };
 
-// Ordre en cours de sélection : fond de la couleur de la faction (classes littérales, Tailwind
-// ne détecte pas les noms construits dynamiquement).
-const SELECTED_CLASS = {
-  wyrms: 'bg-faction-wyrms text-black hover:bg-faction-wyrms',
-  undead: 'bg-faction-undead text-black hover:bg-faction-undead',
-};
+// Ordre en cours de sélection : fond de la couleur de la faction du joueur.
+const SELECTED_CLASS = 'bg-faction text-black hover:bg-faction';
 
 // rules.md 5 : rangée « Ordres » de la tour, entre la jauge et la liste des unités. Pause, puis
 // un bouton par ordre : un clic choisit l'ordre (pause d'interaction), l'unité et la cible se
 // choisissent sur le terrain (BattleScene -> clickField). Re-cliquer l'ordre surligné, faire un
 // clic droit sur le terrain ou appuyer sur Échap annule. Seul Fuir a un cooldown, qui remplit
 // son bouton de bas en haut.
-export default function OrdersRow({ battle, playerFaction }) {
+export default function OrdersRow({ battle }) {
   const selectedOrder = battle.orderSelection?.order ?? null;
 
   useEffect(() => {
@@ -67,7 +63,7 @@ export default function OrdersRow({ battle, playerFaction }) {
                     aria-pressed={selected}
                     className={cn(
                       'relative overflow-hidden',
-                      selected && SELECTED_CLASS[playerFaction],
+                      selected && SELECTED_CLASS,
                       unavailable && 'opacity-50 cursor-not-allowed',
                     )}
                   >

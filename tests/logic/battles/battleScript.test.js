@@ -3,8 +3,10 @@ import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { createAiScriptState, deployScheduledUnits } from '../../../src/logic/battles/aiScript.js';
 import { isValidDeploymentPosition, PRESENCE_CAP } from '../../../src/logic/battles/deployment.js';
 import { BATTLES } from '../../../src/data/battles/index.js';
-import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
+const UNDEAD_ROSTER = FACTIONS.undead.roster;
 
 // Déploie une seule unité IA (faction 'enemy', moitié droite x >= 12) face aux unités données.
 function deployOne(species, units, rng = Math.random) {

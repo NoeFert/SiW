@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { BATTLES, WAR_BATTLE_IDS } from '../data/battles/index.js';
 import { WAR_MAP_01 } from '../data/battles/war01/warMap01.js';
 import { armyUnits } from '../logic/army.js';
+import { opposingFaction } from '../logic/battles/battleSetup.js';
 import { victoryPlayerXp } from '../logic/levels.js';
-import { ROSTERS } from '../data/rosters.js';
+import { FACTIONS } from '../data/factions/index.js';
 import { SPECIES_SPRITES } from '../data/sprites.js';
 import {
   invaderSpecies, invadersRepelled, isWarCompleted, victoryReward, warBattleState,
 } from '../logic/war.js';
 import { useProfileStore } from '../state/profileStore.js';
+import { uiAsset } from '../ui/factionTheme.js';
 import RewardRow from '../ui/RewardRow.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import SpeciesSprite from '../ui/SpeciesSprite.jsx';
@@ -19,9 +21,8 @@ import { TEXT } from '../ui/strings.js';
 const T = TEXT.war;
 
 // GRAPHICS.md « Partir en guerre » : map en arbre de compétences (sprites SkillTree du pack, à
-// 2×), dans la couleur du souverain du joueur — jaune (doré) pour les Wyrms, violet pour les
-// Morts-Vivants, comme les accents de l'interface.
-const PLAYER_COLOR = { wyrms: 'yellow', undead: 'purple' };
+// 2×), dans la palette de la faction du joueur (`uiColor` de src/data/factions/), comme les
+// accents de l'interface ; gris pour ce qui est verrouillé.
 const SLOT = 42; // losange 21×21 à 2×, pointes au milieu des côtés
 const BOSS_SLOT = 56; // losange du boss, plus grand : SkillSlotLarge 28×28 à 2×
 const HALF = SLOT / 2;
@@ -29,7 +30,7 @@ const PANEL_WIDTH = 320; // panneau de l'emplacement sélectionné, à droite de
 const PANEL_GAP = 64; // entre la map et le panneau
 const STEP = 80; // distance entre deux cases de la grille de la map
 
-const uiSprite = (name) => `url(/ui/${name}.png)`;
+const uiSprite = (name, color) => `url(${uiAsset(name, color)})`;
 const slotCenter = ({ col, row }) => ({ x: HALF + col * STEP, y: HALF + row * STEP });
 const slotSize = (node) => (node.boss ? BOSS_SLOT : SLOT);
 
@@ -39,9 +40,8 @@ function Slot({ node, color, selected, onSelect }) {
   const { x, y } = slotCenter(node);
   const size = slotSize(node);
   const prefix = node.boss ? 'war-boss' : 'war';
-  let sprite = `${prefix}-slot-${color}`;
-  if (node.state === 'won') sprite = `${prefix}-slot-won-${color}`;
-  if (node.state === 'locked') sprite = `${prefix}-slot-grey`;
+  const slotColor = node.state === 'locked' ? 'grey' : color;
+  const sprite = uiSprite(node.state === 'won' ? `${prefix}-slot-won` : `${prefix}-slot`, slotColor);
   const selector = size * 1.5;
   return (
     <button
@@ -52,7 +52,7 @@ function Slot({ node, color, selected, onSelect }) {
     >
       {/* Intérieur noir du losange, pour qu'il se détache du fond de la map. */}
       <span className="absolute rotate-45 bg-black/80" style={{ inset: size / 7 }} />
-      <span className="pixelated absolute inset-0 bg-size-[100%_100%]" style={{ backgroundImage: uiSprite(sprite) }} />
+      <span className="pixelated absolute inset-0 bg-size-[100%_100%]" style={{ backgroundImage: sprite }} />
       {selected && (
         <span
           className="pixelated absolute bg-size-[100%_100%]"
@@ -61,7 +61,7 @@ function Slot({ node, color, selected, onSelect }) {
             top: (size - selector) / 2,
             width: selector,
             height: selector,
-            backgroundImage: uiSprite(`${prefix}-selector-${node.state === 'locked' ? 'grey' : color}`),
+            backgroundImage: uiSprite(`${prefix}-selector`, slotColor),
           }}
         />
       )}
@@ -107,7 +107,7 @@ function Connector({ from, to, color }) {
   return (
     <div
       className={`pixelated absolute bg-size-[32px_32px] ${vertical ? 'bg-repeat-y' : 'bg-repeat-x'}`}
-      style={{ ...style, backgroundImage: uiSprite(`war-connector-${vertical ? 'vertical' : 'horizontal'}-${color}`) }}
+      style={{ ...style, backgroundImage: uiSprite(`war-connector-${vertical ? 'vertical' : 'horizontal'}`, color) }}
     />
   );
 }
@@ -123,7 +123,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
   const army = useProfileStore((profile) => profile.army);
   const wonIds = useProfileStore((profile) => profile.wonWarBattles);
   const armyIsEmpty = armyUnits(army, units).length === 0;
-  const color = PLAYER_COLOR[playerFaction];
+  const color = FACTIONS[playerFaction].uiColor;
   const nodes = WAR_MAP_01.nodes.map((node) => ({
     ...node,
     state: node.battle ? warBattleState(WAR_BATTLE_IDS, wonIds, node.battle) : 'locked',
@@ -135,7 +135,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
   );
   const current = byId.get(selectedId);
   const replay = current.state === 'won'; // rules.md 11.7 : rejeu d'une bataille déjà gagnée
-  const enemyRoster = ROSTERS[playerFaction === 'wyrms' ? 'undead' : 'wyrms'];
+  const enemyRoster = FACTIONS[opposingFaction(playerFaction)].roster;
   const invaders = invadersRepelled(nodes, wonIds);
   // Marges de la map, pour que rien ne dépasse et que la mise en page ne bouge pas avec la
   // sélection : en haut, les envahisseurs de la ligne du haut ; en bas, le sélecteur (une fois et

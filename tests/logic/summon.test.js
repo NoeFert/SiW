@@ -4,8 +4,10 @@ import {
   summonAction, SUMMON_PRICE_FACTOR, LEGENDARY_PRICE_MULTIPLIER, summonPrice, canSummon, summon,
   resummonPrice, maxSummonCount, summonMany,
 } from '../../src/logic/summon.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
+const UNDEAD_ROSTER = FACTIONS.undead.roster;
 
 describe('summonAction — Invoquer / Réinvoquer (rules.md 11.4)', () => {
   test('espèce non légendaire : toujours « Invoquer », sans plafond de possession', () => {

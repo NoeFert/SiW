@@ -14,6 +14,7 @@ import {
 import { STARTER_TUTORIAL } from '../../../src/data/tutorials.js';
 import { BATTLES, TUTO_BATTLE_ID } from '../../../src/data/battles/index.js';
 import { TEXT } from '../../../src/ui/strings.js';
+import { testFaction } from './testFaction.js';
 
 const ROSTER = {
   fighter: {
@@ -28,7 +29,7 @@ const SCRIPT = [0, 8, 20, 35].map((time) => ({ time, species: ROSTER.fighter }))
 const EARLY_WAVE_SCRIPT = [0, 5, 10, 35].map((time) => ({ time, species: ROSTER.fighter }));
 
 function newTutorialBattle(script = SCRIPT) {
-  const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, script, () => 0);
+  const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), script, () => 0);
   startTutorial(battle, STARTER_TUTORIAL);
   return battle;
 }
@@ -309,7 +310,7 @@ describe('données des tutoriels et des batailles (src/data/)', () => {
 
 describe('moteur de tutoriel — réutilisable pour une autre bataille', () => {
   test('déroule n\'importe quelle liste d\'étapes, puis rend la main au jeu', () => {
-    const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, SCRIPT, () => 0);
+    const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), SCRIPT, () => 0);
     startTutorial(battle, [
       { id: 'wait', frozen: false, allows: null, next: [{ type: 'elapsed', seconds: 2 }] },
       { id: 'read', frozen: true, allows: [], message: 'presence', continueButton: true, next: [{ type: 'continueClicked' }] },
@@ -326,7 +327,7 @@ describe('moteur de tutoriel — réutilisable pour une autre bataille', () => {
   });
 
   test('sans tutoriel, aucune action n\'est bloquée', () => {
-    const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, SCRIPT, () => 0);
+    const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), SCRIPT, () => 0);
 
     expect(battle.tutorial).toBeNull();
     expect(tutorialAllows(battle, 'deploy')).toBe(true);

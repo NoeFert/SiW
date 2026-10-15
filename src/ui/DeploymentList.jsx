@@ -50,7 +50,7 @@ function DragGhost({ drag }) {
 // ligne (Pointer Events suivis sur `window`) et se termine sur le canevas (repéré par son
 // <canvas> DOM, pas par un objet Phaser). Toutes les règles (contenu et regroupement des
 // lignes, pause, plafond, copies, zone) sont dans src/logic/.
-export default function DeploymentList({ battle, unitsOnField, playerFaction }) {
+export default function DeploymentList({ battle, unitsOnField }) {
   const [drag, setDrag] = useState(null); // { row, x, y } en coordonnées écran
   const [blockedKey, setBlockedKey] = useState(null); // ligne grisée cliquée : tooltip ouvert
   const [message, setMessage] = useState('');
@@ -134,7 +134,6 @@ export default function DeploymentList({ battle, unitsOnField, playerFaction }) 
             <TooltipTrigger>
               <UnitRow
                 row={row}
-                playerFaction={playerFaction}
                 onToggleGroup={() => toggleGroup(row.species)}
                 onPointerDown={(event) => onPointerDown(row, event)}
               />

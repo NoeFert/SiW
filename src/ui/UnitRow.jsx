@@ -2,19 +2,11 @@ import { forwardRef } from 'react';
 import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { cn } from '@/lib/utils';
 import { isLegendary } from '../logic/ownedUnits.js';
-import {
-  FACTION_COLORS, woundedHpColor, cssColor,
-} from '../renderConstants.js';
+import { woundedHpColor, cssColor } from '../renderConstants.js';
 import CornerDecor from './CornerDecor.jsx';
 import SpeciesSprite from './SpeciesSprite.jsx';
 import { CountSquare, GroupArrow } from './TileGroupBadges.jsx';
 import { TEXT } from './strings.js';
-
-// Niveau dans la couleur de la faction du joueur (classes littérales pour Tailwind).
-const LEVEL_TEXT_CLASS = {
-  wyrms: 'text-faction-wyrms',
-  undead: 'text-faction-undead',
-};
 
 // ui-battle-screen-decisions.md 2.2 : case d'une ligne de la tour, deux par rangée. Même
 // panneau que les cases de CivilizationScreen (PanelLarge, doré avec coins pour un
@@ -25,7 +17,7 @@ const LEVEL_TEXT_CLASS = {
 // (`onToggleGroup`, voir groupTowerRows). forwardRef : sert de déclencheur au tooltip "budget insuffisant"
 // (DeploymentList).
 const UnitRow = forwardRef(({
-  row, playerFaction, onToggleGroup, className, ...props
+  row, onToggleGroup, className, ...props
 }, ref) => {
   const ratio = row.hp / row.maxHp;
   const legendary = isLegendary(row.species);
@@ -51,7 +43,7 @@ const UnitRow = forwardRef(({
       <SpeciesSprite species={row.species} className="size-12" />
       {row.wounded && (
         <div className="w-10 h-1.5 bg-black">
-          <div className="h-full" style={{ width: `${ratio * 100}%`, background: cssColor(FACTION_COLORS[playerFaction]) }} />
+          <div className="h-full" style={{ width: `${ratio * 100}%`, background: 'var(--faction-color)' }} />
         </div>
       )}
 
@@ -59,7 +51,7 @@ const UnitRow = forwardRef(({
         <span>
           ♥ <span style={row.wounded ? { color: cssColor(woundedHpColor(ratio)) } : undefined}>{row.hp}</span>/{row.maxHp}
         </span>
-        {row.showLevel && <span className={LEVEL_TEXT_CLASS[playerFaction]}>{TEXT.levels.range(row.minLevel, row.maxLevel)}</span>}
+        {row.showLevel && <span className="text-faction">{TEXT.levels.range(row.minLevel, row.maxLevel)}</span>}
       </div>
       <Badge data-tutorial="presence-tag" className="text-[10px] mx-1.5">{TEXT.presenceTag(row.cost)}</Badge>
     </div>

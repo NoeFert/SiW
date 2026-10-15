@@ -11,6 +11,7 @@ import {
   setUpcomingPhases, PHASE_TRANSITION_SECONDS,
 } from '../../../src/logic/battles/phases.js';
 import { getReserve } from '../../../src/logic/battles/deployment.js';
+import { testFaction } from './testFaction.js';
 
 const ROSTER = {
   fighter: {
@@ -26,7 +27,7 @@ const PHASE_2_OBSTACLES = [{ x: 9, y: 0 }];
 // Bataille en deux phases : le joueur a une unité blessée sur le terrain ; l'unique ennemi de
 // la phase 1 est déployé au premier tick.
 function twoPhaseBattle() {
-  const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, PHASE_1_SCRIPT, () => 0);
+  const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), PHASE_1_SCRIPT, () => 0);
   setUpcomingPhases(battle, [{ enemyScript: PHASE_2_SCRIPT, obstacles: PHASE_2_OBSTACLES }]);
   const { unit } = deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
   unit.hp = 60;
@@ -60,7 +61,7 @@ describe('fin de phase (rules.md 7.3)', () => {
   });
 
   test('pas de transition tant que le script de la phase n\'est pas épuisé', () => {
-    const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
+    const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
     setUpcomingPhases(battle, [{ enemyScript: PHASE_2_SCRIPT, obstacles: [] }]);
     deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
     tickBattle(battle, 0.1);
@@ -72,7 +73,7 @@ describe('fin de phase (rules.md 7.3)', () => {
   });
 
   test('sans phase suivante, pas de transition : la victoire est acquise (rules.md 8.1)', () => {
-    const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, PHASE_1_SCRIPT, () => 0);
+    const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), PHASE_1_SCRIPT, () => 0);
     deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
     tickBattle(battle, 0.1);
     killEnemies(battle);
@@ -175,7 +176,7 @@ describe('entrée dans la phase suivante (rules.md 7.3)', () => {
 
 describe('trois phases (rules.md 7.3)', () => {
   test('les phases s\'enchaînent dans l\'ordre, chacune avec sa zone', () => {
-    const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, PHASE_1_SCRIPT, () => 0);
+    const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), PHASE_1_SCRIPT, () => 0);
     setUpcomingPhases(battle, [
       { enemyScript: PHASE_2_SCRIPT, obstacles: [{ x: 9, y: 0 }] },
       { enemyScript: PHASE_2_SCRIPT, obstacles: [{ x: 9, y: 9 }] },
@@ -259,7 +260,7 @@ describe('victoire à la fin du script (rules.md 7.3)', () => {
   });
 
   test('pas de victoire tant que l\'IA a encore des unités du script à déployer', () => {
-    const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
+    const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
     deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
     tickBattle(battle, 0.1);
     killEnemies(battle);

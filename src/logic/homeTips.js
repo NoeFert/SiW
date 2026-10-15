@@ -10,15 +10,18 @@ export const HOME_TIPS = ['welcome', 'summon', 'armyRecruit'];
 
 // `seen` : conseils déjà vus ; `justSummoned` : au moins une invocation depuis la dernière
 // arrivée sur l'accueil ; `units` / `army` : individus possédés et armée (rules.md 11.2) ;
-// `roster` : roster de la faction ; `spiritStones` : solde (rules.md 11.3).
+// `roster` / `startingArmy` : roster et armée de départ de la faction ; `spiritStones` : solde
+// (rules.md 11.3).
 const READY = {
   welcome: () => true,
   // Une espèce compte moins d'individus que sa dotation de départ (units.md, rules.md 11.1), et
   // le solde paie l'invocation d'un individu de cette espèce (rules.md 11.4).
-  summon: ({ roster, units, spiritStones }) => {
+  summon: ({
+    roster, startingArmy, units, spiritStones,
+  }) => {
     const counts = countUnitsBySpecies(roster, units);
     return Object.entries(roster)
-      .some(([key, species]) => counts[key] < species.copies && spiritStones >= summonPrice(species));
+      .some(([key, species]) => counts[key] < startingArmy[key] && spiritStones >= summonPrice(species));
   },
   // rules.md 11.2 : un individu invoqué n'est pas ajouté à l'armée.
   armyRecruit: ({ justSummoned, units, army }) => {

@@ -6,7 +6,7 @@
 import { buildArmy, runBattle, starterArmy } from '../../../src/debug/balance/simulate.js';
 import { STRATEGIES } from '../../../src/debug/balance/bot.js';
 import { TUTO_BATTLE_ID, WAR_BATTLE_IDS } from '../../../src/data/battles/index.js';
-import { ROSTERS } from '../../../src/data/rosters.js';
+import { FACTIONS } from '../../../src/data/factions/index.js';
 
 const SEED = 1;
 const BATTLE_IDS = [TUTO_BATTLE_ID, ...WAR_BATTLE_IDS];
@@ -28,7 +28,7 @@ describe('replay of every battle with a fixed seed', () => {
       }
       // Deux unités de base seulement : défaites.
       test(`${faction} ${battleId} two basic units`, () => {
-        const basicSpecies = Object.keys(ROSTERS[faction])[0];
+        const basicSpecies = Object.keys(FACTIONS[faction].roster)[0];
         expect(replay(faction, battleId, 'basics', [{ species: basicSpecies, count: 2, level: 1 }])).toMatchSnapshot();
       });
     }

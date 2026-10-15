@@ -1,7 +1,7 @@
 import {
   useCallback, useEffect, useRef, useState,
 } from 'react';
-import { ROSTERS } from '../data/rosters.js';
+import { FACTIONS } from '../data/factions/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import { useProfileStore } from '../state/profileStore.js';
 
@@ -126,7 +126,7 @@ function Wanderer({
 // de la Spirit Fountain. Toutes les 5 minutes, elles sortent de l'écran et un nouveau groupe,
 // tiré au hasard, entre ; aucune si le joueur n'a pas d'individu d'une case.
 export default function HomeWanderer({ playerFaction }) {
-  const roster = ROSTERS[playerFaction];
+  const roster = FACTIONS[playerFaction].roster;
   const [crowd, setCrowd] = useState(() => ({ id: 0, species: pickCrowd(roster) }));
   const [leaving, setLeaving] = useState(false);
   const leftCount = useRef(0);

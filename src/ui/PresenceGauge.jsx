@@ -1,11 +1,5 @@
 import { PRESENCE_CAP } from '../logic/battles/deployment.js';
 
-// Classes littérales (Tailwind ne détecte pas les noms construits dynamiquement).
-const FILL_CLASS = {
-  wyrms: 'bg-faction-wyrms',
-  undead: 'bg-faction-undead',
-};
-
 // Fiole du pack (ValueBars/White : FlaskBackground et FlaskForeground, 13 × 13 px) affichée à 8×.
 // Son intérieur fait 9 × 9 px à 2 px du bord ; le remplissage (couleur de la faction, pas les
 // FlaskFill du pack) y est découpé à la forme ronde de l'intérieur, pixel par pixel.
@@ -18,7 +12,7 @@ const INNER_CLIP = 'polygon('
 
 // ui-battle-screen-decisions.md 2.1 : fiole qui se remplit de bas en haut, comme un liquide,
 // selon les points de présence sur le terrain, avec le ratio par-dessus.
-export default function PresenceGauge({ used, playerFaction }) {
+export default function PresenceGauge({ used }) {
   const ratio = Math.min(1, used / PRESENCE_CAP);
   return (
     <div className="flex justify-center">
@@ -31,7 +25,7 @@ export default function PresenceGauge({ used, playerFaction }) {
           }}
         >
           <div
-            className={`absolute inset-x-0 bottom-0 transition-[height] duration-300 ${FILL_CLASS[playerFaction]}`}
+            className="absolute inset-x-0 bottom-0 transition-[height] duration-300 bg-faction"
             style={{ height: `${ratio * 100}%` }}
           />
         </div>

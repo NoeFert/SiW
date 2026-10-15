@@ -4,12 +4,14 @@ import {
   resummonLegendary, setArmy, startFountain, harvestSpiritFountain, markHomeTipSeen, resetProfile,
   replaceProfile,
 } from '../../src/state/profileStore.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 import { BATTLES } from '../../src/data/battles/index.js';
 import { FOUNTAIN_MINUTE_MS } from '../../src/logic/fountain.js';
 import { TUTO_BATTLE_PLAYER_XP } from '../../src/logic/levels.js';
 import { summonPrice } from '../../src/logic/summon.js';
 import { TEST_PROFILES } from '../../src/dev/testProfiles.js';
+import { FACTIONS } from '../../src/data/factions/index.js';
+
+const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 const profile = () => useProfileStore.getState();
 
@@ -62,7 +64,7 @@ describe('choix de la faction (rules.md 11.1/11.3)', () => {
   test('dotation de départ : les copies de units.md, niveau 1', () => {
     chooseFaction('wyrms');
 
-    const copies = Object.values(WYRMS_ROSTER).reduce((sum, species) => sum + species.copies, 0);
+    const copies = Object.values(FACTIONS.wyrms.startingArmy).reduce((sum, count) => sum + count, 0);
     expect(profile().faction).toBe('wyrms');
     expect(profile().units).toHaveLength(copies);
     expect(profile().units.every((unit) => unit.xp === 0)).toBe(true);
