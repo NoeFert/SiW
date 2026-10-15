@@ -20,7 +20,7 @@ export const TEXT = {
 
   // Messages des tutoriels (clés = champ `message` des étapes, src/data/tutorials.js).
   tutorial: {
-    // Tutoriel de départ (bataille 01).
+    // Tutoriel de départ (bataille tutoriel).
     deploy: 'Déploie ta 1ère unité.',
     autonomous: 'Ton unité va combattre d\'elle-même les ennemis. Certaines espèces de créatures tirent à distance, d\'autres au corps-à-corps.',
     presence: 'Chaque unité possède des points de présence (PP). Tu ne peux pas dépasser une présence de 150 sur le terrain. Choisis bien tes unités déployées !',
@@ -120,7 +120,7 @@ export const TEXT = {
   // « Partir en guerre » (rules.md 11.7). Noms des batailles provisoires.
   war: {
     title: 'Partir en guerre',
-    battleNames: { war1: 'La passe', war2: 'Les crevasses', war3: 'La citadelle' },
+    battleNames: { battleStartW01: 'La passe', battleLow1W01: 'Les crevasses', battleLow2W01: 'La citadelle' },
     upcoming: 'À venir', // emplacement de la map sans bataille définie (rules.md 11.7)
     xp: 'XP', // icône de la récompense en XP du joueur
     xpRange: (min, max) => `${min}–${max}`, // XP du joueur : selon les PP survivants (rules.md 11.5)

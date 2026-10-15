@@ -19,7 +19,7 @@ describe('armyUnits — individus de l\'armée (rules.md 11.2)', () => {
     expect(armyUnits(army, units)).toEqual([units[0], units[2]]);
   });
 
-  test('sans armée (avant la victoire de la bataille 01), aucun individu', () => {
+  test('sans armée (avant la victoire de la bataille tutoriel), aucun individu', () => {
     expect(armyUnits(null, [createUnit('lambtonWorm')])).toEqual([]);
   });
 });

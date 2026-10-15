@@ -1,17 +1,12 @@
 import Phaser from 'phaser';
-import Grid from '../logic/grid.js';
-import { createBattle, tickBattle } from '../logic/battle.js';
-import { createDeploymentState } from '../logic/deployment.js';
+import { tickBattle } from '../logic/battle.js';
+import { createBattleFromDefinition, opposingFaction, resolvePhases } from '../logic/battleSetup.js';
 import { isBattleTimeRunning } from '../logic/pause.js';
-import { startTutorial } from '../logic/tutorial.js';
-import { setUpcomingPhases, phaseTransitionProgress } from '../logic/phases.js';
+import { phaseTransitionProgress } from '../logic/phases.js';
 import { clickField, cancelCommand, getClickableHighlights } from '../logic/commandSelection.js';
-import { ROSTERS } from '../data/rosters.js';
-import { BATTLES } from '../data/battles.js';
+import { BATTLES } from '../data/battles/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
-import {
-  CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, FACTION_COLORS, cellCenter,
-} from '../renderConstants.js';
+import { CELL_SIZE, FACTION_COLORS, cellCenter } from '../renderConstants.js';
 import { interactionState } from '../state/interactionState.js';
 
 // Quadrillage de debug : repère de case utile en dev, pas pour le joueur. Passer à true pour
@@ -75,6 +70,9 @@ const ABILITY_COUNTER_COLORS = {
 const COUNTER_SLOT_HEIGHT = 4;
 const COUNTER_SLOT_GAP = 2;
 
+// Clé de texture Phaser de l'image de fond `image` (champ `background` des phases, src/data/battles/).
+const backgroundKey = (image) => `background-${image}`;
+
 // Cette Scene gère exclusivement le champ de bataille (technical.md 2.2) : grille, sprites,
 // animations, clics sur le terrain pendant la sélection d'une commande, signaux visuels de
 // pause. Le déploiement (glisser-déposer) et les ordres (rangée « Ordres ») vivent dans la tour de
@@ -90,17 +88,17 @@ export default class BattleScene extends Phaser.Scene {
 
   init(data) {
     this.playerFaction = data.playerFaction;
-    this.enemyFaction = data.playerFaction === 'wyrms' ? 'undead' : 'wyrms';
-    this.battleDefinition = BATTLES[data.battleId]; // src/data/battles.js
+    this.enemyFaction = opposingFaction(data.playerFaction);
+    this.battleDefinition = BATTLES[data.battleId]; // src/data/battles/
     this.playerUnits = data.playerUnits; // individus du joueur engagés (rules.md 2)
-    // rules.md 7.3 : phases de la bataille (zones), résolues pour la faction jouée par l'IA.
-    this.phases = this.battleDefinition.phases.map(({ enemyScripts, obstacles, flippedBackground }) => ({
-      enemyScript: enemyScripts[this.enemyFaction], obstacles, flippedBackground,
-    }));
+    // rules.md 7.3 : zones de la bataille (fond, obstacles), affichées l'une après l'autre.
+    this.phases = resolvePhases(this.battleDefinition, this.enemyFaction);
   }
 
   preload() {
-    this.load.image('battlefield', 'backgrounds/battlefield-01.png');
+    for (const image of new Set(this.phases.map(({ background }) => background.image))) {
+      this.load.image(backgroundKey(image), `backgrounds/${image}.png`);
+    }
     for (const { key } of Object.values(SPECIES_SPRITES)) this.load.image(key, spritePath(key));
     this.load.image('rocks', 'sprites/rocks.png');
     for (const color of Object.values(ABILITY_COUNTER_COLORS)) {
@@ -149,29 +147,28 @@ export default class BattleScene extends Phaser.Scene {
         this.textures.get(`step-slot-${color}-${part}`).setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
     }
-    const grid = new Grid(GRID_WIDTH, GRID_HEIGHT, this.phases[0].obstacles); // rules.md 1
-    this.grid = grid;
+    this.battle = createBattleFromDefinition(this.battleDefinition, this.playerFaction, this.playerUnits);
+    const { grid } = this.battle;
     this.width = grid.width * CELL_SIZE;
     this.height = grid.height * CELL_SIZE;
 
     // Profondeurs négatives : fond et rochers restent sous les unités, même redessinés au
     // changement de phase (voir showPhase).
-    this.background = this.add.image(0, 0, 'battlefield').setOrigin(0, 0)
-      .setDisplaySize(this.width, this.height).setDepth(-3);
+    const firstBackground = backgroundKey(this.phases[0].background.image);
+    this.background = this.add.image(0, 0, firstBackground).setOrigin(0, 0).setDepth(-3);
     this.backgroundFx = this.background.preFX?.addColorMatrix();
     // Copie non filtrée du background, masquée sur la zone cliquable pendant une interaction
     // (voir applyPauseColors) : c'est elle qui "reste en couleur" au-dessus du terrain désaturé.
     // Masque en coordonnées écran plutôt qu'un crop : un crop se calcule dans la texture et se
     // décale quand le fond est retourné (phase 2).
     this.colorZoneMask = this.make.graphics({}, false);
-    this.colorBackground = this.add.image(0, 0, 'battlefield').setOrigin(0, 0)
-      .setDisplaySize(this.width, this.height).setDepth(-2).setVisible(false)
+    this.colorBackground = this.add.image(0, 0, firstBackground).setOrigin(0, 0).setDepth(-2).setVisible(false)
       .setMask(this.colorZoneMask.createGeometryMask());
     this.drawGridLines(grid);
     this.deploymentZone = this.add.graphics().setVisible(false);
     this.showPhase(0);
 
-    this.startBattle(this.playerFaction);
+    this.connectToPlayer();
   }
 
   drawGridLines(grid) {
@@ -198,14 +195,16 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  // rules.md 7.3 : affiche la zone de la phase `index` (fond dans le bon sens, rochers).
+  // rules.md 7.3 : affiche la zone de la phase `index` (son fond, dans le bon sens, et ses rochers).
   showPhase(index) {
-    const { obstacles, flippedBackground } = this.phases[index];
+    const { obstacles, background } = this.phases[index];
     for (const { image } of this.obstacleViews ?? []) image.destroy();
     this.drawObstacles(obstacles);
-    this.drawDeploymentZone(obstacles);
-    this.background.setFlipX(flippedBackground);
-    this.colorBackground.setFlipX(flippedBackground);
+    this.drawDeploymentZone();
+    for (const image of [this.background, this.colorBackground]) {
+      image.setTexture(backgroundKey(background.image)).setDisplaySize(this.width, this.height)
+        .setFlipX(background.flipped);
+    }
     this.shownPhaseIndex = index;
   }
 
@@ -231,19 +230,8 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  // rules.md 9 : le choix de faction lui-même vit maintenant dans FactionChoiceScreen (React,
-  // technical.md 5) — cette Scene reçoit `playerFaction` déjà tranché via `init(data)`.
-  startBattle(playerFaction) {
-    const playerRoster = ROSTERS[playerFaction];
-    const enemyRoster = ROSTERS[playerFaction === 'wyrms' ? 'undead' : 'wyrms'];
-
-    this.battle = createBattle(this.grid, playerRoster, enemyRoster, this.phases[0].enemyScript);
-    // rules.md 2 et 11.6 : la réserve du joueur est faite de ses individus, chacun avec son niveau.
-    this.battle.playerDeployment = createDeploymentState(playerRoster, this.playerUnits);
-    setUpcomingPhases(this.battle, this.phases.slice(1));
-    const { tutorial } = this.battleDefinition;
-    if (tutorial) startTutorial(this.battle, tutorial); // technical.md 5.5
-
+  // Branche la bataille sur le joueur : la tour de commandement React et les clics sur le terrain.
+  connectToPlayer() {
     // Publie l'état pour la tour de commandement React (technical.md 2.2) : c'est le seul canal de
     // communication entre les deux couches, aucune ne référence les objets de l'autre.
     interactionState.battle = this.battle;
@@ -262,8 +250,8 @@ export default class BattleScene extends Phaser.Scene {
   // isValidDeploymentPosition), visible uniquement pendant un glisser depuis la tour. Les cases
   // de rochers en sont exclues : on n'y déploie pas. Couleur de la faction du joueur ; le liseré
   // suit le contour de la zone, rochers compris, tracé à l'intérieur des cases de la zone.
-  drawDeploymentZone(obstacles) {
-    const grid = new Grid(GRID_WIDTH, GRID_HEIGHT, obstacles);
+  drawDeploymentZone() {
+    const { grid } = this.battle; // grille de la phase affichée
     const zoneColumns = Math.floor(grid.width / 2);
     const inZone = (x, y) => x < zoneColumns && grid.isFree(x, y);
     const color = FACTION_COLORS[this.playerFaction];
@@ -342,9 +330,7 @@ export default class BattleScene extends Phaser.Scene {
     const to = this.unitViews.get(target.id)?.container;
     if (!from || !to) return;
 
-    const shooterFaction = shooter.faction === 'player'
-      ? this.playerFaction
-      : (this.playerFaction === 'wyrms' ? 'undead' : 'wyrms');
+    const shooterFaction = shooter.faction === 'player' ? this.playerFaction : this.enemyFaction;
     const color = PROJECTILE_COLORS[shooterFaction];
 
     // Le missile joue toute son animation pendant le vol, orienté vers la cible.

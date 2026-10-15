@@ -1,12 +1,16 @@
 // Outil de debug temporaire : affiche l'état d'une bataille en ASCII dans le terminal.
 // Pas une fonctionnalité du jeu — sert uniquement à vérifier la logique sans Phaser.
-import Grid from '../logic/grid.js';
+import Grid, { parseObstacleMap } from '../logic/grid.js';
 import { footprint } from '../logic/pathfinding.js';
 import { createBattle, deployPlayerUnit, issuePlayerFlee, tickBattle } from '../logic/battle.js';
 import { WYRMS_ROSTER } from '../data/wyrmsRoster.js';
 import { UNDEAD_ROSTER } from '../data/undeadRoster.js';
-import { UNDEAD_AI_SCRIPT } from '../data/battleScript.js';
-import { BATTLEFIELD_OBSTACLES } from '../data/battlefield.js';
+import { BATTLES } from '../data/battles/index.js';
+
+// Terrain et script de l'IA (Morts-Vivants) de la bataille tutoriel.
+const FIRST_PHASE = BATTLES.battleTuto.phases[0];
+const BATTLEFIELD_OBSTACLES = parseObstacleMap(FIRST_PHASE.obstacles);
+const UNDEAD_AI_SCRIPT = FIRST_PHASE.enemyScripts.undead;
 
 const SYMBOLS = {
   'Lambton Worm': 'L',

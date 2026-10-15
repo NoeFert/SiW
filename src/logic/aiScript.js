@@ -47,7 +47,7 @@ function chooseDeploymentPosition(species, faction, grid, unitsOnField, rng) {
   return pick(valid.filter((_, i) => distances[i] === closest));
 }
 
-// `script` doit être trié par `time` croissant (voir src/data/battleScript.js). Renvoie les
+// `script` doit être trié par `time` croissant (voir src/data/battles/). Renvoie les
 // unités à déployer pour ce tick — celles dont l'heure de déploiement (temps absolu depuis
 // le début de la bataille) est atteinte depuis le dernier appel — sans jamais en redéployer
 // une deuxième fois. Si l'unité ferait dépasser le plafond vivant de points de présence

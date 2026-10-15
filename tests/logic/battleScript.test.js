@@ -2,7 +2,7 @@ import Grid from '../../src/logic/grid.js';
 import Unit from '../../src/logic/unit.js';
 import { createAiScriptState, deployScheduledUnits } from '../../src/logic/aiScript.js';
 import { isValidDeploymentPosition, PRESENCE_CAP } from '../../src/logic/deployment.js';
-import { WYRMS_AI_SCRIPT, UNDEAD_AI_SCRIPT } from '../../src/data/battleScript.js';
+import { BATTLES } from '../../src/data/battles/index.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
 
@@ -11,6 +11,9 @@ function deployOne(species, units, rng = Math.random) {
   const [unit] = deployScheduledUnits([{ time: 0, species }], createAiScriptState(), 0, 'enemy', new Grid(), units, rng);
   return unit;
 }
+
+// Scripts de l'IA de la bataille tutoriel.
+const { wyrms: WYRMS_AI_SCRIPT, undead: UNDEAD_AI_SCRIPT } = BATTLES.battleTuto.phases[0].enemyScripts;
 
 const costOf = (speciesList) => speciesList.reduce((sum, species) => sum + species.cost, 0);
 

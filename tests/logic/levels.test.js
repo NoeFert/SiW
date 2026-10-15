@@ -1,7 +1,7 @@
 import {
   INDIVIDUAL_MAX_LEVEL, INDIVIDUAL_MAX_XP, individualXpForLevel, individualLevel, individualProgress,
   levelStat, levelDamage, individualXpGains, applyVictoryToUnits, levelUps, sortByLevel,
-  FIRST_BATTLE_PLAYER_XP, playerXpForLevel, playerLevel, playerProgress, victoryPlayerXp,
+  TUTO_BATTLE_PLAYER_XP, playerXpForLevel, playerLevel, playerProgress, victoryPlayerXp,
   playerLevelReward,
 } from '../../src/logic/levels.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
@@ -151,8 +151,8 @@ describe('niveau du joueur (rules.md 11.5)', () => {
     expect(playerProgress(1700)).toEqual({ level: 3, xpInLevel: 200, xpForLevel: 1500 });
   });
 
-  test('bataille 01 : 100 XP fixes', () => {
-    expect(FIRST_BATTLE_PLAYER_XP).toBe(100);
+  test('bataille tutoriel : 100 XP fixes', () => {
+    expect(TUTO_BATTLE_PLAYER_XP).toBe(100);
   });
 
   test('victoire : 100 + 100 × PP survivants / PP de l\'armée, arrondi inférieur', () => {

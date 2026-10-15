@@ -32,7 +32,7 @@ Problèmes à résoudre (feedback) :
 - [x] Supprimer le code devenu mort : condition de tutoriel `phaseElapsed`, cible de main `playerUnit`, `getCasualtyReport` et `countOwnedCopies`, palette CSS « Dungeon Torch »
 - [x] Zones « Le mur », « Les trois couloirs », « Le fort » conservées (utilisées par « Partir en guerre ») ; leur test devient `battleZones.test.js`
 
-### Étape 2 — État du joueur ✅
+### Étape 2 — État du joueur ✅ (`0a83528`)
 - [x] Installer Zustand
 - [x] Un seul objet profil (faction, première victoire, individus, armée, Spirit Stones, XP, niveau du Légendaire mort, batailles gagnées, fontaine, conseils vus) dans un store Zustand : `src/state/profileStore.js`
 - [x] Sauvegardé à un seul endroit : middleware `persist`, une seule clé localStorage versionnée (`siw.save`). Pas de migration des anciennes clés (aucun joueur réel)
@@ -41,10 +41,13 @@ Problèmes à résoudre (feedback) :
 - [x] Mettre à jour les profils de test du menu devs (`src/dev/testProfiles.js`) et supprimer `test-wyrm-fallen` ; chaque profil de test liste tous les champs du profil, comme un profil sauvegardé (vérifié par un test)
 - [x] Tests des actions du store : `tests/state/profileStore.test.js`
 
-### Étape 3 — Préparation de la bataille et flux de jeu
-- [ ] Sortir la préparation de la bataille de la Scene vers une fonction testée de `logic/`, par exemple `createBattleFromDefinition(definition, faction, playerUnits)`. Au passage : `createBattle` crée une réserve du joueur que la Scene remplace aussitôt par celle de ses individus
+### Étape 3 — Données des batailles, préparation de la bataille et flux de jeu ✅
+- [x] Toutes les données d'une bataille dans un seul fichier, dans `src/data/battles/` (`battleTuto.js`, puis un sous-dossier par guerre : `war01/` avec sa map `warMap01.js` et ses batailles `battleStartW01.js`, `battleLow1W01.js`, `battleLow2W01.js`) : récompense, tutoriel, et pour chaque phase son fond, son plan d'obstacles (ASCII) et les scripts de l'IA. `src/data/battles/index.js` liste les batailles et décrit le format. Remplace `battles.js`, `battleScript.js` et `battlefield.js`
+- [x] Sortir la préparation de la bataille de la Scene vers une fonction testée de `logic/` : `createBattleFromDefinition(definition, faction, playerUnits)` (`src/logic/battleSetup.js`), utilisée aussi par l'outil d'équilibrage. `createBattle` reçoit directement les individus du joueur (plus de réserve créée puis remplacée)
 - [x] Sortir de `App.jsx` la logique « fin de bataille → profil » vers les actions du store du profil (fait à l'étape 2)
-- [ ] `App.jsx` ne garde que la navigation entre écrans
+- [x] `App.jsx` ne garde que la navigation entre écrans et les appels aux actions du store
+- [x] Vocabulaire : une **guerre** (war) est un ensemble de batailles sur une map ; une **bataille** (battle) n'est plus jamais appelée « war ». Identifiants : `firstBattle` → `battleTuto` (et `tutoBattleWon`, `TUTO_BATTLE_ID`… partout), `war1/2/3` → `battle` + id de l'emplacement + `W01`
+- [x] `tests/logic/battleData.test.js` vérifie automatiquement chaque bataille et chaque phase (fond présent, plan 24 x 14, entrée de l'IA libre, aucune zone isolée, scripts triés, nom et emplacement sur la map)
 
 ### Étape 4 — Sous-objets de la bataille
 - [ ] Découper l'objet `battle` en sous-objets : `sim` (grille, unités, temps, phases, IA, réserves, fin de bataille), `interaction` (pause, commande en cours de sélection, tutoriel), `events` (événements visuels du dernier tick)
@@ -71,6 +74,7 @@ Problèmes à résoudre (feedback) :
 ### Étape 8 — Specs à jour
 - [ ] `technical.md` décrit l'architecture réelle (états, stores, dossiers, découpage de la Scene)
 - [ ] Retirer le clickbait des specs (`CONCEPT.md`, `roadmap.md`, `roadmap-mvp.md`, `rules.md`, `technical.md`…) et le remplacer par : le MVP est la seconde version du projet, après une version clickbait ; le clickbait vit désormais dans un autre dépôt, c'est un projet passé, et on se concentre uniquement sur le MVP
+- [ ] Aligner le vocabulaire des specs sur le code : « bataille 01 » → bataille tutoriel (`battleTuto`), guerre (war) = ensemble de batailles sur une map, identifiants des batailles (`battleStartW01`…)
 - [ ] Mettre à jour `CLAUDE.md` et le `README.md` (qui parlent encore du clickbait)
 - [ ] Clore ce suivi (toutes les cases cochées) et fusionner la branche
 
@@ -135,3 +139,11 @@ Changements apportés au plan initial, du plus ancien au plus récent.
   - Les champs du profil gardent les noms qu'attendent déjà `resolveVictory` et `resolveWarDefeat` (`units`, `army`, `playerXp`…) : le profil leur est passé tel quel.
   - Les actions sont des fonctions exportées à côté du store (pas dans l'état) : seules les données sont sauvegardées, et les actions s'appellent aussi bien depuis React que depuis les tests.
   - Les anciennes clés `siw.*` restent dans le localStorage des navigateurs de dev, sans effet : le jeu repart de l'intro une fois.
+- **2026-10-15 — Étape 3**
+  - Ajout demandé par Noémie : réunir toutes les données d'une bataille dans un seul fichier, pour avoir un aperçu immédiat et créer une bataille sans toucher à plusieurs fichiers.
+  - Obstacles écrits en plan ASCII dans chaque phase (choix de Noémie) : une zone utilisée par deux batailles est recopiée dans les deux fichiers, chaque bataille se modifie sans toucher aux autres.
+  - Le nom affiché d'une bataille reste dans `src/ui/strings.js` (choix de Noémie), pour garder tous les textes du joueur au même endroit ; son emplacement sur la map reste dans `warMaps.js`.
+  - Le fond de chaque phase devient une image au choix (`background.image`) plus un sens (`flipped`) : une nouvelle zone pourra avoir son propre fond.
+  - Contrôle : les nouvelles définitions ont été comparées aux anciennes (obstacles, scripts, récompenses, sens du fond) avant suppression ; instantané de référence inchangé.
+  - Ajustement de Noémie en cours d'étape : un sous-dossier par guerre (`war01/`, avec sa map), batailles nommées battle + emplacement + W + numéro de guerre, `firstBattle` → `battleTuto` partout dans le code (y compris le champ du profil `tutoBattleWon` et les commentaires « bataille 01 » → « bataille tutoriel »). La « bataille 01 » des specs sera alignée à l'étape 8.
+  - Les instantanés de référence ont été renommés (clés seulement) et passent tels quels : les batailles renommées se jouent à l'identique.

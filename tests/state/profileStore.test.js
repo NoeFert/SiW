@@ -5,9 +5,9 @@ import {
   replaceProfile,
 } from '../../src/state/profileStore.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { BATTLES } from '../../src/data/battles.js';
+import { BATTLES } from '../../src/data/battles/index.js';
 import { FOUNTAIN_MINUTE_MS } from '../../src/logic/fountain.js';
-import { FIRST_BATTLE_PLAYER_XP } from '../../src/logic/levels.js';
+import { TUTO_BATTLE_PLAYER_XP } from '../../src/logic/levels.js';
 import { summonPrice } from '../../src/logic/summon.js';
 import { TEST_PROFILES } from '../../src/dev/testProfiles.js';
 
@@ -18,11 +18,11 @@ const deployed = (individualId, { alive = true } = {}) => ({
   individualId, faction: 'player', level: 1, killXp: 0, isAlive: alive,
 });
 
-// Joueur Wyrms après la bataille 01 : deux Vers de Lambton et Fafnir, tous dans l'armée.
+// Joueur Wyrms après la bataille tutoriel : deux Vers de Lambton et Fafnir, tous dans l'armée.
 function wyrmsPlayer(overrides = {}) {
   replaceProfile({
     faction: 'wyrms',
-    firstBattleWon: true,
+    tutoBattleWon: true,
     units: [
       { id: 'w1', species: 'lambtonWorm', xp: 0 },
       { id: 'w2', species: 'lambtonWorm', xp: 0 },
@@ -70,34 +70,34 @@ describe('choix de la faction (rules.md 11.1/11.3)', () => {
 });
 
 describe('victoire (rules.md 11)', () => {
-  test('bataille 01 : débloque l\'accueil, crée l\'armée avec les survivants, XP fixe', () => {
-    wyrmsPlayer({ firstBattleWon: false, army: null });
+  test('bataille tutoriel : débloque l\'accueil, crée l\'armée avec les survivants, XP fixe', () => {
+    wyrmsPlayer({ tutoBattleWon: false, army: null });
 
-    const report = applyVictory('firstBattle', [deployed('w1'), deployed('w2', { alive: false })]);
+    const report = applyVictory('battleTuto', [deployed('w1'), deployed('w2', { alive: false })]);
 
-    expect(profile().firstBattleWon).toBe(true);
+    expect(profile().tutoBattleWon).toBe(true);
     expect(profile().units.map((unit) => unit.id)).toEqual(['w1', 'f']);
     expect(profile().army.unitIds).toEqual(['w1', 'f']);
-    expect(profile().playerXp).toBe(FIRST_BATTLE_PLAYER_XP);
+    expect(profile().playerXp).toBe(TUTO_BATTLE_PLAYER_XP);
     expect(profile().wonWarBattles).toEqual([]);
-    expect(report.xpGained).toBe(FIRST_BATTLE_PLAYER_XP);
+    expect(report.xpGained).toBe(TUTO_BATTLE_PLAYER_XP);
   });
 
   test('« Partir en guerre » : la première victoire est retenue et paie la récompense pleine', () => {
     wyrmsPlayer();
 
-    const report = applyVictory('war1', [deployed('w1')]);
+    const report = applyVictory('battleStartW01', [deployed('w1')]);
 
-    expect(profile().wonWarBattles).toEqual(['war1']);
-    expect(report.spiritStonesGained).toBeGreaterThanOrEqual(BATTLES.war1.reward);
+    expect(profile().wonWarBattles).toEqual(['battleStartW01']);
+    expect(report.spiritStonesGained).toBeGreaterThanOrEqual(BATTLES.battleStartW01.reward);
   });
 
   test('rejeu d\'une bataille déjà gagnée : pas retenue deux fois, récompense de rejeu (11.7)', () => {
-    wyrmsPlayer({ wonWarBattles: ['war1'] });
+    wyrmsPlayer({ wonWarBattles: ['battleStartW01'] });
 
-    const report = applyVictory('war1', [deployed('w1')]);
+    const report = applyVictory('battleStartW01', [deployed('w1')]);
 
-    expect(profile().wonWarBattles).toEqual(['war1']);
+    expect(profile().wonWarBattles).toEqual(['battleStartW01']);
     expect(report.spiritStonesGained).toBe(0);
   });
 });

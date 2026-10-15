@@ -12,9 +12,7 @@ import {
   TUTORIAL_CONDITION_TYPES,
 } from '../../src/logic/tutorial.js';
 import { STARTER_TUTORIAL } from '../../src/data/tutorials.js';
-import { BATTLES, FIRST_BATTLE_ID } from '../../src/data/battles.js';
-import { WYRMS_AI_SCRIPT, UNDEAD_AI_SCRIPT } from '../../src/data/battleScript.js';
-import { BATTLEFIELD_OBSTACLES } from '../../src/data/battlefield.js';
+import { BATTLES, TUTO_BATTLE_ID } from '../../src/data/battles/index.js';
 import { TEXT } from '../../src/ui/strings.js';
 
 const ROSTER = {
@@ -285,16 +283,11 @@ describe('données des tutoriels et des batailles (src/data/)', () => {
   const allTutorials = [STARTER_TUTORIAL];
   const allSteps = allTutorials.flat();
 
-  test('la bataille 01 : une seule phase, script IA par faction, tutoriel de départ', () => {
-    expect(BATTLES[FIRST_BATTLE_ID]).toEqual({
-      phases: [{
-        enemyScripts: { wyrms: WYRMS_AI_SCRIPT, undead: UNDEAD_AI_SCRIPT },
-        obstacles: BATTLEFIELD_OBSTACLES,
-        flippedBackground: false,
-      }],
-      tutorial: STARTER_TUTORIAL,
-      reward: 50, // rules.md 11.7
-    });
+  test('la bataille tutoriel : une seule phase, tutoriel de départ, récompense de 50 (rules.md 11.7)', () => {
+    const { phases, tutorial, reward } = BATTLES[TUTO_BATTLE_ID];
+    expect(phases).toHaveLength(1);
+    expect(tutorial).toBe(STARTER_TUTORIAL);
+    expect(reward).toBe(50);
   });
 
   test('chaque condition utilisée existe dans le moteur', () => {

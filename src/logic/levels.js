@@ -108,7 +108,7 @@ export function sortByLevel(units) {
 
 // --- Joueur (rules.md 11.5) ---
 
-export const FIRST_BATTLE_PLAYER_XP = 100;
+export const TUTO_BATTLE_PLAYER_XP = 100;
 export const VICTORY_PLAYER_XP = 100;
 export const SURVIVORS_BONUS_XP = 100;
 

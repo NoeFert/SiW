@@ -2,18 +2,17 @@ import {
   warBattleState, isWarCompleted, victoryReward, lossReport, resolveWarDefeat, invaderSpecies,
   invadersRepelled,
 } from '../../src/logic/war.js';
-import { WAR_MAP_1 } from '../../src/data/warMaps.js';
+import { WAR_MAP_01 } from '../../src/data/battles/war01/warMap01.js';
 import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
 import { createArmy } from '../../src/logic/army.js';
-import { BATTLES, WAR_BATTLE_IDS } from '../../src/data/battles.js';
+import { BATTLES, WAR_BATTLE_IDS } from '../../src/data/battles/index.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 
-const IDS = ['war1', 'war2', 'war3'];
+const IDS = ['battleStartW01', 'battleLow1W01', 'battleLow2W01'];
 
 describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
   test('trois batailles de deux zones, victoire à la fin du script de la dernière zone, sans tutoriel', () => {
     expect(WAR_BATTLE_IDS).toEqual(IDS);
-    expect(IDS.map((id) => BATTLES[id].zones)).toEqual([['field', 'wall'], ['wall', 'lanes'], ['lanes', 'fort']]);
     for (const id of IDS) {
       expect(BATTLES[id].phases).toHaveLength(2);
       expect(BATTLES[id].tutorial).toBeNull();
@@ -39,29 +38,29 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
           expect(all.filter((e) => e.species === species).length).toBeLessThanOrEqual(species.copies);
         }
         const legendaries = all.filter((e) => e.species.keywords.includes('legendary'));
-        expect(legendaries).toHaveLength(id === 'war3' ? 1 : 0);
+        expect(legendaries).toHaveLength(id === 'battleLow2W01' ? 1 : 0);
       }
     }
   });
 
-  test('récompenses provisoires : 50 pour la bataille 01, 60 / 80 / 100 ensuite', () => {
-    expect(BATTLES.firstBattle.reward).toBe(50);
+  test('récompenses provisoires : 50 pour la bataille tutoriel, 60 / 80 / 100 ensuite', () => {
+    expect(BATTLES.battleTuto.reward).toBe(50);
     expect(IDS.map((id) => BATTLES[id].reward)).toEqual([60, 80, 100]);
   });
 });
 
 describe('déblocage en séquence (rules.md 11.7)', () => {
-  test('au départ, seule la bataille 1 est disponible', () => {
+  test('au départ, seule la première bataille de la guerre est disponible', () => {
     expect(IDS.map((id) => warBattleState(IDS, [], id))).toEqual(['available', 'locked', 'locked']);
   });
 
   test('gagner une bataille débloque la suivante ; une bataille gagnée reste marquée « gagnée »', () => {
-    expect(IDS.map((id) => warBattleState(IDS, ['war1'], id))).toEqual(['won', 'available', 'locked']);
+    expect(IDS.map((id) => warBattleState(IDS, ['battleStartW01'], id))).toEqual(['won', 'available', 'locked']);
   });
 
   test('contenu terminé une fois les trois gagnées', () => {
-    expect(isWarCompleted(IDS, ['war1', 'war2'])).toBe(false);
-    expect(isWarCompleted(IDS, ['war1', 'war2', 'war3'])).toBe(true);
+    expect(isWarCompleted(IDS, ['battleStartW01', 'battleLow1W01'])).toBe(false);
+    expect(isWarCompleted(IDS, ['battleStartW01', 'battleLow1W01', 'battleLow2W01'])).toBe(true);
   });
 });
 
@@ -113,7 +112,7 @@ describe('défaite dans « Partir en guerre » (rules.md 11.7)', () => {
 
 describe('envahisseurs de la map 1 (rules.md 11.7)', () => {
   test('trois emplacements d\'envahisseur : intersection du haut, intersection de droite, boss', () => {
-    const invaders = WAR_MAP_1.nodes.filter((node) => node.invader);
+    const invaders = WAR_MAP_01.nodes.filter((node) => node.invader);
     expect(invaders.map(({ id, invader }) => [id, invader])).toEqual([
       ['low4', 'basic'], ['top3', 'flying'], ['boss', 'legendary'],
     ]);
@@ -127,7 +126,7 @@ describe('envahisseurs de la map 1 (rules.md 11.7)', () => {
   });
 
   test('compte les envahisseurs repoussés : emplacements d\'envahisseur dont la bataille est gagnée', () => {
-    expect(invadersRepelled(WAR_MAP_1.nodes, IDS)).toEqual({ repelled: 0, total: 3 });
+    expect(invadersRepelled(WAR_MAP_01.nodes, IDS)).toEqual({ repelled: 0, total: 3 });
     const nodes = [{ invader: 'basic', battle: 'b1' }, { invader: 'flying', battle: 'b2' }, { battle: 'b3' }];
     expect(invadersRepelled(nodes, ['b1', 'b3'])).toEqual({ repelled: 1, total: 2 });
   });

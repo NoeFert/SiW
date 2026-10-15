@@ -13,7 +13,7 @@
 // - next          : conditions pour PASSER à l'étape suivante (une seule suffit).
 // - back          : { when: condition, to: id } pour revenir à une étape précédente.
 
-// Tutoriel de départ, sur la bataille 01 du jeu normal : déployer, combat autonome, points de
+// Tutoriel de départ, sur la bataille tutoriel du jeu normal : déployer, combat autonome, points de
 // présence, battre en retraite.
 export const STARTER_TUTORIAL = [
   {

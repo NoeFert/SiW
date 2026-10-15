@@ -1,7 +1,7 @@
 import { FOUNTAIN_MINUTE_MS } from '../logic/fountain.js';
 import { HOME_TIPS } from '../logic/homeTips.js';
 
-// Outil de dev — joueurs de test figés, pour tester à la main l'après-bataille 01 sans la
+// Outil de dev — joueurs de test figés, pour tester à la main l'après-bataille tutoriel sans la
 // rejouer. Le menu devs remplace le profil sauvegardé par l'un d'eux (voir replaceProfile dans
 // src/state/profileStore.js). Chaque profil a la même forme que le profil sauvegardé
 // (EMPTY_PROFILE), tous les champs remplis.
@@ -11,7 +11,7 @@ import { HOME_TIPS } from '../logic/homeTips.js';
 // Dernière récolte il y a 24 h : la fontaine est pleine (rules.md 11.8).
 const fullFountain = () => Date.now() - 24 * 60 * FOUNTAIN_MINUTE_MS;
 
-// Joueur Wyrms après la bataille 01 : 3 Vers de Lambton et 1 Amphiptère perdus, restent 9 / 7 / 1
+// Joueur Wyrms après la bataille tutoriel : 3 Vers de Lambton et 1 Amphiptère perdus, restent 9 / 7 / 1
 // individus, tous dans l'armée.
 const WYRM_UNITS = [
   { id: 'lambton-1', species: 'lambtonWorm', xp: 500 }, // niveau 5
@@ -33,7 +33,7 @@ const WYRM_UNITS = [
   { id: 'fafnir', species: 'fafnir', xp: 350 }, // niveau 4
 ];
 
-// Joueur Morts-Vivants après la bataille 01 : 4 New-reborn Skeletons et 1 Necromant Initiate
+// Joueur Morts-Vivants après la bataille tutoriel : 4 New-reborn Skeletons et 1 Necromant Initiate
 // perdus, restent 14 / 7 / 1 individus (369 PP), tous dans l'armée.
 const UNDEAD_UNITS = [
   { id: 'skeleton-1', species: 'newRebornSkeleton', xp: 500 }, // niveau 5
@@ -63,7 +63,7 @@ const UNDEAD_UNITS = [
 export const TEST_PROFILES = {
   'test-wyrm': () => ({
     faction: 'wyrms',
-    firstBattleWon: true,
+    tutoBattleWon: true,
     units: WYRM_UNITS,
     army: { name: 'Armée 1', unitIds: WYRM_UNITS.map((unit) => unit.id) },
     spiritStones: 10000,
@@ -75,7 +75,7 @@ export const TEST_PROFILES = {
   }),
   'test-undead': () => ({
     faction: 'undead',
-    firstBattleWon: true,
+    tutoBattleWon: true,
     units: UNDEAD_UNITS,
     army: { name: 'Armée 1', unitIds: UNDEAD_UNITS.map((unit) => unit.id) },
     spiritStones: 10000,

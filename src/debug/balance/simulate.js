@@ -1,16 +1,14 @@
 // Outil d'équilibrage (skill /balancer) : joue des batailles sans Phaser avec le moteur de
 // src/logic/ et le bot de bot.js, puis mesure leur issue avec la logique méta du jeu
 // (resolveVictory, résolution des pertes). Ne lit ni n'écrit aucune sauvegarde.
-import Grid from '../../logic/grid.js';
-import { createBattle, tickBattle } from '../../logic/battle.js';
-import { createDeploymentState } from '../../logic/deployment.js';
-import { setUpcomingPhases } from '../../logic/phases.js';
+import { tickBattle } from '../../logic/battle.js';
+import { createBattleFromDefinition } from '../../logic/battleSetup.js';
 import { individualXpForLevel, individualXpGains } from '../../logic/levels.js';
 import { createArmy } from '../../logic/army.js';
 import { resolveVictory } from '../../logic/victory.js';
 import { victoryReward } from '../../logic/war.js';
 import { summonPrice } from '../../logic/summon.js';
-import { BATTLES } from '../../data/battles.js';
+import { BATTLES } from '../../data/battles/index.js';
 import { ROSTERS } from '../../data/rosters.js';
 import { botDeploy } from './bot.js';
 
@@ -46,17 +44,12 @@ export function starterArmy(faction, level) {
 // Une bataille complète. `config` : { faction, battleId, strategy, individuals, seed, replay,
 // playerXp }. Renvoie l'issue et ses mesures.
 export function runBattle({ faction, battleId, strategy, individuals, seed, replay = false, playerXp = 0 }) {
-  const enemyFaction = faction === 'wyrms' ? 'undead' : 'wyrms';
   const roster = ROSTERS[faction];
   const definition = BATTLES[battleId];
-  const phases = definition.phases.map((phase) => ({
-    enemyScript: phase.enemyScripts[enemyFaction], obstacles: phase.obstacles,
-  }));
-
-  const grid = new Grid(24, 14, phases[0].obstacles);
-  const battle = createBattle(grid, roster, ROSTERS[enemyFaction], phases[0].enemyScript, seededRng(seed));
-  battle.playerDeployment = createDeploymentState(roster, individuals);
-  setUpcomingPhases(battle, phases.slice(1));
+  // Pas de tutoriel : le bot ne cliquerait jamais sur « Continuer ».
+  const battle = createBattleFromDefinition(definition, faction, individuals, {
+    rng: seededRng(seed), withTutorial: false,
+  });
 
   const bot = { strategy, deployedCount: 0 };
   while (battle.outcome === 'ongoing' && battle.elapsedSeconds < MAX_BATTLE_SECONDS) {
@@ -91,7 +84,7 @@ export function runBattle({ faction, battleId, strategy, individuals, seed, repl
     units: individuals, army: createArmy('Balance', individuals), playerXp, spiritStones: 0, fallenLegendaryLevel: 1,
   };
   const { report } = resolveVictory(save, battle.units, roster, {
-    firstBattle: battleId === 'firstBattle', reward: victoryReward(definition.reward, replay), replay,
+    tutoBattle: battleId === 'battleTuto', reward: victoryReward(definition.reward, replay), replay,
   });
   // XP des survivants déployés, par espèce : { species: { xp, survivors } }.
   const xpBySpecies = {};

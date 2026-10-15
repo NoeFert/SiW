@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`replay of every battle with a fixed seed undead firstBattle basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleTuto basics starter army 1`] = `
 {
   "dead": 6,
   "deployed": 21,
@@ -27,7 +27,7 @@ exports[`replay of every battle with a fixed seed undead firstBattle basics star
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead firstBattle flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleTuto flyers starter army 1`] = `
 {
   "dead": 4,
   "deployed": 16,
@@ -54,7 +54,7 @@ exports[`replay of every battle with a fixed seed undead firstBattle flyers star
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead firstBattle legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleTuto legendaryFirst starter army 1`] = `
 {
   "dead": 6,
   "deployed": 13,
@@ -81,7 +81,7 @@ exports[`replay of every battle with a fixed seed undead firstBattle legendaryFi
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead firstBattle mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleTuto mixed starter army 1`] = `
 {
   "dead": 2,
   "deployed": 14,
@@ -108,7 +108,7 @@ exports[`replay of every battle with a fixed seed undead firstBattle mixed start
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead firstBattle two basic units 1`] = `
+exports[`replay of every battle with a fixed seed undead battleTuto two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -125,7 +125,7 @@ exports[`replay of every battle with a fixed seed undead firstBattle two basic u
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war1 basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleStartW01 basics starter army 1`] = `
 {
   "dead": 3,
   "deployed": 20,
@@ -152,7 +152,7 @@ exports[`replay of every battle with a fixed seed undead war1 basics starter arm
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war1 flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleStartW01 flyers starter army 1`] = `
 {
   "dead": 0,
   "deployed": 6,
@@ -175,7 +175,7 @@ exports[`replay of every battle with a fixed seed undead war1 flyers starter arm
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war1 legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleStartW01 legendaryFirst starter army 1`] = `
 {
   "dead": 7,
   "deployed": 11,
@@ -206,7 +206,7 @@ exports[`replay of every battle with a fixed seed undead war1 legendaryFirst sta
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war1 mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleStartW01 mixed starter army 1`] = `
 {
   "dead": 3,
   "deployed": 15,
@@ -233,7 +233,7 @@ exports[`replay of every battle with a fixed seed undead war1 mixed starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war1 two basic units 1`] = `
+exports[`replay of every battle with a fixed seed undead battleStartW01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -250,7 +250,7 @@ exports[`replay of every battle with a fixed seed undead war1 two basic units 1`
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war2 basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow1W01 basics starter army 1`] = `
 {
   "dead": 9,
   "deployed": 21,
@@ -277,7 +277,7 @@ exports[`replay of every battle with a fixed seed undead war2 basics starter arm
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war2 flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow1W01 flyers starter army 1`] = `
 {
   "dead": 1,
   "deployed": 7,
@@ -300,7 +300,7 @@ exports[`replay of every battle with a fixed seed undead war2 flyers starter arm
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war2 legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow1W01 legendaryFirst starter army 1`] = `
 {
   "dead": 9,
   "deployed": 16,
@@ -327,7 +327,7 @@ exports[`replay of every battle with a fixed seed undead war2 legendaryFirst sta
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war2 mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow1W01 mixed starter army 1`] = `
 {
   "dead": 2,
   "deployed": 14,
@@ -354,7 +354,7 @@ exports[`replay of every battle with a fixed seed undead war2 mixed starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war2 two basic units 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow1W01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -371,7 +371,7 @@ exports[`replay of every battle with a fixed seed undead war2 two basic units 1`
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war3 basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow2W01 basics starter army 1`] = `
 {
   "dead": 13,
   "deployed": 22,
@@ -398,7 +398,7 @@ exports[`replay of every battle with a fixed seed undead war3 basics starter arm
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war3 flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow2W01 flyers starter army 1`] = `
 {
   "dead": 4,
   "deployed": 13,
@@ -425,7 +425,7 @@ exports[`replay of every battle with a fixed seed undead war3 flyers starter arm
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war3 legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow2W01 legendaryFirst starter army 1`] = `
 {
   "dead": 9,
   "deployed": 13,
@@ -456,7 +456,7 @@ exports[`replay of every battle with a fixed seed undead war3 legendaryFirst sta
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war3 mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow2W01 mixed starter army 1`] = `
 {
   "dead": 7,
   "deployed": 19,
@@ -483,7 +483,7 @@ exports[`replay of every battle with a fixed seed undead war3 mixed starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead war3 two basic units 1`] = `
+exports[`replay of every battle with a fixed seed undead battleLow2W01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -500,7 +500,7 @@ exports[`replay of every battle with a fixed seed undead war3 two basic units 1`
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms firstBattle basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleTuto basics starter army 1`] = `
 {
   "dead": 0,
   "deployed": 13,
@@ -527,7 +527,7 @@ exports[`replay of every battle with a fixed seed wyrms firstBattle basics start
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms firstBattle flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleTuto flyers starter army 1`] = `
 {
   "dead": 3,
   "deployed": 10,
@@ -554,7 +554,7 @@ exports[`replay of every battle with a fixed seed wyrms firstBattle flyers start
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms firstBattle legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleTuto legendaryFirst starter army 1`] = `
 {
   "dead": 0,
   "deployed": 3,
@@ -585,7 +585,7 @@ exports[`replay of every battle with a fixed seed wyrms firstBattle legendaryFir
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms firstBattle mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleTuto mixed starter army 1`] = `
 {
   "dead": 0,
   "deployed": 9,
@@ -612,7 +612,7 @@ exports[`replay of every battle with a fixed seed wyrms firstBattle mixed starte
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms firstBattle two basic units 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleTuto two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -629,7 +629,7 @@ exports[`replay of every battle with a fixed seed wyrms firstBattle two basic un
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war1 basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleStartW01 basics starter army 1`] = `
 {
   "dead": 2,
   "deployed": 14,
@@ -656,7 +656,7 @@ exports[`replay of every battle with a fixed seed wyrms war1 basics starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war1 flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleStartW01 flyers starter army 1`] = `
 {
   "dead": 0,
   "deployed": 6,
@@ -679,7 +679,7 @@ exports[`replay of every battle with a fixed seed wyrms war1 flyers starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war1 legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleStartW01 legendaryFirst starter army 1`] = `
 {
   "dead": 3,
   "deployed": 6,
@@ -710,7 +710,7 @@ exports[`replay of every battle with a fixed seed wyrms war1 legendaryFirst star
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war1 mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleStartW01 mixed starter army 1`] = `
 {
   "dead": 1,
   "deployed": 10,
@@ -737,7 +737,7 @@ exports[`replay of every battle with a fixed seed wyrms war1 mixed starter army 
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war1 two basic units 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleStartW01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -754,7 +754,7 @@ exports[`replay of every battle with a fixed seed wyrms war1 two basic units 1`]
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war2 basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow1W01 basics starter army 1`] = `
 {
   "dead": 3,
   "deployed": 14,
@@ -781,7 +781,7 @@ exports[`replay of every battle with a fixed seed wyrms war2 basics starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war2 flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow1W01 flyers starter army 1`] = `
 {
   "dead": 1,
   "deployed": 7,
@@ -804,7 +804,7 @@ exports[`replay of every battle with a fixed seed wyrms war2 flyers starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war2 legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow1W01 legendaryFirst starter army 1`] = `
 {
   "dead": 4,
   "deployed": 7,
@@ -835,7 +835,7 @@ exports[`replay of every battle with a fixed seed wyrms war2 legendaryFirst star
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war2 mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow1W01 mixed starter army 1`] = `
 {
   "dead": 2,
   "deployed": 11,
@@ -862,7 +862,7 @@ exports[`replay of every battle with a fixed seed wyrms war2 mixed starter army 
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war2 two basic units 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow1W01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -879,7 +879,7 @@ exports[`replay of every battle with a fixed seed wyrms war2 two basic units 1`]
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war3 basics starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow2W01 basics starter army 1`] = `
 {
   "dead": 3,
   "deployed": 14,
@@ -906,7 +906,7 @@ exports[`replay of every battle with a fixed seed wyrms war3 basics starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war3 flyers starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow2W01 flyers starter army 1`] = `
 {
   "dead": 7,
   "deployed": 14,
@@ -933,7 +933,7 @@ exports[`replay of every battle with a fixed seed wyrms war3 flyers starter army
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war3 legendaryFirst starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow2W01 legendaryFirst starter army 1`] = `
 {
   "dead": 5,
   "deployed": 8,
@@ -964,7 +964,7 @@ exports[`replay of every battle with a fixed seed wyrms war3 legendaryFirst star
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war3 mixed starter army 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow2W01 mixed starter army 1`] = `
 {
   "dead": 4,
   "deployed": 13,
@@ -991,7 +991,7 @@ exports[`replay of every battle with a fixed seed wyrms war3 mixed starter army 
 }
 `;
 
-exports[`replay of every battle with a fixed seed wyrms war3 two basic units 1`] = `
+exports[`replay of every battle with a fixed seed wyrms battleLow2W01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,

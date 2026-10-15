@@ -25,7 +25,10 @@ import {
 // tick. Aucune décision d'IA ici : le script dit quoi/quand/où (7), resolveCombatTick fait le
 // reste, identique pour joueur et IA — c'est tout le principe de cette architecture par couches.
 // `rng` : source d'aléa du choix de case de l'IA (rules.md 7.2), injectable en test.
-export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng = Math.random) {
+// `playerUnits` : individus du joueur engagés (rules.md 2 et 11.6), qui forment sa réserve avec
+// leur niveau ; sans eux, la réserve est faite des copies de units.md, niveau 1.
+// Pour une bataille du jeu, passer plutôt par createBattleFromDefinition (battleSetup.js).
+export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng = Math.random, playerUnits = null) {
   return {
     grid,
     rng,
@@ -46,7 +49,7 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     playerFleeState: createFleeState(),
     aiScriptState: createAiScriptState(),
     enemyScript,
-    playerDeployment: createDeploymentState(playerRoster),
+    playerDeployment: createDeploymentState(playerRoster, playerUnits),
     enemyDeployment: createDeploymentState(enemyRoster),
     playerEndState: createFactionState(),
     enemyEndState: createFactionState(),

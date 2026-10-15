@@ -1,8 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/8bit/badge.jsx';
 import { Button } from '@/components/ui/8bit/button.jsx';
-import { BATTLES, WAR_BATTLE_IDS } from '../data/battles.js';
-import { WAR_MAP_1 } from '../data/warMaps.js';
+import { BATTLES, WAR_BATTLE_IDS } from '../data/battles/index.js';
+import { WAR_MAP_01 } from '../data/battles/war01/warMap01.js';
 import { armyUnits } from '../logic/army.js';
 import { victoryPlayerXp } from '../logic/levels.js';
 import { ROSTERS } from '../data/rosters.js';
@@ -113,7 +113,7 @@ function Connector({ from, to, color }) {
 }
 
 // technical.md 5.1 / rules.md 11.7 : écran « Partir en guerre ». La map 1 en réseau
-// (src/data/warMaps.js) : trois chemins du départ au boss, des passerelles et des impasses, sur
+// (src/data/battles/war01/warMap01.js) : trois chemins du départ au boss, des passerelles et des impasses, sur
 // le fond de la map en plein écran. Les emplacements qui portent une bataille définie prennent
 // son état ; les autres sont verrouillés (« À venir »). Un clic sur un losange l'affiche dans le
 // panneau : nom, état, récompense de la prochaine victoire (pleine ou réduite au rejeu) et
@@ -124,7 +124,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
   const wonIds = useProfileStore((profile) => profile.wonWarBattles);
   const armyIsEmpty = armyUnits(army, units).length === 0;
   const color = PLAYER_COLOR[playerFaction];
-  const nodes = WAR_MAP_1.nodes.map((node) => ({
+  const nodes = WAR_MAP_01.nodes.map((node) => ({
     ...node,
     state: node.battle ? warBattleState(WAR_BATTLE_IDS, wonIds, node.battle) : 'locked',
   }));
@@ -144,8 +144,8 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
     (node) => INVADER_SIZE[node.invader] + INVADER_GAP + slotSize(node) / 2 - slotCenter(node).y,
   ));
   const mapMarginBottom = SLOT / 4;
-  const mapWidth = SLOT + (WAR_MAP_1.cols - 1) * STEP;
-  const mapHeight = SLOT + (WAR_MAP_1.rows - 1) * STEP;
+  const mapWidth = SLOT + (WAR_MAP_01.cols - 1) * STEP;
+  const mapHeight = SLOT + (WAR_MAP_01.rows - 1) * STEP;
   // Map réduite (jamais agrandie) pour tenir, avec le panneau, dans la place laissée par la
   // fenêtre : aucune barre de défilement, quelle que soit la taille de l'écran.
   const rowRef = useRef(null);
@@ -171,7 +171,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
       background={(
         <div
           className="size-full bg-cover bg-center brightness-50 grayscale contrast-150"
-          style={{ backgroundImage: `url(${WAR_MAP_1.background})` }}
+          style={{ backgroundImage: `url(${WAR_MAP_01.background})` }}
         />
       )}
     >
@@ -189,7 +189,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
                 width: mapWidth, height: mapHeight, top: mapMarginTop * mapScale, transform: `scale(${mapScale})`,
               }}
             >
-              {WAR_MAP_1.links.map(([a, b]) => {
+              {WAR_MAP_01.links.map(([a, b]) => {
                 const from = byId.get(a);
                 const to = byId.get(b);
                 const linkColor = from.state === 'locked' || to.state === 'locked' ? 'grey' : color;

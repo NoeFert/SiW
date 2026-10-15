@@ -13,7 +13,7 @@ import WarScreen from './screens/WarScreen.jsx';
 import CodexScreen from './screens/CodexScreen.jsx';
 import DevMenu from './dev/DevMenu.jsx';
 import { TEST_PROFILES } from './dev/testProfiles.js';
-import { FIRST_BATTLE_ID, WAR_BATTLE_IDS } from './data/battles.js';
+import { TUTO_BATTLE_ID, WAR_BATTLE_IDS } from './data/battles/index.js';
 import { armyUnits } from './logic/army.js';
 import {
   useProfileStore, chooseFaction, applyVictory, applyWarDefeat, startFountain, resetProfile,
@@ -22,9 +22,9 @@ import {
 
 // technical.md 5.2 : l'écran de départ se déduit du profil sauvegardé, pas d'un routeur.
 function initialScreen() {
-  const { faction, firstBattleWon } = useProfileStore.getState();
+  const { faction, tutoBattleWon } = useProfileStore.getState();
   if (!faction) return 'intro';
-  if (!firstBattleWon) return 'battle';
+  if (!tutoBattleWon) return 'battle';
   startFountain();
   return 'home';
 }
@@ -34,8 +34,8 @@ function initialScreen() {
 export default function App() {
   const [screen, setScreen] = useState(initialScreen);
   const [battleAttempt, setBattleAttempt] = useState(0); // change de clé = BattleScreen tout neuf
-  // Bataille du jeu normal en cours : la bataille 01, ou une de « Partir en guerre » (rules.md 11.7).
-  const [battleId, setBattleId] = useState(FIRST_BATTLE_ID);
+  // Bataille du jeu normal en cours : la bataille tutoriel, ou une de « Partir en guerre » (rules.md 11.7).
+  const [battleId, setBattleId] = useState(TUTO_BATTLE_ID);
   const [victoryProgress, setVictoryProgress] = useState(null); // XP, niveaux et pertes de la victoire
   const [defeatLosses, setDefeatLosses] = useState(null); // pertes d'une défaite de guerre
   // technical.md 5.2 : SummonScreen s'ouvre depuis l'accueil ou depuis l'écran des unités ;
@@ -67,9 +67,9 @@ export default function App() {
     setScreen('home');
   }, []);
 
-  const startFirstBattle = useCallback((faction) => {
+  const startTutoBattle = useCallback((faction) => {
     chooseFaction(faction);
-    setBattleId(FIRST_BATTLE_ID);
+    setBattleId(TUTO_BATTLE_ID);
     startBattle();
   }, [startBattle]);
 
@@ -79,18 +79,18 @@ export default function App() {
     startBattle();
   }, [startBattle]);
 
-  // technical.md 5.4 : dans la bataille 01, pertes et XP ne sont comptées qu'à la victoire — une
+  // technical.md 5.4 : dans la bataille tutoriel, pertes et XP ne sont comptées qu'à la victoire — une
   // tentative ratée ne change rien au profil.
   const handleVictory = useCallback((battle) => {
     setVictoryProgress(applyVictory(battleId, battle.units));
     setScreen('victory');
   }, [battleId]);
 
-  // Menu devs, pendant la bataille 01 (rules.md 11) : comptée comme gagnée sans combat (aucune
+  // Menu devs, pendant la bataille tutoriel (rules.md 11) : comptée comme gagnée sans combat (aucune
   // perte, armée de départ avec toute la dotation, récompense et XP fixe du joueur), puis retour
   // direct à l'accueil.
-  const skipFirstBattle = useCallback(() => {
-    applyVictory(FIRST_BATTLE_ID, []);
+  const skipTutoBattle = useCallback(() => {
+    applyVictory(TUTO_BATTLE_ID, []);
     goHome();
   }, [goHome]);
 
@@ -105,14 +105,14 @@ export default function App() {
   // Repart comme au tout premier lancement (menu des paramètres de l'accueil, menu devs).
   const restartGame = useCallback(() => {
     resetProfile();
-    setBattleId(FIRST_BATTLE_ID);
+    setBattleId(TUTO_BATTLE_ID);
     setScreen('intro');
   }, []);
 
   const devActions = [
     { label: 'restart game', run: restartGame },
-    ...(screen === 'battle' && battleId === FIRST_BATTLE_ID
-      ? [{ label: 'skip tutorial', run: skipFirstBattle }] : []),
+    ...(screen === 'battle' && battleId === TUTO_BATTLE_ID
+      ? [{ label: 'skip tutorial', run: skipTutoBattle }] : []),
     ...Object.entries(TEST_PROFILES)
       .map(([label, createProfile]) => ({
         label,
@@ -124,7 +124,7 @@ export default function App() {
       })),
   ];
 
-  // rules.md 2 : bataille 01 = tous les individus possédés ; « Partir en guerre » = l'armée.
+  // rules.md 2 : bataille tutoriel = tous les individus possédés ; « Partir en guerre » = l'armée.
   const battleUnits = isWarBattle ? armyUnits(army, ownedUnits) : ownedUnits;
 
   let content;
@@ -133,7 +133,7 @@ export default function App() {
       <IntroScreen onContinue={() => setScreen('factionChoice')} />
     );
   } else if (screen === 'factionChoice') {
-    content = <FactionChoiceScreen onChoose={startFirstBattle} />;
+    content = <FactionChoiceScreen onChoose={startTutoBattle} />;
   } else if (screen === 'battle') {
     content = (
       <BattleScreen

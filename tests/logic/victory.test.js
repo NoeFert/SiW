@@ -14,12 +14,12 @@ const units = [
   { id: 'f', species: 'fafnir', xp: 350 }, // niveau 4
 ];
 
-describe('resolveVictory — bataille 01 (rules.md 11)', () => {
+describe('resolveVictory — bataille tutoriel (rules.md 11)', () => {
   const save = {
     units, army: null, playerXp: 0, spiritStones: 0, fallenLegendaryLevel: null,
   };
   const battleUnits = [deployed('w1', { killXp: 6 }), deployed('w2', { alive: false }), deployed('f', { alive: false, level: 4 })];
-  const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { firstBattle: true, armyName: 'Armée 1' });
+  const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { tutoBattle: true, armyName: 'Armée 1' });
 
   test('morts retirés ; XP : +40 de survie + coût des ennemis achevés, jamais-déployés inchangés', () => {
     expect(after.units).toEqual([
@@ -53,11 +53,11 @@ describe('resolveVictory — bataille 01 (rules.md 11)', () => {
   });
 });
 
-describe('resolveVictory — bataille 01 passée avec « Skip » (rules.md 11)', () => {
+describe('resolveVictory — bataille tutoriel passée avec « Skip » (rules.md 11)', () => {
   const save = {
     units, army: null, playerXp: 0, spiritStones: 200, fallenLegendaryLevel: null,
   };
-  const { save: after, report } = resolveVictory(save, [], WYRMS_ROSTER, { firstBattle: true, armyName: 'Armée 1', reward: 50 });
+  const { save: after, report } = resolveVictory(save, [], WYRMS_ROSTER, { tutoBattle: true, armyName: 'Armée 1', reward: 50 });
 
   test('aucune perte, aucune XP d\'individu ; armée de départ avec toute la dotation', () => {
     expect(after.units).toEqual(units);
@@ -66,7 +66,7 @@ describe('resolveVictory — bataille 01 passée avec « Skip » (rules.md 11)',
     expect(report.lost).toEqual([]);
   });
 
-  test('joueur : 100 XP fixes et la récompense de la bataille 01', () => {
+  test('joueur : 100 XP fixes et la récompense de la bataille tutoriel', () => {
     expect(after.playerXp).toBe(100);
     expect(after.spiritStones).toBe(250);
   });
@@ -78,7 +78,7 @@ describe('resolveVictory — batailles suivantes (rules.md 11.5)', () => {
     const save = {
       units, army, playerXp: 0, spiritStones: 0, fallenLegendaryLevel: null,
     };
-    const { save: after, report } = resolveVictory(save, [deployed('w1', { alive: false })], WYRMS_ROSTER, { firstBattle: false });
+    const { save: after, report } = resolveVictory(save, [deployed('w1', { alive: false })], WYRMS_ROSTER, { tutoBattle: false });
     expect(report.xpGained).toBe(100 + Math.floor((100 * 130) / 140));
     expect(after.army.unitIds).toEqual(['w2', 'w3', 'f']);
   });
@@ -87,7 +87,7 @@ describe('resolveVictory — batailles suivantes (rules.md 11.5)', () => {
     const save = {
       units, army: createArmy('A', units), playerXp: 450, spiritStones: 5, fallenLegendaryLevel: 2,
     };
-    const { save: after } = resolveVictory(save, [deployed('f', { level: 4 })], WYRMS_ROSTER, { firstBattle: false });
+    const { save: after } = resolveVictory(save, [deployed('f', { level: 4 })], WYRMS_ROSTER, { tutoBattle: false });
     expect(after.playerXp).toBe(650); // niveau 2 atteint
     expect(after.spiritStones).toBe(5 + 100);
     expect(after.fallenLegendaryLevel).toBe(2);
@@ -101,7 +101,7 @@ describe('resolveVictory — rejeu (rules.md 11.5, 11.6, 11.7)', () => {
       units, army, playerXp: 0, spiritStones: 0, fallenLegendaryLevel: null,
     };
     const battleUnits = [deployed('w1', { killXp: 6 }), deployed('w2', { alive: false })];
-    const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { firstBattle: false, replay: true });
+    const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { tutoBattle: false, replay: true });
     expect(report.xpGained).toBe(Math.floor((100 + Math.floor((100 * 130) / 140)) / 4)); // 192 → 48
     expect(after.units.find((u) => u.id === 'w1').xp).toBe(40 + 11); // 46 × 25 % = 11
     expect(after.units.map((u) => u.id)).toEqual(['w1', 'w3', 'f']);
@@ -113,7 +113,7 @@ describe('resolveVictory — récompense en Spirit Stones (rules.md 11.7)', () =
     const save = {
       units, army: createArmy('A', units), playerXp: 450, spiritStones: 5, fallenLegendaryLevel: null,
     };
-    const { save: after, report } = resolveVictory(save, [], WYRMS_ROSTER, { firstBattle: false, reward: 60 });
+    const { save: after, report } = resolveVictory(save, [], WYRMS_ROSTER, { tutoBattle: false, reward: 60 });
     expect(report.spiritStonesGained).toBe(60 + 100);
     expect(after.spiritStones).toBe(5 + 60 + 100);
   });

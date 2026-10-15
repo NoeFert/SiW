@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { BATTLES, FIRST_BATTLE_ID } from '../data/battles.js';
+import { BATTLES, TUTO_BATTLE_ID } from '../data/battles/index.js';
 import { ROSTERS } from '../data/rosters.js';
 import { harvestFountain } from '../logic/fountain.js';
 import { markTipSeen } from '../logic/homeTips.js';
@@ -15,9 +15,9 @@ import { TEXT } from '../ui/strings.js';
 // n'est jamais sauvegardé.
 export const EMPTY_PROFILE = {
   faction: null, // 'wyrms' | 'undead', null avant le choix de faction
-  firstBattleWon: false, // la bataille 01 a été gagnée : l'accueil est débloqué
+  tutoBattleWon: false, // la bataille tutoriel a été gagnée : l'accueil est débloqué
   units: [], // individus possédés, chacun { id, species, xp } (rules.md 11.1)
-  army: null, // { name, unitIds } (rules.md 11.2), null avant la victoire de la bataille 01
+  army: null, // { name, unitIds } (rules.md 11.2), null avant la victoire de la bataille tutoriel
   spiritStones: 0, // solde (rules.md 11.3)
   playerXp: 0, // XP du joueur (rules.md 11.5)
   fallenLegendaryLevel: null, // niveau du [Légendaire] à sa dernière mort (rules.md 11.4), null s'il n'est jamais mort
@@ -52,23 +52,23 @@ export function chooseFaction(faction) {
 }
 
 // rules.md 11 : conséquences d'une victoire — morts retirés, XP, récompense (réduite au rejeu,
-// 11.7), armée de départ créée après la bataille 01, batailles de guerre gagnées retenues.
-// `battleUnits` : unités de la bataille (battle.units), vide si la bataille 01 est passée depuis
+// 11.7), armée de départ créée après la bataille tutoriel, batailles de guerre gagnées retenues.
+// `battleUnits` : unités de la bataille (battle.units), vide si la bataille tutoriel est passée depuis
 // le menu devs. Renvoie le bilan affiché sur l'écran de victoire.
 export function applyVictory(battleId, battleUnits) {
   const profile = getProfile();
-  const firstBattle = battleId === FIRST_BATTLE_ID;
+  const tutoBattle = battleId === TUTO_BATTLE_ID;
   const replay = profile.wonWarBattles.includes(battleId);
   const { save, report } = resolveVictory(profile, battleUnits, ROSTERS[profile.faction], {
-    firstBattle,
+    tutoBattle,
     armyName: TEXT.defaultArmyName,
     reward: victoryReward(BATTLES[battleId].reward, replay),
     replay,
   });
   updateProfile({
     ...save,
-    firstBattleWon: profile.firstBattleWon || firstBattle,
-    wonWarBattles: firstBattle || replay ? profile.wonWarBattles : [...profile.wonWarBattles, battleId],
+    tutoBattleWon: profile.tutoBattleWon || tutoBattle,
+    wonWarBattles: tutoBattle || replay ? profile.wonWarBattles : [...profile.wonWarBattles, battleId],
   });
   return report;
 }

@@ -1,6 +1,9 @@
-import Grid from '../../src/logic/grid.js';
+import Grid, { parseObstacleMap } from '../../src/logic/grid.js';
 import { DIRECTIONS } from '../../src/logic/pathfinding.js';
-import { BATTLEFIELD_OBSTACLES } from '../../src/data/battlefield.js';
+import { BATTLES } from '../../src/data/battles/index.js';
+
+// Terrain de la bataille tutoriel (aussi la première zone de battleStartW01).
+const BATTLEFIELD_OBSTACLES = parseObstacleMap(BATTLES.battleTuto.phases[0].obstacles);
 
 const grid = new Grid(24, 14, BATTLEFIELD_OBSTACLES);
 
@@ -24,7 +27,7 @@ function countDiagonalAdjacentPairs(obstacles) {
   return count;
 }
 
-describe('BATTLEFIELD_OBSTACLES (rules.md 1)', () => {
+describe('terrain de la bataille tutoriel (rules.md 1)', () => {
   test('16 obstacles : 12 d\'une case et 4 blocs 2x2, entièrement dans la grille', () => {
     expect(BATTLEFIELD_OBSTACLES).toHaveLength(16);
     expect(BATTLEFIELD_OBSTACLES.filter((o) => o.size === 2)).toHaveLength(4);
