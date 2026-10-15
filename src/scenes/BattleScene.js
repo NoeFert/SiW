@@ -14,7 +14,7 @@ import { applyPauseTint } from './battle/PauseTint.js';
 // redessiné) : BattleScreen.jsx s'y abonne pour redessiner la tour et détecter la fin de bataille.
 export const BATTLE_FRAME_EVENT = 'battleFrame';
 
-// Scene Phaser du champ de bataille (technical.md 2.2). Elle fait avancer la bataille à chaque
+// Scene Phaser du champ de bataille (technical.md 2.3). Elle fait avancer la bataille à chaque
 // frame et l'affiche, en déléguant chaque sujet à une vue (src/scenes/battle/) :
 // - BattlefieldView : fond et rochers de la zone affichée
 // - DeploymentZoneView : halo de la zone de déploiement pendant un glisser

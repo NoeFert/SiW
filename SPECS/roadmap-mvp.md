@@ -1,8 +1,8 @@
 # ROADMAP-MVP.md — Couche méta du MVP
 
-Roadmap des fonctionnalités méta ajoutées au MVP : accueil, gestion de civilisation, invocation, monnaie. La bataille 01 et le tutoriel restent décrits dans `roadmap.md` et sont mis de côté pour l'instant.
+Roadmap des fonctionnalités méta du MVP : accueil, gestion de civilisation, invocation, monnaie, niveaux, « Partir en guerre ». Le moteur de bataille et la bataille tutoriel sont décrits dans `roadmap.md`.
 
-**Ce fichier fait priorité sur `roadmap.md` en cas de contradiction** (voir notamment « Ce que ce fichier remplace dans roadmap.md » en fin de document).
+**Ce fichier fait priorité sur `roadmap.md` en cas de contradiction.**
 
 ---
 
@@ -14,7 +14,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 
 ## Inclus dans le MVP
 
-### Écran d'accueil (point central du jeu après la bataille 01)
+### Écran d'accueil (point central du jeu après la bataille tutoriel)
 - Solde de **Spirit Stones** affiché en haut à droite (nom provisoire, libellé dans `strings.js`), suivi d'une icône d'engrenage : menu des paramètres avec **« Codex des mots-clés »** (page listant chaque mot-clé des unités et son effet en quelques mots, `technical.md` 5.1) et **« Réinitialiser le jeu »** (efface la sauvegarde après confirmation, `technical.md` 5.4)
 - **Niveau du joueur** et barre d'XP, en haut à gauche à côté du portrait du souverain (`rules.md` 11.5)
 - **Spirit Fountain** (`rules.md` 11.8) : produit 3 Spirit Stones par minute en temps réel, jusqu'à une capacité de 80 + 10 × niveau du joueur ; un clic récolte. Garantit qu'on peut toujours réinvoquer après avoir tout perdu
@@ -24,10 +24,10 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 
 ### Partir en guerre (`rules.md` 11.7)
 - **Trois batailles en séquence** (« La passe », « Les crevasses », « La citadelle », noms provisoires) : chacune se débloque en gagnant la précédente ; une bataille gagnée reste **rejouable**, sans Spirit Stones et avec l'XP du joueur et des individus réduite à 25 %
-- **Écran « Partir en guerre »** : la map 1 en arbre de compétences : un réseau de trois chemins du départ au boss, avec passerelles et impasses ; 3 batailles jouables, les autres emplacements verrouillés « À venir » ; trois emplacements surmontés d'un envahisseur ennemi ([Vol], basique, [Légendaire] au boss) marquent les batailles de boss, objectif de la map affiché « Repousse l'envahisseur 0/3 » (batailles pas encore écrites) ; un clic sur un losange affiche dans un panneau son nom, son état (verrouillée / disponible / gagnée) et sa récompense, bouton « Combattre » (désactivé si l'armée est vide)
+- **Écran « Partir en guerre »** : la map 1 en arbre de compétences : un réseau de trois chemins du départ au boss, avec passerelles et impasses ; 3 batailles jouables, les autres emplacements verrouillés « À venir » ; trois emplacements surmontés d'un envahisseur ennemi ([Vol], basique, [Légendaire] au boss) marquent les batailles de boss, objectif de la map affiché « Repousse l'envahisseur 0/3 » (batailles de boss pas encore écrites) ; un clic sur un losange affiche dans un panneau son nom, son état (verrouillée / disponible / gagnée) et sa récompense, bouton « Combattre » (désactivé si l'armée est vide)
 - **Deux zones par bataille** (provisoire) : champ → « Le mur » ; « Le mur » → « Les trois couloirs » ; « Les trois couloirs » → « Le fort ». Scripts de l'IA provisoires, propres à « Partir en guerre » (`rules.md` 11.7), plus durs à mesure qu'on approche du boss. Zones et scripts définitifs : plus tard
 - **Difficulté selon la distance au boss** (`rules.md` 11.7) : règle de conception des scripts, pas une mécanique du jeu. Chaque emplacement vise des pertes fixées par sa distance au boss (5 % au départ → 30 % au boss), vérifiées avec `npm run balance` avant d'ajouter sa bataille à la map
-- **Victoire** dès la fin du script de la dernière zone (comme la bataille-clickbait) ; commandes complètes et abandon possibles, pas de tutoriel
+- **Victoire** dès la fin du script de la dernière zone ; ordres complets et abandon possibles, pas de tutoriel
 - **Défaite, abandon ou match nul** : les individus tués sont **perdus quand même** ; aucune XP ni récompense ; écran de défaite avec les pertes, « Réessayer » et « Retour à l'accueil »
 - **Fin du contenu** : les trois batailles gagnées, un message annonce la suite ; tout reste rejouable
 
@@ -38,9 +38,9 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 - Les « copies disponibles » de `units.md` deviennent la **dotation de départ** du joueur (niveau 1) et ne sont plus un maximum de possession
 
 ### Niveaux (joueur et individus)
-- **Joueur** (`rules.md` 11.5) : XP à chaque victoire (100 + bonus selon les PP survivants de l'armée ; 100 fixes pour la bataille 01), courbe 500 × niveau, sans maximum. Chaque niveau rapporte des Spirit Stones (50 × nouveau niveau, provisoire)
-- **Individus** (`rules.md` 11.6) : XP à la victoire seulement, bataille 01 comprise (+40 par survivant déployé, + coût en PP de chaque ennemi achevé), courbe 50 × niveau, niveau 5 maximum. +10 % de PV et de dégâts par niveau ; coût en PP inchangé
-- **Écran de victoire** (jeu normal seulement, rien ne change dans la version clickbait) : rangée de récompenses (Spirit Stones et XP du joueur, même composant que le panneau de « Partir en guerre »), individus qui ont monté de niveau, unités perdues (comme le bilan du clickbait) — `technical.md` 5.3
+- **Joueur** (`rules.md` 11.5) : XP à chaque victoire (100 + bonus selon les PP survivants de l'armée ; 100 fixes pour la bataille tutoriel), courbe 500 × niveau, sans maximum. Chaque niveau rapporte des Spirit Stones (50 × nouveau niveau, provisoire)
+- **Individus** (`rules.md` 11.6) : XP à la victoire seulement, bataille tutoriel comprise (+40 par survivant déployé, + coût en PP de chaque ennemi achevé), courbe 50 × niveau, niveau 5 maximum. +10 % de PV et de dégâts par niveau ; coût en PP inchangé
+- **Écran de victoire** : rangée de récompenses (Spirit Stones et XP du joueur, même composant que le panneau de « Partir en guerre »), individus qui ont monté de niveau, unités perdues — `technical.md` 5.3
 - **Bataille** : la tour de déploiement affiche une ligne par espèce **et par niveau** (`ui-battle-screen-decisions.md` 2.2)
 
 ### Gestion de civilisation — section Unités
@@ -54,11 +54,11 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 - Actions : **renommer** l'armée (1 à 20 caractères), **ajouter / retirer** des individus, avec un compteur « X / 500 PP ». Pas de suppression (armée unique)
 - **Un accordéon par espèce** : fermé, l'en-tête seul ; ouvert, une ligne par niveau (individus strictement identiques regroupés, comme la tour de commandement) avec des boutons − / + pour retirer ou ajouter un individu
 - Un individu invoqué n'est **pas** ajouté automatiquement à l'armée
-- **Armée de départ** : créée automatiquement à l'arrivée sur l'accueil après la victoire de la bataille 01, avec **tous les survivants** (les dotations de départ totalisent au plus 430 PP, donc tiennent toujours sous 500), et un nom par défaut
+- **Armée de départ** : créée automatiquement à l'arrivée sur l'accueil après la victoire de la bataille tutoriel, avec **tous les survivants** (les dotations de départ totalisent au plus 430 PP, donc tiennent toujours sous 500), et un nom par défaut
 
 ### Monnaie : Spirit Stones
 - Somme de départ donnée au joueur au choix de la faction (0, provisoire)
-- Récompense à chaque victoire : bataille 01 : 50 ; « Partir en guerre » : 60 / 80 / 100 à la première victoire, rien au rejeu (provisoire)
+- Récompense à chaque victoire : bataille tutoriel : 50 ; « Partir en guerre » : 60 / 80 / 100 à la première victoire, rien au rejeu (provisoire)
 
 ### Écran Invocation (nouveau)
 - Achat d'un individu d'une **espèce déjà connue** (roster de la faction du joueur) — pas de gacha
@@ -69,11 +69,11 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 - **Prix = coût en PP de l'espèce × k**, avec un multiplicateur à part éventuel pour le [Légendaire] (valeurs à définir)
 
 ### Persistance (localStorage)
-- Sont conservés : la faction choisie, la victoire de la bataille 01, la **liste des individus possédés** (avec leur XP), l'**armée** (nom + identifiants), le **solde de Spirit Stones**, l'**XP du joueur**, le **niveau du Légendaire à sa mort** (pour la réinvocation), la **liste des batailles de « Partir en guerre » gagnées** l'**heure de la dernière récolte de la Spirit Fountain** et la **liste des conseils de l'accueil déjà vus** (tutoriel de l'accueil, `technical.md` 5.5). La liste d'individus remplace l'ancien décompte de copies par espèce
+- Un seul **profil du joueur**, sauvegardé sous une seule clé (`technical.md` 5.4) : la faction choisie, la victoire de la bataille tutoriel, la **liste des individus possédés** (avec leur XP), l'**armée** (nom + identifiants), le **solde de Spirit Stones**, l'**XP du joueur**, le **niveau du Légendaire à sa mort** (pour la réinvocation), la **liste des batailles de « Partir en guerre » gagnées**, l'**heure de la dernière récolte de la Spirit Fountain** et la **liste des conseils de l'accueil déjà vus** (tutoriel de l'accueil, `technical.md` 5.5)
 - Pas de système de sauvegarde généralisé : ni historique de batailles, ni état d'une bataille en cours
 
 ### Outil de développement
-- Profil de test `test-wyrm` (menu devs) : **10 000 Spirit Stones** en plus de ses pertes figées, et des niveaux variés (joueur et individus) ; profil `test-wyrm-fallen` : même chose avec Fafnir mort au niveau 5 (détail : `technical.md` 5.7)
+- Profils de test `test-wyrm` et `test-undead` (menu devs) : **10 000 Spirit Stones** en plus de leurs pertes figées, et des niveaux variés (joueur et individus) — détail : `technical.md` 5.6
 
 ---
 
@@ -126,7 +126,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 | Pourquoi des individus dès le MVP | La sauvegarde doit de toute façon changer (monnaie, armée), et une armée référence des individus : cela évite une migration des sauvegardes quand la personnalisation arrivera. Seule l'XP est ajoutée maintenant |
 | Niveau des individus | Porté par chaque individu (pas par l'espèce) ; XP à la victoire (survie + ennemis achevés) ; niveau 1 à 5 ; +10 % PV et dégâts par niveau ; coût en PP fixe, pour que garder ses unités en vie les rende plus fortes sous le même plafond |
 | Niveau du joueur | XP à la victoire (100 + bonus selon les PP survivants ; 100 fixes au tutoriel) ; sans maximum ; rapporte des Spirit Stones. Emplacements d'armée et plafond de PP liés au niveau : hors MVP |
-| Armée | Une seule armée (preset d'identifiants), renommable, 500 PP max, 1 unité min ; créée automatiquement avec tous les survivants de la bataille 01, nommée « Armée 1 » ; composée individu par individu (accordéons) |
+| Armée | Une seule armée (preset d'identifiants), renommable, 500 PP max, 1 unité min ; créée automatiquement avec tous les survivants de la bataille tutoriel, nommée « Armée 1 » ; composée individu par individu (accordéons) |
 | Invocation | Achat d'espèces connues sans plafond ; Légendaire unique, réinvocable seulement s'il est mort ; même action pour invocation et réinvocation ; prix = coût PP × k ; à la réinvocation, niveau gardé au choix, +25 % du prix par niveau |
 | Monnaie | Spirit Stones (nom provisoire) : somme de départ + récompenses de victoire (aucune au rejeu) + récompenses de niveau ; solde affiché en haut à droite de l'accueil |
 | Partir en guerre | Trois batailles en séquence, deux zones chacune, rejouables ; pertes définitives même en défaite ; la Spirit Fountain évite le blocage ; difficulté fixée par la distance au boss (règle de conception, `rules.md` 11.7) |
@@ -136,14 +136,3 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 - **Économie** (valeurs provisoires, à chiffrer après playtest) : somme de départ (0), k (1), multiplicateur du Légendaire (×1), récompenses de victoire (50 ; 60 / 80 / 100 ; rien au rejeu), Spirit Fountain (3 / min, 80 + 10 × niveau)
 - **Partir en guerre** : zones et scripts de l'IA définitifs des trois batailles (scripts provisoires dans `rules.md` 11.7, chiffrés par `/balancer`)
 - **Récompense de niveau du joueur** : 50 × nouveau niveau en Spirit Stones, provisoire, à revoir avec k
-
----
-
-## Ce que ce fichier remplace dans roadmap.md
-
-- « Écran de gestion de civilisation (lecture seule) » et « Toute action sur l'écran de gestion de civilisation » (exclu) → la civilisation permet désormais de composer et renommer l'armée
-- « Persistance ciblée » (trois valeurs) et « Progression sauvegardée complète » (exclu) → la sauvegarde contient aussi les individus (avec leur XP), l'armée, le solde, l'XP du joueur, le niveau du Légendaire à sa mort les batailles de « Partir en guerre » gagnées et l'heure de la dernière récolte de la Spirit Fountain
-- « XP » et « amélioration d'unités » dans « Progression sauvegardée complète » (exclu), et « amélioration de stats » dans « Personnalisation » (exclu) → les niveaux du joueur et des individus sont inclus (`rules.md` 11.5 et 11.6) ; noms et achat de keywords restent exclus
-- « Gacha / monnaie d'invocation » (exclu) → la monnaie et l'invocation d'espèces connues sont incluses ; seul le gacha reste exclu
-- « Plusieurs niveaux/batailles enchaînés » (exclu) → « Partir en guerre » est dans le MVP : trois batailles en séquence (`rules.md` 11.7)
-- Décisions « Quantité de copies par unité », « Après la victoire » et « Gestion de civilisation » → voir « Décisions tranchées » ci-dessus

@@ -4,7 +4,7 @@ Stats des unités des deux factions. Ce fichier contient des **données**, pas d
 
 **Plafond simultané sur le terrain, pour chaque camp (joueur ou IA) : 150 points de présence** (plafond vivant, voir `rules.md` 2). À ne pas confondre avec le plafond de l'armée du joueur, 500 points (`rules.md` 11.2). Le joueur choisit l'une des deux factions, l'IA joue l'autre (`rules.md` 9).
 
-**Copies de départ** : copies de l'IA pour une bataille, et de la version clickbait. Dans le jeu normal, c'est la dotation de départ du joueur, pas un maximum : il peut ensuite en invoquer de nouveaux (`rules.md` 11).
+**Copies de départ** : l'armée de départ de la faction (`startingArmy`, `src/data/factions/`). C'est la dotation de départ du joueur, pas un maximum : il peut ensuite en invoquer de nouveaux (`rules.md` 11) ; c'est aussi la réserve de l'IA quand elle joue cette faction.
 
 ---
 

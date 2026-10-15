@@ -2,8 +2,8 @@
 
 Jeu de stratégie web où l'on déploie des monstres qui combattent seuls, avec un contrôle limité par quelques ordres. Projet de la Gamejam CREA 2026, thème « Clickbait game ».
 
-- **Rendu 1 (POC)** : la version clickbait, une bataille en trois zones qui imite une publicité de jeu de stratégie.
-- Concept et mécanique pub : [`SPECS/CONCEPT.md`](SPECS/CONCEPT.md). Toutes les spécifications sont dans [`SPECS/`](SPECS/).
+- Le projet a connu deux versions : la **version clickbait** (rendu 1), une bataille qui imitait une publicité de jeu de stratégie, aujourd'hui conservée dans un autre dépôt ; puis le **MVP**, le jeu complet, seul contenu de ce dépôt.
+- Concept : [`SPECS/CONCEPT.md`](SPECS/CONCEPT.md). Toutes les spécifications sont dans [`SPECS/`](SPECS/).
 
 ## Stack
 
@@ -12,8 +12,9 @@ Jeu de stratégie web où l'on déploie des monstres qui combattent seuls, avec 
 | Langage | JavaScript |
 | Champ de bataille | Phaser 3.90 |
 | Interface autour (tour de commandement, écrans) | React 19, Tailwind CSS 4, shadcn/ui avec le thème 8bitcn |
+| Profil du joueur sauvegardé | Zustand (`persist`, localStorage) |
 | Bundler | Vite |
-| Tests | Jest (logique de jeu uniquement, `tests/logic/`) |
+| Tests | Jest (règles du jeu, profil du joueur, données ; `tests/`) |
 
 Pourquoi ces choix : [`SPECS/TECHNICAL.md`](SPECS/TECHNICAL.md).
 
@@ -24,26 +25,32 @@ Prérequis : **Node.js 20.11 ou plus récent** (la configuration Vite utilise `i
 ```
 npm install
 npm run dev        # jeu en local, sur l'URL affichée par Vite
-npm test           # tests Jest de la logique de jeu
+npm test           # tests Jest
 npm run build      # build de production dans dist/
 npm run preview    # sert le build de production en local
+npm run balance    # outil d'équilibrage : batailles simulées sans navigateur
+npm run debug      # une bataille affichée en ASCII dans le terminal
 ```
 
-Dans le jeu : sur l'écran d'introduction, cliquer **Clickbait**, choisir une faction, puis suivre le tutoriel. Le bouton **MVP** est grisé pour ce rendu.
+Dans le jeu : **Commencer**, choisir une faction, puis suivre le tutoriel de la bataille tutoriel. En développement, le menu **devs** (en haut à gauche) permet de passer cette bataille ou de charger un joueur de test.
 
 ## Structure du code
 
 ```
 src/
-  logic/     moteur de bataille, JavaScript pur, sans Phaser ni React (testé par Jest)
-  data/      données statiques : rosters, scripts de l'IA, zones, tutoriels
-  scenes/    Phaser : affichage du champ de bataille et clics sur le terrain
-  ui/        React : tour de commandement (déploiement, pause, commandes, tutoriel)
-  screens/   React : écrans (intro, choix de faction, bataille, victoire, défaite…)
-  state/     pont entre Phaser et React (objet `battle` partagé)
-tests/logic/ tests Jest de chaque règle de SPECS/RULES.md
-assets/      sprites et fond, servis tels quels par Vite
+  data/      données statiques : une faction par fichier, une bataille par fichier (rangées par guerre),
+             tutoriels, effets
+  logic/     règles du jeu, JavaScript pur, sans Phaser ni React (testées par Jest) ;
+             logic/battles/ : le moteur de bataille, découpé par rôle
+  state/     profil du joueur sauvegardé (store Zustand)
+  scenes/    Phaser : le champ de bataille, une vue par sujet (scenes/battle/)
+  screens/   React : un fichier par écran
+  ui/        React : composants, textes affichés (strings.js), thème de faction
+tests/       tests Jest (logic/, state/, ui/)
+assets/      sprites, fonds et interface (rangée par couleur), servis tels quels par Vite
 ```
+
+Détail de l'architecture : [`SPECS/technical.md`](SPECS/technical.md) section 2.
 
 ## Ce que le POC m'a appris
 
@@ -54,7 +61,7 @@ assets/      sprites et fond, servis tels quels par Vite
 - Faire fuir une unité au bon moment, puis la voir revenir avec ses PV réduits, rend lisible la boucle de succès : c'est là que le contrôle limité prend son sens.
 
 **Ce qui ne marchait pas**
-- Les règles avaient des trous que l'IA avait comblés seule, sans le dire : distance mesurée depuis quelle case d'une unité 2×2, départage entre deux ennemis à égale distance, dernière attaque d'une fuite comptée pour les aptitudes, diagonales qui coupent le coin d'un obstacle, unité en fuite encerclée, deux comptes à rebours qui expirent en même temps… La relecture des specs (`SPECS-REVIEW.md`) en a relevé neuf. Ils sont tranchés dans `RULES.md`, et le code a été réaligné avec un test pour chacun.
+- Les règles avaient des trous que l'IA avait comblés seule, sans le dire : distance mesurée depuis quelle case d'une unité 2×2, départage entre deux ennemis à égale distance, dernière attaque d'une fuite comptée pour les aptitudes, diagonales qui coupent le coin d'un obstacle, unité en fuite encerclée, deux comptes à rebours qui expirent en même temps… Une relecture des specs (depuis archivée) en a relevé neuf. Ils sont tranchés dans `RULES.md`, et le code a été réaligné avec un test pour chacun.
 - Un bug d'ordre de résolution : une unité en fuite pouvait mourir ou survivre selon l'ordre interne des unités. Corrigé et testé.
 - Le tutoriel n'enseignait que le déploiement : un joueur qui découvrait le jeu voyait surtout ses unités mourir, sans découvrir la fuite. Corrigé : une étape « battre en retraite » s'affiche en phase 2.
 - La boucle d'échec reste peu visible sur le moment : rien ne distingue une unité tuée d'une unité en fuite, la perte n'apparaît que dans le bilan final.
@@ -71,11 +78,11 @@ assets/      sprites et fond, servis tels quels par Vite
 
 ## À corriger pour le MVP
 
-- Sauvegarde fragile : un localStorage corrompu ou bloqué donne un écran blanc (`src/persistence.js`).
+Le refactor d'octobre 2026 (`SPECS/refactor-roadmap.md`) a soldé une partie de cette dette : code mort (`findNearestEnemy`, `timeControl`), textes en dur de la Scene Phaser, assemblage de la bataille sorti de la Scene, sauvegarde réécrite (un seul profil, store Zustand). Reste :
+
+- Sauvegarde : vérifier le comportement avec un localStorage corrompu ou bloqué depuis le passage à Zustand (`src/state/profileStore.js`).
 - Au premier tick d'une fuite, un ennemi peut frapper deux fois (coup normal et dernière attaque).
-- Code mort : `findNearestEnemy`, `timeControl`, `PAUSE_DEFAULTS`.
 - Dépendances inutiles : `cn` à retirer, `shadcn` à passer en devDependencies.
-- Textes affichés en dur dans `BattleScene.js` et dans les écrans, hors de `strings.js`.
-- Assemblage de la bataille à sortir de la Scene Phaser vers `src/logic/`.
-- La tour React se re-rend à chaque frame.
+- Quelques textes encore en dur dans les écrans (ex : « Victoire », « Continuer »), hors de `strings.js`.
+- La tour React se redessine à chaque frame (voulu, mais à surveiller).
 - Pas de linter.

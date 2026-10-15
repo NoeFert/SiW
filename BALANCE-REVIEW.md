@@ -2,7 +2,7 @@
 
 Produit par `/balancer`. À relancer après tout changement de valeurs, de scripts de l'IA ou de batailles (nouvelle bataille, boss, nouvelle map). La simulation ne remplace pas le playtest : le bot joueur est passif et ne donne qu'une **borne basse** de ce qu'obtient un humain.
 
-Le clickbait (premier rendu) est hors champ : il reste dans le projet pour l'historique et n'a plus de lien avec les batailles du MVP.
+Le clickbait (premier rendu) est hors champ : c'est un projet passé, conservé dans un autre dépôt, sans lien avec les batailles du MVP. Les noms de fichiers cités plus bas sont ceux d'avant le refactor d'octobre 2026 (voir `SPECS/refactor-roadmap.md`).
 
 ---
 

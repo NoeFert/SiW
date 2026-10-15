@@ -71,7 +71,7 @@ export const TEST_PROFILES = {
     fallenLegendaryLevel: null, // Fafnir n'est jamais mort
     wonWarBattles: [], // aucune bataille de « Partir en guerre » gagnée
     fountainLastHarvest: fullFountain(),
-    homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.7)
+    homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
   }),
   'test-undead': () => ({
     faction: 'undead',
@@ -83,6 +83,6 @@ export const TEST_PROFILES = {
     fallenLegendaryLevel: null, // Athos n'est jamais mort
     wonWarBattles: [], // aucune bataille de « Partir en guerre » gagnée
     fountainLastHarvest: fullFountain(),
-    homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.7)
+    homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
   }),
 };

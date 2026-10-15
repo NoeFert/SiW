@@ -75,18 +75,19 @@ Problèmes à résoudre (feedback) :
 - [x] La Scene ne garde que l'orchestration : 90 lignes (649 avant)
 - [x] Les textes flottants affichés au joueur (« COUP CRITIQUE ! », « Raté ! ») passent dans `src/ui/strings.js` (`fieldTexts`)
 
-### Étape 7 — Passe de lisibilité ✅ (7a : `712ebc8`)
+### Étape 7 — Passe de lisibilité ✅ (7a : `712ebc8`, 7b : `9d1e3c9`)
 - [x] Commentaires (7b) : notions disparues retirées (« jeu normal », note sur la v2, compte à rebours de 15 s, renvoi à la section clickbait de technical.md), justifications historiques reformulées, références à du code renommé corrigées ; lignes de commentaire ramenées à 100 caractères. Code mort trouvé en route : le signal `timeControl` de `deployUnit`, que plus rien ne lisait
 - [x] Code mort (7a) : `showLevel` / `withLevels` supprimés (la tour affiche toujours le niveau), `findNearestEnemy` (plus utilisé par le jeu) déplacé dans son test, import `lossReport` inutilisé retiré. La clé de sauvegarde legacy a disparu avec `persistence.js` (étape 2)
 - [x] Gros écrans découpés (7a) : `CivilizationScreen.jsx` (372 lignes) devient `UnitsScreen.jsx` (grille des unités) et `ArmyScreen.jsx` (armée), plus `ui/IndividualDetail.jsx` (page d'un individu) ; `WarScreen.jsx` garde l'écran et le panneau, la map part dans `ui/WarMap.jsx` ; `App.jsx` : actions du menu devs dans `DevMenu.jsx`, ouverture de l'invocation factorisée
 - [x] Fichiers périmés supprimés (7a) : `SPECS-REVIEW.md`, `PRE-RENDU-CHECK.md` (`gamejam-skills-claude/` n'existait déjà plus)
 
-### Étape 8 — Specs à jour
-- [ ] `technical.md` décrit l'architecture réelle (états, stores, dossiers, découpage de la Scene)
-- [ ] Retirer le clickbait des specs (`CONCEPT.md`, `roadmap.md`, `roadmap-mvp.md`, `rules.md`, `technical.md`…) et le remplacer par : le MVP est la seconde version du projet, après une version clickbait ; le clickbait vit désormais dans un autre dépôt, c'est un projet passé, et on se concentre uniquement sur le MVP
-- [ ] Aligner le vocabulaire des specs sur le code : « bataille 01 » → bataille tutoriel (`battleTuto`), guerre (war) = ensemble de batailles sur une map, identifiants des batailles (`battleStartW01`…)
-- [ ] Mettre à jour `CLAUDE.md` et le `README.md` (qui parlent encore du clickbait)
-- [ ] Clore ce suivi (toutes les cases cochées) et fusionner la branche
+### Étape 8 — Specs à jour ✅
+- [x] `technical.md` décrit l'architecture réelle : section 2 réécrite (dossiers, moteur par rôle, deux états et leurs propriétaires, répartition Phaser / React, couleurs des factions, vocabulaire), 5.4 (profil sauvegardé dans le store, une seule clé), tests (4), écrans renommés (5.1) ; ancienne section 5.6 (clickbait) supprimée, le menu devs devient 5.6
+- [x] Clickbait retiré des specs : `POC-SPECS.md` supprimé ; `CONCEPT.md` et `roadmap.md` présentent les deux versions du projet (le clickbait, projet passé dans un autre dépôt ; le MVP, seul contenu du dépôt) ; `rules.md` 7.3 réécrite autour des zones de « Partir en guerre » ; mentions retirées de `roadmap-mvp.md`, `GRAPHICS.md`, `units.md`, `ui-battle-screen-decisions.md`
+- [x] Vocabulaire aligné : « bataille 01 » → bataille tutoriel, « jeu normal » retiré, chemins de fichiers mis à jour (vérifiés : chaque fichier cité existe)
+- [x] `CLAUDE.md` et `README.md` à jour (le bilan personnel « Ce que le POC m'a appris » du README est laissé tel quel, comme texte historique)
+- [x] `roadmap.md` intègre les points que `roadmap-mvp.md` déclarait « remplacés » : les deux fichiers ne se contredisent plus ; renvois au « design doc » absent du dépôt retirés
+- [ ] Fusionner la branche `refactor/state-and-scene` dans `main` (Noémie)
 
 ## Contrôles de fin d'étape
 
@@ -178,3 +179,6 @@ Changements apportés au plan initial, du plus ancien au plus récent.
   - Ajustement de Noémie : le missile de chaque faction (et sa couleur d'impact) rejoint ses données (`projectile`, src/data/factions/) ; `src/data/effects.js` ne garde que les effets communs (entaille, aptitudes, compteurs, durée de vol).
 - **2026-10-15 — Étape 7**
   - 7a et 7b relus et commités séparément. Les renvois aux specs (« rules.md 4.1 : … ») sont gardés : déjà courts, ils disent quelle règle chaque fonction applique ; leur numérotation sera vérifiée à l'étape 8 avec les specs.
+- **2026-10-15 — Étape 8**
+  - Documents d'archive laissés tels quels : `FEEDBACK-POC.md`, `COURS-BRIEF.md`, ce suivi ; `BALANCE-REVIEW.md` (compte rendu daté) reçoit seulement une note sur le clickbait et les anciens noms de fichiers.
+  - Non fait, à décider plus tard : `rules.md` section 5 parle encore de « commandes » là où le code et l'interface disent « ordres » (renommer touche toute la section et ses renvois).

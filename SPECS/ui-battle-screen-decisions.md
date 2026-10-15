@@ -92,11 +92,11 @@ Titre « Vos unités », puis **une case par ligne de la liste, deux cases par r
 - **Flèche en haut à droite** de la première case d'une espèce (seulement si l'espèce a plusieurs lignes) : un clic **dégroupe** l'espèce en une case par ligne (voir « Règle de regroupement » ci-dessous), un nouveau clic la **regroupe**. Dégroupée, le joueur choisit le niveau et les PV de l'individu qu'il déploie.
 - Le choix vaut pour la bataille en cours (rien n'est sauvegardé).
 
-#### Niveaux (jeu normal, `rules.md` 11.6)
+#### Niveaux (`rules.md` 11.6)
 
 - **Espèce dégroupée : une ligne par espèce et par niveau** : les individus d'une même espèce et d'un même niveau sont regroupés (`2x`) ; deux niveaux différents font deux cases (« Ver de Lambton niv 3 », « Ver de Lambton niv 1 »). Le joueur choisit donc le niveau de l'individu qu'il déploie.
 - Le niveau s'affiche à côté des PV, en texte simple (pas de badge) de la même taille que les PV, dans la couleur de la faction. Les PV sont ceux du niveau.
-- Version clickbait et unités de l'IA : toujours niveau 1, pas de mention du niveau.
+- Unités de l'IA : toujours niveau 1.
 
 #### Unités blessées (recommandation acceptée à l'étape 1)
 
@@ -145,7 +145,6 @@ ORDRES
 - **Bouton Pause** en premier (section 3), puis les trois ordres sous forme d'**icônes**, toujours visibles. Un **tooltip avec le nom de l'ordre** s'affiche **au-dessus** du bouton quand la souris reste dessus.
   - Les icônes ➜ / ⚔ / 🏳 sont provisoires, à définir.
 - **Ordre sélectionné :** le bouton de l'ordre choisi est **surligné dans la couleur de la faction du joueur** pendant la sélection de l'unité et de la cible.
-- La version clickbait n'affiche que Pause et Fuir (`technical.md` 5.6).
 
 #### Cooldown
 

@@ -16,99 +16,65 @@ Les technologies choisies, pourquoi, et la stratégie de tests. Ce fichier couvr
 
 ---
 
-## 2. Architecture : séparation logique / rendu
+## 2. Architecture
 
-**Principe central : la logique du jeu ne dépend jamais de Phaser, ni de React.**
+**Principe central : la logique du jeu ne dépend jamais de Phaser, ni de React.** Les règles vivent dans `src/logic/`, en JavaScript pur : elles se testent sans navigateur (section 4), et une bataille complète se simule en ligne de commande (`npm run balance`, `npm run debug`). Phaser et React ne font qu'afficher l'état et transmettre les actions du joueur.
 
-- Le **moteur de bataille** (grille, unités, pathfinding, résolution de combat, conditions de victoire/défaite) est écrit en JavaScript pur, sans aucun import de Phaser ni de React — un module autonome qui pourrait fonctionner en ligne de commande, sans navigateur ni rendu graphique
-- La **couche Phaser** (Scenes, Sprites, input sur le champ de bataille) est une couche fine par-dessus : elle lit l'état produit par la logique de jeu et l'affiche, elle transmet les clics du joueur sur le terrain vers la logique de jeu, mais ne contient elle-même aucune règle de jeu
-- La **couche React** (sidebar de déploiement, boutons, HUD, écrans de fin de bataille) suit le même principe : elle lit l'état produit par la logique de jeu et affiche des composants shadcn/8bitcn génériques, sans contenir de règle de jeu elle-même
-
-- La **logique méta** (individus possédés, armée, Spirit Stones, invocation — `rules.md` section 11) suit la même séparation : ses règles vivent dans `src/logic/` en JavaScript pur, un fichier par domaine — `ownedUnits.js` (individus possédés, dotation, pertes), `army.js` (armée), `summon.js` (invocation), `levels.js` (niveaux du joueur et des individus), `victory.js` (ce que change une victoire : pertes, XP, récompense, armée de départ), `war.js` (« Partir en guerre » : déblocage, récompenses, défaite), `fountain.js` (Spirit Fountain) —, jamais dans les composants React. `persistence.js` se contente de lire et d'écrire le localStorage, sans aucune règle de jeu
-
-**Pourquoi :** ça permet de tester toute la logique de combat/mouvement avec des tests automatisés rapides, sans avoir besoin de lancer le jeu dans un navigateur — essentiel pour la stratégie de tests ci-dessous. Ça garde aussi la porte ouverte à changer le moteur de rendu ou le framework d'UI plus tard sans toucher aux règles du jeu.
-
-### 2.1 Style de modélisation des données
-- **Entités avec comportement et état évolutif** (une unité déployée, la bataille en cours) : modélisées comme des classes ES6 porteuses à la fois de données et de comportement (ex : `Unit`, `Battle`)
-- **Configuration statique sans comportement propre** (définitions d'espèces/stats de base, scripts de bataille IA, configuration de grille) : objets JavaScript simples, potentiellement externalisables en JSON, séparés du comportement
-- Une unité déployée **référence** sa définition d'espèce statique plutôt que de dupliquer ses stats de base — voir le détail dans `units.md`
-
-### 2.2 Répartition Phaser / React
-
-- **Phaser gère exclusivement le champ de bataille** : le canevas de jeu (grille, sprites d'unités, background, animations de combat, barres de vie au-dessus des unités, feedback visuel des aptitudes)
-- **React + shadcn/8bitcn gèrent tout le reste de l'interface** : la **tour de commandement** de l'écran de bataille (voir ci-dessous), l'écran de choix de faction, les écrans de fin de bataille (récompense, défaite), l'écran d'accueil, l'écran de gestion de civilisation, l'écran d'invocation
-- **Tour de commandement** (`src/ui/CommandTower.jsx`, détail dans `SPECS/ui-battle-screen-decisions.md`) : colonne **à gauche** du canevas, collée à la zone de déploiement du joueur. De haut en bas : bouton **Abandonner** (coin haut-droit, avec boîte de confirmation), jauge de présence, rangée **« Ordres »** (`src/ui/OrdersRow.jsx` : bouton **Pause** — interrupteur ⏸ / ▶ de la pause principale, raccourci Espace — puis icônes Aller / Attaquer / Fuir, cooldown affiché sur Fuir), liste « Vos unités » (seule zone qui défile, lignes regroupées par unités strictement identiques, drag & drop vers le terrain)
-- Le canevas Phaser et l'arbre React vivent côte à côte dans la page quand la bataille est affichée (la tour est **à côté** du champ de bataille, jamais superposée — seuls les tooltips, la confirmation d'abandon et le futur overlay tutoriel peuvent passer par-dessus) ; aucun des deux ne manipule directement le DOM ou les objets de l'autre — ils communiquent uniquement via l'état partagé exposé par `battle.js`. Toutes les règles d'interaction (pauses, déroulé d'une commande, contenu de la liste d'unités) vivent dans `src/logic/` (`pause.js`, `commandSelection.js`, `deployment.js`) ; React et Phaser ne font que lire l'état et transmettre les actions du joueur
-- **Signaux de pause sur le terrain** (Phaser) : désaturation complète pendant la pause principale, partielle pendant une pause d'interaction ; ce qui est cliquable (zone de déploiement, unités du joueur, ennemis ou cases ciblables) reste en couleur
-- Les autres écrans (choix de faction, récompense, défaite, accueil, gestion de civilisation — voir section 5) sont du **React pur, sans Phaser** : le canevas de jeu n'existe que pendant l'écran de bataille
-- Largeur de la tour : laissée à l'appréciation de l'implémentation, à ajuster si besoin une fois affichée
-
-### 2.3 Structure de dossiers indicative
+### 2.1 Les dossiers
 
 ```
 src/
-  logic/           # Moteur de bataille, sans dépendance à Phaser ni à React
-    grid.js
-    unit.js
-    combat.js
-    pathfinding.js
-    deployment.js
-    battle.js
-    ownedUnits.js  # Couche méta (rules.md 11) : individus possédés
-    army.js        #   armée
-    summon.js      #   invocation
-    levels.js      #   niveaux du joueur et des individus
-    victory.js     #   conséquences d'une victoire (pertes, XP, armée)
-    war.js         #   « Partir en guerre »
-    fountain.js    #   Spirit Fountain
-  data/            # Configuration statique (rosters, scripts IA)
-    wyrmsRoster.js
-    undeadRoster.js
-    battleScript.js
-  scenes/          # Couche Phaser (rendu du champ de bataille, input sur le terrain)
-    BattleScene.js
-  ui/              # Couche React (sidebar, boutons, HUD, écrans)
-    screens/       # Les 9 écrans du jeu (voir section 5)
-      IntroScreen.jsx
-      FactionChoiceScreen.jsx
-      BattleScreen.jsx
-      VictoryScreen.jsx
-      DefeatScreen.jsx
-      HomeScreen.jsx
-      CivilizationScreen.jsx
-      SummonScreen.jsx
-      WarScreen.jsx
-    CommandTower.jsx
-    DeploymentList.jsx
-    CommandBar.jsx
-    components/    # Composants shadcn/8bitcn générés (ex: button.jsx)
-  App.jsx          # État de navigation entre écrans (voir section 5)
-assets/
-  sprites/
-    fafnir.png
-    athos.png
-    lambton-worm.png
-    new-reborn-skeleton.png
-  backgrounds/
-    battlefield-01.png
-tests/
-  logic/           # Tests automatisés de la logique de jeu
-    combat.test.js
-    pathfinding.test.js
-    battle.test.js
-    deployment.test.js
+  data/                 Données statiques, sans comportement
+    factions/           Une faction par fichier (roster, armée de départ, couleurs, missile)
+    battles/            Une bataille par fichier : battleTuto.js, puis un dossier par guerre
+      war01/            (warMap01.js : la map ; battleStartW01.js… : ses batailles)
+    tutorials.js, effects.js, sprites.js
+  logic/                Règles du jeu, JavaScript pur, testées (tests/logic/)
+    battles/            Moteur de bataille, découpé par rôle (carte en tête de battle.js)
+    army.js, levels.js, summon.js, victory.js, war.js, fountain.js, homeTips.js, ownedUnits.js
+                        Couche méta (rules.md 11)
+  state/profileStore.js Profil du joueur, sauvegardé (section 5.4)
+  scenes/               Phaser : BattleScene et ses vues (scenes/battle/)
+  screens/              React : un fichier par écran (section 5)
+  ui/                   React : composants, textes affichés (strings.js), thème de faction
+  dev/, debug/          Menu devs, profils de test, outils de debug et d'équilibrage
+tests/                  Jest : logic/ (règles), state/ (profil), ui/ (assets du thème)
 ```
 
-*Structure indicative, à ajuster librement en cours de développement — ce qui compte est la séparation `logic/` (sans Phaser ni React) vs `scenes/` (Phaser) vs `ui/` (React).*
+**Moteur de bataille** (`src/logic/battles/`), quatre rôles :
+1. **Déroulé** : `battleSetup.js` prépare une bataille à partir de sa définition ; `battle.js` porte l'objet bataille et la boucle `tickBattle` (lisible de haut en bas : tutoriel → arrivée des ennemis → unités → retours de fuite → fin de phase → fin de bataille) ; `phases.js`, `pause.js`, `tutorial.js`.
+2. **Unités sur le terrain**, identiques pour les deux camps : `battleUnit.js` (la classe `BattleUnit`), `unitBehavior.js` (cible, déplacement, attaques, aptitudes, fuite), `pathfinding.js`, `grid.js`, `deployment.js` (réserves et règles de déploiement).
+3. **Les deux commandants** : le joueur (`playerActions.js` : déployer, ordres, pause, abandon ; `orderSelection.js` : déroulé d'un ordre en plusieurs clics ; `fleeCooldown.js`) et l'IA (`aiScript.js` : arrivée des ennemis selon le script de la phase).
+4. **Fin de bataille** : `battleEnd.js` (victoire, défaite, match nul, abandon).
 
-### 2.4 Convention de nommage
-- **Le code, les noms de fichiers, les dossiers et les assets utilisent des noms anglais**, même si les documents `SPECS/` restent rédigés en français (ce sont des outils de travail, pas une source de texte à afficher tel quel). Les textes affichés au joueur sont en français pour le Rendu 1, regroupés dans `src/ui/strings.js` pour une traduction future
-- Ex : la classe `Unit`, le fichier `combat.js`, le sprite `lambton-worm.png` — pas de noms français dans le code
+### 2.2 Deux états, deux propriétaires
 
-### 2.5 Principe pour la v1 : DRY et simplicité maximale
+- **Le profil du joueur** (tout ce qui est sauvegardé) : un store Zustand, `src/state/profileStore.js`. Les écrans le lisent avec `useProfileStore` ; seules les actions du store le modifient, en appelant les règles de `src/logic/` (section 5.4).
+- **La bataille en cours** (jamais sauvegardée) : un objet modifié en place par le moteur, décrit dans `createBattle` (`battle.js`). `BattleScreen` le crée (`createBattleFromDefinition`) et en est propriétaire : il le donne à la Scene Phaser, qui le fait avancer à chaque frame et l'affiche, et à la tour de commandement et au tutoriel, par leurs props. Après chaque frame, la Scene émet `BATTLE_FRAME_EVENT` : `BattleScreen` se redessine et détecte la fin de bataille. À la fin, le résultat passe au profil par les actions du store (`applyVictory`, `applyWarDefeat`).
+
+### 2.3 Répartition Phaser / React
+
+- **Phaser gère exclusivement le champ de bataille** : `BattleScene` orchestre, et délègue chaque sujet à une vue de `src/scenes/battle/` — `BattlefieldView` (fond et rochers), `DeploymentZoneView`, `UnitViews` (sprites, barres de vie, compteurs d'aptitude, déplacements animés), `CombatEffects` (missiles, entailles, aptitudes, textes flottants), `FieldInput` (clics sur le terrain), `PauseTint` (désaturation pendant les pauses).
+- **React + shadcn/8bitcn gèrent tout le reste** : la **tour de commandement** de l'écran de bataille et tous les autres écrans (section 5), sans canevas Phaser.
+- **Tour de commandement** (`src/ui/CommandTower.jsx`, détail dans `SPECS/ui-battle-screen-decisions.md`) : colonne **à gauche** du canevas, collée à la zone de déploiement du joueur. De haut en bas : bouton **Abandonner** (coin haut-droit, avec boîte de confirmation), jauge de présence, rangée **« Ordres »** (`src/ui/OrdersRow.jsx` : bouton **Pause** — interrupteur ⏸ / ▶ de la pause principale, raccourci Espace — puis icônes Aller / Attaquer / Fuir, cooldown affiché sur Fuir), liste « Vos unités » (seule zone qui défile, lignes regroupées par unités strictement identiques, drag & drop vers le terrain).
+- Le canevas et la tour vivent **côte à côte**, jamais superposés (seuls les tooltips, la confirmation d'abandon et l'overlay du tutoriel passent par-dessus) ; aucune des deux couches ne manipule les objets de l'autre.
+- **Signaux de pause sur le terrain** : désaturation complète pendant la pause principale, partielle pendant une pause d'interaction ; ce qui est cliquable (zone de déploiement, unités du joueur, ennemis ou cases ciblables) reste en couleur.
+- **Couleurs des factions** : chaque faction déclare sa couleur principale et sa palette d'interface (`color`, `uiColor`, `src/data/factions/`). `src/ui/factionTheme.js` en tire des variables CSS posées sur `<html>` (couleurs, curseurs, accents) et Phaser lit `factionColor()` : changer ces deux champs change toutes les couleurs de la faction. Les assets d'interface sont rangés par couleur (`assets/ui/<couleur>/`, voir `assets/README.md`).
+
+### 2.4 Style de modélisation des données
+- **Entités avec comportement et état évolutif** (une unité sur le terrain) : classes ES6 porteuses de données et de comportement (ex : `BattleUnit`). La bataille en cours est un objet simple, modifié par les fonctions du moteur.
+- **Configuration statique sans comportement propre** (factions, batailles, tutoriels, effets) : objets JavaScript simples dans `src/data/`, séparés du comportement.
+- Une unité sur le terrain **référence** sa définition d'espèce plutôt que de dupliquer ses stats de base — voir `units.md`.
+
+### 2.5 Convention de nommage
+- **Le code, les noms de fichiers, les dossiers et les assets utilisent des noms anglais**, même si les documents `SPECS/` restent rédigés en français. Les commentaires du code sont en français, comme les specs. Les textes affichés au joueur sont en français, regroupés dans `src/ui/strings.js` pour une traduction future (hors de cette version).
+- Ex : la classe `BattleUnit`, le fichier `unitBehavior.js`, le sprite `lambton-worm.png` — pas de noms français dans le code.
+- **Vocabulaire** : une **guerre** (war) est un ensemble de batailles sur une map ; une **bataille** (battle) n'est jamais appelée « war ». Identifiants : `battleTuto` pour la bataille tutoriel, `battle` + id de l'emplacement de la map + `W` + numéro de la guerre pour les autres (`battleStartW01`). Ce que le joueur donne à ses unités s'appelle un **ordre** (`orderSelection`, `issuePlayerFlee`…).
+
+### 2.6 Principe pour la v1 : DRY et simplicité maximale
 - Priorité à un code **simple et sans répétition (DRY)** plutôt qu'à une architecture élaborée pensée pour anticiper la v2+
 - Pas d'abstraction prématurée (pas de système de plugins, pas de couche de configuration générique) tant qu'un besoin concret ne l'exige pas
-- Objectif : le code le plus direct possible pour valider le moteur de bataille, quitte à le retravailler une fois la v1 jouable et testée
+- Objectif : le code le plus direct possible, lisible par un humain autant que par une IA
 
 ## 3. Résolution de rendu
 
@@ -136,7 +102,7 @@ tests/
 
 ## 4. Stratégie de tests
 
-- **Tests automatisés dès la v1**, avec **Jest**, ciblant exclusivement le dossier `logic/` (la logique de jeu indépendante de Phaser et de React)
+- **Tests automatisés dès la v1**, avec **Jest** : les règles de `src/logic/` (`tests/logic/`), les actions du profil du joueur (`tests/state/`) et la présence des assets cités par les données de faction (`tests/ui/`). Les données (`src/data/`) sont vérifiées automatiquement : chaque phase de chaque bataille (`battleData.test.js`) et chaque faction (`wyrmsFaction.test.js`, `undeadFaction.test.js`)
 - Priorité de couverture :
   1. Résolution de combat (dégâts simultanés, mort, aptitudes automatiques)
   2. Pathfinding (chemin le plus court, contournement d'obstacles, blocs 2×2, unités [Vol])
@@ -145,9 +111,10 @@ tests/
   5. Gestion des points de présence et des copies (plafond vivant, copie perdue vs réutilisable)
   6. Couche méta (`rules.md` 11) : plafond de 500 PP et minimum d'1 individu de l'armée, retrait des morts de la liste et de l'armée, prix d'invocation, [Légendaire] unique, solde insuffisant, validation du nom de l'armée
   7. Niveaux (`rules.md` 11.5 et 11.6) : courbes d'XP du joueur et des individus, plafond du niveau 5, stats par niveau et leur arrondi, XP gagnée à la victoire (survie, coups fatals, coup fatal simultané, bonus de survivants), récompenses de niveau, prix du niveau gardé à la réinvocation
+- **Test de référence** (`tests/logic/battles/battleReplay.test.js`) : chaque bataille est rejouée par le bot de l'outil d'équilibrage avec un aléa fixé, et son résultat comparé à un instantané. Un écart signale un changement de comportement du moteur ; s'il est voulu, l'instantané se régénère (`npx jest battleReplay -u`)
 - **Pas de tests automatisés sur la couche Phaser ni sur la couche React** (rendu, animations, input, composants UI) pour la v1 — cette partie reste validée manuellement en jouant, le coût de mise en place de tests d'interface n'étant pas justifié pour un prototype
 - Chaque règle chiffrée de `rules.md` doit pouvoir correspondre à au moins un test automatisé qui la vérifie — cohérent avec la consigne de `rules.md` ("chaque ligne doit être vérifiable")
-- **Outil d'équilibrage** (`src/debug/balance/`, `npm run balance`, skill `/balancer`) : script Node qui joue des batailles sans Phaser avec le moteur de `src/logic/` et un bot joueur passif (4 stratégies), seed fixe ; il n'importe que `src/logic/` et `src/data/`, sans localStorage. Ce n'est pas un test Jest : il mesure, il ne valide pas. Il sert notamment à vérifier qu'un script de « Partir en guerre » respecte la difficulté visée selon sa distance au boss (`rules.md` 11.7)
+- **Outil d'équilibrage** (`src/debug/balance/`, `npm run balance`, skill `/balancer`) : script Node qui joue des batailles sans Phaser avec le moteur de `src/logic/` et un bot joueur passif (4 stratégies), seed fixe ; il prépare chaque bataille comme le jeu (`createBattleFromDefinition`) et n'importe que `src/logic/` et `src/data/`, sans localStorage. Ce n'est pas un test Jest : il mesure, il ne valide pas. Il sert notamment à vérifier qu'un script de « Partir en guerre » respecte la difficulté visée selon sa distance au boss (`rules.md` 11.7)
 
 ---
 
@@ -158,17 +125,17 @@ Le jeu v1 est composé de **neuf écrans distincts**. Un seul d'entre eux (l'éc
 ### 5.1 Liste des écrans
 
 0. **IntroScreen** — texte d'introduction centré (le joueur est un souverain qui devra mener les siens à la guerre), avec un bouton pour continuer. Affiché juste avant `FactionChoiceScreen`, donc **une seule fois**, au tout début d'une partie.
-1. **FactionChoiceScreen** — écran de choix de faction (Souveraine des Wyrms ou Souverain des Morts-Vivants). Affiché **une seule fois**, au tout début d'une partie (pas avant chaque bataille, même une fois que plusieurs batailles existeront en v2+).
-2. **BattleScreen** — l'écran de bataille actuel (bataille 01 du jeu normal : passable seulement depuis le menu devs, « skip tutorial », 5.7 et `rules.md` 11) : tour de commandement React à gauche (pause, abandon, déploiement, commandes) + canevas Phaser (champ de bataille) à droite.
-3. **VictoryScreen** — écran de récompense affiché après une victoire. **Squelette minimal pour la v1** (voir 5.3). Dans le jeu normal, il affiche une rangée de récompenses (**Spirit Stones gagnées**, `rules.md` 11.3, et **XP gagnée par le joueur**, 11.5), les **individus qui ont monté de niveau** (11.6) et les **unités perdues** (contenu détaillé en 5.3).
-4. **DefeatScreen** — écran affiché après une défaite, avec un bouton **"Réessayer"** qui relance la même bataille (la faction déjà choisie reste conservée, aucun nouveau choix de faction demandé). Sert aussi après un match nul (`rules.md` 8.1), avec le titre « Match nul » au lieu de « Défaite » : même suite, aucun vainqueur. **Après une bataille de « Partir en guerre »** (`rules.md` 11.7) : il liste aussi les unités perdues (au format du bilan de la version clickbait, 5.6) et ajoute un bouton **« Retour à l'accueil »** ; « Réessayer » relance la bataille avec l'armée telle qu'elle reste, et est désactivé si l'armée est vide.
-5. **HomeScreen** — écran d'accueil, point central du jeu. **Accessible uniquement après avoir remporté la première bataille** (traitée comme la bataille tutoriel). Affiche la faction choisie par le joueur (ex : "Vous jouez la Souveraine des Wyrms."), le **solde de Spirit Stones** en haut à droite (`rules.md` 11.3) avec, à sa droite, une **icône d'engrenage** (`settings.png`) qui ouvre un petit menu déroulant des paramètres — deux entrées : « Codex des mots-clés » (`CodexScreen`) et « Réinitialiser le jeu » (5.4) —, en haut à gauche le **portrait du souverain** avec, à sa droite, son nom, sa **barre d'XP** et son **niveau** (texte à côté de la barre, pas de badge) (`rules.md` 11.5), et, sur le bord gauche, quatre entrées de menu (sans style de bouton ni séparateur, `GRAPHICS.md`) : **Partir en guerre** (`WarScreen`), un bouton au **nom de la faction** suivi du nombre d'individus possédés (« Wyrms (21) » ou « Morts-Vivants (22) », section Unités de `CivilizationScreen`), **Armées** (section Armée de `CivilizationScreen`) et **Invocation** (`SummonScreen`). L'accueil affiche aussi, en bas à gauche, la **Spirit Fountain** (`rules.md` 11.8) : la statue de pierre (`stone-statue`) avec l'icône des Spirit Stones et le contenu actuel, mis à jour en continu ; un clic récolte. Elle est mise en route à la première arrivée sur l'accueil.
-6. **CivilizationScreen** — gestion de civilisation, en **deux écrans séparés**, chacun ouvert par son propre bouton de `HomeScreen` (pas d'onglets pour passer de l'un à l'autre) :
-   - **Unités**, titré du nom de la faction (« Wyrms » / « Morts-Vivants ») : une **grille** (autant de colonnes que la largeur le permet) de **cases carrées**, espèce par espèce dans l'ordre du roster (panneau PanelLarge, `GRAPHICS.md`). Comme dans la tour de commandement (`ui-battle-screen-decisions.md` 2.2), **chaque espèce tient par défaut dans une seule case**, niveaux confondus ; une **flèche en haut à droite** de sa première case (si l'espèce a plusieurs niveaux) la sépare en une case par **groupe d'individus strictement identiques** (même niveau), par niveau décroissant, et un nouveau clic la regroupe (choix non sauvegardé). Une case montre le sprite, puis le nom et le niveau en couleur de la faction — la **tranche des niveaux présents** pour une case regroupée (« niv 1-5 ») ; un **carré en haut à gauche** (GridPanelInactive du pack) indique le nombre d'individus de la case (« 3x », absent pour un individu seul). Une espèce sans individu garde une case grisée avec son bouton « Invoquer » / « Réinvoquer » vers `SummonScreen`. Un clic sur une case ouvre la **page de détail du premier individu de la case** (le plus haut niveau, puis le plus avancé en XP ; vue interne à l'écran, pas un écran à part). La page de détail montre **toujours un seul individu**, jamais un groupe : grand sprite, nom de l'espèce, niveau, keywords, sa barre d'XP, stats complètes **à son niveau** (`rules.md` 11.6), texte des aptitudes ; des **flèches** sans cadre de bouton (◀ ▶) à gauche et à droite (centrées en hauteur) passent à l'**individu** précédent / suivant, un par un, dans l'ordre de la grille — y compris d'un individu à l'autre d'un même groupe (désactivées au bout) ; la flèche « Retour » (◀) de l'en-tête ramène à la grille (pas de bouton d'invocation).
-   - **Armée**, titré « Armées » : nom modifiable, compteur « X / 500 PP », et un **accordéon par espèce**, les accordéons **côte à côte** (une colonne par espèce) — fermé, l'en-tête seul (sprite, nombre, nom, coût) ; ouvert, **une ligne par groupe d'individus strictement identiques** (même niveau, comme la tour de commandement) : nombre (« 3x », absent pour un individu seul), niveau, « X / Y dans l'armée », et des boutons − / + pour retirer ou ajouter un individu du groupe (`rules.md` 11.2). **Tous les accordéons sont ouverts par défaut** (un nouveau joueur voit tout de suite les boutons − / +) ; chacun se ferme et se rouvre indépendamment, sans sauvegarde.
+1. **FactionChoiceScreen** — écran de choix de faction (Souveraine des Wyrms ou Souverain des Morts-Vivants). Affiché **une seule fois**, au tout début d'une partie (pas avant chaque bataille).
+2. **BattleScreen** — l'écran de bataille (bataille tutoriel, ou bataille de « Partir en guerre ») : tour de commandement React à gauche (pause, abandon, déploiement, ordres) + canevas Phaser (champ de bataille) à droite. Il crée la bataille et la partage entre les deux (section 2.2).
+3. **VictoryScreen** — écran de récompense affiché après une victoire. **Squelette minimal pour la v1** (voir 5.3). Il affiche une rangée de récompenses (**Spirit Stones gagnées**, `rules.md` 11.3, et **XP gagnée par le joueur**, 11.5), les **individus qui ont monté de niveau** (11.6) et les **unités perdues** (contenu détaillé en 5.3).
+4. **DefeatScreen** — écran affiché après une défaite, avec un bouton **"Réessayer"** qui relance la même bataille (la faction déjà choisie reste conservée, aucun nouveau choix de faction demandé). Sert aussi après un match nul (`rules.md` 8.1), avec le titre « Match nul » au lieu de « Défaite » : même suite, aucun vainqueur. **Après une bataille de « Partir en guerre »** (`rules.md` 11.7) : il liste aussi les unités perdues (au format du bilan des pertes, 5.3) et ajoute un bouton **« Retour à l'accueil »** ; « Réessayer » relance la bataille avec l'armée telle qu'elle reste, et est désactivé si l'armée est vide.
+5. **HomeScreen** — écran d'accueil, point central du jeu. **Accessible uniquement après avoir remporté la bataille tutoriel.** Affiche la faction choisie par le joueur (ex : "Vous jouez la Souveraine des Wyrms."), le **solde de Spirit Stones** en haut à droite (`rules.md` 11.3) avec, à sa droite, une **icône d'engrenage** (`settings.png`) qui ouvre un petit menu déroulant des paramètres — deux entrées : « Codex des mots-clés » (`CodexScreen`) et « Réinitialiser le jeu » (5.4) —, en haut à gauche le **portrait du souverain** avec, à sa droite, son nom, sa **barre d'XP** et son **niveau** (texte à côté de la barre, pas de badge) (`rules.md` 11.5), et, sur le bord gauche, quatre entrées de menu (sans style de bouton ni séparateur, `GRAPHICS.md`) : **Partir en guerre** (`WarScreen`), un bouton au **nom de la faction** suivi du nombre d'individus possédés (« Wyrms (21) » ou « Morts-Vivants (22) », `UnitsScreen`), **Armées** (`ArmyScreen`) et **Invocation** (`SummonScreen`). L'accueil affiche aussi, en bas à gauche, la **Spirit Fountain** (`rules.md` 11.8) : la statue de pierre (`stone-statue`) avec l'icône des Spirit Stones et le contenu actuel, mis à jour en continu ; un clic récolte. Elle est mise en route à la première arrivée sur l'accueil.
+6. **UnitsScreen** et **ArmyScreen** — gestion de civilisation, en **deux écrans séparés**, chacun ouvert par son propre bouton de `HomeScreen` (pas d'onglets pour passer de l'un à l'autre) :
+   - **Unités** (`UnitsScreen`), titré du nom de la faction (« Wyrms » / « Morts-Vivants ») : une **grille** (autant de colonnes que la largeur le permet) de **cases carrées**, espèce par espèce dans l'ordre du roster (panneau PanelLarge, `GRAPHICS.md`). Comme dans la tour de commandement (`ui-battle-screen-decisions.md` 2.2), **chaque espèce tient par défaut dans une seule case**, niveaux confondus ; une **flèche en haut à droite** de sa première case (si l'espèce a plusieurs niveaux) la sépare en une case par **groupe d'individus strictement identiques** (même niveau), par niveau décroissant, et un nouveau clic la regroupe (choix non sauvegardé). Une case montre le sprite, puis le nom et le niveau en couleur de la faction — la **tranche des niveaux présents** pour une case regroupée (« niv 1-5 ») ; un **carré en haut à gauche** (GridPanelInactive du pack) indique le nombre d'individus de la case (« 3x », absent pour un individu seul). Une espèce sans individu garde une case grisée avec son bouton « Invoquer » / « Réinvoquer » vers `SummonScreen`. Un clic sur une case ouvre la **page de détail du premier individu de la case** (le plus haut niveau, puis le plus avancé en XP ; vue interne à l'écran, pas un écran à part). La page de détail montre **toujours un seul individu**, jamais un groupe : grand sprite, nom de l'espèce, niveau, keywords, sa barre d'XP, stats complètes **à son niveau** (`rules.md` 11.6), texte des aptitudes ; des **flèches** sans cadre de bouton (◀ ▶) à gauche et à droite (centrées en hauteur) passent à l'**individu** précédent / suivant, un par un, dans l'ordre de la grille — y compris d'un individu à l'autre d'un même groupe (désactivées au bout) ; la flèche « Retour » (◀) de l'en-tête ramène à la grille (pas de bouton d'invocation).
+   - **Armée** (`ArmyScreen`), titré « Armées » : nom modifiable, compteur « X / 500 PP », et un **accordéon par espèce**, les accordéons **côte à côte** (une colonne par espèce) — fermé, l'en-tête seul (sprite, nombre, nom, coût) ; ouvert, **une ligne par groupe d'individus strictement identiques** (même niveau, comme la tour de commandement) : nombre (« 3x », absent pour un individu seul), niveau, « X / Y dans l'armée », et des boutons − / + pour retirer ou ajouter un individu du groupe (`rules.md` 11.2). **Tous les accordéons sont ouverts par défaut** (un nouveau joueur voit tout de suite les boutons − / +) ; chacun se ferme et se rouvre indépendamment, sans sauvegarde.
    - Dans la grille des unités comme dans un accordéon ouvert de l'armée, les individus d'une espèce sont triés par **niveau décroissant, puis XP décroissante** : les vétérans en haut.
    - Au niveau 5 (maximum, `rules.md` 11.6), la barre d'XP d'un individu est pleine et affiche **« MAX »** au lieu de « X / Y XP » (provisoire, voir la Suite de `roadmap-mvp.md`).
-7. **SummonScreen** — écran d'invocation, accessible depuis `HomeScreen` et depuis la case grisée d'une espèce sans individu (grille des unités de `CivilizationScreen`). Deux colonnes (**1/3 – 2/3**). À gauche, une ligne par espèce de la faction du joueur — **sauf un [Légendaire] encore vivant**, masqué tant qu'il est à vos côtés : sprite, nom et prix en Spirit Stones (pas le nombre possédé). Un clic sur une espèce la **met en avant** — sa ligne est marquée par des **coins décoratifs** (Decorators/BorderC, dorés pour les Wyrms, violets pour les Morts-Vivants) au lieu d'un cadre — et l'affiche à droite : son sprite en grand au centre, et en bas le bouton « Invoquer (prix) » (« Réinvoquer (prix) » pour un [Légendaire] mort ; désactivé si le solde est insuffisant) qui invoque l'espèce mise en avant — `rules.md` 11.4. Au-dessus de ce bouton, pour une espèce qui n'est pas [Légendaire], des boutons **− / +** choisissent combien d'individus invoquer d'un coup (de 1 au maximum payable avec le solde ; si le solde ne paie même pas un individu, le nombre reste à 1, − et + sont désactivés, comme le bouton « Invoquer ») ; le bouton devient alors « Invoquer x2 (somme des prix) ». Le nombre revient à 1 après une invocation ou un changement d'espèce. À l'ouverture, la première espèce proposée est mise en avant (de même quand le [Légendaire] mis en avant vient d'être réinvoqué et disparaît de la liste). La boîte de confirmation de « Réinvoquer » propose le **niveau gardé** (de 1 au niveau du [Légendaire] à sa mort) et affiche le prix correspondant. Solde affiché comme sur `HomeScreen`.
+7. **SummonScreen** — écran d'invocation, accessible depuis `HomeScreen` et depuis la case grisée d'une espèce sans individu (`UnitsScreen`). Deux colonnes (**1/3 – 2/3**). À gauche, une ligne par espèce de la faction du joueur — **sauf un [Légendaire] encore vivant**, masqué tant qu'il est à vos côtés : sprite, nom et prix en Spirit Stones (pas le nombre possédé). Un clic sur une espèce la **met en avant** — sa ligne est marquée par des **coins décoratifs** (Decorators/BorderC, dorés pour les Wyrms, violets pour les Morts-Vivants) au lieu d'un cadre — et l'affiche à droite : son sprite en grand au centre, et en bas le bouton « Invoquer (prix) » (« Réinvoquer (prix) » pour un [Légendaire] mort ; désactivé si le solde est insuffisant) qui invoque l'espèce mise en avant — `rules.md` 11.4. Au-dessus de ce bouton, pour une espèce qui n'est pas [Légendaire], des boutons **− / +** choisissent combien d'individus invoquer d'un coup (de 1 au maximum payable avec le solde ; si le solde ne paie même pas un individu, le nombre reste à 1, − et + sont désactivés, comme le bouton « Invoquer ») ; le bouton devient alors « Invoquer x2 (somme des prix) ». Le nombre revient à 1 après une invocation ou un changement d'espèce. À l'ouverture, la première espèce proposée est mise en avant (de même quand le [Légendaire] mis en avant vient d'être réinvoqué et disparaît de la liste). La boîte de confirmation de « Réinvoquer » propose le **niveau gardé** (de 1 au niveau du [Légendaire] à sa mort) et affiche le prix correspondant. Solde affiché comme sur `HomeScreen`.
 8. **WarScreen** — écran « Partir en guerre », accessible depuis `HomeScreen` (`rules.md` 11.7). La **map 1** en arbre de compétences (`GRAPHICS.md`, `rules.md` 11.7) : un réseau de losanges — trois chemins du départ au boss, des passerelles et des impasses —, sur le fond de la map en plein écran ; les trois premiers losanges du chemin du bas portent les batailles, les autres sont verrouillés (« À venir »). Trois losanges sont surmontés d'un **envahisseur** ennemi (batailles de boss, `rules.md` 11.7), avec au-dessus de la map le compteur « Repousse l'envahisseur N/3 ». Un clic sur un losange le sélectionne (par défaut, la dernière bataille débloquée) et l'affiche dans un panneau à droite de la map : nom, état (**verrouillée**, **disponible**, **gagnée**), un bouton **« Combattre »** par bataille débloquée, désactivé si l'armée est vide (« Composez votre armée »), puis sous ce bouton une **rangée de récompenses** de la prochaine victoire : les Spirit Stones (0 au rejeu, `rules.md` 11.7) et l'XP du joueur, affichée en fourchette (« 100–200 » : 100 + jusqu'à 100 selon les PP survivants ; « 25–50 » au rejeu, `rules.md` 11.5). Une fois les trois batailles gagnées, message « D'autres terres à conquérir arrivent bientôt… ». Bouton « Retour » vers l'accueil.
 9. **CodexScreen** — codex des mots-clés, accessible depuis le menu des paramètres de `HomeScreen`. Liste tous les tags affichés sur les unités — types d'attaque (« Corps-à-corps », « Tirs ») puis keywords (« Légendaire », « Vol ») — chacun dans le même badge que sur la page de détail d'un individu, suivi de son effet en une ou deux phrases (résumé de `rules.md` : 4.2 corps-à-corps, 4.5 tir à distance, 2 et 11.4 [Légendaire], 3 [Vol] ; textes dans `strings.js`). Bouton « Retour » vers l'accueil.
 
@@ -187,7 +154,7 @@ IntroScreen → FactionChoiceScreen (une fois)
         │                                              │
         ▼                                              │
    HomeScreen ◄────────────────────────────────────────┘ (après la victoire)
-     ├──► CivilizationScreen (Unités / détail d'un individu / Armée) ──► retour HomeScreen
+     ├──► UnitsScreen (grille / détail d'un individu) ou ArmyScreen ──► retour HomeScreen
      │         └── « Invoquer » depuis une case grisée ──► SummonScreen
      ├──► SummonScreen ──► retour HomeScreen
      ├──► CodexScreen (menu des paramètres) ──► retour HomeScreen
@@ -196,48 +163,44 @@ IntroScreen → FactionChoiceScreen (une fois)
 
 « Réessayer » sur `DefeatScreen` relance `BattleScreen`.
 
-- **Rendu 1 (POC) :** seule la version clickbait (5.6) était jouable : le bouton « MVP » d'`IntroScreen` était grisé et l'application démarrait toujours sur `IntroScreen`. **Depuis, le MVP est rouvert** : l'intro n'a plus qu'un bouton, « Commencer », vers le jeu normal, et la règle ci-dessous s'applique.
-- Au chargement de l'application, l'état persistant (localStorage, voir 5.4) est lu : s'il n'y a pas encore de faction choisie, `IntroScreen` s'affiche, puis `FactionChoiceScreen` ; si une faction est déjà choisie mais la première bataille pas encore gagnée, l'app va directement à `BattleScreen` ; si la première bataille est déjà gagnée, l'app va directement à `HomeScreen`.
-- **Bataille 01** : une défaite ne fait perdre ni la faction choisie ni aucune autre donnée persistée — seul un nouvel essai de la même bataille est proposé, et aucune perte d'unité d'une tentative ratée n'est comptabilisée (voir 5.4).
+- Au chargement de l'application, le profil sauvegardé (5.4) est lu : s'il n'y a pas encore de faction choisie, `IntroScreen` s'affiche, puis `FactionChoiceScreen` ; si une faction est déjà choisie mais la bataille tutoriel pas encore gagnée, l'app va directement à `BattleScreen` ; sinon, directement à `HomeScreen`.
+- **Bataille tutoriel** : une défaite ne fait perdre ni la faction choisie ni aucune autre donnée persistée — seul un nouvel essai de la même bataille est proposé, et aucune perte d'unité d'une tentative ratée n'est comptabilisée (voir 5.4).
 - **« Partir en guerre »** : une défaite, un abandon ou un match nul font perdre définitivement les individus tués (`rules.md` 11.7) ; rien d'autre n'est perdu.
 
 ### 5.3 Squelette de VictoryScreen et DefeatScreen pour la v1
 - Les deux écrans sont volontairement minimaux : un titre (Victoire / Défaite ou Match nul), et un seul bouton d'action (Continuer vers l'accueil / Réessayer). Exception : la défaite (ou le match nul) d'une bataille de « Partir en guerre » affiche aussi la liste des unités perdues et deux boutons, « Réessayer » et « Retour à l'accueil » (5.1, `rules.md` 11.7)
-- **Victoire dans le jeu normal** : entre le titre et le bouton, dans cet ordre (niveaux : `rules.md` 11.5 et 11.6) :
+- **Victoire** : entre le titre et le bouton, dans cet ordre (niveaux : `rules.md` 11.5 et 11.6) :
   1. une **rangée de récompenses**, avec le **même composant** que la rangée de récompenses du panneau de `WarScreen` (5.1, `GRAPHICS.md` « Partir en guerre ») : les **Spirit Stones gagnées** (icône, montant en dessous) — un seul total, qui additionne la récompense de victoire (`rules.md` 11.7) et les récompenses de niveau du joueur (11.5) —, puis l'**XP gagnée par le joueur** (« XP », montant exact en dessous, plus de fourchette) ;
   2. les **individus qui ont gagné au moins un niveau** pendant la bataille, regroupés par espèce et par passage de niveau, au format du bilan des pertes (ex : « 2x [sprite] Ver de Lambton niv 1 → 2 »). Bloc absent si aucun individu n'a monté de niveau ;
-  3. la **liste des unités perdues** (tuées) pendant la bataille, au format du bilan des pertes de la version clickbait (5.6) : par espèce avec le nombre d'individus, « Aucune perte ! » s'il n'y en a pas.
-- **Version clickbait : aucun changement** — elle garde son bilan des pertes (5.6), sans récompenses, XP ni niveau.
+  3. le **bilan des pertes** : la liste des unités perdues (tuées) pendant la bataille, par espèce avec le nombre d'individus, « Aucune perte ! » s'il n'y en a pas.
 
-### 5.4 Navigation et état persistant
-- **Gestion de la navigation entre écrans : état React simple** (ex : un state `currentScreen` géré dans le composant racine `App.jsx`), pas de librairie de routing (React Router ou équivalent) pour la v1 — le jeu est une session continue dans un seul onglet, sans besoin d'URLs distinctes par écran. Une vraie solution de routing pourra être introduite en v2+ si la sélection de niveau (plusieurs batailles) le justifie.
-- **Persistance via localStorage** : dix valeurs sont sauvegardées (`roadmap-mvp.md`) —
-  1. la faction choisie par le joueur
-  2. un indicateur booléen "première bataille (tutoriel) gagnée"
-  3. la **liste des individus possédés**, chacun `{ id, species, xp }` (ex : `[{ id: 'u1', species: 'lambtonWorm', xp: 0 }, …]`, `rules.md` 11.1 et 11.6 ; le niveau se calcule à partir de l'XP, il n'est pas sauvegardé) : créée avec la dotation de départ au choix de la faction, mise à jour à chaque victoire (individus tués retirés, XP gagnée), à chaque défaite de « Partir en guerre » (individus tués retirés, `rules.md` 11.7) et à chaque invocation — jamais lors d'une tentative ratée de la bataille 01 (voir 5.2). Elle remplace l'ancien décompte de copies par espèce
-  4. l'**armée** : `{ name, unitIds }` (`rules.md` 11.2)
-  5. le **solde de Spirit Stones** (entier, `rules.md` 11.3)
-  6. l'**XP du joueur** (entier, `rules.md` 11.5 ; le niveau se calcule à partir de l'XP)
-  7. le **niveau du [Légendaire] à sa mort** (entier, ou absent s'il n'est jamais mort ; `rules.md` 11.4), mis à jour à chaque mort du [Légendaire] comptabilisée (victoire, ou défaite de « Partir en guerre »)
-  8. la **liste des batailles de « Partir en guerre » gagnées** (identifiants, ex : `['war1', 'war2']` ; `rules.md` 11.7) : sert au déblocage de la bataille suivante et aux gains du rejeu (aucune Spirit Stone, XP du joueur à 25 %)
-  9. l'**heure de la dernière récolte de la Spirit Fountain** (horodatage en millisecondes, `rules.md` 11.8 ; absente tant que la fontaine n'est pas en route) : son contenu se recalcule à partir de cette heure, rien d'autre n'est sauvegardé pour elle
-  10. la **liste des conseils de l'accueil déjà vus** (identifiants, ex : `['welcome']`, 5.5) : un conseil vu ne réapparaît jamais
-- **Identifiant d'un individu** : généré par `crypto.randomUUID()` à sa création (dotation de départ ou invocation). Jamais dérivé de la taille de la liste, qui réutiliserait l'identifiant d'un individu mort ; aucun compteur n'est sauvegardé.
+### 5.4 Navigation et profil sauvegardé
+- **Gestion de la navigation entre écrans : état React simple** (un state `screen` dans le composant racine `App.jsx`), pas de librairie de routing — le jeu est une session continue dans un seul onglet, sans besoin d'URLs distinctes par écran.
+- **Profil du joueur** : un seul objet, sauvegardé sous **une seule clé du localStorage** (`siw.save`, versionnée) par un store Zustand avec le middleware `persist` (`src/state/profileStore.js`). Ses champs (`EMPTY_PROFILE`, `roadmap-mvp.md`) :
+  1. `faction` : la faction choisie par le joueur
+  2. `tutoBattleWon` : la bataille tutoriel a été gagnée (l'accueil est débloqué)
+  3. `units` : les **individus possédés**, chacun `{ id, species, xp }` (`rules.md` 11.1 et 11.6 ; le niveau se calcule à partir de l'XP, il n'est pas sauvegardé) : créée avec l'armée de départ de la faction, mise à jour à chaque victoire (individus tués retirés, XP gagnée), à chaque défaite de « Partir en guerre » (individus tués retirés, `rules.md` 11.7) et à chaque invocation — jamais lors d'une tentative ratée de la bataille tutoriel (voir 5.2)
+  4. `army` : l'**armée**, `{ name, unitIds }` (`rules.md` 11.2)
+  5. `spiritStones` : le **solde de Spirit Stones** (entier, `rules.md` 11.3)
+  6. `playerXp` : l'**XP du joueur** (entier, `rules.md` 11.5 ; le niveau se calcule à partir de l'XP)
+  7. `fallenLegendaryLevel` : le **niveau du [Légendaire] à sa mort** (null s'il n'est jamais mort ; `rules.md` 11.4), mis à jour à chaque mort du [Légendaire] comptabilisée (victoire, ou défaite de « Partir en guerre »)
+  8. `wonWarBattles` : les **batailles de « Partir en guerre » gagnées** (identifiants, ex : `['battleStartW01']` ; `rules.md` 11.7) : sert au déblocage de la bataille suivante et aux gains du rejeu (aucune Spirit Stone, XP du joueur à 25 %)
+  9. `fountainLastHarvest` : l'**heure de la dernière récolte de la Spirit Fountain** (horodatage en millisecondes, `rules.md` 11.8 ; null tant que la fontaine n'est pas en route) : son contenu se recalcule à partir de cette heure
+  10. `homeTipsSeen` : les **conseils de l'accueil déjà vus** (identifiants, ex : `['welcome']`, 5.5) : un conseil vu ne réapparaît jamais
+- **Seules les actions du store modifient le profil** (`chooseFaction`, `applyVictory`, `applyWarDefeat`, `summonUnits`, `resummonLegendary`, `setArmy`, `startFountain`, `harvestSpiritFountain`, `markHomeTipSeen`, `resetProfile`) : elles appellent les règles de `src/logic/` et enregistrent le résultat, qui est sauvegardé aussitôt.
+- **Identifiant d'un individu** : généré par `crypto.randomUUID()` à sa création (armée de départ ou invocation). Jamais dérivé de la taille de la liste, qui réutiliserait l'identifiant d'un individu mort ; aucun compteur n'est sauvegardé.
 - Aucun champ de personnalisation n'est ajouté aux individus : l'identifiant suffit pour que les armées référencent des individus, et pour accueillir la personnalisation plus tard sans migration de sauvegarde.
-- C'est une exception ciblée à l'absence de persistance, pas un système de sauvegarde généralisé. Ces valeurs suffisent à reconstituer l'écran de départ correct au chargement de l'application (voir 5.2) et à afficher `HomeScreen`, `CivilizationScreen` et `SummonScreen`.
-- **Individus sauvegardés sans `xp`** (sauvegardes antérieures aux niveaux) : pas de migration, un individu sans `xp` compte comme 0 XP (niveau 1) ; un joueur sans XP sauvegardée est à 0 XP.
-- **Ancien format (décompte de copies par espèce) : pas de migration.** Une sauvegarde qui contient une faction mais pas de liste d'individus est considérée comme absente : elle est effacée et l'app repart de `IntroScreen`. Aucun joueur n'a de sauvegarde MVP (le build publié ne donne accès qu'au clickbait, qui ne sauvegarde rien).
-- Le raccourci « restart game » du menu devs (section 5.7) efface toutes ces valeurs et ramène à `IntroScreen`. Côté joueur, l'entrée **« Réinitialiser le jeu »** du menu des paramètres de `HomeScreen` (5.1) fait de même, après une boîte de confirmation (« Réinitialiser le jeu ? » [Annuler] [Réinitialiser]).
-- Aucune autre donnée n'est persistée en v1 (l'état d'une bataille en cours, par exemple, repart de zéro à chaque chargement de `BattleScreen`).
+- C'est une exception ciblée à l'absence de persistance, pas un système de sauvegarde généralisé : ce profil suffit à reconstituer l'écran de départ au chargement (5.2) et à afficher les écrans de la couche méta.
+- Le raccourci « restart game » du menu devs (5.6) efface le profil et ramène à `IntroScreen`. Côté joueur, l'entrée **« Réinitialiser le jeu »** du menu des paramètres de `HomeScreen` (5.1) fait de même, après une boîte de confirmation (« Réinitialiser le jeu ? » [Annuler] [Réinitialiser]).
+- Aucune autre donnée n'est persistée (l'état d'une bataille en cours, par exemple, repart de zéro à chaque chargement de `BattleScreen`).
 
 ### 5.5 Tutoriels
-- **Un tutoriel est rattaché à une bataille**, pas au joueur : chaque bataille est décrite dans `src/data/battles.js` (identifiant, scripts IA, tutoriel éventuel), et `BattleScreen` reçoit l'identifiant de la bataille à jouer. La bataille 01 du jeu normal (`firstBattle`) a le tutoriel de départ, la bataille-clickbait (`clickbaitBattle`, section 5.6) le tutoriel clickbait ; un tutoriel se rejoue à chaque « Réessayer » après une défaite ou un match nul.
-- **Le contenu d'un tutoriel est une donnée** (`src/data/tutorials.js`) : une liste d'étapes (message, cibles de la main, gel, actions permises, conditions d'entrée et de passage). Le moteur (`src/logic/tutorial.js`) et l'affichage (`src/ui/TutorialOverlay.jsx`) sont communs à toutes les batailles : un nouveau tutoriel s'écrit sans toucher au code, tant qu'il réutilise les conditions et les cibles de main existantes.
+- **Un tutoriel est rattaché à une bataille**, pas au joueur : le fichier de chaque bataille (`src/data/battles/`) indique son tutoriel éventuel, et `BattleScreen` reçoit l'identifiant de la bataille à jouer. La bataille tutoriel (`battleTuto`) a le tutoriel de départ ; un tutoriel se rejoue à chaque « Réessayer » après une défaite ou un match nul.
+- **Le contenu d'un tutoriel est une donnée** (`src/data/tutorials.js`) : une liste d'étapes (message, cibles de la main, gel, actions permises, conditions d'entrée et de passage). Le moteur (`src/logic/battles/tutorial.js`) et l'affichage (`src/ui/TutorialOverlay.jsx`) sont communs à toutes les batailles : un nouveau tutoriel s'écrit sans toucher au code, tant qu'il réutilise les conditions et les cibles de main existantes.
 - **Chaque étape qui demande ou explique quelque chose fige la bataille** (tous les compteurs gelés, comme une pause, `rules.md` 5.2) et **n'autorise que l'action demandée**. Le bouton Pause est alors désactivé ; le bouton Abandonner reste toujours disponible (`rules.md` 8.2).
-- Chaque étape affiche un **message** (composant `Item` 8bitcn, en haut du terrain) et une **main** qui montre l'action à faire. C'est le seul overlay autorisé par-dessus le terrain avec les tooltips (section 2.2).
+- Chaque étape affiche un **message** (composant `Item` 8bitcn, en haut du terrain) et une **main** qui montre l'action à faire. C'est le seul overlay autorisé par-dessus le terrain avec les tooltips (section 2.3).
 - **Tutoriels existants** (`src/data/tutorials.js`) :
-  - `CLICKBAIT_TUTORIAL` — **sur la bataille-clickbait** (section 5.6). Tutoriel indépendant (ses propres étapes et textes, clés `clickbait…` dans `strings.js`), appelé à évoluer. Pour l'instant : déployer, combat autonome, points de présence, battre en retraite (étapes 1, 1 suite, 2 et 3 ci-dessous), puis fin du tutoriel. Différences avec le tutoriel de départ : l'étape des points de présence est **autonome** — elle ne fige pas la bataille, n'attend aucune action, et son message disparaît seul après 6 s (ou plus tôt avec [Continuer]) ; l'étape 3 se déclenche **6 s (temps de bataille) après le début de la phase 2** (« Le mur », `rules.md` 7.3 — la transition entre phases, figée, ne compte pas), avec les mêmes conditions d'entrée que dans le tutoriel de départ (voir « Déclenchement de l'étape 3 » ci-dessous) : tant qu'elles ne sont pas réunies, l'étape attend. Il garde aussi l'**ancienne version** des étapes 1 (suite) et 3 : message de l'étape 1 (suite) affiché **3 s** au plus, et une seule étape de retraite — message « Si tu veux récupérer une unité blessée ou libérer de la place sur le terrain, ordonne-lui de battre en retraite : clique sur Fuir, puis sur ton unité. », main en allers-retours entre l'icône Fuir et une unité du joueur, seuls Fuir et le choix d'une unité permis, fin du tutoriel quand l'ordre de fuite est donné (annuler Fuir laisse l'étape en place). Autres textes identiques au tutoriel de départ pour l'instant.
-  - `STARTER_TUTORIAL` — tutoriel de départ, **sur la bataille 01 du jeu normal**. Son déroulé complet :
+  - `STARTER_TUTORIAL` — tutoriel de départ, **sur la bataille tutoriel**. Son déroulé complet :
 
 | Étape | Message | Main | Bataille | Suite |
 |---|---|---|---|---|
@@ -249,7 +212,7 @@ IntroScreen → FactionChoiceScreen (une fois)
 
 - **Déclenchement de l'étape 3** : quand l'IA a déployé son **avant-dernière vague** (avant-dernière entrée de son script, `rules.md` 7.1 — t=28 s) **ou au plus tard 8 s** (temps de bataille) après la fin de l'étape 2, au premier des deux ; dans les deux cas, dès que le joueur a au moins une unité sur le terrain, que Fuir est disponible (pas de cooldown en cours) et qu'aucun geste n'est en cours.
 
-- **Tutoriel de l'accueil** (`HomeScreen`, jeu normal) : pas de visite guidée, mais des **conseils** qui apparaissent un par un, au moment où la fonction devient utile. Rien n'est verrouillé ni caché : le joueur peut tout explorer librement.
+- **Tutoriel de l'accueil** (`HomeScreen`) : pas de visite guidée, mais des **conseils** qui apparaissent un par un, au moment où la fonction devient utile. Rien n'est verrouillé ni caché : le joueur peut tout explorer librement.
   - **Règles communes** : même bulle (`Item`, en haut de l'écran) et même main blanche que le tutoriel de bataille ; **une seule bulle à la fois**, au plus une par arrivée sur l'accueil ; **rien n'est figé** (tout reste cliquable) ; la bulle a un bouton [×] et disparaît aussi dès que le joueur quitte l'accueil. **Chaque conseil n'apparaît qu'une fois** : il est marqué vu dès qu'il s'affiche (sauvegardé, 5.4).
   - **Conseils** (l'ordre donne la priorité si deux sont prêts en même temps) :
 
@@ -261,26 +224,16 @@ IntroScreen → FactionChoiceScreen (une fois)
 
   - Conseils prévus plus tard (hors de cette étape) : Spirit Fountain quand elle a de quoi être récoltée, vétérans dans la section Unités.
 
-### 5.6 Version clickbait
-- Version du jeu **indépendante** du jeu normal : écran de choix de faction → bataille-clickbait (`clickbaitBattle`, avec le tutoriel clickbait, section 5.5).
-- La bataille-clickbait a **trois phases** (`rules.md` 7.3) : la phase 1 reprend le terrain de la bataille 01 et une version resserrée de son script, sans Légendaire (`rules.md` 7.3), puis l'armée du joueur passe dans « Le mur » (phase 2, fond retourné) puis « Le fort » (phase 3, provisoire), chacune avec sa vague ennemie. Les zones sont des plans ASCII dans `src/data/battlefield.js` (convertis par `parseObstacleMap`, `src/logic/grid.js`). Logique : `src/logic/phases.js` ; données : `phases` dans `src/data/battles.js` ; animation de sortie/entrée des unités : `BattleScene.applyPhaseTransition`. « Réessayer » après une défaite en phase 2 relance toute la bataille depuis la phase 1. La bataille est **gagnée dès que l'IA a fini le script de la dernière phase (phase 3) et n'a plus d'unité vivante**, comme toutes les batailles (`rules.md` 7.3 et 8.1, écran de victoire 2 s plus tard).
-- **Commandes et abandon restreints** (`POC-SPECS.md`) : la rangée « Ordres » ne propose que **Fuir** (pas d'Aller, pas d'Attaquer), et le bouton **Abandonner** est absent. Données : `orders` et `surrenderAllowed` dans `src/data/battles.js` ; logique : `availableOrders` (`src/logic/commandSelection.js`) et `surrenderPlayer` (`src/logic/battle.js`).
-- **Rien n'est sauvegardé** : la faction choisie reste en mémoire le temps de la session, sans toucher à la sauvegarde du jeu normal (section 5.4) ; une victoire ne marque pas la bataille 01 comme gagnée et ne fige aucune copie.
-- **Écran de victoire avec bilan des pertes** : la liste des unités perdues (tuées), par espèce avec le nombre de copies — pour faire sentir le poids des pertes. « Aucune perte ! » s'il n'y en a pas. Calcul : `getCasualtyReport` (`src/logic/deployment.js`). Le jeu normal reprend ce bilan, sous ses récompenses et ses montées de niveau (section 5.3).
-- Fin de bataille : mêmes écrans que le jeu normal. « Réessayer » relance la bataille-clickbait ; « Continuer » après une victoire ramène au choix de faction du clickbait.
-- Accès : **réservé au développement**, par le raccourci « restart clickbait » du menu devs (section 5.7), absent du build publié. Le bouton « Clickbait » de l'écran d'introduction (Rendu 1) a été retiré.
-
-### 5.7 Menu devs (outil de développement)
+### 5.6 Menu devs (outil de développement)
 - Menu burger « devs » fixe en haut à gauche de l'écran, par-dessus tous les écrans (`src/dev/DevMenu.jsx`). **Affiché seulement en développement** (`npm run dev`), absent du build publié.
 - Raccourcis :
-  - **restart game** : efface la sauvegarde et relance le jeu normal depuis l'introduction.
-  - **restart clickbait** : lance la version clickbait (section 5.6) depuis le choix de faction.
-  - **skip tutorial** : affiché seulement pendant la bataille 01 du jeu normal ; la compte comme gagnée sans combat et ouvre l'accueil (`rules.md` 11).
-  - **test-wyrm** : charge un joueur de test figé et ouvre l'accueil, sans jouer la bataille 01 — faction Wyrms, bataille 01 gagnée, 3 Vers de Lambton et 1 Amphiptère perdus (soit 9 / 7 / 1 individus restants), une armée contenant ces 17 survivants (375 PP) et **10 000 Spirit Stones**. Écrase la sauvegarde. Profils de test : `src/dev/testProfiles.js`.
-    - **Niveaux** (`rules.md` 11.5 et 11.6) : joueur à **1 700 XP** (niveau 3, 200 / 1 500 dans le niveau). XP des individus (seuils cumulés : niveau 2 à 50, 3 à 150, 4 à 300, 5 à 500) :
+  - **restart game** : efface le profil et relance le jeu depuis l'introduction.
+  - **skip tutorial** : affiché seulement pendant la bataille tutoriel ; la compte comme gagnée sans combat et ouvre l'accueil (`rules.md` 11).
+  - **test-wyrm** / **test-undead** : remplace le profil par un joueur de test figé et ouvre l'accueil, sans jouer la bataille tutoriel. Profils de test : `src/dev/testProfiles.js`, écrits avec tous les champs du profil (5.4) :
+    - **test-wyrm** : faction Wyrms, bataille tutoriel gagnée, 3 Vers de Lambton et 1 Amphiptère perdus (soit 9 / 7 / 1 individus restants), une armée contenant ces 17 survivants (375 PP) et **10 000 Spirit Stones** ; **test-undead** : la même progression côté Morts-Vivants (14 / 7 / 1 individus, 369 PP).
+    - **Niveaux** (`rules.md` 11.5 et 11.6) : joueur à **1 700 XP** (niveau 3, 200 / 1 500 dans le niveau). XP des individus de test-wyrm (seuils cumulés : niveau 2 à 50, 3 à 150, 4 à 300, 5 à 500) :
       - Vers de Lambton : 500 (niveau 5, MAX), 320 (4), 160 (3), 60 (2), 20, 0, 0, 0, 0 (niveau 1) ;
       - Amphiptères : 70 (niveau 2), 30, 0, 0, 0, 0, 0 (niveau 1) ;
       - Fafnir : 350 (niveau 4).
     - **Spirit Fountain** pleine (dernière récolte il y a 24 h, `rules.md` 11.8), pour tester la récolte.
     - **Tutoriel de l'accueil déjà passé** : tous les conseils sont marqués vus (5.5).
-  - **test-wyrm-fallen** : comme test-wyrm, mais **Fafnir est mort au niveau 5** — il n'est ni dans les individus possédés ni dans l'armée (16 individus, 265 PP), et le niveau du [Légendaire] à sa mort vaut 5. Sert à tester la réinvocation avec niveau gardé (`rules.md` 11.4).
