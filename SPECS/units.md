@@ -16,6 +16,8 @@ Stats des unités des deux factions. Ce fichier contient des **données**, pas d
 | Amphiptère | [Vol] | À distance | 1 case | 25 | 18 | 10 | 2 cases/s | 1,3 s | 4 cases | 8 |
 | Fafnir the Cursed One | [Légendaire], [Vol] | Hybride (voir `rules.md` 4.5) | 4 cases (2×2) | 110 | 220 | 30 (distance) / 45 (corps-à-corps) | 0,75 case/s | 1,8 s | 3 cases | 1 |
 
+**Dégâts de zone** ([Légendaire], `rules.md` 4.6) : chaque attaque de Fafnir touche aussi les ennemis à 1 case de sa cible, pour **50 %** des dégâts de l'attaque : 15 à distance, 23 au corps-à-corps, 30 / 45 pour l'Attaque dévastatrice (niveau 1).
+
 ### Aptitude — Fafnir : Attaque dévastatrice (automatique)
 - Toutes les 5 attaques normales (compteur cumulant distance et corps-à-corps), la 5e attaque inflige **+100% de dégâts** (60 à distance / 90 au corps-à-corps)
 - Le compteur se base sur le nombre d'attaques portées, pas sur le temps écoulé
@@ -29,6 +31,8 @@ Stats des unités des deux factions. Ce fichier contient des **données**, pas d
 | New-reborn Skeleton | (basique) | Corps-à-corps | 1 case | 6 | 22 | 5 | 1,25 case/s | 1,0 s | — | 18 |
 | Necromant Initiate | [Vol] | À distance | 1 case | 25 | 18 | 10 | 2 cases/s | 1,3 s | 4 cases | 8 |
 | Athos the Lord of Pain | [Légendaire], [Vol] | À distance uniquement, tire en avançant (voir `rules.md` 4.5) | 4 cases (2×2) | 110 | 145 | 50 | 0,6 case/s | 2,0 s | 5 cases | 1 |
+
+**Dégâts de zone** ([Légendaire], `rules.md` 4.6) : chaque tir d'Athos touche aussi les ennemis à 1 case de sa cible, pour **50 %** des dégâts de l'attaque : 25 au niveau 1. Soif de sang se déclenche pour chaque ennemi tué, cible ou zone ; la Frappe paralysante ne touche que la cible.
 
 ### Aptitudes — Athos (deux aptitudes automatiques)
 
@@ -46,6 +50,6 @@ Ces deux aptitudes ensemble compensent une résistance de base plus faible que c
 |---|---|---|
 | Ver de Lambton / New-reborn Skeleton | 0,80 / 0,83 | 4,0 / 3,7 |
 | Amphiptère / Necromant Initiate | 0,31 / 0,31 (identiques) | 0,72 / 0,72 (identiques) |
-| Fafnir / Athos | 0,27 / 0,23 (sans compter les aptitudes) | 2,0 / 1,32 |
+| Fafnir / Athos | 0,27 / 0,23 (sans compter les aptitudes ni la zone, `rules.md` 4.6) | 2,0 / 1,32 |
 
 Fafnir et Athos restent volontairement différents dans leur profil (Fafnir = tank offensif hybride, Athos = artillerie fragile avec contrôle + sustain conditionnel), mais leur DPS brut a été rapproché pour éviter qu'une des deux factions soit systématiquement plus forte au choix initial. L'écart en PV/point est assumé et partiellement compensé par la régénération au kill d'Athos, un effet plus aléatoire que le burst garanti de Fafnir. Équilibrage à valider en playtesting.

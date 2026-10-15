@@ -18,7 +18,8 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 │     [Abandon.] │                                      │  fixe
 │   ( jauge )    │                                      │  fixe
 │  ORDRES        │   camp du joueur  │   camp de l'IA    │
-│ [⏸][➜][⚔][🏳] │   (déploiement)   │                   │  fixe
+│ [⏸][➜][⚔][🏳] │ (déploiement :    │                   │  fixe
+│                │  1er quart)       │                   │
 │  VOS UNITÉS    │        ──── sens d'attaque ───▶        │
 │  ┌──────────┐  │                                      │
 │  │ unité    │  │                                      │  ↕ la liste défile
@@ -30,6 +31,7 @@ Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `
 - **✅ À gauche : la « tour de commandement »**, une colonne où tous les éléments sont empilés verticalement.
 - **À droite : le champ de bataille** (canevas Phaser).
 - **✅ Le camp du joueur est sur la moitié gauche du terrain**, collée à la tour. L'IA arrive par la droite, et le joueur attaque de gauche à droite.
+  - Il ne déploie que dans le **premier quart** du terrain, les colonnes 0 à 5 (`rules.md` 2), collées à la tour.
 - **Lecture de l'écran comme une phrase :** `[ mes unités ] → [ ma zone ] → [ l'ennemi ]`, soit « je choisis → je dépose → j'attaque ».
   - Le drag de déploiement suit le sens de lecture.
   - Les trajets de souris sont courts, puisque la tour touche la zone de déploiement.
@@ -88,13 +90,13 @@ Titre « Vos unités », puis **une case par ligne de la liste, deux cases par r
 
 #### Regroupement par espèce
 
-- **Par défaut, une seule case par espèce**, niveaux et PV confondus : son nombre est le total de l'espèce, son niveau est la **tranche des niveaux présents** (« niv 1-5 », ou « niv 3 » si tous ont le même), et ses PV sont ceux du prochain individu déployé. Un drag depuis cette case déploie les individus **par niveau décroissant** (puis PV décroissants à niveau égal).
+- **Par défaut, une seule case par espèce**, niveaux et PV confondus : son nombre est le total de l'espèce, son niveau est la **tranche des niveaux présents** (« niv 1-5 », ou « niv 3 » si tous ont le même), et ses PV sont ceux du prochain individu déployé. Un drag depuis cette case déploie d'abord les individus **intacts**, par niveau décroissant, puis les **blessés en dernier** (revenus de fuite), par niveau décroissant puis PV décroissants.
 - **Flèche en haut à droite** de la première case d'une espèce (seulement si l'espèce a plusieurs lignes) : un clic **dégroupe** l'espèce en une case par ligne (voir « Règle de regroupement » ci-dessous), un nouveau clic la **regroupe**. Dégroupée, le joueur choisit le niveau et les PV de l'individu qu'il déploie.
 - Le choix vaut pour la bataille en cours (rien n'est sauvegardé).
 
 #### Niveaux (`rules.md` 11.6)
 
-- **Espèce dégroupée : une ligne par espèce et par niveau** : les individus d'une même espèce et d'un même niveau sont regroupés (`2x`) ; deux niveaux différents font deux cases (« Ver de Lambton niv 3 », « Ver de Lambton niv 1 »). Le joueur choisit donc le niveau de l'individu qu'il déploie.
+- **Espèce dégroupée : une case par groupe strictement identique** (même niveau et mêmes PV actuels, voir « Règle de regroupement ») : les individus d'une même espèce, d'un même niveau et intacts sont regroupés (`2x`) ; deux niveaux différents font deux cases (« Ver de Lambton niv 3 », « Ver de Lambton niv 1 »). Le joueur choisit donc le niveau et les PV de l'individu qu'il déploie.
 - Le niveau s'affiche à côté des PV, en texte simple (pas de badge) de la même taille que les PV, dans la couleur de la faction. Les PV sont ceux du niveau.
 - Unités de l'IA : toujours niveau 1.
 
@@ -106,7 +108,7 @@ Titre « Vos unités », puis **une case par ligne de la liste, deux cases par r
 
 #### Règle de regroupement
 
-Une ligne regroupe uniquement des unités **strictement identiques**. Toute différence crée une nouvelle ligne : nom, PV actuels, espèce, trait, keyword acheté, etc. Seul l'état de l'unité compte, pas son histoire.
+S'applique à une **espèce dégroupée** (regroupée, l'espèce tient dans une seule case, voir plus haut). Une ligne regroupe uniquement des unités **strictement identiques**. Toute différence crée une nouvelle ligne : nom, PV actuels, espèce, trait, keyword acheté, etc. Seul l'état de l'unité compte, pas son histoire.
 
 | Cas | Résultat |
 |---|---|
@@ -231,7 +233,7 @@ Contrainte : pendant la pause, le terrain doit rester entièrement visible et cl
 - **Disponible en permanence**, **y compris pendant la bataille tutoriel**. La v1 est une bêta, et toutes les fonctionnalités doivent pouvoir être testées.
 - L'abandon entraîne une défaite. Les unités en réserve ne sont pas exterminées (`rules.md` 8.2).
 - **✅ Confirmation** avant d'abandonner (`rules.md` 8.2), par exemple : « Abandonner la bataille ? Vos unités en réserve seront conservées. » Pendant la confirmation, la bataille est en pause d'interaction (`rules.md` 5.2).
-- **Emplacement : coin haut-droit de la tour** (`technical.md` 2.2) ; le bouton Pause est passé dans la rangée « Ordres ». La première idée (dans un menu de pause modal) a été retirée, car la pause principale n'ouvre pas de menu.
+- **Emplacement : coin haut-droit de la tour** (`technical.md` 2.3) ; le bouton Pause est passé dans la rangée « Ordres ». La première idée (dans un menu de pause modal) a été retirée, car la pause principale n'ouvre pas de menu.
 
 ---
 

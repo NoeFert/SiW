@@ -1,6 +1,6 @@
 # STRATEGIC-DEPTH.md — Profondeur stratégique des batailles
 
-Pistes pour que le choix des unités, leur placement et le nombre déployé comptent dans une bataille. **Rien ici n'est une règle** : chaque point retenu doit passer par `/enricher` pour entrer dans `rules.md` ou `units.md`, avec ses valeurs, avant d'être codé. Les valeurs citées sont des exemples, pas des décisions.
+Pistes pour que le choix des unités, leur placement et le nombre déployé comptent dans une bataille. Les pistes retenues sont désormais des règles (`rules.md`, `units.md`) : en cas d'écart, les règles font foi. Les « Autres idées » n'en sont pas : chacune devrait passer par `/enricher` avant d'être codée, et leurs valeurs sont des exemples.
 
 ---
 
@@ -22,34 +22,13 @@ Causes :
 
 ---
 
-## Pistes retenues
+## Pistes retenues (intégrées le 2026-10-15)
 
-### 1. Dégâts de zone sur les Légendaires
+1. **Dégâts de zone sur les Légendaires** (`rules.md` 4.6, `units.md`) : chaque attaque de Fafnir et d'Athos touche aussi les ennemis à 1 case de la cible, pour 50 % des dégâts de l'attaque. La zone suit l'Attaque dévastatrice ; un ennemi tué par la zone compte comme achevé (XP de kill, Soif de sang) ; la Frappe paralysante ne touche que la cible ; pas de zone sur la dernière attaque gratuite portée à une unité qui fuit.
+2. **Zone de déploiement réduite** (`rules.md` 2) : colonnes 0 à 5, le premier quart du terrain, sans distance minimale à un ennemi.
+3. **XP de survie partagée** (`rules.md` 11.6) : réserve de 200 XP par bataille (provisoire), divisée par le nombre d'individus déployés (morts compris) et versée aux survivants.
 
-L'aptitude de chaque Légendaire touche plusieurs cases au lieu d'une seule cible. Par exemple, l'Attaque dévastatrice de Fafnir frappe les 3×3 cases autour de sa cible au lieu de doubler ses dégâts, et le tir d'Athos traverse une ligne de cases.
-
-- **Effet visé** : face à une Légendaire ennemie, une masse de basiques serrés devient une erreur. Côté joueur, la Légendaire trouve un rôle : contrer la masse.
-- **À trancher** : la forme et la taille de la zone de chaque Légendaire, les dégâts dans la zone (pleins ou réduits), le sort des alliés dans la zone (épargnés ou touchés), le déclencheur (toutes les N attaques, comme aujourd'hui, ou chaque attaque), l'interaction avec les unités 2×2 et avec l'XP de kill quand plusieurs ennemis meurent dans la même zone (`rules.md` 11.6).
-
-### 2. Zone de déploiement réduite
-
-Le joueur ne déploie plus dans toute sa moitié, mais dans une bande près de la tour de commandement, et/ou jamais à moins de quelques cases d'un ennemi.
-
-- **Effet visé** : le placement devient une décision prise à l'avance, plus une réaction de dernière seconde, et les obstacles entre la zone de déploiement et l'ennemi prennent de l'importance.
-- **À trancher** : la largeur de la bande (en colonnes), la distance minimale à un ennemi, la règle applicable aux unités [Vol], le cas des zones où la bande est en partie couverte d'obstacles (le « Fort »), l'endroit où arrive l'armée après une transition entre zones (`rules.md` 7.3), l'affichage de la zone autorisée pendant le glisser-déposer.
-
-### 3. XP de survie partagée
-
-L'XP de survie n'est plus versée en entier à chaque unité déployée qui survit : une réserve d'XP par bataille est partagée entre les individus déployés.
-
-- **Effet visé** : sur-déployer dilue la progression du peuple. Gagner avec peu d'unités devient une bonne décision, en accord avec l'objectif « gagner en perdant le moins possible ».
-- **À trancher** :
-  - le montant de la réserve (fixe, ou selon la bataille) ;
-  - le mode de partage (à parts égales, ou au prorata du coût en PP) ;
-  - l'arrondi ;
-  - qui reçoit une part : tous les déployés, ou seulement les survivants (si les morts comptent dans le partage sans rien recevoir, les pertes coûtent aussi en XP) ;
-  - l'interaction avec le rejeu à 25 % et avec la bataille tutoriel (`rules.md` 11.6).
-- **Équilibrage** : la cible « une basique survivante atteint le niveau 5 en 8 à 12 victoires » (`BALANCE-REVIEW.md`) est à remesurer, car elle dépendra du nombre d'unités déployées.
+**Reste à faire** : mesurer avec `/balancer`. Les dégâts de zone renforcent aussi les Légendaires de l'IA (bataille tutoriel à t=35 s, « Le fort ») : les pertes visées (`rules.md` 11.7) et la cible « niveau 5 en 8 à 12 victoires » (`BALANCE-REVIEW.md`) sont à revérifier.
 
 ### Mesurer le résultat
 

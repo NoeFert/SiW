@@ -39,7 +39,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 
 ### Niveaux (joueur et individus)
 - **Joueur** (`rules.md` 11.5) : XP à chaque victoire (100 + bonus selon les PP survivants de l'armée ; 100 fixes pour la bataille tutoriel), courbe 500 × niveau, sans maximum. Chaque niveau rapporte des Spirit Stones (50 × nouveau niveau, provisoire)
-- **Individus** (`rules.md` 11.6) : XP à la victoire seulement, bataille tutoriel comprise (+40 par survivant déployé, + coût en PP de chaque ennemi achevé), courbe 50 × niveau, niveau 5 maximum. +10 % de PV et de dégâts par niveau ; coût en PP inchangé
+- **Individus** (`rules.md` 11.6) : XP à la victoire seulement, bataille tutoriel comprise (réserve de survie de 200 XP partagée entre les déployés, morts compris, versée aux survivants ; + coût en PP de chaque ennemi achevé), courbe 50 × niveau, niveau 5 maximum. +10 % de PV et de dégâts par niveau ; coût en PP inchangé
 - **Écran de victoire** : rangée de récompenses (Spirit Stones et XP du joueur, même composant que le panneau de « Partir en guerre »), individus qui ont monté de niveau, unités perdues — `technical.md` 5.3
 - **Bataille** : la tour de déploiement affiche une ligne par espèce **et par niveau** (`ui-battle-screen-decisions.md` 2.2)
 

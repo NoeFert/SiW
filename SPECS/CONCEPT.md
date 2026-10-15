@@ -9,11 +9,16 @@ Un jeu de stratégie en temps réel où le joueur, souverain d'une espèce de mo
 Le joueur incarne un souverain : la **Souveraine des Wyrms** (dragons et vers géants) ou le **Souverain des Morts-Vivants** (squelettes et nécromants). L'intelligence artificielle joue l'autre faction.
 
 Une bataille se joue sur une grille de 24 × 14 cases (`RULES.md` section 1) :
-- le joueur **déploie** ses monstres dans sa moitié gauche du terrain, par glisser-déposer ;
+- le joueur **déploie** ses monstres dans le premier quart du terrain, côté gauche, par glisser-déposer ;
 - les monstres **se battent seuls** : ils avancent vers l'ennemi le plus proche, contournent les obstacles, frappent au corps-à-corps ou tirent à distance ;
 - le joueur garde un **contrôle limité** : il peut ordonner à une unité d'attaquer une cible, d'aller sur une case ou de fuir, mais une seule fuite toutes les 5 secondes (`RULES.md` section 5).
 
 Le vrai choix stratégique se fait **avant et pendant le déploiement** : chaque monstre coûte des points de présence, et le terrain n'en accepte jamais plus de 150 à la fois (`RULES.md` section 2). Déployer un dragon légendaire, c'est renoncer à une dizaine de petites unités.
+
+Inonder le terrain n'est pas une bonne réponse par défaut (`SPECS/strategic-depth.md`) :
+- les **Légendaires frappent en zone** : chaque coup blesse aussi les ennemis collés à la cible, et une masse serrée devient une proie (`RULES.md` 4.6) ;
+- la **zone de déploiement est étroite** (colonnes 0 à 5) : on ne pose plus ses unités au contact de l'ennemi, on choisit à l'avance d'où elles partent (`RULES.md` 2) ;
+- l'**XP de survie est partagée** entre tous les monstres déployés : plus on en engage, moins chacun progresse, et un monstre tombé emporte sa part (`RULES.md` 11.6).
 
 ## L'objectif du joueur
 

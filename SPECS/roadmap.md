@@ -13,7 +13,9 @@ Le projet a connu deux versions. La première, une **version clickbait** (le POC
 ### Inclus
 - Une grille avec obstacles (voir `rules.md` section 1)
 - **Deux factions jouables** (Souveraine des Wyrms et Souverain des Morts-Vivants), roster réduit de 3 unités chacune (basique, [Vol], [Légendaire]). Le joueur choisit sa faction en début de partie ; l'IA contrôle automatiquement l'autre — pour éviter que le joueur affronte sa propre armée en miroir (voir `rules.md` section 9 et `units.md`)
-- Déploiement avec pause tactique, plafond vivant de points de présence, nombre de copies limité par espèce (voir `rules.md` section 2)
+- Déploiement avec pause tactique dans la zone de déploiement (colonnes 0 à 5, le premier quart du terrain), plafond vivant de points de présence, nombre de copies limité par espèce (voir `rules.md` section 2)
+- **Dégâts de zone des [Légendaire]** : chaque attaque touche aussi les ennemis à 1 case de la cible, pour 50 % des dégâts (voir `rules.md` 4.6)
+- **XP de survie partagée** entre les individus déployés (voir `rules.md` 11.6) — avec les deux points ci-dessus, pour que surcharger le terrain ne soit plus la stratégie gagnante (`strategic-depth.md`)
 - **Pause principale** : interrupteur ⏸ / ▶ (et barre Espace) qui gèle tous les compteurs de la bataille, pendant laquelle le joueur peut encore déployer et donner un ordre (voir `rules.md` section 5.2)
 - **Tutoriel guidé pendant la bataille tutoriel** : messages et main animée, bataille figée tant que le joueur n'a pas fait l'action demandée (déployer, points de présence, battre en retraite — voir `technical.md` section 5.5)
 - **Bouton Abandonner**, disponible à tout moment de la bataille (tutoriel compris), avec confirmation : défaite, réserves conservées (voir `rules.md` section 8.2)
@@ -74,6 +76,8 @@ Le projet a connu deux versions. La première, une **version clickbait** (le POC
 | Nombre de batailles scriptées | La bataille tutoriel, en une seule phase (`rules.md` 7.1), puis les trois batailles de la guerre 01 (« Partir en guerre »), en deux phases chacune (`rules.md` 11.7, `roadmap-mvp.md`) |
 | Choix de faction | Le joueur choisit entre Wyrms et Morts-Vivants, l'IA joue l'autre — pour préserver la cohérence narrative. Écran séparé, une seule fois au début, choix sauvegardé dans le profil |
 | Points de présence | Plafond vivant de 150 points, se libère à la mort/fuite d'une unité |
+| Zone de déploiement | Colonnes 0 à 5 (premier quart du terrain), sans distance minimale à un ennemi |
+| Contre la masse | Dégâts de zone des [Légendaire] (50 %, à 1 case de la cible) et XP de survie partagée (200 XP, provisoire) |
 | Copies par espèce | Le joueur engage ses individus (tous à la bataille tutoriel, son armée en guerre) ; l'IA a l'armée de départ de sa faction (`units.md`). Une copie tuée est perdue définitivement, une copie en fuite reste réutilisable |
 | Fin de bataille | Victoire dès que l'IA a fini son script et n'a plus d'unité sur le terrain ; défaite quand le joueur n'a plus aucune unité (terrain et réserve) ou abandonne ; match nul possible. Pas de compte à rebours |
 | Aptitudes | Deux types définis : automatique (sans action du joueur) et à usage limité (activée par le joueur) — seul le type automatique est utilisé par le roster v1 |

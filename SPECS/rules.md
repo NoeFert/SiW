@@ -15,12 +15,12 @@ Ce fichier couvre le **scope v1** : le moteur de bataille (sections 1 à 9) et l
 ## 2. Déploiement
 
 - Le camp du joueur est la **moitié gauche** du terrain, collée à la tour de commandement ; l'IA occupe la moitié droite. Le joueur attaque donc de gauche à droite.
-- Le joueur peut déployer ses unités sur **toute sa moitié du terrain** (12 colonnes de large sur les 24), pas seulement sur une ligne de départ.
+- **Zone de déploiement** : le joueur déploie ses unités dans le **premier quart du terrain** de son côté, les **colonnes 0 à 5** (6 colonnes sur 24, toutes les rangées), sur des cases libres (ni obstacle, ni unité). Une unité 2×2 doit avoir ses 4 cases dans la zone. Les unités [Vol] suivent la même règle. Il n'y a pas de distance minimale à un ennemi : une case libre de la zone reste valide même au contact d'un ennemi. Le reste de sa moitié (colonnes 6 à 11) n'est plus une zone de déploiement, mais ses unités s'y déplacent librement. Pendant un glisser-déposer, seules les cases de la zone restent en couleur (`ui-battle-screen-decisions.md` 3). Réduite pour que le placement de départ se décide à l'avance (`strategic-depth.md`).
 - Déployer une unité **arrête le temps** : la bataille se met en pause (pause d'interaction, section 5.2) dès le début du glisser-déposer, pendant que le joueur choisit et positionne son unité.
 - Le déploiement est limité par les **points de présence** disponibles : le joueur dispose d'un plafond de **150 points de présence pouvant être déployés simultanément** (voir section 9 et `units.md` pour le détail du coût de chaque unité).
 - Ce plafond est **vivant, pas un budget dépensé une seule fois** : le coût en points de présence d'une unité se libère dès qu'elle meurt ou fuit le terrain (commande de retraite, section 5), permettant au joueur de redéployer d'autres unités en cours de bataille tant que le total des unités actuellement sur le terrain reste sous le plafond.
 - **Limite de quantité par unité [Légendaire] :** un seul exemplaire de l'unité [Légendaire] d'une faction (Fafnir ou Athos selon le camp) peut être déployé simultanément sur le terrain, indépendamment du budget de points disponible.
-- **Copies disponibles pour la bataille :** chaque unité (légendaire ou non) dispose d'un nombre fixe de copies pour une même bataille. Pour le joueur, ce sont **tous les individus qu'il possède** pour la bataille tutoriel (section 11.1 — l'armée n'existe pas encore), puis **les individus de son armée** (11.2) pour les batailles de « Partir en guerre », chacun avec les stats de son niveau (11.6) ; pour l'IA et pour la version clickbait, les copies de `units.md`.
+- **Copies disponibles pour la bataille :** chaque unité (légendaire ou non) dispose d'un nombre fixe de copies pour une même bataille. Pour le joueur, ce sont **tous les individus qu'il possède** pour la bataille tutoriel (section 11.1 — l'armée n'existe pas encore), puis **les individus de son armée** (11.2) pour les batailles de « Partir en guerre », chacun avec les stats de son niveau (11.6) ; pour l'IA, les copies de `units.md`.
   - Une unité **tuée** en combat consomme définitivement une copie (perdue pour le reste de la bataille, cohérent avec la mort définitive, section 4.4). C'est aussi le cas d'une unité tuée à l'instant même où elle atteint le bord en fuyant : elle est morte, pas en fuite.
   - Une unité qui **fuit** (retraite, section 5) retourne en réserve avec ses points de vie réduits conservés, et **reste disponible** pour un redéploiement ultérieur dans la même bataille — sa copie n'est pas perdue.
 - L'IA se déploie sur l'autre moitié du terrain (moitié droite, 12 colonnes), selon un script prédéfini (voir section 7).
@@ -72,6 +72,17 @@ Ce fichier couvre le **scope v1** : le moteur de bataille (sections 1 à 9) et l
   - Elle peut tirer tout en se déplaçant (le tir n'interrompt pas la marche vers la cible)
   - Une fois adjacente à sa cible, elle bascule au corps-à-corps et suit dès lors les règles de la section 4.2
 
+### 4.6 Dégâts de zone des [Légendaire]
+Les unités [Légendaire] (Fafnir et Athos, des deux camps) punissent les unités serrées : chaque coup blesse aussi les ennemis collés à la cible (`strategic-depth.md`).
+
+- **Chaque attaque** portée par une unité [Légendaire], à distance comme au corps-à-corps, touche sa cible **et** tous les autres ennemis situés **à 1 case** de la cible (distance de la section 3 : pour une cible 2×2, les cases les plus proches). Pour une cible d'une case, c'est le carré de 3×3 cases autour d'elle.
+- **Dégâts de zone** : **50 %** des dégâts de cette attaque (niveau, 11.6, et Attaque dévastatrice compris ; même si la cible avait moins de PV), arrondis à l'entier le plus proche (0,5 arrondi au-dessus). Au niveau 1 : Fafnir 15 à distance et 23 au corps-à-corps (30 et 45 pour l'Attaque dévastatrice), Athos 25.
+- **Seuls les ennemis** sont touchés, jamais les alliés. Les unités [Vol] et les unités en fuite sont touchées comme les autres.
+- **Même instant** : les dégâts de zone sont appliqués en même temps que ceux de l'attaque, avec la résolution simultanée de la section 4.1. Pour départager les tueurs (XP, 11.6), ils comptent comme des dégâts infligés à la victime.
+- **Coup fatal** : un ennemi tué par les dégâts de zone compte comme achevé par le [Légendaire] : XP de kill (11.6) et Soif de sang (Athos se soigne de 40 PV pour **chaque** ennemi tué par la cible ou par la zone, plafonné à ses PV max).
+- **Aptitudes** : une attaque avec sa zone ne compte qu'**une fois** dans les compteurs « toutes les N attaques » (section 6.1). La Frappe paralysante d'Athos ne touche que la **cible** de l'attaque, jamais la zone. Une attaque annulée (Frappe paralysante) ne fait aucun dégât de zone. La **dernière attaque gratuite** portée sur une unité qui fuit (section 5) n'a pas de zone : elle ne touche que l'unité qui fuit.
+- La position des ennemis est celle de l'instant de l'attaque.
+
 ## 5. Commandes du joueur
 
 - Le joueur peut donner 3 types de commandes à une unité déployée :
@@ -112,7 +123,7 @@ Deux familles de pause, indépendantes et combinables. Le temps de bataille ne s
 
 ## 6. Aptitudes
 
-- Les **aptitudes** sont des pouvoirs spéciaux propres à certains monstres — une stat séparée des autres caractéristiques d'une unité (voir design doc section 2.2).
+- Les **aptitudes** sont des pouvoirs spéciaux propres à certains monstres — une stat séparée des autres caractéristiques d'une unité (voir `units.md` pour les aptitudes de chaque unité).
 - Toutes les unités n'ont pas d'aptitude ; c'est une stat optionnelle propre à certains individus/espèces.
 - Une aptitude appartient à l'un des deux types suivants :
 
@@ -160,7 +171,7 @@ Le coût total d'un script n'est pas un budget : ce qui limite l'IA, c'est le m�
 
 **Plafond de présence :** l'IA est soumise au même plafond vivant de 150 points que le joueur (section 2) : les unités IA encore sur le terrain comptent, et une unité du script qui ferait dépasser le plafond **attend** qu'assez de points se libèrent (mort d'une unité IA ; l'IA ne fait jamais fuir ses unités) ; les unités suivantes du script attendent derrière elle pour garder l'ordre.
 
-> Horaires et unités de ce script provisoires : à revoir (nouvelle règle à venir, avec une mécanique d'équilibrage des forces sur le terrain).
+> Script provisoire (section 10).
 
 ### 7.2 Choix de la case d'apparition : entrée par le bord droit
 Les unités de l'IA **entrent par le bord droit du terrain** : elles n'apparaissent jamais directement au milieu du champ de bataille. Le joueur les voit arriver et traverser le terrain, ce qui lui laisse le temps de réagir (décision de design : une apparition soudaine au contact paraissait injuste).
@@ -190,7 +201,7 @@ Une bataille peut enchaîner plusieurs **phases**, chacune avec son propre scrip
   - **« Les trois couloirs »** : deux crêtes qui séparent trois couloirs, franchissables seulement en volant.
   - **« Le fort »** (provisoire) : une ruine en fer à cheval côté joueur, salle intérieure de 4×4 cases, ouverte vers l'ennemi par une entrée de deux cases. Elle protège du corps-à-corps mais pas des tirs. C'est un cul-de-sac assumé : exception à la règle « pas de cul-de-sac » de la section 1, qui ne vaut que pour la bataille tutoriel.
 - **Murs** : les rochers d'un mur se touchent par un côté. Une unité au sol ne coupe jamais le coin d'un rocher (section 3).
-- **Ce qui est conservé** : les morts restent perdus, les PV perdus ne reviennent pas. La réserve du joueur (copies jamais déployées, unités revenues de fuite) reste déployable dans la moitié gauche de la nouvelle zone, avec le même plafond de 150 points. Le cooldown de la fuite continue.
+- **Ce qui est conservé** : les morts restent perdus, les PV perdus ne reviennent pas. La réserve du joueur (copies jamais déployées, unités revenues de fuite) reste déployable dans la zone de déploiement de la nouvelle zone (colonnes 0 à 5, section 2), avec le même plafond de 150 points. Le cooldown de la fuite continue.
 - **Script de la phase suivante** : ses instants sont comptés depuis le début de la phase.
 - **Victoire** : dès que l'IA est à la fin du script de la **dernière** phase et qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (section 8.1).
 
@@ -218,20 +229,21 @@ Les stats précises de chaque unité (points de vie, dégâts, coût, vitesses, 
 
 ## 10. Valeurs à définir
 
-Les valeurs de la bataille sont tranchées. Restent ouvertes, pour la couche méta (section 11) :
+Les valeurs de la bataille sont tranchées, sauf deux, **provisoires** en attendant `/balancer` : le script de la bataille tutoriel (7.1) et les **50 %** des dégâts de zone des [Légendaire] (4.6). Restent ouvertes, pour la couche méta (section 11) :
 - somme de départ en Spirit Stones : **0, provisoire**, donnée au choix de la faction (montant définitif au second passage de `roadmap-mvp.md`) ;
 - récompenses de victoire en Spirit Stones : bataille tutoriel : **50** ; « Partir en guerre » : **60 / 80 / 100** à la première victoire, **rien** au rejeu — **provisoires** (11.7) ;
 - coefficient de prix k : **1, provisoire** ; multiplicateur du [Légendaire] : **aucun (×1), provisoire** (valeurs définitives au second passage de `roadmap-mvp.md`) ;
 - nom par défaut de l'armée de départ : **« Armée 1 »** (tranché) ;
 - Spirit Fountain : **3 Spirit Stones par minute**, capacité **80 + 10 × niveau du joueur** — **provisoires** (11.8) ;
 - récompense de niveau du joueur : **50 × le nouveau niveau** en Spirit Stones, **provisoire** (revue avec k au second passage de `roadmap-mvp.md`) ; les autres valeurs de niveau (XP, courbes, bonus de stats, prix des niveaux gardés) sont tranchées en 11.5, 11.6 et 11.4 ;
-- zones et scripts de l'IA définitifs des batailles de « Partir en guerre » (**provisoires**, 11.7).
+- zones et scripts de l'IA définitifs des batailles de « Partir en guerre » (**provisoires**, 11.7) ;
+- réserve d'XP de survie partagée des individus : **200 XP** par bataille, **provisoire** (11.6, à mesurer avec `/balancer`).
 
 ## 11. Couche méta
 
 Détail du périmètre et des écrans : `roadmap-mvp.md`.
 
-**Passer la bataille tutoriel (outil de développement)** : pendant la bataille tutoriel, l'entrée **« skip tutorial »** du menu devs (`technical.md` 5.6, absent du build publié) permet de ne pas la jouer ; le joueur n'a pas de bouton pour la passer. Elle compte alors comme **gagnée sans combat** : **aucune perte** (la dotation de départ est intacte), aucune XP pour les individus, **armée de départ** avec toute la dotation (11.2), **100 XP** fixes pour le joueur (11.5) et la récompense de **50** Spirit Stones (11.7) — comme une victoire où rien ne s'est passé sur le terrain. Le joueur arrive directement sur l'accueil, sans écran de victoire. L'entrée n'existe pas pour la version clickbait ni pour les batailles de « Partir en guerre ».
+**Passer la bataille tutoriel (outil de développement)** : pendant la bataille tutoriel, l'entrée **« skip tutorial »** du menu devs (`technical.md` 5.6, absent du build publié) permet de ne pas la jouer ; le joueur n'a pas de bouton pour la passer. Elle compte alors comme **gagnée sans combat** : **aucune perte** (la dotation de départ est intacte), aucune XP pour les individus, **armée de départ** avec toute la dotation (11.2), **100 XP** fixes pour le joueur (11.5) et la récompense de **50** Spirit Stones (11.7) — comme une victoire où rien ne s'est passé sur le terrain. Le joueur arrive directement sur l'accueil, sans écran de victoire. L'entrée n'existe pas pour les batailles de « Partir en guerre ».
 
 ### 11.1 Individus possédés
 - Le joueur possède une **liste d'individus**. Un individu a trois caractéristiques : un **identifiant unique**, son **espèce** et son **XP** (section 11.6). Ses stats sont celles de l'espèce (`units.md`), augmentées selon son niveau (11.6).
@@ -286,7 +298,7 @@ Détail du périmètre et des écrans : `roadmap-mvp.md`.
 ### 11.6 Niveau des individus
 - Chaque individu du joueur a un **XP** cumulé, qui détermine son **niveau**, de **1 à 5**.
 - **Gain d'XP**, compté **seulement à la victoire** (comme les pertes, 11.1 : une défaite, un abandon ou un match nul ne changent rien), **bataille tutoriel comprise** :
-  - **+40 XP** (relevé de 10 à 40 pour qu'une unité basique atteigne le niveau 5 en 8 à 12 victoires, `BALANCE-REVIEW.md`) pour chaque individu déployé au moins une fois pendant la bataille et **vivant à la fin** (sur le terrain ou revenu en réserve après une fuite) ;
+  - **XP de survie partagée** : une **réserve de 200 XP** par bataille (provisoire, section 10) est divisée par le **nombre d'individus déployés** au moins une fois pendant la bataille, **morts compris**, arrondie à l'entier inférieur. Chaque individu déployé et **vivant à la fin** (sur le terrain ou revenu en réserve après une fuite) reçoit cette part ; la part d'un mort est perdue. Ex : 5 déployés → 40 chacun ; 8 déployés dont 2 morts → 25 pour chacun des 6 survivants. Un individu déployé plusieurs fois (après une fuite, ou dans les deux zones d'une bataille) ne compte qu'une fois. Remplace l'ancien +40 par survivant, pour que sur-déployer coûte de la progression (`strategic-depth.md`) ;
   - **+ le coût en PP de chaque ennemi qu'il a achevé** (coup fatal, section 4.1 ; ex : un New-reborn Skeleton rapporte 6, Athos 110). Coup fatal simultané (4.1) : **un seul** des attaquants qui ont achevé l'ennemi au même instant gagne son coût — celui qui a infligé le plus de dégâts à la cible à cet instant ; à égalité, celui qui a été déployé le premier (dans cette bataille). Un attaquant qui meurt lui-même à cet instant est écarté. Cette règle ne concerne que l'XP : pour les aptitudes déclenchées au coup fatal (Soif de sang), chacun compte toujours comme ayant porté le coup fatal (4.1). Sans elle, des unités qui frappent en rythme (ex : plusieurs Vers déployés ensemble) gagnaient chacune les 110 d'Athos (`BALANCE-REVIEW.md`). Un individu mort pendant la bataille ne gagne rien (mort définitive).
   - **Rejeu** d'une bataille de « Partir en guerre » déjà gagnée (11.7) : chaque individu gagne **25 %** de son total (survie + ennemis achevés), arrondi à l'entier inférieur, pour qu'une unité basique ne passe pas du niveau 1 au niveau 5 en moins de 30 minutes de rejeu (`BALANCE-REVIEW.md`).
 - **Courbe** : passer du niveau N au niveau N + 1 demande **50 × N XP** (50, 100, 150, 200 — niveau 5 à 500 XP cumulés). Au niveau 5, l'XP n'augmente plus (plafonnée à 500).
