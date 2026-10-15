@@ -15,10 +15,9 @@ import DevMenu from './dev/DevMenu.jsx';
 import { TEST_PROFILES, loadTestProfile } from './dev/testProfiles.js';
 import { ROSTERS } from './data/rosters.js';
 import {
-  BATTLES, FIRST_BATTLE_ID, CLICKBAIT_BATTLE_ID, TRAINING_BATTLE_ID, WAR_BATTLE_IDS,
+  BATTLES, FIRST_BATTLE_ID, WAR_BATTLE_IDS,
 } from './data/battles.js';
 import { armyUnits } from './logic/army.js';
-import { getCasualtyReport } from './logic/deployment.js';
 import { createStartingUnits } from './logic/ownedUnits.js';
 import { STARTING_SPIRIT_STONES } from './logic/summon.js';
 import { resolveVictory } from './logic/victory.js';
@@ -50,18 +49,12 @@ function initialScreen() {
 
 // technical.md 5.4 : navigation par état React simple dans le composant racine, pas de librairie
 // de routing — un seul onglet, une session continue.
-// Deux modes (technical.md 5.6) : 'game' (jeu normal, sauvegardé) et 'clickbait' (choix de
-// faction -> bataille-clickbait, rien n'est sauvegardé, la faction reste en mémoire). Plus
-// 'training', réservé au menu devs : bataille d'entraînement, rien n'est sauvegardé.
 export default function App() {
-  const [mode, setMode] = useState('game');
   const [screen, setScreen] = useState(initialScreen);
   const [battleAttempt, setBattleAttempt] = useState(0); // change de clé = BattleScreen tout neuf
   // Bataille du jeu normal en cours : la bataille 01, ou une de « Partir en guerre » (rules.md 11.7).
   const [battleId, setBattleId] = useState(FIRST_BATTLE_ID);
-  const [clickbaitFaction, setClickbaitFaction] = useState(null);
-  const [victoryReport, setVictoryReport] = useState(null); // bilan de victoire (clickbait)
-  const [victoryProgress, setVictoryProgress] = useState(null); // XP et niveaux (jeu normal)
+  const [victoryProgress, setVictoryProgress] = useState(null); // XP, niveaux et pertes de la victoire
   const [defeatLosses, setDefeatLosses] = useState(null); // pertes d'une défaite de guerre
   // technical.md 5.2 : SummonScreen s'ouvre depuis l'accueil ou depuis l'écran des unités ;
   // « Retour » ramène à l'écran d'origine ('home' ou 'units').
@@ -70,11 +63,8 @@ export default function App() {
   // « recrue hors de l'armée » du tutoriel de l'accueil).
   const [summonedSinceHome, setSummonedSinceHome] = useState(false);
   const [saveVersion, setSaveVersion] = useState(0); // menu devs : recharge l'écran après un profil
-  const isClickbait = mode === 'clickbait';
-  const isTraining = mode === 'training';
-  const isWarBattle = mode === 'game' && WAR_BATTLE_IDS.includes(battleId);
-  let playerFaction = isClickbait ? clickbaitFaction : getSavedFaction();
-  if (isTraining) playerFaction ??= 'wyrms'; // couleurs de l'interface seulement
+  const isWarBattle = WAR_BATTLE_IDS.includes(battleId);
+  const playerFaction = getSavedFaction();
 
   // GRAPHICS.md « Curseur de la souris » : couleur du curseur selon la faction (pixel-ui.css),
   // posée sur <html> pour couvrir aussi les tooltips et dialogues rendus hors de l'app. Sans
@@ -95,16 +85,12 @@ export default function App() {
 
   // rules.md 11.1/11.3 : au choix de la faction, dotation de départ et somme de départ.
   const chooseFaction = useCallback((faction) => {
-    if (isClickbait) {
-      setClickbaitFaction(faction);
-    } else {
-      savePlayerFaction(faction);
-      saveOwnedUnits(createStartingUnits(ROSTERS[faction]));
-      saveSpiritStones(STARTING_SPIRIT_STONES);
-      setBattleId(FIRST_BATTLE_ID);
-    }
+    savePlayerFaction(faction);
+    saveOwnedUnits(createStartingUnits(ROSTERS[faction]));
+    saveSpiritStones(STARTING_SPIRIT_STONES);
+    setBattleId(FIRST_BATTLE_ID);
     startBattle();
-  }, [isClickbait, startBattle]);
+  }, [startBattle]);
 
   // rules.md 11.7 : lance une bataille de « Partir en guerre » avec l'armée.
   const startWarBattle = useCallback((id) => {
@@ -115,8 +101,7 @@ export default function App() {
   // technical.md 5.4 : dans la bataille 01, pertes et XP ne sont comptées qu'à la victoire — une
   // tentative ratée ne sauvegarde rien. La victoire (resolveVictory, rules.md 11) retire les
   // morts, donne l'XP et la récompense (réduites au rejeu, 11.7), crée l'armée de départ après la
-  // bataille 01, retient les batailles de guerre gagnées. Rien n'est sauvegardé en mode
-  // clickbait : on y affiche à la place le bilan des unités en vie/perdues.
+  // bataille 01, retient les batailles de guerre gagnées.
   // `battleUnits` : unités de la bataille (battle.units) ; vide quand la bataille 01 est passée
   // (rules.md 11 : skip). Renvoie le bilan de l'écran de victoire.
   const saveGameVictory = useCallback((battleUnits) => {
@@ -149,17 +134,9 @@ export default function App() {
   }, [playerFaction, battleId]);
 
   const handleVictory = useCallback((battle) => {
-    if (isClickbait) {
-      const unitsOnField = battle.units.filter((u) => u.isOnField);
-      setVictoryReport(
-        getCasualtyReport(ROSTERS[playerFaction], battle.playerDeployment, 'player', unitsOnField),
-      );
-    } else {
-      setVictoryReport(null);
-      setVictoryProgress(saveGameVictory(battle.units));
-    }
+    setVictoryProgress(saveGameVictory(battle.units));
     setScreen('victory');
-  }, [isClickbait, playerFaction, saveGameVictory]);
+  }, [saveGameVictory]);
 
   // Menu devs, pendant la bataille 01 (rules.md 11) : comptée comme gagnée sans combat (aucune
   // perte, armée de départ avec toute la dotation, récompense et XP fixe du joueur), puis retour
@@ -189,38 +166,16 @@ export default function App() {
     setScreen(outcome === 'draw' ? 'draw' : 'defeat');
   }, [isWarBattle, playerFaction]);
 
-  // Après une victoire : accueil dans le jeu normal, nouveau choix de faction en clickbait.
-  const continueAfterVictory = useCallback(() => {
-    if (isClickbait) setScreen('factionChoice');
-    else goHome();
-  }, [isClickbait, goHome]);
-
   // Repart comme au tout premier lancement (menu des paramètres de l'accueil, menu devs).
   const restartGame = useCallback(() => {
     clearProgress();
-    setMode('game');
     setBattleId(FIRST_BATTLE_ID);
     setScreen('intro');
   }, []);
 
-  // technical.md 5.6 : version clickbait, depuis son choix de faction (menu devs seulement).
-  const startClickbait = useCallback(() => {
-    setMode('clickbait');
-    setClickbaitFaction(null);
-    setScreen('factionChoice');
-  }, []);
-
-  // Menu devs : bataille d'entraînement (mannequin immobile, toutes les unités déployables).
-  const startTraining = useCallback(() => {
-    setMode('training');
-    startBattle();
-  }, [startBattle]);
-
   const devActions = [
     { label: 'restart game', run: restartGame },
-    { label: 'restart clickbait', run: startClickbait },
-    { label: 'entrainement', run: startTraining },
-    ...(screen === 'battle' && mode === 'game' && battleId === FIRST_BATTLE_ID
+    ...(screen === 'battle' && battleId === FIRST_BATTLE_ID
       ? [{ label: 'skip tutorial', run: skipFirstBattle }] : []),
     ...[['test-wyrm', TEST_PROFILES.testWyrm], ['test-wyrm-fallen', TEST_PROFILES.testWyrmFallen],
       ['test-undead', TEST_PROFILES.testUndead]]
@@ -229,16 +184,13 @@ export default function App() {
         run: () => {
           loadTestProfile(profile);
           setSaveVersion((v) => v + 1);
-          setMode('game');
           goHome();
         },
       })),
   ];
 
-  // rules.md 2 : bataille 01 = tous les individus possédés ; « Partir en guerre » = l'armée ;
-  // version clickbait = copies de units.md (null).
+  // rules.md 2 : bataille 01 = tous les individus possédés ; « Partir en guerre » = l'armée.
   const battleUnits = () => {
-    if (isClickbait || isTraining) return null;
     const owned = getOwnedUnits();
     return isWarBattle ? armyUnits(getArmy(), owned) : owned;
   };
@@ -255,7 +207,7 @@ export default function App() {
       <BattleScreen
         key={battleAttempt}
         playerFaction={playerFaction}
-        battleId={{ clickbait: CLICKBAIT_BATTLE_ID, training: TRAINING_BATTLE_ID }[mode] ?? battleId}
+        battleId={battleId}
         playerUnits={battleUnits()}
         onVictory={handleVictory}
         onDefeat={handleDefeat}
@@ -264,8 +216,7 @@ export default function App() {
   } else if (screen === 'victory') {
     content = (
       <VictoryScreen
-        onContinue={continueAfterVictory}
-        report={victoryReport}
+        onContinue={goHome}
         progress={victoryProgress}
         playerFaction={playerFaction}
       />

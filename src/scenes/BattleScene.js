@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Grid from '../logic/grid.js';
-import { createBattle, setupTraining, tickBattle } from '../logic/battle.js';
+import { createBattle, tickBattle } from '../logic/battle.js';
 import { createDeploymentState } from '../logic/deployment.js';
 import { isBattleTimeRunning } from '../logic/pause.js';
 import { startTutorial } from '../logic/tutorial.js';
@@ -9,7 +9,6 @@ import { clickField, cancelCommand, getClickableHighlights } from '../logic/comm
 import { ROSTERS } from '../data/rosters.js';
 import { BATTLES } from '../data/battles.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
-import { TRAINING_DUMMY, TRAINING_COPIES } from '../data/training.js';
 import {
   CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, FACTION_COLORS, cellCenter,
 } from '../renderConstants.js';
@@ -93,7 +92,7 @@ export default class BattleScene extends Phaser.Scene {
     this.playerFaction = data.playerFaction;
     this.enemyFaction = data.playerFaction === 'wyrms' ? 'undead' : 'wyrms';
     this.battleDefinition = BATTLES[data.battleId]; // src/data/battles.js
-    this.playerUnits = data.playerUnits ?? null; // individus du joueur (jeu normal, rules.md 2)
+    this.playerUnits = data.playerUnits; // individus du joueur engagés (rules.md 2)
     // rules.md 7.3 : phases de la bataille (zones), résolues pour la faction jouée par l'IA.
     this.phases = this.battleDefinition.phases.map(({ enemyScripts, obstacles, flippedBackground }) => ({
       enemyScript: enemyScripts[this.enemyFaction], obstacles, flippedBackground,
@@ -235,18 +234,14 @@ export default class BattleScene extends Phaser.Scene {
   // rules.md 9 : le choix de faction lui-même vit maintenant dans FactionChoiceScreen (React,
   // technical.md 5) — cette Scene reçoit `playerFaction` déjà tranché via `init(data)`.
   startBattle(playerFaction) {
-    const playerRoster = this.battleDefinition.playerRoster ?? ROSTERS[playerFaction];
+    const playerRoster = ROSTERS[playerFaction];
     const enemyRoster = ROSTERS[playerFaction === 'wyrms' ? 'undead' : 'wyrms'];
 
     this.battle = createBattle(this.grid, playerRoster, enemyRoster, this.phases[0].enemyScript);
-    // rules.md 2 et 11.6 : dans le jeu normal, la réserve du joueur est faite de ses individus,
-    // chacun avec son niveau ; sinon (clickbait), des copies de units.md.
-    if (this.playerUnits) this.battle.playerDeployment = createDeploymentState(playerRoster, this.playerUnits);
+    // rules.md 2 et 11.6 : la réserve du joueur est faite de ses individus, chacun avec son niveau.
+    this.battle.playerDeployment = createDeploymentState(playerRoster, this.playerUnits);
     setUpcomingPhases(this.battle, this.phases.slice(1));
-    if (this.battleDefinition.training) setupTraining(this.battle, TRAINING_DUMMY, TRAINING_COPIES);
-    const { tutorial, orders = null, surrenderAllowed = true } = this.battleDefinition;
-    this.battle.orders = orders;
-    this.battle.surrenderAllowed = surrenderAllowed;
+    const { tutorial } = this.battleDefinition;
     if (tutorial) startTutorial(this.battle, tutorial); // technical.md 5.5
 
     // Publie l'état pour la tour de commandement React (technical.md 2.2) : c'est le seul canal de

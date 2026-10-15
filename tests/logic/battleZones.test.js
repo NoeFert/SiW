@@ -5,7 +5,7 @@ import {
   WALL_ZONE_OBSTACLES, LANES_ZONE_OBSTACLES, FORT_ZONE_OBSTACLES,
 } from '../../src/data/battlefield.js';
 
-// Zones de la bataille-clickbait (rules.md 7.3) : chaque plan doit jouer son rôle (mur, couloirs,
+// Zones des batailles en plusieurs phases (rules.md 7.3) : chaque plan doit jouer son rôle (mur, couloirs,
 // fort) sans fuite. Même règle de déplacement que le jeu (`canStep`) : 8 directions, sans jamais
 // couper le coin d'un rocher (rules.md 3).
 const W = 24;

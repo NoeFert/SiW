@@ -7,7 +7,7 @@ import {
 import { cn } from '@/lib/utils';
 import { FLEE_COOLDOWN_SECONDS, getFleeCooldownRemaining } from '../logic/commands.js';
 import {
-  availableOrders, canChooseOrder, chooseOrder, cancelCommand,
+  ORDERS, canChooseOrder, chooseOrder, cancelCommand,
 } from '../logic/commandSelection.js';
 import PauseButton from './PauseButton.jsx';
 import { TEXT } from './strings.js';
@@ -45,7 +45,7 @@ export default function OrdersRow({ battle, playerFaction }) {
       <h2 className="retro text-xs mb-3">{TEXT.ordersTitle}</h2>
       <div className="flex items-center gap-3">
         <PauseButton battle={battle} />
-        {availableOrders(battle).map((order) => {
+        {ORDERS.map((order) => {
           const Icon = ORDER_ICONS[order];
           const selected = selectedOrder === order;
           const cooling = order === 'flee' && fleeRemaining > 0;

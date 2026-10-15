@@ -1,4 +1,3 @@
-import Unit from './unit.js';
 import { resolveCombatTick } from './combat.js';
 import { createFleeState, commandAttack, commandMoveTo, commandFlee } from './commands.js';
 import { createAiScriptState, deployScheduledUnits } from './aiScript.js';
@@ -44,11 +43,6 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
     phaseTransition: null,
     // rules.md 8.1 : temps restant avant que la victoire acquise ne devienne `outcome`, ou null.
     victoryDelayRemaining: null,
-    // Ordres proposés dans la tour de commandement (null = tous, voir commandSelection.js) et
-    // bouton Abandonner disponible ou non (rules.md 8.2) — la version clickbait restreint les deux.
-    orders: null,
-    surrenderAllowed: true,
-    training: false, // bataille d'entraînement du menu devs : ne se termine jamais (setupTraining)
     playerFleeState: createFleeState(),
     aiScriptState: createAiScriptState(),
     enemyScript,
@@ -61,21 +55,10 @@ export function createBattle(grid, playerRoster, enemyRoster, enemyScript, rng =
   };
 }
 
-// Menu devs (hors specs) : bataille d'entraînement pour tester attaques et animations. Le joueur
-// dispose de `copies` copies de chaque espèce de son roster ; un mannequin (`dummySpecies`, côté
-// IA) est posé au centre du terrain ; la bataille ne se termine jamais (voir tickBattle).
-export function setupTraining(battle, dummySpecies, copies) {
-  battle.training = true;
-  for (const speciesState of battle.playerDeployment.bySpecies.values()) speciesState.freshRemaining = copies;
-  const x = Math.floor((battle.grid.width - dummySpecies.size) / 2);
-  const y = Math.floor((battle.grid.height - dummySpecies.size) / 2);
-  battle.units.push(new Unit(dummySpecies, 'enemy', x, y));
-}
-
 // rules.md 8.2, dernière clause : abandon explicite du joueur, possible à tout moment. Le
 // verdict est posé tout de suite : pendant une pause, aucun tick ne viendrait le calculer.
 export function surrenderPlayer(battle) {
-  if (battle.outcome !== 'ongoing' || !battle.surrenderAllowed || isVictoryAcquired(battle)) return;
+  if (battle.outcome !== 'ongoing' || isVictoryAcquired(battle)) return;
   endSurrenderConfirm(battle);
   surrender(battle.playerEndState);
   battle.outcome = evaluateOutcome(battle);
@@ -85,7 +68,6 @@ export function surrenderPlayer(battle) {
 // perd rien pendant qu'il hésite. Une commande en cours de sélection est annulée (sans
 // consommer de cooldown) : les deux interactions ne se cumulent pas.
 export function startSurrenderConfirm(battle) {
-  if (!battle.surrenderAllowed) return;
   battle.commandSelection = null;
   startInteraction(battle.pause, 'surrender');
 }
@@ -229,7 +211,6 @@ export function tickBattle(battle, deltaSeconds) {
     }
     return battle.outcome;
   }
-  if (battle.training) return battle.outcome; // entraînement : jamais de fin
 
   // rules.md 8.1 : victoire acquise -> plus rien ne change le verdict ; la bataille tourne
   // encore VICTORY_DELAY_SECONDS avant l'écran de victoire. Le tutoriel n'avance plus (une

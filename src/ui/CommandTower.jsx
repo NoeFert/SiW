@@ -23,11 +23,9 @@ export default function CommandTower({ playerFaction }) {
     <TooltipProvider>
       <div className="h-full flex flex-col bg-neutral-950 text-foreground">
         <div className="relative flex-none pl-game pr-4 pt-game pb-2">
-          {battle.surrenderAllowed && (
-            <div className="absolute top-game right-4">
-              <SurrenderButton battle={battle} />
-            </div>
-          )}
+          <div className="absolute top-game right-4">
+            <SurrenderButton battle={battle} />
+          </div>
           <div className="pt-8">
             <PresenceGauge used={getPresenceUsed('player', unitsOnField)} playerFaction={playerFaction} />
           </div>

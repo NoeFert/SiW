@@ -23,12 +23,12 @@ export const BATTLEFIELD_OBSTACLES = [
   { x: 18, y: 8 }, { x: 17, y: 9 },
 ];
 
-// Zones de la bataille-clickbait (rules.md 7.3), écrites en plan ASCII (voir parseObstacleMap) :
+// Zones des batailles en plusieurs phases (rules.md 7.3), écrites en plan ASCII (voir parseObstacleMap) :
 // '.' case libre, '#' rocher d'une case, '@@/@@' rocher 2x2. Colonnes 0-23, rangées 0-13 ;
 // le joueur se déploie sur les colonnes 0-11, l'IA entre par la colonne 23 (laissée libre).
 // Les murs sont des rochers qui se touchent par un côté : deux rochers qui ne se touchent que
 // par un coin laissent passer en diagonale (pathfinding.js). Propriétés vérifiées par
-// tests/logic/clickbaitZones.test.js.
+// tests/logic/battleZones.test.js.
 
 // Phase 2 — "Le mur" : un mur qui serpente (colonnes 14-17), percé d'un passage étroit
 // (rangée 3, 1 case : une Légendaire 2x2 ne passe pas) et d'un passage large (rangées 10-11).

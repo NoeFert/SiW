@@ -7,20 +7,14 @@ import {
   cancelCommand, chooseOrder, selectUnit,
 } from '../../src/logic/commandSelection.js';
 import { isBattleTimeRunning } from '../../src/logic/pause.js';
-import { setUpcomingPhases, PHASE_TRANSITION_SECONDS } from '../../src/logic/phases.js';
 import {
   startTutorial, continueTutorial, visibleTutorialStep, tutorialAllows, weakestPlayerUnit,
   TUTORIAL_CONDITION_TYPES,
 } from '../../src/logic/tutorial.js';
-import { STARTER_TUTORIAL, CLICKBAIT_TUTORIAL } from '../../src/data/tutorials.js';
-import { BATTLES, FIRST_BATTLE_ID, CLICKBAIT_BATTLE_ID } from '../../src/data/battles.js';
-import {
-  WYRMS_AI_SCRIPT, UNDEAD_AI_SCRIPT, WYRMS_CLICKBAIT_PHASE_1_SCRIPT, UNDEAD_CLICKBAIT_PHASE_1_SCRIPT,
-  WYRMS_CLICKBAIT_PHASE_2_SCRIPT, UNDEAD_CLICKBAIT_PHASE_2_SCRIPT,
-  WYRMS_CLICKBAIT_PHASE_3_SCRIPT, UNDEAD_CLICKBAIT_PHASE_3_SCRIPT,
-} from '../../src/data/battleScript.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
-import { BATTLEFIELD_OBSTACLES, WALL_ZONE_OBSTACLES, FORT_ZONE_OBSTACLES } from '../../src/data/battlefield.js';
+import { STARTER_TUTORIAL } from '../../src/data/tutorials.js';
+import { BATTLES, FIRST_BATTLE_ID } from '../../src/data/battles.js';
+import { WYRMS_AI_SCRIPT, UNDEAD_AI_SCRIPT } from '../../src/data/battleScript.js';
+import { BATTLEFIELD_OBSTACLES } from '../../src/data/battlefield.js';
 import { TEXT } from '../../src/ui/strings.js';
 
 const ROSTER = {
@@ -288,7 +282,7 @@ describe('tutoriel — abandon', () => {
 });
 
 describe('données des tutoriels et des batailles (src/data/)', () => {
-  const allTutorials = [STARTER_TUTORIAL, CLICKBAIT_TUTORIAL];
+  const allTutorials = [STARTER_TUTORIAL];
   const allSteps = allTutorials.flat();
 
   test('la bataille 01 : une seule phase, script IA par faction, tutoriel de départ', () => {
@@ -300,37 +294,6 @@ describe('données des tutoriels et des batailles (src/data/)', () => {
       }],
       tutorial: STARTER_TUTORIAL,
       reward: 50, // rules.md 11.7
-    });
-  });
-
-  test('la bataille-clickbait : bataille à part, 3 phases (champ, mur, fort), tutoriel clickbait', () => {
-    const { phases, tutorial } = BATTLES[CLICKBAIT_BATTLE_ID];
-
-    expect(CLICKBAIT_BATTLE_ID).not.toBe(FIRST_BATTLE_ID);
-    expect(tutorial).toBe(CLICKBAIT_TUTORIAL);
-    expect(phases[0]).toEqual({
-      enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_1_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_1_SCRIPT },
-      obstacles: BATTLEFIELD_OBSTACLES,
-      flippedBackground: false,
-    });
-    // Phase 1 sans légendaire ; Athos n'apparaît qu'en phase 3, en dernier.
-    const names = (script) => script.map((e) => e.species.name);
-    expect(names(WYRMS_CLICKBAIT_PHASE_1_SCRIPT)).not.toContain('Fafnir the Cursed One');
-    expect(names(UNDEAD_CLICKBAIT_PHASE_1_SCRIPT)).not.toContain(UNDEAD_ROSTER.athos.name);
-    expect(names(UNDEAD_CLICKBAIT_PHASE_2_SCRIPT)).not.toContain(UNDEAD_ROSTER.athos.name);
-    expect(UNDEAD_CLICKBAIT_PHASE_3_SCRIPT.at(-1).species).toBe(UNDEAD_ROSTER.athos);
-    // Vagues de phase 1 plus rapprochées que celles de la bataille 01.
-    expect(WYRMS_CLICKBAIT_PHASE_1_SCRIPT.at(-1).time).toBeLessThan(WYRMS_AI_SCRIPT.at(-2).time);
-    expect(UNDEAD_CLICKBAIT_PHASE_1_SCRIPT.at(-1).time).toBeLessThan(UNDEAD_AI_SCRIPT.at(-2).time);
-    expect(phases[1]).toEqual({
-      enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_2_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_2_SCRIPT },
-      obstacles: WALL_ZONE_OBSTACLES,
-      flippedBackground: true,
-    });
-    expect(phases[2]).toEqual({
-      enemyScripts: { wyrms: WYRMS_CLICKBAIT_PHASE_3_SCRIPT, undead: UNDEAD_CLICKBAIT_PHASE_3_SCRIPT },
-      obstacles: FORT_ZONE_OBSTACLES,
-      flippedBackground: false,
     });
   });
 
@@ -369,151 +332,11 @@ describe('moteur de tutoriel — réutilisable pour une autre bataille', () => {
     expect(isBattleTimeRunning(battle.pause)).toBe(true);
   });
 
-  test('condition phaseElapsed : aussi vraie dans une phase ultérieure, sans recompter', () => {
-    const battle = twoPhaseBattle();
-    deployPlayerUnit(battle, ROSTER.fighter, 0, 0);
-    startTutorial(battle, [
-      { id: 'wait', frozen: false, allows: null, next: [{ type: 'phaseElapsed', phaseIndex: 0, seconds: 100 }] },
-      { id: 'read', frozen: true, allows: [], message: 'presence', continueButton: true, next: [{ type: 'continueClicked' }] },
-    ]);
-    tickBattle(battle, 0.5);
-    expect(battle.tutorial.step).toBe('wait');
-
-    startNextPhase(battle);
-    tickBattle(battle, 0.5);
-
-    expect(battle.tutorial.step).toBe('read');
-  });
-
   test('sans tutoriel, aucune action n\'est bloquée', () => {
     const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, SCRIPT, () => 0);
 
     expect(battle.tutorial).toBeNull();
     expect(tutorialAllows(battle, 'deploy')).toBe(true);
     expect(chooseOrder(battle, 'attack')).toBe(true);
-  });
-});
-
-// Bataille en deux phases : un seul ennemi en phase 1 (déployé à t=0), un en phase 2 (t=2).
-function twoPhaseBattle() {
-  const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, [{ time: 0, species: ROSTER.fighter }], () => 0);
-  setUpcomingPhases(battle, [{ enemyScript: [{ time: 2, species: ROSTER.fighter }], obstacles: [] }]);
-  return battle;
-}
-
-// Élimine les ennemis de la phase en cours et joue toute la transition : la phase suivante
-// commence réellement à la fin de cette fonction.
-function startNextPhase(battle) {
-  for (const u of battle.units) if (u.faction === 'enemy') u.hp = 0;
-  tickBattle(battle, 0.5);
-  tickBattle(battle, PHASE_TRANSITION_SECONDS.exit);
-  tickBattle(battle, PHASE_TRANSITION_SECONDS.enter);
-}
-
-describe('tutoriel clickbait (bataille-clickbait)', () => {
-  function reachClickbaitPresence() {
-    const battle = twoPhaseBattle();
-    startTutorial(battle, CLICKBAIT_TUTORIAL);
-    startDeploymentDrag(battle);
-    const { unit } = deployPlayerUnit(battle, ROSTER.fighter, 0, 0);
-    endDeploymentDrag(battle);
-    for (let i = 0; i < 100 && battle.tutorial.step !== 'presence'; i++) tickBattle(battle, 0.5);
-    return { battle, unit };
-  }
-
-  // Passe les PP (6 s), puis entre en phase 2.
-  function reachClickbaitPhase2() {
-    const { battle, unit } = reachClickbaitPresence();
-    tickBattle(battle, 6);
-    startNextPhase(battle);
-    return { battle, unit };
-  }
-
-  function reachClickbaitFlee() {
-    const { battle, unit } = reachClickbaitPhase2();
-    tickBattle(battle, 6);
-    return { battle, unit };
-  }
-
-  test('étapes : déployer, combat autonome, points de présence, battre en retraite', () => {
-    expect(CLICKBAIT_TUTORIAL.map((step) => step.id)).toEqual(
-      ['deploy', 'autonomous', 'presence', 'waitingForWall', 'flee'],
-    );
-  });
-
-  test('l\'étape des PP ne fige pas la bataille et ne bloque aucune action', () => {
-    const { battle } = reachClickbaitPresence();
-    const elapsed = battle.elapsedSeconds;
-
-    tickBattle(battle, 1);
-
-    expect(battle.elapsedSeconds).toBe(elapsed + 1);
-    expect(visibleTutorialStep(battle).id).toBe('presence');
-    expect(startDeploymentDrag(battle)).toBe(true);
-  });
-
-  test('l\'étape des PP disparaît seule après 6 s ; la bataille continue sans tutoriel visible', () => {
-    const { battle } = reachClickbaitPresence();
-
-    tickBattle(battle, 5.5);
-    expect(battle.tutorial.step).toBe('presence');
-    tickBattle(battle, 0.5);
-
-    expect(battle.tutorial.step).toBe('waitingForWall');
-    expect(visibleTutorialStep(battle)).toBeNull();
-    expect(isBattleTimeRunning(battle.pause)).toBe(true);
-    expect(chooseOrder(battle, 'attack')).toBe(true);
-  });
-
-  test('pendant la phase 1, la retraite ne se déclenche jamais', () => {
-    const { battle } = reachClickbaitPresence();
-
-    for (let i = 0; i < 60; i++) tickBattle(battle, 0.5);
-
-    expect(battle.phaseIndex).toBe(0);
-    expect(battle.tutorial.step).toBe('waitingForWall');
-  });
-
-  test('la retraite arrive 6 s (temps de bataille) après le début réel de la phase 2', () => {
-    const { battle } = reachClickbaitPhase2();
-    expect(battle.phaseIndex).toBe(1);
-    expect(battle.elapsedSeconds).toBe(battle.phaseStartSeconds); // transition non comptée
-
-    tickBattle(battle, 5.5);
-    expect(battle.tutorial.step).toBe('waitingForWall');
-    tickBattle(battle, 0.5);
-
-    expect(battle.tutorial.step).toBe('flee');
-    expect(visibleTutorialStep(battle).message).toBe('clickbaitFlee');
-    expect(isBattleTimeRunning(battle.pause)).toBe(false);
-    expect(startDeploymentDrag(battle)).toBe(false);
-  });
-
-  test('attend qu\'une unité du joueur soit sur le terrain', () => {
-    const { battle, unit } = reachClickbaitPhase2();
-    unit.hasFled = true; // plus aucune unité du joueur sur le terrain
-
-    for (let i = 0; i < 20; i++) tickBattle(battle, 0.5);
-
-    expect(battle.tutorial.step).toBe('waitingForWall');
-  });
-
-  test('seule la fuite est permise ; annuler laisse l\'étape en place ; l\'ordre donné, fin du tutoriel', () => {
-    const { battle, unit } = reachClickbaitFlee();
-    expect(battle.tutorial.step).toBe('flee');
-    expect(chooseOrder(battle, 'flee')).toBe(true);
-
-    cancelCommand(battle);
-    tickBattle(battle, 0.1);
-    expect(battle.tutorial.step).toBe('flee');
-
-    expect(chooseOrder(battle, 'attack')).toBe(false);
-    expect(chooseOrder(battle, 'flee')).toBe(true);
-    expect(selectUnit(battle, unit)).toBe(true);
-    expect(unit.command).toEqual({ type: 'flee' });
-    tickBattle(battle, 0.1);
-
-    expect(battle.tutorial).toBeNull();
-    expect(isBattleTimeRunning(battle.pause)).toBe(true);
   });
 });

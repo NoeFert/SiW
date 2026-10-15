@@ -22,7 +22,7 @@ const TOWER_WIDTH = `max(clamp(300px, 24%, 400px), calc(100vw - 100vh * ${GAME_W
 // "phaser-root" est conservé sur ce conteneur car DeploymentList.jsx repère le <canvas> par
 // ce sélecteur pour convertir les coordonnées de glisser-déposer (voir renderConstants.js).
 // `battleId` : bataille à jouer (src/data/battles.js), avec son tutoriel s'il en a un.
-// `playerUnits` : individus du joueur engagés (jeu normal, rules.md 2), ou null (clickbait).
+// `playerUnits` : individus du joueur engagés dans la bataille (rules.md 2).
 export default function BattleScreen({
   playerFaction, battleId, playerUnits, onVictory, onDefeat,
 }) {

@@ -16,69 +16,8 @@ export const WYRMS_AI_SCRIPT = [
   { time: 35, species: WYRMS_ROSTER.fafnir },
 ];
 
-// rules.md 7.3 — bataille-clickbait, phase 1 : les vagues de la bataille 01 resserrées, sans
-// légendaire (Fafnir retiré côté Wyrms ; Athos passe en phase 3 côté Morts-Vivants, qui
-// gagnent 2 New-reborn Skeletons à t=18s).
-export const WYRMS_CLICKBAIT_PHASE_1_SCRIPT = [
-  { time: 0, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 4, species: WYRMS_ROSTER.amphiptere },
-  { time: 10, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 14, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 14, species: WYRMS_ROSTER.lambtonWorm },
-];
-
-export const UNDEAD_CLICKBAIT_PHASE_1_SCRIPT = [
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 4, species: UNDEAD_ROSTER.necromantInitiate },
-  { time: 10, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 14, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 14, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 18, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 18, species: UNDEAD_ROSTER.newRebornSkeleton },
-];
-
-// rules.md 7.3 — bataille-clickbait, phase 2 : "extension de vague" provisoire, temps comptés
-// depuis le début de la phase 2. 2 basiques, 1 [Vol], puis 2 basiques (Wyrms : sans le [Vol],
-// et 1 seul basique à t=12s).
-export const WYRMS_CLICKBAIT_PHASE_2_SCRIPT = [
-  { time: 0, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 0, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 12, species: WYRMS_ROSTER.lambtonWorm },
-];
-
-export const UNDEAD_CLICKBAIT_PHASE_2_SCRIPT = [
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 5, species: UNDEAD_ROSTER.necromantInitiate },
-  { time: 12, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 12, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 18, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 18, species: UNDEAD_ROSTER.newRebornSkeleton },
-];
-
-// rules.md 7.3 — bataille-clickbait, phase 3 ("Le fort") : provisoire. Une nuée de basiques
-// d'abord (le fort la retient), puis des tireurs (le fort devient un piège).
-export const WYRMS_CLICKBAIT_PHASE_3_SCRIPT = [
-  { time: 0, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 0, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 0, species: WYRMS_ROSTER.lambtonWorm },
-  { time: 10, species: WYRMS_ROSTER.fafnir },
-];
-
-export const UNDEAD_CLICKBAIT_PHASE_3_SCRIPT = [
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 0, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 10, species: UNDEAD_ROSTER.necromantInitiate },
-  { time: 10, species: UNDEAD_ROSTER.necromantInitiate },
-  { time: 15, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 15, species: UNDEAD_ROSTER.newRebornSkeleton },
-  { time: 20, species: UNDEAD_ROSTER.athos }, // attend sous le plafond de 150 (rules.md 7.1)
-];
-
-// rules.md 11.7 : scripts propres à « Partir en guerre » (provisoires), indépendants de ceux du
-// clickbait. Instants comptés depuis le début de chaque zone. Calibrés pour la difficulté selon
+// rules.md 11.7 : scripts propres à « Partir en guerre » (provisoires), indépendants de celui de la
+// bataille 01. Instants comptés depuis le début de chaque zone. Calibrés pour la difficulté selon
 // la distance au boss (pertes visées, vérifiées avec `npm run balance`).
 // `waves` : [instant, espèce, nombre] → une entrée par unité, comme les scripts ci-dessus.
 function waves(...list) {

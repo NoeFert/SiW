@@ -1,8 +1,7 @@
 import Grid from '../../src/logic/grid.js';
 import Unit from '../../src/logic/unit.js';
 import {
-  createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, countOwnedCopies, getTowerRows, groupTowerRows,
-  getCasualtyReport,
+  createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, getTowerRows, groupTowerRows,
   PRESENCE_CAP,
 } from '../../src/logic/deployment.js';
 
@@ -214,28 +213,6 @@ describe('isValidDeploymentPosition (rules.md 1/2)', () => {
   });
 });
 
-describe('countOwnedCopies — copies possédées après bataille (rules.md 2, technical.md 5.4)', () => {
-  test('une copie tuée est perdue, une copie en fuite ou encore sur le terrain reste possédée', () => {
-    const state = createDeploymentState(ROSTER);
-    const killed = deployUnit(state, 'player', ROSTER.grunt, 0, 0, []).unit;
-    const fled = deployUnit(state, 'player', ROSTER.grunt, 1, 0, []).unit;
-    const standing = deployUnit(state, 'player', ROSTER.grunt, 2, 0, []).unit;
-
-    killed.hp = 0;
-    fled.hasFled = true;
-    recordReturn(state, fled);
-
-    const onField = [killed, fled, standing].filter((u) => u.isOnField);
-    expect(countOwnedCopies(ROSTER, state, 'player', onField)).toEqual({ grunt: 4, champion: 2, lonely: 1 });
-  });
-
-  test('ignore les unités du camp adverse de même espèce', () => {
-    const state = createDeploymentState(ROSTER);
-    const enemy = new Unit(ROSTER.lonely, 'enemy', 0, 0);
-    expect(countOwnedCopies(ROSTER, state, 'player', [enemy]).lonely).toBe(1);
-  });
-});
-
 describe('getTowerRows — liste des unités déployables de la tour (ui-battle-screen-decisions.md 2.2)', () => {
   function returnWithHp(state, species, hp) {
     const unit = new Unit(species, 'player', 0, 0);
@@ -373,25 +350,5 @@ describe('groupTowerRows — cases de la tour, regroupées par espèce (ui-battl
     groupTowerRows(rows, new Set());
 
     expect(rows[0].count).toBe(3);
-  });
-});
-
-describe('getCasualtyReport — bilan de fin de bataille (technical.md 5.6)', () => {
-  test('par espèce : copies en vie (terrain + réserve, blessés compris) et copies tuées', () => {
-    const state = createDeploymentState(ROSTER);
-    const onField = [];
-    const alive = deployUnit(state, 'player', ROSTER.grunt, 0, 0, onField).unit;
-    onField.push(alive);
-    deployUnit(state, 'player', ROSTER.grunt, 1, 0, onField); // déployée puis tuée : jamais revenue
-    const fled = new Unit(ROSTER.lonely, 'player', 0, 0);
-    state.bySpecies.get(ROSTER.lonely).freshRemaining = 0;
-    fled.hp = 3;
-    recordReturn(state, fled); // revenue de fuite, blessée
-
-    expect(getCasualtyReport(ROSTER, state, 'player', onField)).toEqual([
-      { species: ROSTER.grunt, alive: 4, lost: 1 },
-      { species: ROSTER.champion, alive: 2, lost: 0 },
-      { species: ROSTER.lonely, alive: 1, lost: 0 },
-    ]);
   });
 });

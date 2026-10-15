@@ -9,7 +9,6 @@ export const SPECIES_SPRITES = {
   'New-reborn Skeleton': { key: 'new-reborn-skeleton', facing: 'left' },
   'Necromant Initiate': { key: 'necromant', facing: 'left' },
   'Athos the Lord of Pain': { key: 'athos', facing: null },
-  'Training Dummy': { key: 'stone-statue', facing: null }, // mannequin d'entraînement (menu devs)
 };
 
 // Sprite du souverain de chaque faction (écran de choix de faction).

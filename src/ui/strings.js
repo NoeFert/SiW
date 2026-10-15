@@ -20,13 +20,7 @@ export const TEXT = {
 
   // Messages des tutoriels (clés = champ `message` des étapes, src/data/tutorials.js).
   tutorial: {
-    // Tutoriel clickbait (bataille de la version clickbait).
-    clickbaitDeploy: 'Déploie tes unités pour anéantir tes ennemis.',
-    clickbaitAutonomous: 'Ton unité va combattre d\'elle-même les ennemis. Certaines espèces de créatures tirent à distance, d\'autres au corps-à-corps.',
-    clickbaitPresence: 'Chaque unité possède des points de présence (PP). Tu ne peux pas dépasser une présence de 150 sur le terrain. Choisis bien tes unités déployées !',
-    clickbaitFlee: 'Si tu veux récupérer une unité blessée ou libérer de la place sur le terrain, ordonne-lui de battre en retraite : clique sur Fuir, puis sur ton unité.',
-
-    // Tutoriel de départ (bataille 01 du jeu normal).
+    // Tutoriel de départ (bataille 01).
     deploy: 'Déploie ta 1ère unité.',
     autonomous: 'Ton unité va combattre d\'elle-même les ennemis. Certaines espèces de créatures tirent à distance, d\'autres au corps-à-corps.',
     presence: 'Chaque unité possède des points de présence (PP). Tu ne peux pas dépasser une présence de 150 sur le terrain. Choisis bien tes unités déployées !',
@@ -36,7 +30,7 @@ export const TEXT = {
     continue: 'Continuer', // bouton commun à tous les tutoriels
   },
 
-  // Bilan de l'écran de victoire (version clickbait).
+  // Pertes affichées par les écrans de victoire et de défaite.
   report: {
     lost: 'Unités perdues',
     noLosses: 'Aucune perte !',

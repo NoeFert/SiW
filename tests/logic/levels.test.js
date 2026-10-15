@@ -87,7 +87,7 @@ describe('XP des individus à la victoire (rules.md 11.6)', () => {
     expect(dead.has('a')).toBe(true);
   });
 
-  test('ni les unités de l\'IA ni celles sans individu (clickbait) ne comptent', () => {
+  test('ni les unités de l\'IA ni celles sans individu ne comptent', () => {
     const { gains } = individualXpGains([battleUnit('x', { faction: 'enemy' }), battleUnit(null)]);
     expect(gains.size).toBe(0);
   });

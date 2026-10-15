@@ -2,7 +2,7 @@ import Grid from './grid.js';
 import { createAiScriptState } from './aiScript.js';
 import { isValidDeploymentPosition } from './deployment.js';
 
-// rules.md 7.3 : bataille en plusieurs phases (bataille-clickbait). Une phase = un script IA et
+// rules.md 7.3 : bataille en plusieurs phases (« Partir en guerre »). Une phase = un script IA et
 // une zone (obstacles). Quand l'IA a déployé tout le script de la phase et qu'il ne lui reste
 // plus aucune unité sur le terrain, l'armée du joueur part vers la droite et entre dans la
 // zone suivante par la gauche : c'est la transition, pendant laquelle tout est figé.

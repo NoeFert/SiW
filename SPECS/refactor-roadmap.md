@@ -24,11 +24,13 @@ Problèmes à résoudre (feedback) :
 - [x] Écrire la checklist de tests manuels (voir « Contrôles de fin d'étape »)
 - [x] Ajouter une simulation headless déterministe (aléa fixé) : `tests/logic/battleReplay.test.js` rejoue chaque bataille et compare à un instantané (32 victoires, 8 défaites)
 
-### Étape 1 — Retirer le clickbait et l'entraînement
-- [ ] Supprimer le mode clickbait : bataille, scripts, tutoriel, bilan de victoire, textes, entrée du menu devs, tests
-- [ ] Supprimer le mode entraînement : `training.js`, `setupTraining`, entrée du menu devs, tests
-- [ ] Supprimer les champs de bataille qui ne servaient qu'à eux (`orders`, `surrenderAllowed`, `playerRoster`), après vérification
-- [ ] `App.jsx` n'a plus de notion de mode
+### Étape 1 — Retirer le clickbait et l'entraînement ✅ (commit à faire par Noémie)
+- [x] Supprimer le mode clickbait : bataille, scripts, tutoriel, bilan de victoire, textes, entrée du menu devs, tests
+- [x] Supprimer le mode entraînement : `training.js`, `setupTraining`, entrée du menu devs, tests
+- [x] Supprimer les champs de bataille qui ne servaient qu'à eux (`orders`, `surrenderAllowed`, `playerRoster`), après vérification
+- [x] `App.jsx` n'a plus de notion de mode
+- [x] Supprimer le code devenu mort : condition de tutoriel `phaseElapsed`, cible de main `playerUnit`, `getCasualtyReport` et `countOwnedCopies`, palette CSS « Dungeon Torch »
+- [x] Zones « Le mur », « Les trois couloirs », « Le fort » conservées (utilisées par « Partir en guerre ») ; leur test devient `battleZones.test.js`
 
 ### Étape 2 — État du joueur
 - [ ] Installer Zustand
@@ -39,7 +41,7 @@ Problèmes à résoudre (feedback) :
 - [ ] Mettre à jour les profils de test du menu devs (`src/dev/testProfiles.js`) et supprimer `test-wyrm-fallen`
 
 ### Étape 3 — Préparation de la bataille et flux de jeu
-- [ ] Sortir la préparation de la bataille de la Scene vers une fonction testée de `logic/`, par exemple `createBattleFromDefinition(definition, faction, playerUnits)`
+- [ ] Sortir la préparation de la bataille de la Scene vers une fonction testée de `logic/`, par exemple `createBattleFromDefinition(definition, faction, playerUnits)`. Au passage : `createBattle` crée une réserve du joueur que la Scene remplace aussitôt par celle de ses individus
 - [ ] Sortir de `App.jsx` la logique « fin de bataille → profil » vers les actions du store du profil
 - [ ] `App.jsx` ne garde que la navigation entre écrans
 
@@ -59,14 +61,16 @@ Problèmes à résoudre (feedback) :
 
 ### Étape 7 — Passe de lisibilité
 - [ ] Commentaires : expliquer ce que fait le code, pas son historique ; renvois aux specs courts, seulement là où une règle est implémentée
-- [ ] Nommage, duplications, code mort (clé de sauvegarde legacy, etc.)
+- [ ] Nommage, duplications, code mort (clé de sauvegarde legacy, etc.). Repéré en route :
+  - `showLevel` / `withLevels` (`deployment.js`) : toujours vrais côté joueur depuis le retrait du clickbait
+  - import `lossReport` inutilisé dans `tests/logic/war.test.js` (antérieur au refactor)
 - [ ] `App.jsx`, `CivilizationScreen.jsx` (386 lignes) et `WarScreen.jsx` (241 lignes) découpés en sous-composants
 - [ ] Supprimer les fichiers périmés ou en double hors `src/` : `gamejam-skills-claude/`, `SPECS-REVIEW.md`, `PRE-RENDU-CHECK.md`
 
 ### Étape 8 — Specs à jour
 - [ ] `technical.md` décrit l'architecture réelle (états, stores, dossiers, découpage de la Scene)
 - [ ] Retirer le clickbait des specs (`CONCEPT.md`, `roadmap.md`, `roadmap-mvp.md`, `rules.md`, `technical.md`…) et le remplacer par : le MVP est la seconde version du projet, après une version clickbait ; le clickbait vit désormais dans un autre dépôt, c'est un projet passé, et on se concentre uniquement sur le MVP
-- [ ] Mettre à jour `CLAUDE.md`
+- [ ] Mettre à jour `CLAUDE.md` et le `README.md` (qui parlent encore du clickbait)
 - [ ] Clore ce suivi (toutes les cases cochées) et fusionner la branche
 
 ## Contrôles de fin d'étape
@@ -122,3 +126,6 @@ Changements apportés au plan initial, du plus ancien au plus récent.
   - La checklist est intégrée à ce fichier (`REFACTOR-CHECKLIST.md` supprimé).
 - **2026-10-15 — Commits**
   - Les commits sont faits par Noémie : Claude propose le message, Noémie le réécrit et commite. (Les deux premiers commits de la branche, `96eb901` et `631cad6`, ont été faits par Claude avant cette consigne.)
+- **2026-10-15 — Étape 1**
+  - Plus de tests après l'étape (438 : +40 du test de référence, −20 tests clickbait/entraînement) ; instantané de référence inchangé.
+  - Code mort découvert en route : supprimé s'il venait du clickbait, sinon noté pour l'étape 7.

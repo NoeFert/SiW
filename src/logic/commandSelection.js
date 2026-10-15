@@ -11,11 +11,6 @@ import { tutorialAllows } from './tutorial.js';
 // cooldown de la fuite.
 export const ORDERS = ['move', 'attack', 'flee'];
 
-// Ordres proposés dans cette bataille (`battle.orders`, tous par défaut).
-export function availableOrders(battle) {
-  return battle.orders ?? ORDERS;
-}
-
 function isOpen(battle) {
   return battle.commandSelection !== null;
 }
@@ -25,7 +20,6 @@ function isOpen(battle) {
 // remplace.
 export function canChooseOrder(battle, order) {
   return battle.outcome === 'ongoing'
-    && availableOrders(battle).includes(order)
     && battle.pause.interaction !== 'deploy'
     && !battle.phaseTransition
     && tutorialAllows(battle, `order:${order}`)

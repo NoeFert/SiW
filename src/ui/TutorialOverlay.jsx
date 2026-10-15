@@ -18,9 +18,6 @@ const HAND_TARGETS = {
   // Centre de la zone de déploiement du joueur (moitié gauche du terrain).
   deploymentZone: (battle, canvasRect) => canvasRect
     && gridToScreen(canvasRect, Math.floor(battle.grid.width / 4), Math.floor(battle.grid.height / 2)),
-  playerUnit: (battle, canvasRect) => unitOnScreen(
-    canvasRect, battle.units.find((u) => u.faction === 'player' && u.isOnField),
-  ),
   weakestPlayerUnit: (battle, canvasRect) => unitOnScreen(canvasRect, weakestPlayerUnit(battle)),
 };
 

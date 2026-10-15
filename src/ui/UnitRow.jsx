@@ -19,7 +19,7 @@ const LEVEL_TEXT_CLASS = {
 // ui-battle-screen-decisions.md 2.2 : case d'une ligne de la tour, deux par rangée. Même
 // panneau que les cases de CivilizationScreen (PanelLarge, doré avec coins pour un
 // [Légendaire]) ; le nombre de copies dans un carré en haut à gauche (« 8x »), seulement à partir de 2. Puis : sprite (+ mini
-// barre de vie si blessé), PV et niveau (jeu normal seulement, rien en clickbait), tag de
+// barre de vie si blessé), PV et niveau, tag de
 // présence ; ni nom ni keywords (consultables dans l'écran de civilisation). Sur la première
 // case d'une espèce à plusieurs lignes, une flèche en haut à droite la regroupe / dégroupe
 // (`onToggleGroup`, voir groupTowerRows). forwardRef : sert de déclencheur au tooltip "budget insuffisant"

@@ -53,7 +53,7 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
     expect(rows[0]).toMatchObject({ maxHp: 48, damage: 10, showLevel: true, wounded: false });
   });
 
-  test('version clickbait / IA : niveau 1, pas d\'affichage du niveau', () => {
+  test('sans individus : niveau 1, pas d\'affichage du niveau', () => {
     const rows = getTowerRows(createDeploymentState(WYRMS_ROSTER), 'player', []);
     expect(rows.every((r) => r.level === 1 && r.showLevel === false)).toBe(true);
   });

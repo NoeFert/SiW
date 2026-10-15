@@ -17,8 +17,6 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
     for (const id of IDS) {
       expect(BATTLES[id].phases).toHaveLength(2);
       expect(BATTLES[id].tutorial).toBeNull();
-      expect(BATTLES[id].orders).toBeUndefined(); // les trois ordres
-      expect(BATTLES[id].surrenderAllowed).toBeUndefined(); // abandon possible
     }
   });
 
@@ -44,11 +42,6 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
         expect(legendaries).toHaveLength(id === 'war3' ? 1 : 0);
       }
     }
-  });
-
-  test('le clickbait garde ses propres scripts', () => {
-    expect(BATTLES.clickbaitBattle.phases[1].enemyScripts.wyrms).toHaveLength(3);
-    expect(BATTLES.war1.phases[1].enemyScripts.wyrms).not.toBe(BATTLES.clickbaitBattle.phases[1].enemyScripts.wyrms);
   });
 
   test('récompenses provisoires : 50 pour la bataille 01, 60 / 80 / 100 ensuite', () => {

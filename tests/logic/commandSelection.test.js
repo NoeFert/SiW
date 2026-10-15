@@ -3,7 +3,7 @@ import Unit from '../../src/logic/unit.js';
 import { createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag } from '../../src/logic/battle.js';
 import {
   cancelCommand, chooseOrder, canChooseOrder, selectUnit, selectEnemy, selectCell, clickField,
-  getClickableHighlights, availableOrders,
+  getClickableHighlights,
 } from '../../src/logic/commandSelection.js';
 import { canFlee } from '../../src/logic/commands.js';
 
@@ -226,24 +226,5 @@ describe('éléments cliquables mis en valeur (ui-battle-screen-decisions.md 3)'
     expect(getClickableHighlights(battle)).toEqual({
       zone: { x: 0, y: 0, width: 5, height: 10 }, unitIds: new Set(),
     });
-  });
-});
-
-describe('ordres restreints — version clickbait, seul Fuir (POC-SPECS.md)', () => {
-  test('seul Fuir est proposé et accepté', () => {
-    const { battle, unit } = setup();
-    battle.orders = ['flee'];
-
-    expect(availableOrders(battle)).toEqual(['flee']);
-    expect(chooseOrder(battle, 'attack')).toBe(false);
-    expect(chooseOrder(battle, 'move')).toBe(false);
-    expect(chooseOrder(battle, 'flee')).toBe(true);
-    expect(selectUnit(battle, unit)).toBe(true);
-    expect(unit.command).toEqual({ type: 'flee' });
-  });
-
-  test('par défaut, les trois ordres sont proposés', () => {
-    const { battle } = setup();
-    expect(availableOrders(battle)).toEqual(['move', 'attack', 'flee']);
   });
 });

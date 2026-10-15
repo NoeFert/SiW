@@ -34,7 +34,7 @@ function LossReport({ rows }) {
     : <p className="retro text-xs">{TEXT.report.noLosses}</p>;
 }
 
-// technical.md 5.3 : jeu normal — rangée de récompenses (Spirit Stones : victoire + niveaux du
+// technical.md 5.3 : rangée de récompenses (Spirit Stones : victoire + niveaux du
 // joueur, puis XP du joueur), individus qui ont gagné au moins un niveau, regroupés
 // (« 2x [sprite] Ver de Lambton niv 1 → 2 », bloc absent s'il n'y en a aucun), puis unités perdues
 // (rules.md 11.5 et 11.6). Niveaux gagnés et pertes côte à côte, pour tenir en hauteur.
@@ -61,17 +61,12 @@ function ProgressReport({ progress, playerFaction }) {
   );
 }
 
-// technical.md 5.6 : en version clickbait, `report` (getCasualtyReport) affiche seulement les
-// unités perdues, pour faire sentir le poids des pertes. Jeu normal : `progress`
-// (resolveVictory) affiche récompenses, niveaux gagnés et pertes (technical.md 5.3).
-export default function VictoryScreen({
-  onContinue, report, progress, playerFaction,
-}) {
+// technical.md 5.3 : `progress` (resolveVictory) affiche récompenses, niveaux gagnés et pertes.
+export default function VictoryScreen({ onContinue, progress, playerFaction }) {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-6 text-white">
       <h1 className="text-3xl font-bold">Victoire</h1>
-      {report && <LossReport rows={report.filter((row) => row.lost > 0)} />}
-      {progress && <ProgressReport progress={progress} playerFaction={playerFaction} />}
+      <ProgressReport progress={progress} playerFaction={playerFaction} />
       <Button onClick={onContinue}>Continuer</Button>
     </div>
   );
