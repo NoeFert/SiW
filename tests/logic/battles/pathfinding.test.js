@@ -1,15 +1,21 @@
 import Grid from '../../../src/logic/battles/grid.js';
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
-import { findNearestEnemy, findPath, chebyshevDistance } from '../../../src/logic/battles/pathfinding.js';
+import { compareTargets, findPath, chebyshevDistance } from '../../../src/logic/battles/pathfinding.js';
 import { FACTIONS } from '../../../src/data/factions/index.js';
 
 const WYRMS_ROSTER = FACTIONS.wyrms.roster;
+
+// Ennemi vivant le mieux classé par compareTargets (le plus proche, puis départages).
+function findNearestEnemy(unit, units) {
+  const enemies = units.filter((other) => other !== unit && other.isAlive && other.faction !== unit.faction);
+  return enemies.sort((a, b) => compareTargets(unit, a, b))[0] ?? null;
+}
 
 function lastStep(path) {
   return path[path.length - 1];
 }
 
-describe('findNearestEnemy', () => {
+describe('compareTargets — ennemi le plus proche (rules.md 3)', () => {
   test('returns the closest living unit of the opposite faction', () => {
     const grid = new Grid(10, 10);
     const self = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);

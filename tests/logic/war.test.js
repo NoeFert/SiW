@@ -1,5 +1,5 @@
 import {
-  warBattleState, isWarCompleted, victoryReward, lossReport, resolveWarDefeat, invaderSpecies,
+  warBattleState, isWarCompleted, victoryReward, resolveWarDefeat, invaderSpecies,
   invadersRepelled,
 } from '../../src/logic/war.js';
 import { WAR_MAP_01 } from '../../src/data/battles/war01/warMap01.js';

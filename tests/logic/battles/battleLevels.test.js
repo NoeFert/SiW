@@ -52,12 +52,12 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
       ['Lambton Worm', 1, 2, 40],
       ['Fafnir the Cursed One', 4, 1, 286],
     ]);
-    expect(rows[0]).toMatchObject({ maxHp: 48, damage: 10, showLevel: true, wounded: false });
+    expect(rows[0]).toMatchObject({ maxHp: 48, damage: 10, wounded: false });
   });
 
-  test('sans individus : niveau 1, pas d\'affichage du niveau', () => {
+  test('sans individus (IA) : copies de niveau 1', () => {
     const rows = getTowerRows(createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy), 'player', []);
-    expect(rows.every((r) => r.level === 1 && r.showLevel === false)).toBe(true);
+    expect(rows.every((r) => r.level === 1)).toBe(true);
   });
 
   test('regroupée, l\'espèce déploie ses individus par niveau décroissant', () => {

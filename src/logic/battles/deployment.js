@@ -26,7 +26,7 @@ export function createDeploymentState(roster, startingArmy, individuals = null) 
       freshIndividuals,
     });
   }
-  return { bySpecies, withLevels: individuals !== null };
+  return { bySpecies };
 }
 
 export function getPresenceUsed(faction, unitsOnField) {
@@ -52,7 +52,6 @@ export function getReserve(state, species) {
 // Ordre : roster, puis niveaux décroissants, puis copies intactes et blessés (PV décroissants)
 // juste sous leur groupe. `deployable` est faux si le coût dépasse le budget restant (ou si le
 // [Légendaire] est déjà déployé). `copyChoice` ({ level, hp }) est à transmettre à deployUnit.
-// `showLevel` : le niveau n'est affiché que dans le jeu normal.
 export function getTowerRows(state, faction, unitsOnField) {
   const remainingBudget = PRESENCE_CAP - getPresenceUsed(faction, unitsOnField);
   const rows = [];
@@ -84,7 +83,6 @@ export function getTowerRows(state, faction, unitsOnField) {
           copyChoice: { level, hp },
           count,
           level,
-          showLevel: state.withLevels,
           hp,
           maxHp,
           damage: levelDamage(species.damage, level),

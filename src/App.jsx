@@ -7,12 +7,12 @@ import BattleScreen from './screens/BattleScreen.jsx';
 import VictoryScreen from './screens/VictoryScreen.jsx';
 import DefeatScreen from './screens/DefeatScreen.jsx';
 import HomeScreen from './screens/HomeScreen.jsx';
-import CivilizationScreen from './screens/CivilizationScreen.jsx';
+import UnitsScreen from './screens/UnitsScreen.jsx';
+import ArmyScreen from './screens/ArmyScreen.jsx';
 import SummonScreen from './screens/SummonScreen.jsx';
 import WarScreen from './screens/WarScreen.jsx';
 import CodexScreen from './screens/CodexScreen.jsx';
 import DevMenu from './dev/DevMenu.jsx';
-import { TEST_PROFILES } from './dev/testProfiles.js';
 import { TUTO_BATTLE_ID, WAR_BATTLE_IDS } from './data/battles/index.js';
 import { armyUnits } from './logic/army.js';
 import {
@@ -39,9 +39,7 @@ export default function App() {
   const [battleId, setBattleId] = useState(TUTO_BATTLE_ID);
   const [victoryProgress, setVictoryProgress] = useState(null); // XP, niveaux et pertes de la victoire
   const [defeatLosses, setDefeatLosses] = useState(null); // pertes d'une défaite de guerre
-  // technical.md 5.2 : SummonScreen s'ouvre depuis l'accueil ou depuis l'écran des unités ;
-  // « Retour » ramène à l'écran d'origine ('home' ou 'units').
-  const [summonBack, setSummonBack] = useState('home');
+  const [summonBack, setSummonBack] = useState('home'); // écran où ramène « Retour » de l'invocation
   // technical.md 5.5 : au moins une invocation depuis la dernière arrivée sur l'accueil (conseil
   // « recrue hors de l'armée » du tutoriel de l'accueil).
   const [summonedSinceHome, setSummonedSinceHome] = useState(false);
@@ -110,20 +108,19 @@ export default function App() {
     setScreen('intro');
   }, []);
 
-  const devActions = [
-    { label: 'restart game', run: restartGame },
-    ...(screen === 'battle' && battleId === TUTO_BATTLE_ID
-      ? [{ label: 'skip tutorial', run: skipTutoBattle }] : []),
-    ...Object.entries(TEST_PROFILES)
-      .map(([label, createProfile]) => ({
-        label,
-        run: () => {
-          replaceProfile(createProfile());
-          setSaveVersion((v) => v + 1);
-          goHome();
-        },
-      })),
-  ];
+  // Menu devs : charge un joueur de test, puis remonte l'écran pour qu'il reparte de ce profil.
+  const loadTestProfile = (profile) => {
+    replaceProfile(profile);
+    setSaveVersion((v) => v + 1);
+    goHome();
+  };
+
+  // technical.md 5.2 : l'invocation s'ouvre depuis l'accueil ou depuis l'écran des unités
+  // (`from`), où « Retour » ramène.
+  const openSummon = (from) => {
+    setSummonBack(from);
+    setScreen('summon');
+  };
 
   // rules.md 2 : bataille tutoriel = tous les individus possédés ; « Partir en guerre » = l'armée.
   const battleUnits = isWarBattle ? armyUnits(army, ownedUnits) : ownedUnits;
@@ -166,19 +163,16 @@ export default function App() {
     );
   } else if (screen === 'war') {
     content = <WarScreen playerFaction={playerFaction} onFight={startWarBattle} onBack={goHome} />;
-  } else if (screen === 'units' || screen === 'army') {
+  } else if (screen === 'units') {
     content = (
-      <CivilizationScreen
-        key={screen}
+      <UnitsScreen
         playerFaction={playerFaction}
-        section={screen}
         onBack={goHome}
-        onOpenSummon={() => {
-          setSummonBack('units');
-          setScreen('summon');
-        }}
+        onOpenSummon={() => openSummon('units')}
       />
     );
+  } else if (screen === 'army') {
+    content = <ArmyScreen playerFaction={playerFaction} onBack={goHome} />;
   } else if (screen === 'codex') {
     content = <CodexScreen onBack={goHome} />;
   } else if (screen === 'summon') {
@@ -196,10 +190,7 @@ export default function App() {
         onOpenWar={() => setScreen('war')}
         onOpenUnits={() => setScreen('units')}
         onOpenArmy={() => setScreen('army')}
-        onOpenSummon={() => {
-          setSummonBack('home');
-          setScreen('summon');
-        }}
+        onOpenSummon={() => openSummon('home')}
         onOpenCodex={() => setScreen('codex')}
         onResetGame={restartGame}
         justSummoned={summonedSinceHome}
@@ -210,9 +201,9 @@ export default function App() {
 
   return (
     <>
-      {/* GRAPHICS.md « Interface » : fond des écrans : noir pour l'intro, le choix de faction et la bataille (la marge autour
-          de la tour et du terrain se fond avec eux), dégradé vertical #2a2c2f → #838796 pour les
-          autres (l'accueil le couvre de son château). */}
+      {/* GRAPHICS.md « Interface » : fond des écrans — noir pour l'intro, le choix de faction et
+          la bataille (la marge autour de la tour et du terrain se fond avec eux), dégradé vertical
+          #2a2c2f → #838796 pour les autres (l'accueil le couvre de son château). */}
       <div
         className={`h-full p-game ${['intro', 'factionChoice', 'battle'].includes(screen)
           ? 'bg-neutral-900'
@@ -220,7 +211,13 @@ export default function App() {
       >
         <Fragment key={saveVersion}>{content}</Fragment>
       </div>
-      {import.meta.env.DEV && <DevMenu actions={devActions} />}
+      {import.meta.env.DEV && (
+        <DevMenu
+          onRestart={restartGame}
+          onSkipTutoBattle={screen === 'battle' && battleId === TUTO_BATTLE_ID ? skipTutoBattle : null}
+          onLoadProfile={loadTestProfile}
+        />
+      )}
     </>
   );
 }

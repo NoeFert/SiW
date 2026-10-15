@@ -16,15 +16,6 @@ export function compareTargets(unit, a, b) {
     || a.id - b.id;
 }
 
-export function findNearestEnemy(unit, units) {
-  let nearest = null;
-  for (const other of units) {
-    if (other === unit || !other.isAlive || other.faction === unit.faction) continue;
-    if (!nearest || compareTargets(unit, other, nearest) < 0) nearest = other;
-  }
-  return nearest;
-}
-
 // Cases occupées par une unité selon sa position (coin haut-gauche) et sa taille (1 ou 2x2).
 export function footprint(x, y, size) {
   const cells = [];

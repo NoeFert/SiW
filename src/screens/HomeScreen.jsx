@@ -35,7 +35,7 @@ const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rec
 // première victoire. En haut à gauche, le portrait du souverain avec, à sa droite, son nom, sa
 // barre d'XP et son niveau (rules.md 11.5) ; solde de Spirit Stones en haut à droite (rules.md
 // 11.3), et à sa droite l'engrenage du menu des paramètres (codex des mots-clés, réinitialiser le jeu) ; menu de quatre entrées alignées à gauche — « Partir en guerre » (WarScreen), les unités
-// (entrée au nom de la faction) et « Armées » (CivilizationScreen), invocation — et la Spirit
+// (entrée au nom de la faction, UnitsScreen) et « Armées » (ArmyScreen), invocation — et la Spirit
 // Fountain alignée à gauche (rules.md 11.8).
 export default function HomeScreen({
   playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon, onOpenCodex, onResetGame, justSummoned, onArrived,

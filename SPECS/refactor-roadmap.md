@@ -69,19 +69,17 @@ Problèmes à résoudre (feedback) :
 - [x] Supprimer l'objet global `interactionState` et les deux boucles `requestAnimationFrame` (`useBattle.js`, `BattleScreen.jsx`) ; la position affichée des sprites (main du tutoriel) se demande directement à la Scene
 - [x] `battle` reste un objet modifié en place par le moteur ; aucune nouvelle dépendance
 
-### Étape 6 — Découpage de BattleScene ✅
+### Étape 6 — Découpage de BattleScene ✅ (`3823f7d`)
 - [x] Une vue par sujet dans `src/scenes/battle/`, chacune recevant la Scene : `BattlefieldView` (fond, rochers, phases), `DeploymentZoneView`, `UnitViews` (sprites, barre de vie, compteur d'aptitude, déplacements, transition de phase), `CombatEffects` (missiles, entailles, aptitudes, textes flottants), `FieldInput` (clics sur le terrain, cadre de sélection), `PauseTint` (désaturation pendant les pauses : une simple fonction, `applyPauseTint`)
 - [x] La configuration des effets part dans `src/data/effects.js`
 - [x] La Scene ne garde que l'orchestration : 90 lignes (649 avant)
 - [x] Les textes flottants affichés au joueur (« COUP CRITIQUE ! », « Raté ! ») passent dans `src/ui/strings.js` (`fieldTexts`)
 
 ### Étape 7 — Passe de lisibilité
-- [ ] Commentaires : expliquer ce que fait le code, pas son historique ; renvois aux specs courts, seulement là où une règle est implémentée
-- [ ] Nommage, duplications, code mort (clé de sauvegarde legacy, etc.). Repéré en route :
-  - `showLevel` / `withLevels` (`deployment.js`) : toujours vrais côté joueur depuis le retrait du clickbait
-  - import `lossReport` inutilisé dans `tests/logic/war.test.js` (antérieur au refactor)
-- [ ] `App.jsx`, `CivilizationScreen.jsx` (386 lignes) et `WarScreen.jsx` (241 lignes) découpés en sous-composants
-- [ ] Supprimer les fichiers périmés ou en double hors `src/` : `gamejam-skills-claude/`, `SPECS-REVIEW.md`, `PRE-RENDU-CHECK.md`
+- [ ] Commentaires : expliquer ce que fait le code, pas son historique ; renvois aux specs courts, seulement là où une règle est implémentée (7b)
+- [x] Code mort (7a) : `showLevel` / `withLevels` supprimés (la tour affiche toujours le niveau), `findNearestEnemy` (plus utilisé par le jeu) déplacé dans son test, import `lossReport` inutilisé retiré. La clé de sauvegarde legacy a disparu avec `persistence.js` (étape 2)
+- [x] Gros écrans découpés (7a) : `CivilizationScreen.jsx` (372 lignes) devient `UnitsScreen.jsx` (grille des unités) et `ArmyScreen.jsx` (armée), plus `ui/IndividualDetail.jsx` (page d'un individu) ; `WarScreen.jsx` garde l'écran et le panneau, la map part dans `ui/WarMap.jsx` ; `App.jsx` : actions du menu devs dans `DevMenu.jsx`, ouverture de l'invocation factorisée
+- [x] Fichiers périmés supprimés (7a) : `SPECS-REVIEW.md`, `PRE-RENDU-CHECK.md` (`gamejam-skills-claude/` n'existait déjà plus)
 
 ### Étape 8 — Specs à jour
 - [ ] `technical.md` décrit l'architecture réelle (états, stores, dossiers, découpage de la Scene)
