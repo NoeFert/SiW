@@ -18,6 +18,8 @@ Lire dans cet ordre avant toute tâche de code :
 
 Voir aussi `SPECS/AGENTIC-WORKFLOW.md` pour la boucle de travail attendue.
 
+**Refactor en cours** : suivre `SPECS/refactor-roadmap.md` (étapes, consignes, contrôles de fin d'étape) et le tenir à jour à chaque étape terminée ou ajustement du processus.
+
 ## Règles de travail
 
 - **Ne jamais mélanger logique de jeu et rendu Phaser.** Le dossier `src/logic/` ne doit avoir aucune dépendance à Phaser (voir `SPECS/technical.md` section 2). Si une tâche semble pousser à violer cette séparation, le signaler avant de coder.
