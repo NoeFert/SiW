@@ -1,13 +1,12 @@
 import Phaser from 'phaser';
 import { tickBattle } from '../logic/battles/battle.js';
-import { createBattleFromDefinition, opposingFaction, resolvePhases } from '../logic/battles/battleSetup.js';
+import { opposingFaction, resolvePhases } from '../logic/battles/battleSetup.js';
 import { isBattleTimeRunning } from '../logic/battles/pause.js';
 import { phaseTransitionProgress } from '../logic/battles/phases.js';
 import { clickField, cancelOrder, getClickableHighlights } from '../logic/battles/orderSelection.js';
 import { BATTLES } from '../data/battles/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import { CELL_SIZE, cellCenter, factionColor } from '../renderConstants.js';
-import { interactionState } from '../state/interactionState.js';
 
 // Quadrillage de debug : repère de case utile en dev, pas pour le joueur. Passer à true pour
 // le réafficher pendant qu'on travaille sur le placement des obstacles/scripts par exemple.
@@ -70,6 +69,10 @@ const ABILITY_COUNTER_COLORS = {
 const COUNTER_SLOT_HEIGHT = 4;
 const COUNTER_SLOT_GAP = 2;
 
+// Événement émis sur `game.events` après chaque frame jouée (bataille avancée et terrain
+// redessiné) : BattleScreen.jsx s'y abonne pour redessiner la tour et détecter la fin de bataille.
+export const BATTLE_FRAME_EVENT = 'battleFrame';
+
 // Clé de texture Phaser de l'image de fond `image` (champ `background` des phases, src/data/battles/).
 const backgroundKey = (image) => `background-${image}`;
 
@@ -78,21 +81,24 @@ const backgroundKey = (image) => `background-${image}`;
 // pause. Le déploiement (glisser-déposer) et les ordres (rangée « Ordres ») vivent dans la tour de
 // commandement React (src/ui/) ; le choix de faction et l'écran de résultat vivent dans des écrans React
 // séparés (src/screens/, technical.md 5) — cette Scene est recréée par BattleScreen.jsx à
-// chaque entrée dans l'écran de bataille, faction déjà connue (voir `init`). Les deux couches
-// ne communiquent qu'à travers `interactionState` et l'objet `battle` qu'il expose.
+// chaque entrée dans l'écran de bataille, qui lui donne la bataille à jouer (voir `init`). Les
+// deux couches partagent seulement l'objet `battle` ; la Scene signale chaque frame jouée
+// (BATTLE_FRAME_EVENT).
 export default class BattleScene extends Phaser.Scene {
   constructor() {
     super('BattleScene');
     this.unitViews = new Map(); // unit.id -> { container, barFill, barWidth, stunEffect, ... }
   }
 
+  // `data` : { battle, playerFaction, battleId } — la bataille créée par BattleScreen.jsx, que la
+  // Scene fait avancer et affiche ; la faction du joueur (couleurs) ; l'identifiant de la bataille
+  // (src/data/battles/), pour les fonds et les rochers de ses zones.
   init(data) {
+    this.battle = data.battle;
     this.playerFaction = data.playerFaction;
     this.enemyFaction = opposingFaction(data.playerFaction);
-    this.battleDefinition = BATTLES[data.battleId]; // src/data/battles/
-    this.playerUnits = data.playerUnits; // individus du joueur engagés (rules.md 2)
     // rules.md 7.3 : zones de la bataille (fond, obstacles), affichées l'une après l'autre.
-    this.phases = resolvePhases(this.battleDefinition, this.enemyFaction);
+    this.phases = resolvePhases(BATTLES[data.battleId], this.enemyFaction);
   }
 
   preload() {
@@ -147,7 +153,6 @@ export default class BattleScene extends Phaser.Scene {
         this.textures.get(`step-slot-${color}-${part}`).setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
     }
-    this.battle = createBattleFromDefinition(this.battleDefinition, this.playerFaction, this.playerUnits);
     const { grid } = this.battle;
     this.width = grid.width * CELL_SIZE;
     this.height = grid.height * CELL_SIZE;
@@ -230,16 +235,8 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  // Branche la bataille sur le joueur : la tour de commandement React et les clics sur le terrain.
+  // Branche les clics du joueur sur le terrain.
   connectToPlayer() {
-    // Publie l'état pour la tour de commandement React (technical.md 2.2) : c'est le seul canal de
-    // communication entre les deux couches, aucune ne référence les objets de l'autre.
-    interactionState.battle = this.battle;
-    interactionState.unitDisplayCenter = (unit) => {
-      const view = this.unitViews.get(unit.id);
-      return view ? { x: view.container.x, y: view.container.y } : null;
-    };
-
     this.input.mouse.disableContextMenu();
     this.input.on('pointerdown', (pointer) => this.handlePointerDown(pointer));
 
@@ -511,6 +508,15 @@ export default class BattleScene extends Phaser.Scene {
     this.deploymentZone.setVisible(this.battle.pause.interaction === 'deploy');
 
     if (this.battle.outcome !== 'ongoing') this.hideBattleUi();
+    this.game.events.emit(BATTLE_FRAME_EVENT);
+  }
+
+  // Position affichée (px du canevas) du sprite d'une unité, ou null s'il n'est pas sur le
+  // terrain. Pendant une pause, un sprite peut rester figé à mi-chemin entre deux cases
+  // (déplacement animé gelé), loin de sa case logique : la main du tutoriel le vise ici.
+  unitDisplayCenter(unit) {
+    const view = this.unitViews.get(unit.id);
+    return view ? { x: view.container.x, y: view.container.y } : null;
   }
 
   syncViews() {

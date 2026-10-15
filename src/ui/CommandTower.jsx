@@ -1,6 +1,5 @@
 import { TooltipProvider } from '@/components/ui/8bit/tooltip.jsx';
 import { getPresenceUsed } from '../logic/battles/deployment.js';
-import { useBattle } from './useBattle.js';
 import SurrenderButton from './SurrenderButton.jsx';
 import PresenceGauge from './PresenceGauge.jsx';
 import OrdersRow from './OrdersRow.jsx';
@@ -13,10 +12,8 @@ import { TEXT } from './strings.js';
 // bord de la fenêtre, son contenu reste à la distance du padding du jeu (game, 48 px) en haut, à
 // gauche et en bas. À droite (côté terrain) : 16 px ; dans la liste, la scrollbar (14 px,
 // gouttière toujours réservée) + 2 px.
-export default function CommandTower() {
-  const battle = useBattle();
-  if (!battle) return null;
-
+// `battle` : la bataille en cours (BattleScreen.jsx, qui redessine la tour à chaque frame).
+export default function CommandTower({ battle }) {
   const unitsOnField = battle.units.filter((u) => u.isOnField);
 
   return (
