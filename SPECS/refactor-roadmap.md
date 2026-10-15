@@ -11,8 +11,9 @@ Problèmes à résoudre (feedback) :
 
 - **Ce fichier est tenu à jour au fur et à mesure du refactor** : cocher chaque point terminé, noter le commit de chaque étape, et reporter tout ajustement du processus dans le journal en bas de page. Les étapes décrivent toujours la **dernière version** du plan.
 - Une branche : `refactor/state-and-scene`. Un commit par étape.
+- **Claude ne commite jamais lui-même** : quand une étape est prête, il propose un message de commit ; Noémie le réécrit, le valide et fait le commit.
 - Le site ne doit jamais être cassé : chaque étape se termine sur les contrôles automatiques et les parcours manuels ci-dessous.
-- Arrêt après chaque étape pour que l'utilisatrice relise le diff avant la suivante.
+- Arrêt après chaque étape pour que Noémie relise le diff avant la suivante.
 - Code 100 % en anglais ; commentaires en français, comme les specs ; textes affichés au joueur en français dans `src/ui/strings.js`.
 
 ## Étapes
@@ -119,3 +120,5 @@ Changements apportés au plan initial, du plus ancien au plus récent.
   - 418 tests au départ (et non 261, chiffre du feedback, antérieur).
   - Le test de référence rejoue les batailles avec le bot de `src/debug/balance/` : il ne donne pas d'ordres et n'utilise ni la pause ni le tutoriel, ces parties restent couvertes par les tests unitaires et les parcours manuels.
   - La checklist est intégrée à ce fichier (`REFACTOR-CHECKLIST.md` supprimé).
+- **2026-10-15 — Commits**
+  - Les commits sont faits par Noémie : Claude propose le message, Noémie le réécrit et commite. (Les deux premiers commits de la branche, `96eb901` et `631cad6`, ont été faits par Claude avant cette consigne.)
