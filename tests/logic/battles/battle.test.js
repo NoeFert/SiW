@@ -3,7 +3,7 @@
 // demandé explicitement, mais un smoke test reste utile pour attraper une erreur de câblage
 // (CLAUDE.md : toute logique de jeu doit avoir un test associé).
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { getReserve } from '../../../src/logic/battles/deployment.js';
 import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import { deployPlayerUnit, issuePlayerFlee, surrenderPlayer } from '../../../src/logic/battles/playerActions.js';
@@ -78,7 +78,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   test('une unité tuée au tick où elle fuit ne revient pas en réserve (rules.md 2/4.4)', () => {
     const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, []);
     const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 5); // déjà sur le bord
-    const enemy = new Unit(ENEMY_ROSTER.grunt, 'enemy', 1, 5);
+    const enemy = new BattleUnit(ENEMY_ROSTER.grunt, 'enemy', 1, 5);
     enemy.hp = 1000;
     battle.units.push(enemy);
     tickBattle(battle, 0.01); // engagement au corps-à-corps
@@ -93,7 +93,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
 
   test('un déploiement scripté de l\'IA ne chevauche jamais une unité déjà présente (rules.md 1/7)', () => {
     const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
-    const intruder = new Unit(PLAYER_ROSTER.fighter, 'player', 5, 5); // dans la moitié IA
+    const intruder = new BattleUnit(PLAYER_ROSTER.fighter, 'player', 5, 5); // dans la moitié IA
     battle.units.push(intruder);
 
     tickBattle(battle, 0.01);

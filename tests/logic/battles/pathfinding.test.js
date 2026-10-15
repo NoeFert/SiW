@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
 import { findNearestEnemy, findPath, chebyshevDistance } from '../../../src/logic/battles/pathfinding.js';
 
@@ -10,44 +10,44 @@ function lastStep(path) {
 describe('findNearestEnemy', () => {
   test('returns the closest living unit of the opposite faction', () => {
     const grid = new Grid(10, 10);
-    const self = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const far = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 9, 9);
-    const near = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 2);
+    const self = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const far = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 9, 9);
+    const near = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 2);
     const units = [self, far, near];
 
     expect(findNearestEnemy(self, units)).toBe(near);
   });
 
   test('measures a 2x2 enemy from its closest cell (rules.md 3)', () => {
-    const self = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
-    const smallEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 8, 5); // 3 cases
-    const bigEnemy = new Unit(WYRMS_ROSTER.fafnir, 'enemy', 2, 2); // (3,3) à 2 cases, coin haut-gauche à 3
+    const self = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
+    const smallEnemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 8, 5); // 3 cases
+    const bigEnemy = new BattleUnit(WYRMS_ROSTER.fafnir, 'enemy', 2, 2); // (3,3) à 2 cases, coin haut-gauche à 3
 
     expect(findNearestEnemy(self, [self, smallEnemy, bigEnemy])).toBe(bigEnemy);
   });
 
   test('breaks a distance tie by fewest current HP (rules.md 3)', () => {
-    const self = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
-    const healthy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 8, 5);
-    const wounded = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 5);
+    const self = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
+    const healthy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 8, 5);
+    const wounded = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 5);
     wounded.takeDamage(1);
 
     expect(findNearestEnemy(self, [self, healthy, wounded])).toBe(wounded);
   });
 
   test('ignores allies and dead units', () => {
-    const ally = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
-    const self = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const deadEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 1, 0);
+    const ally = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
+    const self = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const deadEnemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 1, 0);
     deadEnemy.takeDamage(deadEnemy.hp);
-    const aliveEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 5, 5);
+    const aliveEnemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 5, 5);
 
     expect(findNearestEnemy(self, [ally, self, deadEnemy, aliveEnemy])).toBe(aliveEnemy);
   });
 
   test('returns null when no enemy remains', () => {
-    const self = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const ally = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
+    const self = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const ally = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
 
     expect(findNearestEnemy(self, [self, ally])).toBeNull();
   });
@@ -56,7 +56,7 @@ describe('findNearestEnemy', () => {
 describe('findPath — simple movement without obstacle', () => {
   test('moves in a straight (diagonal) line toward the target', () => {
     const grid = new Grid(10, 10);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
 
     const path = findPath(unit, 3, 3, grid, [unit]);
 
@@ -69,7 +69,7 @@ describe('findPath — simple movement without obstacle', () => {
 
   test('takes a purely horizontal straight line when the target has no vertical offset', () => {
     const grid = new Grid(10, 10);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 5);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 5);
 
     const path = findPath(unit, 5, 5, grid, [unit]);
 
@@ -80,7 +80,7 @@ describe('findPath — simple movement without obstacle', () => {
 
   test('never takes more steps than the Chebyshev distance (shortest path, no superfluous detour)', () => {
     const grid = new Grid(20, 20);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 2, 2);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 2, 2);
 
     const path = findPath(unit, 9, 5, grid, [unit]);
 
@@ -94,7 +94,7 @@ describe('findPath — contournement d\'obstacle', () => {
     const grid = new Grid(5, 5, [
       { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 2, y: 2 }, { x: 2, y: 3 },
     ]);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 2);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 2);
 
     const path = findPath(unit, 4, 2, grid, [unit]);
 
@@ -108,22 +108,22 @@ describe('findPath — contournement d\'obstacle', () => {
 describe('findPath — diagonale et coin d\'obstacle (rules.md 3)', () => {
   test('a ground unit never cuts the corner of an obstacle', () => {
     const grid = new Grid(5, 5, [{ x: 1, y: 0 }]);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
 
     expect(findPath(unit, 1, 1, grid, [unit])).toEqual([{ x: 0, y: 1 }, { x: 1, y: 1 }]);
   });
 
   test('units never block a diagonal', () => {
     const grid = new Grid(5, 5);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const blockers = [[1, 0], [0, 1]].map(([x, y]) => new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', x, y));
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const blockers = [[1, 0], [0, 1]].map(([x, y]) => new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', x, y));
 
     expect(findPath(unit, 1, 1, grid, [unit, ...blockers])).toEqual([{ x: 1, y: 1 }]);
   });
 
   test('[Vol] units are not concerned', () => {
     const grid = new Grid(5, 5, [{ x: 1, y: 0 }]);
-    const flyer = new Unit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
+    const flyer = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
 
     expect(findPath(flyer, 1, 1, grid, [flyer])).toEqual([{ x: 1, y: 1 }]);
   });
@@ -132,8 +132,8 @@ describe('findPath — diagonale et coin d\'obstacle (rules.md 3)', () => {
 describe('findPath — blocage par une autre unité', () => {
   test('routes around a unit standing on the direct line', () => {
     const grid = new Grid(5, 5);
-    const mover = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 2);
-    const blocker = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 2);
+    const mover = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 2);
+    const blocker = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 2);
 
     const path = findPath(mover, 4, 2, grid, [mover, blocker]);
 
@@ -153,7 +153,7 @@ describe('findPath — bloc rigide 2x2 face à un couloir trop étroit', () => {
 
   test('a 1x1 unit crosses through the single-cell gap', () => {
     const grid = new Grid(6, 7, wallObstacles);
-    const worm = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 3);
+    const worm = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 3);
 
     const path = findPath(worm, 5, 3, grid, [worm]);
 
@@ -162,7 +162,7 @@ describe('findPath — bloc rigide 2x2 face à un couloir trop étroit', () => {
 
   test('a 2x2 ground unit cannot fit through the same gap and stays on its side', () => {
     const grid = new Grid(6, 7, wallObstacles);
-    const colossus = new Unit(groundColossus, 'player', 0, 3);
+    const colossus = new BattleUnit(groundColossus, 'player', 0, 3);
 
     const path = findPath(colossus, 5, 3, grid, [colossus]);
 
@@ -177,8 +177,8 @@ describe('findPath — unité [Vol] traversant un obstacle de terrain', () => {
 
   test('a flying unit ignores the terrain obstacle a ground unit must detour around', () => {
     const grid = new Grid(6, 7, wallObstacles);
-    const groundUnit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const flyingUnit = new Unit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
+    const groundUnit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const flyingUnit = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
 
     const groundPath = findPath(groundUnit, 5, 0, grid, [groundUnit]);
     const flyingPath = findPath(flyingUnit, 5, 0, grid, [flyingUnit]);
@@ -193,8 +193,8 @@ describe('findPath — unité [Vol] traversant un obstacle de terrain', () => {
 
   test('a flying unit is still blocked by another unit occupying a cell', () => {
     const grid = new Grid(5, 5);
-    const flyingUnit = new Unit(WYRMS_ROSTER.amphiptere, 'player', 0, 2);
-    const blocker = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 2);
+    const flyingUnit = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 0, 2);
+    const blocker = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 2, 2);
 
     const path = findPath(flyingUnit, 4, 2, grid, [flyingUnit, blocker]);
 

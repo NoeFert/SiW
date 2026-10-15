@@ -2,7 +2,7 @@ import { resolveVictory } from '../../src/logic/victory.js';
 import { createArmy } from '../../src/logic/army.js';
 import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
 
-// Unité de bataille minimale (voir src/logic/battles/unit.js).
+// Unité de bataille minimale (voir src/logic/battles/battleUnit.js).
 const deployed = (individualId, { alive = true, killXp = 0, level = 1 } = {}) => ({
   individualId, faction: 'player', level, killXp, isAlive: alive,
 });

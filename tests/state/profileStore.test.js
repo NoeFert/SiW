@@ -13,7 +13,7 @@ import { TEST_PROFILES } from '../../src/dev/testProfiles.js';
 
 const profile = () => useProfileStore.getState();
 
-// Unité de bataille minimale (voir src/logic/battles/unit.js) qui représente l'individu `individualId`.
+// Unité de bataille minimale (voir src/logic/battles/battleUnit.js) qui représente l'individu `individualId`.
 const deployed = (individualId, { alive = true } = {}) => ({
   individualId, faction: 'player', level: 1, killXp: 0, isAlive: alive,
 });

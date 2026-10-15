@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { createAiScriptState, deployScheduledUnits } from '../../../src/logic/battles/aiScript.js';
 import { isValidDeploymentPosition, PRESENCE_CAP } from '../../../src/logic/battles/deployment.js';
 import { BATTLES } from '../../../src/data/battles/index.js';
@@ -88,7 +88,7 @@ describe('deployScheduledUnits — horaires et plafond (rules.md 7.1, 2)', () =>
     expect(deployScheduledUnits(WYRMS_AI_SCRIPT, state, 1000, 'enemy', new Grid(), [])).toHaveLength(0);
   });
 
-  test('une unité déployée par le script est un Unit normal, sans marquage spécial "IA"', () => {
+  test('une unité déployée par le script est un BattleUnit normal, sans marquage spécial "IA"', () => {
     const unit = deployOne(WYRMS_ROSTER.lambtonWorm, []);
 
     expect(unit.status).toBe('idle');
@@ -101,7 +101,7 @@ describe('deployScheduledUnits — entrée par le bord droit (rules.md 7.2)', ()
   const RIGHT_EDGE = 23; // grille par défaut : 24 colonnes
 
   test('sans ennemi sur le terrain : une case libre du bord droit, jamais sur une unité', () => {
-    const blocker = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', RIGHT_EDGE, 0);
+    const blocker = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', RIGHT_EDGE, 0);
     for (const rng of [() => 0, () => 0.5, () => 0.999]) {
       const unit = deployOne(UNDEAD_ROSTER.newRebornSkeleton, [blocker], rng);
       expect(unit.x).toBe(RIGHT_EDGE);
@@ -116,9 +116,9 @@ describe('deployScheduledUnits — entrée par le bord droit (rules.md 7.2)', ()
   });
 
   test('éradication : entre sur la rangée la plus proche de l\'ennemi qui a le plus de PV', () => {
-    const weak = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 2);
+    const weak = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 2);
     weak.hp = 10;
-    const strong = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 10);
+    const strong = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 10);
 
     const unit = deployOne(UNDEAD_ROSTER.newRebornSkeleton, [weak, strong]);
 
@@ -126,13 +126,13 @@ describe('deployScheduledUnits — entrée par le bord droit (rules.md 7.2)', ()
   });
 
   test('renfort prioritaire : vise l\'ennemi engagé avec un allié à 50 % de PV ou moins', () => {
-    const woundedAlly = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 12, 2);
+    const woundedAlly = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 12, 2);
     woundedAlly.hp = 11; // 50 % de 22
-    const attacker = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 11, 2);
+    const attacker = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 11, 2);
     attacker.hp = 10;
     attacker.status = 'engaged';
     attacker.target = woundedAlly;
-    const strong = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 11, 10); // cible d'éradication
+    const strong = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 11, 10); // cible d'éradication
 
     const unit = deployOne(UNDEAD_ROSTER.newRebornSkeleton, [woundedAlly, attacker, strong]);
 
@@ -140,7 +140,7 @@ describe('deployScheduledUnits — entrée par le bord droit (rules.md 7.2)', ()
   });
 
   test('une vague de plusieurs unités entre groupée, sur des rangées voisines', () => {
-    const target = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 7);
+    const target = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 7);
     const script = [0, 0, 0].map((time) => ({ time, species: UNDEAD_ROSTER.newRebornSkeleton }));
 
     const wave = deployScheduledUnits(script, createAiScriptState(), 0, 'enemy', new Grid(), [target], () => 0);
@@ -153,7 +153,7 @@ describe('deployScheduledUnits — entrée par le bord droit (rules.md 7.2)', ()
     const grid = new Grid(2, 1); // bord droit = une seule case, (1,0)
     const state = createAiScriptState();
     const script = [{ time: 0, species: UNDEAD_ROSTER.newRebornSkeleton }];
-    const occupant = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 0);
+    const occupant = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 0);
 
     expect(deployScheduledUnits(script, state, 1, 'enemy', grid, [occupant])).toHaveLength(0);
 

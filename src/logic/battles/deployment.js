@@ -1,4 +1,4 @@
-import Unit from './unit.js';
+import BattleUnit from './battleUnit.js';
 import { isPositionFree, occupiedCells } from './pathfinding.js';
 import { individualLevel, levelDamage, levelStat } from '../levels.js';
 
@@ -214,7 +214,7 @@ export function deployUnit(state, faction, species, x, y, unitsOnField, copyChoi
   const copy = takeCopy(state.bySpecies.get(species), species, copyChoice);
   if (copy === null) return { success: false, reason: 'noCopiesLeft' };
 
-  const unit = new Unit(species, faction, x, y, copy.level, copy.individualId);
+  const unit = new BattleUnit(species, faction, x, y, copy.level, copy.individualId);
   unit.hp = copy.hp;
 
   return { success: true, unit, timeControl: 'pause' };

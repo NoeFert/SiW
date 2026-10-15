@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import {
   deployPlayerUnit, startDeploymentDrag, endDeploymentDrag, surrenderPlayer, startSurrenderConfirm, endSurrenderConfirm,
@@ -51,8 +51,8 @@ describe.each(Object.entries(PAUSES))('gel de tous les compteurs — %s (rules.m
     const battle = newBattle();
     const { unit: walker } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
     const { unit: fighter } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 5);
-    const farEnemy = new Unit(ENEMY_ROSTER.grunt, 'enemy', 9, 0);
-    const closeEnemy = new Unit(ENEMY_ROSTER.grunt, 'enemy', 1, 5); // au contact de `fighter`
+    const farEnemy = new BattleUnit(ENEMY_ROSTER.grunt, 'enemy', 9, 0);
+    const closeEnemy = new BattleUnit(ENEMY_ROSTER.grunt, 'enemy', 1, 5); // au contact de `fighter`
     battle.units.push(farEnemy, closeEnemy);
     tickBattle(battle, 0.5); // engagement lancé, timer d'attaque à mi-course
     const walkerX = walker.x;

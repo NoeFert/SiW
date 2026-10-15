@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import {
   createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, getTowerRows, groupTowerRows,
   PRESENCE_CAP,
@@ -119,7 +119,7 @@ describe('deployUnit — choix explicite de la copie (sidebar : lignes séparée
   test('copyChoice "fresh" est refusé s\'il ne reste aucune copie fraîche, sans repli automatique', () => {
     const state = createDeploymentState(ROSTER);
     state.bySpecies.get(ROSTER.grunt).freshRemaining = 0;
-    const wounded = new Unit(ROSTER.grunt, 'player', 0, 0);
+    const wounded = new BattleUnit(ROSTER.grunt, 'player', 0, 0);
     wounded.hp = 5;
     recordReturn(state, wounded);
 
@@ -202,7 +202,7 @@ describe('isValidDeploymentPosition (rules.md 1/2)', () => {
   });
 
   test('refuse une case déjà occupée par une autre unité', () => {
-    const occupant = new Unit(ROSTER.grunt, 'player', 1, 1);
+    const occupant = new BattleUnit(ROSTER.grunt, 'player', 1, 1);
     expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 1, 1, [occupant])).toBe(false);
   });
 
@@ -215,7 +215,7 @@ describe('isValidDeploymentPosition (rules.md 1/2)', () => {
 
 describe('getTowerRows — liste des unités déployables de la tour (ui-battle-screen-decisions.md 2.2)', () => {
   function returnWithHp(state, species, hp) {
-    const unit = new Unit(species, 'player', 0, 0);
+    const unit = new BattleUnit(species, 'player', 0, 0);
     unit.hp = hp;
     recordReturn(state, unit);
   }
@@ -301,7 +301,7 @@ describe('groupTowerRows — cases de la tour, regroupées par espèce (ui-battl
   function stateWithWoundedGrunt() {
     const state = createDeploymentState(ROSTER);
     state.bySpecies.get(ROSTER.grunt).freshRemaining = 3;
-    const unit = new Unit(ROSTER.grunt, 'player', 0, 0);
+    const unit = new BattleUnit(ROSTER.grunt, 'player', 0, 0);
     unit.hp = 12;
     recordReturn(state, unit);
     return state;

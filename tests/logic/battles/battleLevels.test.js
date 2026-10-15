@@ -1,7 +1,7 @@
 // Niveaux en bataille (rules.md 2, 11.6) : stats de niveau, réserve par individu, tour par
 // espèce et niveau, XP des coups fatals.
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
 import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
 import { updateUnitBehaviors } from '../../../src/logic/battles/unitBehavior.js';
@@ -9,19 +9,19 @@ import {
   createDeploymentState, deployUnit, getTowerRows, groupTowerRows, recordReturn,
 } from '../../../src/logic/battles/deployment.js';
 
-describe('Unit — stats du niveau (rules.md 11.6)', () => {
+describe('BattleUnit — stats du niveau (rules.md 11.6)', () => {
   test('niveau 1 par défaut : stats de units.md, sans individu', () => {
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 0, 0);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 0, 0);
     expect(unit).toMatchObject({ level: 1, individualId: null, maxHp: 40, hp: 40, damage: 8, killXp: 0 });
   });
 
   test('PV max et dégâts augmentés selon le niveau, arrondis au plus proche', () => {
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0, 4, 'u1');
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0, 4, 'u1');
     expect(unit).toMatchObject({ level: 4, individualId: 'u1', maxHp: 52, hp: 52, damage: 10 });
   });
 
   test('hybride : les deux dégâts augmentent ; coût et vitesses inchangés', () => {
-    const fafnir = new Unit(WYRMS_ROSTER.fafnir, 'player', 0, 0, 5);
+    const fafnir = new BattleUnit(WYRMS_ROSTER.fafnir, 'player', 0, 0, 5);
     expect(fafnir.damage).toEqual({ ranged: 42, melee: 63 });
     expect(fafnir.maxHp).toBe(308);
     expect(fafnir.species.cost).toBe(110);
@@ -101,7 +101,7 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
 describe('XP des coups fatals (rules.md 11.6)', () => {
   // Un attaquant du joueur prêt à frapper au prochain tick, collé à sa victime.
   const striker = (x) => {
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', x, 0);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', x, 0);
     unit.status = 'engaged';
     unit.attackTimer = unit.species.attackSpeed - 0.01;
     return unit;
@@ -110,7 +110,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
   test('achever un ennemi rapporte son coût en PP', () => {
     const grid = new Grid(10, 10);
     const worm = striker(0);
-    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    const skeleton = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
     updateUnitBehaviors([worm, skeleton], grid, 0.02);
@@ -123,7 +123,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     const grid = new Grid(10, 10);
     const left = striker(0);
     const right = striker(2);
-    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    const skeleton = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
     updateUnitBehaviors([right, left, skeleton], grid, 0.02); // l'ordre de la liste ne compte pas
@@ -135,10 +135,10 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
   test('coup fatal simultané : le tueur qui inflige le plus de dégâts gagne le coût', () => {
     const grid = new Grid(10, 10);
     const left = striker(0);
-    const right = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 2, 0, 5); // niveau 5 : 11 dégâts
+    const right = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 2, 0, 5); // niveau 5 : 11 dégâts
     right.status = 'engaged';
     right.attackTimer = right.species.attackSpeed - 0.01;
-    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    const skeleton = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
     updateUnitBehaviors([left, right, skeleton], grid, 0.02);
@@ -152,7 +152,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     const left = striker(0);
     left.hp = 1;
     const right = striker(2);
-    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    const skeleton = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
     skeleton.status = 'engaged';
     skeleton.target = left;
@@ -167,7 +167,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
   test('blesser sans achever ne rapporte rien', () => {
     const grid = new Grid(10, 10);
     const worm = striker(0);
-    const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
+    const skeleton = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
 
     updateUnitBehaviors([worm, skeleton], grid, 0.02);
 

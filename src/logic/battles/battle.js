@@ -19,7 +19,7 @@ import { isPhaseOver, startPhaseTransition, updatePhaseTransition } from './phas
 //    - pause.js : les pauses (joueur, tutoriel, changement de phase)
 //    - tutorial.js : déroulé du tutoriel
 // 2. Unités sur le terrain, identiques pour les deux camps
-//    - unit.js, unitBehavior.js, pathfinding.js : états, PV, déplacements, attaques, aptitudes
+//    - battleUnit.js, unitBehavior.js, pathfinding.js : états, PV, déplacements, attaques, aptitudes
 //    - deployment.js : réserves des deux camps et règles de déploiement
 // 3. Les deux commandants
 //    - playerActions.js (+ orderSelection.js, fleeCooldown.js) : ce que fait le joueur —

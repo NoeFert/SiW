@@ -71,7 +71,7 @@ describe('récompense de victoire (rules.md 11.7)', () => {
   });
 });
 
-// Unité de bataille minimale (voir src/logic/battles/unit.js).
+// Unité de bataille minimale (voir src/logic/battles/battleUnit.js).
 const deployed = (individualId, { alive = true, level = 1 } = {}) => ({
   individualId, faction: 'player', level, killXp: 0, isAlive: alive,
 });

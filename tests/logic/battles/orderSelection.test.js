@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import { deployPlayerUnit, startDeploymentDrag } from '../../../src/logic/battles/playerActions.js';
 import {
@@ -19,7 +19,7 @@ const ROSTER = {
 function setup() {
   const battle = createBattle(new Grid(10, 10), ROSTER, ROSTER, []);
   const { unit } = deployPlayerUnit(battle, ROSTER.fighter, 1, 1);
-  const enemy = new Unit(ROSTER.fighter, 'enemy', 8, 8);
+  const enemy = new BattleUnit(ROSTER.fighter, 'enemy', 8, 8);
   battle.units.push(enemy);
   return { battle, unit, enemy };
 }

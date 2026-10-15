@@ -9,7 +9,7 @@ export function chebyshevDistance(x1, y1, x2, y2) {
 }
 
 // rules.md 3 : ennemi le plus proche ; à égalité, le moins de PV actuels, puis le premier
-// déployé (`id` croissant — une unité redéployée après une fuite est une nouvelle `Unit`).
+// déployé (`id` croissant — une unité redéployée après une fuite est une nouvelle `BattleUnit`).
 export function compareTargets(unit, a, b) {
   return minDistanceBetweenFootprints(unit, a) - minDistanceBetweenFootprints(unit, b)
     || a.hp - b.hp

@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import {
   deployPlayerUnit, startDeploymentDrag, togglePlayerPause, surrenderPlayer,
@@ -161,7 +161,7 @@ describe('entrée dans la phase suivante (rules.md 7.3)', () => {
 
   test('deux unités sur la même rangée : la suivante prend la case libre d\'à côté', () => {
     const { battle, unit } = twoPhaseBattle();
-    const other = new Unit(ROSTER.fighter, 'player', 1, 4);
+    const other = new BattleUnit(ROSTER.fighter, 'player', 1, 4);
     battle.units.push(other);
     killEnemies(battle);
     tickBattle(battle, 0.1);

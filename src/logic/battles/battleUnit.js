@@ -2,10 +2,12 @@ import { levelDamage, levelStat } from '../levels.js';
 
 let nextId = 1;
 
-// Une unité sur le champ de bataille. `level` et `individualId` : niveau et individu possédé du
-// joueur qu'elle représente (rules.md 11.6) ; les unités de l'IA restent niveau 1, sans
-// individu. PV max et dégâts sont ceux du niveau, figés pour toute la bataille.
-export default class Unit {
+// Unité de bataille : une unité sur le terrain, le temps d'une bataille. À ne pas confondre avec
+// les individus possédés du profil ({ id, species, xp }, voir ownedUnits.js), qui survivent
+// d'une bataille à l'autre : côté joueur, chaque unité de bataille représente un individu
+// (`individualId`) avec son niveau (`level`, rules.md 11.6) ; les unités de l'IA restent
+// niveau 1, sans individu. PV max et dégâts sont ceux du niveau, figés pour toute la bataille.
+export default class BattleUnit {
   constructor(species, faction, x, y, level = 1, individualId = null) {
     this.id = nextId++;
     this.species = species;

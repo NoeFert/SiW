@@ -1,5 +1,5 @@
 import Grid from '../../../src/logic/battles/grid.js';
-import Unit from '../../../src/logic/battles/unit.js';
+import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
 import { updateUnitBehaviors } from '../../../src/logic/battles/unitBehavior.js';
 import { createFleeState, FLEE_COOLDOWN_SECONDS } from '../../../src/logic/battles/fleeCooldown.js';
@@ -13,9 +13,9 @@ const INERT = {
 describe('issuePlayerAttack — override du comportement autonome (rules.md 5)', () => {
   test('force le ciblage d\'un ennemi précis même si un autre est plus proche', () => {
     const grid = new Grid(20, 20);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const closeEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 1, 0); // adjacent, ciblé par défaut
-    const farEnemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 10, 0);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const closeEnemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 1, 0); // adjacent, ciblé par défaut
+    const farEnemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 10, 0);
 
     expect(issuePlayerAttack(unit, farEnemy)).toBe(true);
     updateUnitBehaviors([unit, closeEnemy, farEnemy], grid, 0.5);
@@ -26,9 +26,9 @@ describe('issuePlayerAttack — override du comportement autonome (rules.md 5)',
 
   test('l\'emporte sur un engagement en cours : l\'unité quitte son combat', () => {
     const grid = new Grid(20, 20);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
-    const engagedEnemy = new Unit(INERT, 'enemy', 4, 5);
-    const farEnemy = new Unit(INERT, 'enemy', 15, 5);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
+    const engagedEnemy = new BattleUnit(INERT, 'enemy', 4, 5);
+    const farEnemy = new BattleUnit(INERT, 'enemy', 15, 5);
     updateUnitBehaviors([unit, engagedEnemy, farEnemy], grid, 0.1);
     expect(unit.status).toBe('engaged');
 
@@ -42,8 +42,8 @@ describe('issuePlayerAttack — override du comportement autonome (rules.md 5)',
 
   test('une unité à distance avance jusqu\'à avoir la cible à portée, puis tire', () => {
     const grid = new Grid(20, 20);
-    const shooter = new Unit(WYRMS_ROSTER.amphiptere, 'player', 0, 5);
-    const target = new Unit(INERT, 'enemy', 10, 5);
+    const shooter = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 0, 5);
+    const target = new BattleUnit(INERT, 'enemy', 10, 5);
 
     issuePlayerAttack(shooter, target);
     for (let i = 0; i < 60; i++) updateUnitBehaviors([shooter, target], grid, 0.1);
@@ -57,9 +57,9 @@ describe('issuePlayerAttack — override du comportement autonome (rules.md 5)',
     ['fuit le terrain', (target) => { target.hasFled = true; }],
   ])('prend fin quand la cible %s : retour au comportement autonome', (_, removeTarget) => {
     const grid = new Grid(20, 20);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 5);
-    const target = new Unit(INERT, 'enemy', 10, 5);
-    const other = new Unit(INERT, 'enemy', 0, 15);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 5);
+    const target = new BattleUnit(INERT, 'enemy', 10, 5);
+    const other = new BattleUnit(INERT, 'enemy', 0, 15);
 
     issuePlayerAttack(unit, target);
     updateUnitBehaviors([unit, target, other], grid, 0.1);
@@ -75,7 +75,7 @@ describe('priorité à la dernière commande (rules.md 5)', () => {
   test('une commande Aller donnée pendant une fuite remplace la fuite', () => {
     const grid = new Grid(20, 20);
     const state = createFleeState();
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 10, 10);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 10, 10);
 
     issuePlayerFlee(state, 0, unit);
     updateUnitBehaviors([unit], grid, 0.1);
@@ -90,8 +90,8 @@ describe('priorité à la dernière commande (rules.md 5)', () => {
   test('une commande Fuir donnée pendant une attaque remplace l\'attaque', () => {
     const grid = new Grid(20, 20);
     const state = createFleeState();
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 10);
-    const target = new Unit(INERT, 'enemy', 15, 10);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 10);
+    const target = new BattleUnit(INERT, 'enemy', 15, 10);
 
     issuePlayerAttack(unit, target);
     updateUnitBehaviors([unit, target], grid, 0.1);
@@ -105,7 +105,7 @@ describe('priorité à la dernière commande (rules.md 5)', () => {
 describe('issuePlayerMoveTo (rules.md 5)', () => {
   test('déplace l\'unité vers la case désignée puis termine la commande à l\'arrivée', () => {
     const grid = new Grid(20, 20);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0); // vitesse 2.5 cases/s
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0); // vitesse 2.5 cases/s
 
     expect(issuePlayerMoveTo(unit, 5, 0)).toBe(true);
 
@@ -122,8 +122,8 @@ describe('issuePlayerMoveTo (rules.md 5)', () => {
 
   test('pendant le trajet, l\'unité ne combat pas, même frappée', () => {
     const grid = new Grid(20, 20);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
-    const enemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // la poursuit et la frappe
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
+    const enemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // la poursuit et la frappe
     updateUnitBehaviors([unit, enemy], grid, 0.1); // engagement mutuel
 
     issuePlayerMoveTo(unit, 5, 15);
@@ -135,8 +135,8 @@ describe('issuePlayerMoveTo (rules.md 5)', () => {
 
   test('destination sur un obstacle : s\'arrête au plus près puis reprend le combat autonome', () => {
     const grid = new Grid(20, 20, [{ x: 5, y: 0 }]);
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const enemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 10, 5);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const enemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 10, 5);
 
     issuePlayerMoveTo(unit, 5, 0);
     for (let i = 0; i < 60; i++) updateUnitBehaviors([unit, enemy], grid, 0.1);
@@ -147,7 +147,7 @@ describe('issuePlayerMoveTo (rules.md 5)', () => {
 
   test('bloc 2x2 envoyé sur la dernière colonne (il n\'y tient pas) : la commande se termine', () => {
     const grid = new Grid(20, 20);
-    const fafnir = new Unit(WYRMS_ROSTER.fafnir, 'player', 10, 5);
+    const fafnir = new BattleUnit(WYRMS_ROSTER.fafnir, 'player', 10, 5);
 
     issuePlayerMoveTo(fafnir, 19, 5);
     for (let i = 0; i < 150; i++) updateUnitBehaviors([fafnir], grid, 0.1);
@@ -161,7 +161,7 @@ describe('issuePlayerFlee — atteindre le bord (rules.md 5 et 2)', () => {
   test('l\'unité quitte le terrain une fois le bord atteint, PV conservés', () => {
     const grid = new Grid(10, 10);
     const state = createFleeState();
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 5); // à 1 case du bord gauche
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 5); // à 1 case du bord gauche
     unit.hp = 17; // PV déjà réduits, doivent être conservés tels quels
 
     expect(issuePlayerFlee(state, 0, unit)).toBe(true);
@@ -175,8 +175,8 @@ describe('issuePlayerFlee — atteindre le bord (rules.md 5 et 2)', () => {
   test('depuis un état engagé : désengagement immédiat mais l\'adversaire porte une dernière attaque', () => {
     const grid = new Grid(10, 10);
     const state = createFleeState();
-    const a = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
-    const b = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // adjacente à a
+    const a = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
+    const b = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // adjacente à a
 
     // Tick d'échauffement (delta trop court pour déclencher une attaque normale) : les deux
     // s'engagent mutuellement au corps-à-corps sans encore échanger de dégâts.
@@ -198,9 +198,9 @@ describe('issuePlayerFlee — atteindre le bord (rules.md 5 et 2)', () => {
   test('chaque ennemi engagé sur l\'unité porte sa dernière attaque, une seule fois', () => {
     const grid = new Grid(10, 10);
     const state = createFleeState();
-    const a = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
-    const left = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 4, 5);
-    const right = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5);
+    const a = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
+    const left = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 4, 5);
+    const right = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5);
     updateUnitBehaviors([a, left, right], grid, 0.1); // engagement mutuel, pas encore de coup
 
     issuePlayerFlee(state, 0.1, a);
@@ -214,9 +214,9 @@ describe('issuePlayerFlee — atteindre le bord (rules.md 5 et 2)', () => {
   test('bord le plus proche bloqué : contourne vers une autre case de bord', () => {
     const grid = new Grid(10, 10);
     const state = createFleeState();
-    const unit = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
+    const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
     const blockers = [[0, 0], [1, 0], [2, 0], [0, 1], [0, 2]]
-      .map(([x, y]) => new Unit(WYRMS_ROSTER.lambtonWorm, 'player', x, y)); // alliées, immobiles
+      .map(([x, y]) => new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', x, y)); // alliées, immobiles
 
     issuePlayerFlee(state, 0, unit);
     for (let i = 0; i < 20; i++) updateUnitBehaviors([unit, ...blockers], grid, 0.1);
@@ -229,10 +229,10 @@ describe('fuite sans aucun bord atteignable (rules.md 5)', () => {
   // Alliées inertes : seule l'unité en fuite peut blesser l'ennemi.
   function surround(fleeingSpecies) {
     const grid = new Grid(10, 10);
-    const unit = new Unit(fleeingSpecies, 'player', 5, 5);
-    const enemy = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 4, 5);
+    const unit = new BattleUnit(fleeingSpecies, 'player', 5, 5);
+    const enemy = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 4, 5);
     const walls = [[4, 4], [5, 4], [6, 4], [6, 5], [4, 6], [5, 6], [6, 6]]
-      .map(([x, y]) => new Unit(INERT, 'player', x, y));
+      .map(([x, y]) => new BattleUnit(INERT, 'player', x, y));
     const units = [unit, enemy, ...walls];
     issuePlayerFlee(createFleeState(), 0, unit);
     return { grid, unit, enemy, walls, units };
@@ -274,8 +274,8 @@ describe('fuite sans aucun bord atteignable (rules.md 5)', () => {
 describe('cooldown de la fuite (rules.md 5.1)', () => {
   test('bloque toute nouvelle fuite avant 5 secondes, peu importe l\'unité', () => {
     const state = createFleeState();
-    const unitA = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const unitB = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
+    const unitA = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const unitB = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
 
     expect(issuePlayerFlee(state, 0, unitA)).toBe(true);
     expect(issuePlayerFlee(state, 2, unitB)).toBe(false); // 2s < 5s, autre unité pourtant
@@ -286,9 +286,9 @@ describe('cooldown de la fuite (rules.md 5.1)', () => {
 
   test('Aller et Attaquer n\'ont pas de cooldown, même juste après une fuite', () => {
     const state = createFleeState();
-    const unitA = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
-    const unitB = new Unit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
-    const target = new Unit(WYRMS_ROSTER.lambtonWorm, 'enemy', 5, 5);
+    const unitA = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const unitB = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 1, 1);
+    const target = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 5, 5);
 
     issuePlayerFlee(state, 0, unitA);
     expect(issuePlayerAttack(unitB, target)).toBe(true);

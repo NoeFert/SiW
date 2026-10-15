@@ -1,11 +1,11 @@
-import Unit from './unit.js';
+import BattleUnit from './battleUnit.js';
 import {
   isValidDeploymentPosition, getPresenceUsed, consumeFreshCopy, PRESENCE_CAP,
 } from './deployment.js';
 
 // Commandant IA : déploie les ennemis selon le script de la phase en cours (rules.md 7). Le
 // script ne fait QUE définir quoi/quand déployer, et la case est choisie au moment du
-// déploiement (7.2) — une fois créée via `new Unit(...)`, l'unité IA suit exactement le
+// déploiement (7.2) — une fois créée via `new BattleUnit(...)`, l'unité IA suit exactement le
 // comportement autonome déjà codé dans unitBehavior.js, sans aucune logique de décision en plus.
 export function createAiScriptState() {
   return { nextIndex: 0 };
@@ -65,7 +65,7 @@ export function deployScheduledUnits(script, state, elapsedSeconds, faction, gri
     if (getPresenceUsed(faction, unitsOnField) + species.cost > PRESENCE_CAP) break;
     const position = chooseDeploymentPosition(species, faction, grid, unitsOnField, rng);
     if (!position) break;
-    const unit = new Unit(species, faction, position.x, position.y);
+    const unit = new BattleUnit(species, faction, position.x, position.y);
     deployed.push(unit);
     unitsOnField.push(unit); // occupe déjà sa case pour l'entrée suivante du même tick
     state.nextIndex += 1;
