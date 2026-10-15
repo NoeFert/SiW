@@ -164,6 +164,13 @@ export const TEXT = {
     noCopiesLeft: 'Plus aucune copie disponible.',
   },
 
+  // Textes flottants au-dessus des unités sur le terrain (feedback des aptitudes, units.md 6).
+  fieldTexts: {
+    criticalHit: 'COUP CRITIQUE !', // Attaque dévastatrice (Fafnir)
+    missed: 'Raté !', // attaque annulée par la Frappe paralysante (Athos)
+    heal: (amount) => `+${amount}`,
+  },
+
   ordersTitle: 'Ordres',
   cancel: 'Annuler',
   back: 'Retour', // en-tête des écrans de la couche méta (ScreenLayout)

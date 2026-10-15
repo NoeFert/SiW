@@ -63,16 +63,17 @@ Problèmes à résoudre (feedback) :
 - [x] `assets/ui/` rangé par couleur : neutres à la racine, `gold/`, `purple/` (palettes des factions, mêmes noms de fichiers), `white/`, `red/`, `green/`, `grey/`, `black/` ; `tests/ui/factionTheme.test.js` vérifie les palettes et tous les chemins `/ui/…` du code
 - [ ] Option, si Noémie la veut : ordonner la déclaration de `createBattle` en sections commentées, une par rôle, sans renommer de champ
 
-### Étape 5 — Partage de la bataille entre la Scene et React ✅
+### Étape 5 — Partage de la bataille entre la Scene et React ✅ (`fb5507b`)
 - [x] `BattleScreen` crée la bataille (`createBattleFromDefinition`) et en est propriétaire : il la transmet à la Scene au démarrage et à la tour de commandement par les props
 - [x] Après chaque `tickBattle`, la Scene émet un événement Phaser (`battleFrame`) ; `BattleScreen` s'y abonne pour se redessiner (tour, tutoriel) et détecter la fin de bataille
 - [x] Supprimer l'objet global `interactionState` et les deux boucles `requestAnimationFrame` (`useBattle.js`, `BattleScreen.jsx`) ; la position affichée des sprites (main du tutoriel) se demande directement à la Scene
 - [x] `battle` reste un objet modifié en place par le moteur ; aucune nouvelle dépendance
 
-### Étape 6 — Découpage de BattleScene
-- [ ] Classes de vue simples qui reçoivent la Scene : `BattlefieldView` (fond, rochers, phases), `DeploymentZoneView`, `UnitViews` (sprites, barre de vie, compteur d'aptitude, déplacements), `CombatEffects` (missiles, entailles, aptitudes, textes flottants), `PauseTint` (désaturation), `FieldInput` (clics sur le terrain, indicateur de sélection)
-- [ ] La configuration des effets part dans `src/data/effects.js`
-- [ ] La Scene ne garde que l'orchestration, environ 100 lignes
+### Étape 6 — Découpage de BattleScene ✅
+- [x] Une vue par sujet dans `src/scenes/battle/`, chacune recevant la Scene : `BattlefieldView` (fond, rochers, phases), `DeploymentZoneView`, `UnitViews` (sprites, barre de vie, compteur d'aptitude, déplacements, transition de phase), `CombatEffects` (missiles, entailles, aptitudes, textes flottants), `FieldInput` (clics sur le terrain, cadre de sélection), `PauseTint` (désaturation pendant les pauses : une simple fonction, `applyPauseTint`)
+- [x] La configuration des effets part dans `src/data/effects.js`
+- [x] La Scene ne garde que l'orchestration : 90 lignes (649 avant)
+- [x] Les textes flottants affichés au joueur (« COUP CRITIQUE ! », « Raté ! ») passent dans `src/ui/strings.js` (`fieldTexts`)
 
 ### Étape 7 — Passe de lisibilité
 - [ ] Commentaires : expliquer ce que fait le code, pas son historique ; renvois aux specs courts, seulement là où une règle est implémentée
@@ -174,3 +175,6 @@ Changements apportés au plan initial, du plus ancien au plus récent.
 - **2026-10-15 — Étape 5**
   - `BattleScreen` redessine tout l'écran à chaque frame (tour et tutoriel reçoivent la bataille par leurs props) : un seul abonnement à `BATTLE_FRAME_EVENT` au lieu d'un hook par composant ; `useBattle.js` et `interactionState.js` sont supprimés.
   - La position affichée des sprites pour la main du tutoriel est une méthode de la Scene (`unitDisplayCenter`), que `BattleScreen` transmet à l'overlay.
+- **2026-10-15 — Étape 6**
+  - `PauseTint` est une fonction plutôt qu'une classe : elle ne garde aucun état, elle calcule le niveau de désaturation et le transmet au terrain et aux unités (`tint`).
+  - Ajustement de Noémie : le missile de chaque faction (et sa couleur d'impact) rejoint ses données (`projectile`, src/data/factions/) ; `src/data/effects.js` ne garde que les effets communs (entaille, aptitudes, compteurs, durée de vol).

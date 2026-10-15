@@ -8,6 +8,13 @@ export default {
   // Palette d'interface : dossier assets/ui/<uiColor>/ (survol des boutons, curseurs, coins,
   // barre de défilement, map de guerre, badge et barre d'XP de la faction ; voir src/ui/factionTheme.js).
   uiColor: 'gold',
+  // Missile des attaques à distance des unités de la faction (GRAPHICS.md « Projectiles »), joué
+  // en entier pendant son vol : planche d'effets assets/effect/ (images de 64 × 64, une ligne par
+  // couleur, une colonne par étape), `row` : ligne utilisée, `frames` : nombre d'étapes ;
+  // `impactColor` : cercle d'impact à l'arrivée.
+  projectile: {
+    key: 'missile-burst', path: 'effect/missile-burst.png', frames: 15, row: 0, impactColor: 0xff8c1a, // orange
+  },
   // Espèces de la faction (units.md). `size` = côté du bloc carré occupé en cases (1, ou 2 pour
   // un bloc 2x2) ; `range` = null pour une unité sans attaque à distance.
   roster: {

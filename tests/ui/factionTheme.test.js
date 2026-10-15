@@ -36,3 +36,10 @@ test('chemins /ui/… du code : tous présents dans assets/ui/', () => {
   expect(urls.length).toBeGreaterThan(10);
   for (const url of new Set(urls)) expect([url, assetExists(url)]).toEqual([url, true]);
 });
+
+// Les autres assets cités par les données de faction existent aussi.
+test.each(Object.values(FACTIONS))('$id : sprite du souverain et missile présents dans assets/', (faction) => {
+  expect(fs.existsSync(path.join('assets', 'sprites', `${faction.sovereignSprite}.png`))).toBe(true);
+  expect(fs.existsSync(path.join('assets', faction.projectile.path))).toBe(true);
+  expect(faction.projectile.impactColor).toEqual(expect.any(Number));
+});
