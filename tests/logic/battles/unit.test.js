@@ -1,5 +1,5 @@
-import Unit from '../../src/logic/unit.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
 
 describe('Unit', () => {
   test('spawns with full HP from its species and the given position/faction', () => {

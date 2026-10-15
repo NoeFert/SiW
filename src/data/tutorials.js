@@ -1,5 +1,5 @@
 // Statique — tutoriels, rattachés aux batailles dans battles.js (technical.md 5.5). Déroulés par
-// src/logic/tutorial.js (conditions, actions permises) et affichés par TutorialOverlay.jsx.
+// src/logic/battles/tutorial.js (conditions, actions permises) et affichés par TutorialOverlay.jsx.
 //
 // Champs d'une étape :
 // - id            : nom de l'étape (unique dans le tutoriel).

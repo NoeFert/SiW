@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Pause, Play } from 'lucide-react';
 import { Button } from '@/components/ui/8bit/button.jsx';
 import { cn } from '@/lib/utils';
-import { togglePlayerPause } from '../logic/battle.js';
-import { tutorialAllows } from '../logic/tutorial.js';
+import { togglePlayerPause } from '../logic/battles/playerActions.js';
+import { tutorialAllows } from '../logic/battles/tutorial.js';
 import { TEXT } from './strings.js';
 
 // Espace ne doit pas basculer la pause quand le joueur tape du texte, ni pendant une boîte de

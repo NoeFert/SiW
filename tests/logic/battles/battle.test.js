@@ -2,12 +2,11 @@
 // testés (déploiement, commandes, combat, fin de bataille). Ce fichier n'a donc pas été
 // demandé explicitement, mais un smoke test reste utile pour attraper une erreur de câblage
 // (CLAUDE.md : toute logique de jeu doit avoir un test associé).
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
-import { getReserve } from '../../src/logic/deployment.js';
-import {
-  createBattle, deployPlayerUnit, issuePlayerFlee, tickBattle, surrenderPlayer,
-} from '../../src/logic/battle.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { getReserve } from '../../../src/logic/battles/deployment.js';
+import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
+import { deployPlayerUnit, issuePlayerFlee, surrenderPlayer } from '../../../src/logic/battles/playerActions.js';
 
 const PLAYER_ROSTER = {
   fighter: {
@@ -62,7 +61,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
     const battle = createBattle(new Grid(10, 10), PLAYER_ROSTER, ENEMY_ROSTER, ENEMY_SCRIPT);
     const { unit } = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, 0);
 
-    expect(issuePlayerFlee(battle, unit)).toBe(true);
+    expect(issuePlayerFlee(battle.playerFleeState, battle.elapsedSeconds, unit)).toBe(true);
     expect(unit.command).toEqual({ type: 'flee' });
   });
 
@@ -85,7 +84,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
     tickBattle(battle, 0.01); // engagement au corps-à-corps
     unit.hp = 1; // la dernière attaque au désengagement (1 dégât) sera fatale
 
-    issuePlayerFlee(battle, unit);
+    issuePlayerFlee(battle.playerFleeState, battle.elapsedSeconds, unit);
     tickBattle(battle, 0.01);
 
     expect(unit.isAlive).toBe(false);

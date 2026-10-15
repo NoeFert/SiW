@@ -1,5 +1,5 @@
-import Grid, { parseObstacleMap } from '../../src/logic/grid.js';
-import { DIRECTIONS } from '../../src/logic/pathfinding.js';
+import Grid, { parseObstacleMap } from '../../src/logic/battles/grid.js';
+import { DIRECTIONS } from '../../src/logic/battles/pathfinding.js';
 import { BATTLES } from '../../src/data/battles/index.js';
 
 // Terrain de la bataille tutoriel (aussi la première zone de battleStartW01).

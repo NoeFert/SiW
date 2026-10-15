@@ -1,15 +1,16 @@
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import {
-  createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag, togglePlayerPause, surrenderPlayer,
-  isVictoryAcquired,
-} from '../../src/logic/battle.js';
-import { chooseOrder } from '../../src/logic/commandSelection.js';
-import { isBattleTimeRunning } from '../../src/logic/pause.js';
+  deployPlayerUnit, startDeploymentDrag, togglePlayerPause, surrenderPlayer,
+} from '../../../src/logic/battles/playerActions.js';
+import { isVictoryAcquired } from '../../../src/logic/battles/battleEnd.js';
+import { chooseOrder } from '../../../src/logic/battles/orderSelection.js';
+import { isBattleTimeRunning } from '../../../src/logic/battles/pause.js';
 import {
   setUpcomingPhases, PHASE_TRANSITION_SECONDS,
-} from '../../src/logic/phases.js';
-import { getReserve } from '../../src/logic/deployment.js';
+} from '../../../src/logic/battles/phases.js';
+import { getReserve } from '../../../src/logic/battles/deployment.js';
 
 const ROSTER = {
   fighter: {

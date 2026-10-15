@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Tooltip, TooltipContent, TooltipTrigger,
 } from '@/components/ui/8bit/tooltip.jsx';
-import { deployPlayerUnit, startDeploymentDrag, endDeploymentDrag } from '../logic/battle.js';
-import { getTowerRows, groupTowerRows } from '../logic/deployment.js';
+import { deployPlayerUnit, startDeploymentDrag, endDeploymentDrag } from '../logic/battles/playerActions.js';
+import { getTowerRows, groupTowerRows } from '../logic/battles/deployment.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import {
   CELL_SIZE, GAME_WIDTH, getCanvasRect, screenToGrid,

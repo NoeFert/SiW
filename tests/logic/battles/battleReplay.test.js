@@ -3,10 +3,10 @@
 // durée, pertes, XP…) qu'au moment où l'instantané a été enregistré. Un écart signale un
 // changement de comportement du moteur. Si ce changement est voulu, régénérer l'instantané
 // avec `npx jest battleReplay -u`.
-import { buildArmy, runBattle, starterArmy } from '../../src/debug/balance/simulate.js';
-import { STRATEGIES } from '../../src/debug/balance/bot.js';
-import { TUTO_BATTLE_ID, WAR_BATTLE_IDS } from '../../src/data/battles/index.js';
-import { ROSTERS } from '../../src/data/rosters.js';
+import { buildArmy, runBattle, starterArmy } from '../../../src/debug/balance/simulate.js';
+import { STRATEGIES } from '../../../src/debug/balance/bot.js';
+import { TUTO_BATTLE_ID, WAR_BATTLE_IDS } from '../../../src/data/battles/index.js';
+import { ROSTERS } from '../../../src/data/rosters.js';
 
 const SEED = 1;
 const BATTLE_IDS = [TUTO_BATTLE_ID, ...WAR_BATTLE_IDS];

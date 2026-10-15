@@ -1,4 +1,4 @@
-import { PRESENCE_CAP } from '../logic/deployment.js';
+import { PRESENCE_CAP } from '../logic/battles/deployment.js';
 
 // Classes littérales (Tailwind ne détecte pas les noms construits dynamiquement).
 const FILL_CLASS = {

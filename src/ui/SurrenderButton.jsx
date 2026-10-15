@@ -2,7 +2,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/8bit/alert-dialog.jsx';
-import { surrenderPlayer, startSurrenderConfirm, endSurrenderConfirm } from '../logic/battle.js';
+import { surrenderPlayer, startSurrenderConfirm, endSurrenderConfirm } from '../logic/battles/playerActions.js';
 import { TEXT } from './strings.js';
 
 // rules.md 8.2 : abandon = défaite, réserves conservées. Disponible en permanence, tutoriel

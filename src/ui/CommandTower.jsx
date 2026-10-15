@@ -1,5 +1,5 @@
 import { TooltipProvider } from '@/components/ui/8bit/tooltip.jsx';
-import { getPresenceUsed } from '../logic/deployment.js';
+import { getPresenceUsed } from '../logic/battles/deployment.js';
 import { useBattle } from './useBattle.js';
 import SurrenderButton from './SurrenderButton.jsx';
 import PresenceGauge from './PresenceGauge.jsx';

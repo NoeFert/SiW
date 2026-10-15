@@ -1,14 +1,14 @@
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import {
-  createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag, endDeploymentDrag, surrenderPlayer,
-  startSurrenderConfirm, endSurrenderConfirm,
-} from '../../src/logic/battle.js';
-import { toggleMainPause, isBattleTimeRunning, PAUSE_DEFAULTS } from '../../src/logic/pause.js';
+  deployPlayerUnit, startDeploymentDrag, endDeploymentDrag, surrenderPlayer, startSurrenderConfirm, endSurrenderConfirm,
+} from '../../../src/logic/battles/playerActions.js';
+import { toggleMainPause, isBattleTimeRunning, PAUSE_DEFAULTS } from '../../../src/logic/battles/pause.js';
 import {
-  cancelCommand, chooseOrder, selectUnit, selectCell, canChooseOrder,
-} from '../../src/logic/commandSelection.js';
-import { canFlee, getFleeCooldownRemaining } from '../../src/logic/commands.js';
+  cancelOrder, chooseOrder, selectUnit, selectCell, canChooseOrder,
+} from '../../../src/logic/battles/orderSelection.js';
+import { canFlee, getFleeCooldownRemaining } from '../../../src/logic/battles/fleeCooldown.js';
 
 const PLAYER_ROSTER = {
   fighter: {
@@ -105,7 +105,7 @@ describe('combinaison des deux pauses (rules.md 5.2)', () => {
     toggleMainPause(battle.pause);
     chooseOrder(battle, 'attack');
 
-    cancelCommand(battle); // fin de l'interaction, la pause principale reste
+    cancelOrder(battle); // fin de l'interaction, la pause principale reste
     expect(isBattleTimeRunning(battle.pause)).toBe(false);
     tickBattle(battle, 1);
     expect(battle.elapsedSeconds).toBe(0);
@@ -217,7 +217,7 @@ describe('confirmation d\'abandon (rules.md 5.2 / 8.2)', () => {
     startSurrenderConfirm(battle);
     endSurrenderConfirm(battle);
 
-    expect(battle.commandSelection).toBeNull();
+    expect(battle.orderSelection).toBeNull();
     expect(isBattleTimeRunning(battle.pause)).toBe(true);
     expect(canFlee(battle.playerFleeState, battle.elapsedSeconds)).toBe(true);
   });

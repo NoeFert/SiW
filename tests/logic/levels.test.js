@@ -49,7 +49,7 @@ describe('stats par niveau (rules.md 11.6)', () => {
   });
 });
 
-// Unité de bataille minimale (voir src/logic/unit.js).
+// Unité de bataille minimale (voir src/logic/battles/unit.js).
 const battleUnit = (individualId, { alive = true, killXp = 0, level = 1, faction = 'player' } = {}) => ({
   individualId, faction, level, killXp, isAlive: alive,
 });

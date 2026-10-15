@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { tickBattle } from '../logic/battle.js';
-import { createBattleFromDefinition, opposingFaction, resolvePhases } from '../logic/battleSetup.js';
-import { isBattleTimeRunning } from '../logic/pause.js';
-import { phaseTransitionProgress } from '../logic/phases.js';
-import { clickField, cancelCommand, getClickableHighlights } from '../logic/commandSelection.js';
+import { tickBattle } from '../logic/battles/battle.js';
+import { createBattleFromDefinition, opposingFaction, resolvePhases } from '../logic/battles/battleSetup.js';
+import { isBattleTimeRunning } from '../logic/battles/pause.js';
+import { phaseTransitionProgress } from '../logic/battles/phases.js';
+import { clickField, cancelOrder, getClickableHighlights } from '../logic/battles/orderSelection.js';
 import { BATTLES } from '../data/battles/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import { CELL_SIZE, FACTION_COLORS, cellCenter } from '../renderConstants.js';
@@ -74,7 +74,7 @@ const COUNTER_SLOT_GAP = 2;
 const backgroundKey = (image) => `background-${image}`;
 
 // Cette Scene gère exclusivement le champ de bataille (technical.md 2.2) : grille, sprites,
-// animations, clics sur le terrain pendant la sélection d'une commande, signaux visuels de
+// animations, clics sur le terrain pendant la sélection d'un ordre, signaux visuels de
 // pause. Le déploiement (glisser-déposer) et les ordres (rangée « Ordres ») vivent dans la tour de
 // commandement React (src/ui/) ; le choix de faction et l'écran de résultat vivent dans des écrans React
 // séparés (src/screens/, technical.md 5) — cette Scene est recréée par BattleScreen.jsx à
@@ -322,7 +322,7 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  // rules.md 4.5 : missile purement visuel — les dégâts ont déjà été appliqués par combat.js
+  // rules.md 4.5 : missile purement visuel — les dégâts ont déjà été appliqués par unitBehavior.js
   // à ce tick, ce tween ne fait que les illustrer. Couleur selon la faction réelle du tireur
   // (orange Wyrms, vert menthe Morts-Vivants), déduite de son camp player/enemy.
   fireProjectile(shooter, target) {
@@ -421,9 +421,9 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   // -- Sélection et input sur le terrain (rules.md 5) --------------------------------------
-  // L'ordre est choisi dans la tour React ; tant qu'une commande est en cours de sélection,
-  // chaque clic sur le terrain est transmis à commandSelection.js, qui décide de l'étape
-  // (unité, puis cible). Clic droit : annule la commande en cours.
+  // L'ordre est choisi dans la tour React ; tant qu'un ordre est en cours de sélection,
+  // chaque clic sur le terrain est transmis à orderSelection.js, qui décide de l'étape
+  // (unité, puis cible). Clic droit : annule l'ordre en cours.
 
   createSelectionIndicator() {
     const color = FACTION_COLORS[this.playerFaction]; // seules les unités du joueur sont sélectionnables
@@ -434,7 +434,7 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   updateSelectionIndicator() {
-    const unit = this.battle.commandSelection?.unit;
+    const unit = this.battle.orderSelection?.unit;
     if (!unit?.isOnField) {
       this.selectionIndicator.setVisible(false);
       return;
@@ -448,7 +448,7 @@ export default class BattleScene extends Phaser.Scene {
   handlePointerDown(pointer) {
     if (this.battle.outcome !== 'ongoing') return; // bataille terminée : plus aucune interaction
     if (pointer.rightButtonDown()) {
-      cancelCommand(this.battle);
+      cancelOrder(this.battle);
       return;
     }
     // Un clic sur le sprite d'une unité vise sa case logique : pendant une pause, le sprite peut
@@ -584,7 +584,7 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   // rules.md 4.1 : la logique avance en continu (delta-time), mais ne "commet" une case qu'une
-  // fois celle-ci pleinement franchie (voir moveToward/stepAwayFrom dans combat.js) — la Scene
+  // fois celle-ci pleinement franchie (voir moveToward/stepAwayFrom dans unitBehavior.js) — la Scene
   // ne connaît donc jamais de position fractionnaire à lire directement. On obtient un rendu
   // continu en douceur en animant (tween) le passage d'une case à l'autre plutôt qu'en
   // "sautant" instantanément, sur la durée réelle qu'aurait dû prendre ce trajet à la vitesse

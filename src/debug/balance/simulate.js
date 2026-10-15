@@ -1,8 +1,8 @@
 // Outil d'équilibrage (skill /balancer) : joue des batailles sans Phaser avec le moteur de
 // src/logic/ et le bot de bot.js, puis mesure leur issue avec la logique méta du jeu
 // (resolveVictory, résolution des pertes). Ne lit ni n'écrit aucune sauvegarde.
-import { tickBattle } from '../../logic/battle.js';
-import { createBattleFromDefinition } from '../../logic/battleSetup.js';
+import { tickBattle } from '../../logic/battles/battle.js';
+import { createBattleFromDefinition } from '../../logic/battles/battleSetup.js';
 import { individualXpForLevel, individualXpGains } from '../../logic/levels.js';
 import { createArmy } from '../../logic/army.js';
 import { resolveVictory } from '../../logic/victory.js';

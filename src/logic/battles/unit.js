@@ -1,4 +1,4 @@
-import { levelDamage, levelStat } from './levels.js';
+import { levelDamage, levelStat } from '../levels.js';
 
 let nextId = 1;
 

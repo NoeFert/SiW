@@ -1,10 +1,10 @@
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
-import { createAiScriptState, deployScheduledUnits } from '../../src/logic/aiScript.js';
-import { isValidDeploymentPosition, PRESENCE_CAP } from '../../src/logic/deployment.js';
-import { BATTLES } from '../../src/data/battles/index.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { createAiScriptState, deployScheduledUnits } from '../../../src/logic/battles/aiScript.js';
+import { isValidDeploymentPosition, PRESENCE_CAP } from '../../../src/logic/battles/deployment.js';
+import { BATTLES } from '../../../src/data/battles/index.js';
+import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
+import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
 
 // Déploie une seule unité IA (faction 'enemy', moitié droite x >= 12) face aux unités données.
 function deployOne(species, units, rng = Math.random) {

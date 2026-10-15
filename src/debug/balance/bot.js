@@ -2,8 +2,8 @@
 // Il déploie dès que le plafond de 150 PP le permet (rules.md 2), selon un ordre de priorité
 // d'espèces, et ne donne jamais d'ordre (ni focus, ni fuite) : une borne basse de ce qu'un
 // humain obtient.
-import { deployPlayerUnit } from '../../logic/battle.js';
-import { getPresenceUsed, isValidDeploymentPosition, PRESENCE_CAP } from '../../logic/deployment.js';
+import { deployPlayerUnit } from '../../logic/battles/playerActions.js';
+import { getPresenceUsed, isValidDeploymentPosition, PRESENCE_CAP } from '../../logic/battles/deployment.js';
 
 export const STRATEGIES = ['basics', 'flyers', 'mixed', 'legendaryFirst'];
 

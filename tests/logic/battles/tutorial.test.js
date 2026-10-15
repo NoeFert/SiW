@@ -1,19 +1,19 @@
-import Grid from '../../src/logic/grid.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
 import {
-  createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag, endDeploymentDrag, togglePlayerPause,
-  surrenderPlayer,
-} from '../../src/logic/battle.js';
+  deployPlayerUnit, startDeploymentDrag, endDeploymentDrag, togglePlayerPause, surrenderPlayer,
+} from '../../../src/logic/battles/playerActions.js';
 import {
-  cancelCommand, chooseOrder, selectUnit,
-} from '../../src/logic/commandSelection.js';
-import { isBattleTimeRunning } from '../../src/logic/pause.js';
+  cancelOrder, chooseOrder, selectUnit,
+} from '../../../src/logic/battles/orderSelection.js';
+import { isBattleTimeRunning } from '../../../src/logic/battles/pause.js';
 import {
   startTutorial, continueTutorial, visibleTutorialStep, tutorialAllows, weakestPlayerUnit,
   TUTORIAL_CONDITION_TYPES,
-} from '../../src/logic/tutorial.js';
-import { STARTER_TUTORIAL } from '../../src/data/tutorials.js';
-import { BATTLES, TUTO_BATTLE_ID } from '../../src/data/battles/index.js';
-import { TEXT } from '../../src/ui/strings.js';
+} from '../../../src/logic/battles/tutorial.js';
+import { STARTER_TUTORIAL } from '../../../src/data/tutorials.js';
+import { BATTLES, TUTO_BATTLE_ID } from '../../../src/data/battles/index.js';
+import { TEXT } from '../../../src/ui/strings.js';
 
 const ROSTER = {
   fighter: {
@@ -201,7 +201,7 @@ describe('tutoriel — étape 3 : battre en retraite', () => {
     chooseOrder(battle, 'flee');
     tickBattle(battle, 0.1);
 
-    cancelCommand(battle);
+    cancelOrder(battle);
     tickBattle(battle, 0.1);
 
     expect(battle.tutorial.step).toBe('flee');

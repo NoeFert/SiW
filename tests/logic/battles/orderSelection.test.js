@@ -1,11 +1,12 @@
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
-import { createBattle, deployPlayerUnit, tickBattle, startDeploymentDrag } from '../../src/logic/battle.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { createBattle, tickBattle } from '../../../src/logic/battles/battle.js';
+import { deployPlayerUnit, startDeploymentDrag } from '../../../src/logic/battles/playerActions.js';
 import {
-  cancelCommand, chooseOrder, canChooseOrder, selectUnit, selectEnemy, selectCell, clickField,
+  cancelOrder, chooseOrder, canChooseOrder, selectUnit, selectEnemy, selectCell, clickField,
   getClickableHighlights,
-} from '../../src/logic/commandSelection.js';
-import { canFlee } from '../../src/logic/commands.js';
+} from '../../../src/logic/battles/orderSelection.js';
+import { canFlee } from '../../../src/logic/battles/fleeCooldown.js';
 
 const ROSTER = {
   fighter: {
@@ -29,7 +30,7 @@ describe('choix d\'un ordre (rules.md 5)', () => {
 
     expect(chooseOrder(battle, 'attack')).toBe(true);
 
-    expect(battle.pause.interaction).toBe('command');
+    expect(battle.pause.interaction).toBe('order');
     tickBattle(battle, 1);
     expect(battle.elapsedSeconds).toBe(0);
   });
@@ -65,8 +66,8 @@ describe('choix d\'un ordre (rules.md 5)', () => {
 
     expect(chooseOrder(battle, 'move')).toBe(true);
 
-    expect(battle.commandSelection).toEqual({ order: 'move', unit: null });
-    expect(battle.pause.interaction).toBe('command');
+    expect(battle.orderSelection).toEqual({ order: 'move', unit: null });
+    expect(battle.pause.interaction).toBe('order');
   });
 });
 
@@ -79,7 +80,7 @@ describe('déroulé : ordre, unité, cible (rules.md 5)', () => {
     expect(selectEnemy(battle, enemy)).toBe(true);
 
     expect(unit.command).toEqual({ type: 'attack', target: enemy });
-    expect(battle.commandSelection).toBeNull();
+    expect(battle.orderSelection).toBeNull();
     expect(battle.pause.interaction).toBeNull();
   });
 
@@ -100,7 +101,7 @@ describe('déroulé : ordre, unité, cible (rules.md 5)', () => {
     expect(selectUnit(battle, unit)).toBe(true);
 
     expect(unit.command).toEqual({ type: 'flee' });
-    expect(battle.commandSelection).toBeNull();
+    expect(battle.orderSelection).toBeNull();
   });
 
   test('par clics sur le terrain : unité puis ennemi (attack), unité puis case (move)', () => {
@@ -123,7 +124,7 @@ describe('déroulé : ordre, unité, cible (rules.md 5)', () => {
 
     expect(selectCell(battle, 4, 4)).toBe(false);
     expect(unit.command).toBeNull();
-    expect(battle.commandSelection).toEqual({ order: 'attack', unit });
+    expect(battle.orderSelection).toEqual({ order: 'attack', unit });
 
     chooseOrder(battle, 'move');
     selectUnit(battle, unit);
@@ -138,7 +139,7 @@ describe('déroulé : ordre, unité, cible (rules.md 5)', () => {
     clickField(battle, 1, 1);
     clickField(battle, 2, 5);
 
-    expect(battle.commandSelection.unit).toBe(other);
+    expect(battle.orderSelection.unit).toBe(other);
     expect(unit.command).toBeNull();
   });
 
@@ -150,7 +151,7 @@ describe('déroulé : ordre, unité, cible (rules.md 5)', () => {
     expect(clickField(battle, 8, 8)).toBe(false);
     expect(clickField(battle, 4, 4)).toBe(false);
     expect(unit.command).toBeNull();
-    expect(battle.commandSelection).toBeNull();
+    expect(battle.orderSelection).toBeNull();
     expect(battle.pause.interaction).toBeNull();
   });
 });
@@ -164,10 +165,10 @@ describe('annulation (rules.md 5)', () => {
     chooseOrder(battle, 'move');
     reachStep(battle, unit);
 
-    cancelCommand(battle);
+    cancelOrder(battle);
 
     expect(unit.command).toBeNull();
-    expect(battle.commandSelection).toBeNull();
+    expect(battle.orderSelection).toBeNull();
     expect(battle.pause.interaction).toBeNull();
   });
 
@@ -177,7 +178,7 @@ describe('annulation (rules.md 5)', () => {
 
     expect(chooseOrder(battle, 'attack')).toBe(false);
 
-    expect(battle.commandSelection).toBeNull();
+    expect(battle.orderSelection).toBeNull();
     expect(battle.pause.interaction).toBeNull();
   });
 
@@ -185,7 +186,7 @@ describe('annulation (rules.md 5)', () => {
     const { battle } = setup();
     chooseOrder(battle, 'flee');
 
-    cancelCommand(battle);
+    cancelOrder(battle);
 
     expect(canFlee(battle.playerFleeState, battle.elapsedSeconds)).toBe(true);
     expect(chooseOrder(battle, 'flee')).toBe(true);

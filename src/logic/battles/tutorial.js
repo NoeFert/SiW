@@ -1,4 +1,4 @@
-import { canFlee } from './commands.js';
+import { canFlee } from './fleeCooldown.js';
 
 // technical.md 5.5 : moteur de tutoriel. Le contenu d'un tutoriel (ses étapes) est une donnée
 // propre à chaque bataille (src/data/tutorials.js) ; ce module ne fait que le dérouler.
@@ -22,9 +22,9 @@ const CONDITIONS = {
   enemyWaveDeployed: (battle, { fromEnd }) => battle.aiScriptState.nextIndex >= battle.enemyScript.length - fromEnd + 1,
   fleeAvailable: (battle) => canFlee(battle.playerFleeState, battle.elapsedSeconds),
   fleeIssued: (battle) => !canFlee(battle.playerFleeState, battle.elapsedSeconds),
-  noGestureInProgress: (battle) => battle.pause.interaction === null && battle.commandSelection === null,
-  fleeOrderChosen: (battle) => battle.commandSelection?.order === 'flee',
-  noOrderChosen: (battle) => battle.commandSelection === null,
+  noGestureInProgress: (battle) => battle.pause.interaction === null && battle.orderSelection === null,
+  fleeOrderChosen: (battle) => battle.orderSelection?.order === 'flee',
+  noOrderChosen: (battle) => battle.orderSelection === null,
 };
 
 // Unité du joueur sur le terrain qui a le moins de PV actuels (la première déployée en cas

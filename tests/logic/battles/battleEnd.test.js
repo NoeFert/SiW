@@ -1,7 +1,7 @@
 import {
   createFactionState, surrender, evaluateBattleOutcome, isEliminated,
-} from '../../src/logic/battleEnd.js';
-import { createDeploymentState, deployUnit, recordReturn } from '../../src/logic/deployment.js';
+} from '../../../src/logic/battles/battleEnd.js';
+import { createDeploymentState, deployUnit, recordReturn } from '../../../src/logic/battles/deployment.js';
 
 // Roster fictif minimal, isolé de units.md, pour piloter précisément les réserves.
 const ROSTER = {

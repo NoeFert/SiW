@@ -1,7 +1,7 @@
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { findNearestEnemy, findPath, chebyshevDistance } from '../../src/logic/pathfinding.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
+import { findNearestEnemy, findPath, chebyshevDistance } from '../../../src/logic/battles/pathfinding.js';
 
 function lastStep(path) {
   return path[path.length - 1];

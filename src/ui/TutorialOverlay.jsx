@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/8bit/button.jsx';
-import { continueTutorial, visibleTutorialStep, weakestPlayerUnit } from '../logic/tutorial.js';
+import { continueTutorial, visibleTutorialStep, weakestPlayerUnit } from '../logic/battles/tutorial.js';
 import { canvasToScreen, getCanvasRect, gridToScreen } from '../renderConstants.js';
 import { interactionState } from '../state/interactionState.js';
 import {
@@ -29,7 +29,7 @@ function unitOnScreen(canvasRect, unit) {
 }
 
 // technical.md 5.5 : overlay du tutoriel, seul élément (avec les tooltips) autorisé par-dessus
-// le terrain. Il ne fait qu'afficher l'étape en cours (src/logic/tutorial.js, contenu dans
+// le terrain. Il ne fait qu'afficher l'étape en cours (src/logic/battles/tutorial.js, contenu dans
 // src/data/tutorials.js) : message en
 // haut du terrain, main qui montre l'action attendue. Il ne capte aucun clic hors du message.
 export default function TutorialOverlay() {

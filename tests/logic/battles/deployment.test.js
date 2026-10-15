@@ -1,9 +1,9 @@
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
 import {
   createDeploymentState, deployUnit, recordReturn, isValidDeploymentPosition, getTowerRows, groupTowerRows,
   PRESENCE_CAP,
-} from '../../src/logic/deployment.js';
+} from '../../../src/logic/battles/deployment.js';
 
 // Roster fictif minimal, isolé de units.md, pour piloter précisément plafond/copies/légendaire.
 const ROSTER = {

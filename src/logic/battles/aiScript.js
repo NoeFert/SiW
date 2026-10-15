@@ -1,9 +1,12 @@
 import Unit from './unit.js';
-import { isValidDeploymentPosition, getPresenceUsed, PRESENCE_CAP } from './deployment.js';
+import {
+  isValidDeploymentPosition, getPresenceUsed, consumeFreshCopy, PRESENCE_CAP,
+} from './deployment.js';
 
-// rules.md 7 : le script ne fait QUE définir quoi/quand déployer, et la case est choisie au
-// moment du déploiement (7.2) — une fois créée via `new Unit(...)`, l'unité IA suit exactement
-// le comportement autonome déjà codé dans combat.js, sans aucune logique de décision en plus.
+// Commandant IA : déploie les ennemis selon le script de la phase en cours (rules.md 7). Le
+// script ne fait QUE définir quoi/quand déployer, et la case est choisie au moment du
+// déploiement (7.2) — une fois créée via `new Unit(...)`, l'unité IA suit exactement le
+// comportement autonome déjà codé dans unitBehavior.js, sans aucune logique de décision en plus.
 export function createAiScriptState() {
   return { nextIndex: 0 };
 }
@@ -48,8 +51,8 @@ function chooseDeploymentPosition(species, faction, grid, unitsOnField, rng) {
 }
 
 // `script` doit être trié par `time` croissant (voir src/data/battles/). Renvoie les
-// unités à déployer pour ce tick — celles dont l'heure de déploiement (temps absolu depuis
-// le début de la bataille) est atteinte depuis le dernier appel — sans jamais en redéployer
+// unités à déployer pour ce tick — celles dont l'heure de déploiement (temps depuis le début
+// de la phase) est atteinte depuis le dernier appel — sans jamais en redéployer
 // une deuxième fois. Si l'unité ferait dépasser le plafond vivant de points de présence
 // (rules.md 2, identique pour l'IA) ou si le bord d'entrée est plein (7.2), l'entrée attend un
 // tick suivant (les suivantes aussi, pour garder l'ordre du script). `rng` : source d'aléa,
@@ -68,4 +71,21 @@ export function deployScheduledUnits(script, state, elapsedSeconds, faction, gri
     state.nextIndex += 1;
   }
   return deployed;
+}
+
+// Appelé à chaque tick par tickBattle : déploie les ennemis du script de la phase en cours dont
+// l'heure est venue (comptée depuis le début de la phase). Le plafond vivant et la case sont
+// vérifiés par deployScheduledUnits ; les copies et le [Légendaire] unique sont garantis par le
+// contenu du script (voir battleScript.test.js) : pas de passage par deployUnit, seul le
+// registre de copies est tenu à jour (consumeFreshCopy) pour que les réserves restent exactes
+// pour la fin de bataille (battleEnd.js).
+export function deployDueEnemies(battle) {
+  const due = deployScheduledUnits(
+    battle.enemyScript, battle.aiScriptState, battle.elapsedSeconds - battle.phaseStartSeconds, 'enemy',
+    battle.grid, battle.units, battle.rng,
+  );
+  for (const unit of due) {
+    consumeFreshCopy(battle.enemyDeployment, unit.species);
+    battle.units.push(unit);
+  }
 }

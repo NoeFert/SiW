@@ -1,6 +1,6 @@
 import Unit from './unit.js';
 import { isPositionFree, occupiedCells } from './pathfinding.js';
-import { individualLevel, levelDamage, levelStat } from './levels.js';
+import { individualLevel, levelDamage, levelStat } from '../levels.js';
 
 // rules.md 2 : plafond vivant de points de présence, identique pour chaque camp.
 export const PRESENCE_CAP = 150;

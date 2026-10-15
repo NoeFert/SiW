@@ -1,7 +1,7 @@
 // rules.md 5.2 : deux familles de pause, indépendantes et combinables.
 // - Pause principale : interrupteur manuel du joueur (bouton ⏸ / Espace).
 // - Pause d'interaction : automatique pendant un geste (drag de déploiement, sélection d'une
-//   commande, confirmation d'abandon), levée à la fin ou à l'annulation du geste.
+//   ordre, confirmation d'abandon), levée à la fin ou à l'annulation du geste.
 // S'y ajoute le gel du tutoriel (tutorial.js, première bataille seulement).
 // Le temps de bataille ne s'écoule que si aucune n'est active. Comme tous les
 // compteurs (timers d'attaque, mouvements, cooldown, script IA, compte à rebours de 15 s)
@@ -12,7 +12,7 @@
 export const PAUSE_DEFAULTS = {
   // true : plusieurs déploiements possibles pendant une même pause principale.
   multipleDeploymentsPerMainPause: true,
-  // false : après un déploiement/une commande pendant la pause principale, le jeu reste en pause.
+  // false : après un déploiement/un ordre pendant la pause principale, le jeu reste en pause.
   resumeAfterActionInMainPause: false,
 };
 
@@ -21,7 +21,7 @@ export const PAUSE_DEFAULTS = {
 export function createPauseState() {
   return {
     main: false, interaction: null, tutorial: false, transition: false, deploymentsThisMainPause: 0,
-  }; // interaction : null | 'deploy' | 'command' | 'surrender'
+  }; // interaction : null | 'deploy' | 'order' | 'surrender'
 }
 
 export function isBattleTimeRunning(pause) {
@@ -45,7 +45,7 @@ export function canStartDeploymentDuringPause(pause) {
   return !pause.main || PAUSE_DEFAULTS.multipleDeploymentsPerMainPause || pause.deploymentsThisMainPause === 0;
 }
 
-// À appeler après un déploiement ou une commande réussis.
+// À appeler après un déploiement ou un ordre réussis.
 export function recordPlayerAction(pause, kind) {
   if (!pause.main) return;
   if (kind === 'deploy') pause.deploymentsThisMainPause += 1;

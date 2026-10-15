@@ -2,7 +2,7 @@ import Grid, { parseObstacleMap } from './grid.js';
 import { createBattle } from './battle.js';
 import { setUpcomingPhases } from './phases.js';
 import { startTutorial } from './tutorial.js';
-import { ROSTERS } from '../data/rosters.js';
+import { ROSTERS } from '../../data/rosters.js';
 
 // rules.md 9 : l'IA joue toujours la faction que le joueur n'a pas choisie.
 export function opposingFaction(faction) {

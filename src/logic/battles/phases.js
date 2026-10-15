@@ -32,7 +32,7 @@ export function isPhaseOver(battle) {
 export function startPhaseTransition(battle) {
   battle.phaseTransition = { stage: 'exit', seconds: 0 };
   battle.pause.transition = true;
-  battle.commandSelection = null;
+  battle.orderSelection = null;
 }
 
 // Case la plus à gauche libre sur la rangée `y` de la zone du joueur, sinon sur la rangée la

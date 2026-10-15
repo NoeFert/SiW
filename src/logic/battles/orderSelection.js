@@ -1,18 +1,18 @@
 import { footprint } from './pathfinding.js';
-import { canFlee } from './commands.js';
-import { issuePlayerAttack, issuePlayerMoveTo, issuePlayerFlee } from './battle.js';
+import { canFlee } from './fleeCooldown.js';
+import { issuePlayerAttack, issuePlayerMoveTo, issuePlayerFlee } from './playerActions.js';
 import { startInteraction, endInteraction, recordPlayerAction } from './pause.js';
 import { tutorialAllows } from './tutorial.js';
 
-// rules.md 5 : déroulé d'une commande depuis la rangée « Ordres » de la tour de commandement.
-// L'état vit dans `battle.commandSelection` : `null` hors commande, sinon `{ order, unit }`.
+// rules.md 5 : déroulé d'un ordre depuis la rangée « Ordres » de la tour de commandement.
+// L'état vit dans `battle.orderSelection` : `null` hors ordre, sinon `{ order, unit }`.
 // Ordre (met en pause) -> unité du joueur -> cible (ennemi pour `attack`, case pour `move`,
 // aucune pour `flee`). Annuler à n'importe quel stade n'émet rien et ne consomme pas le
 // cooldown de la fuite.
 export const ORDERS = ['move', 'attack', 'flee'];
 
 function isOpen(battle) {
-  return battle.commandSelection !== null;
+  return battle.orderSelection !== null;
 }
 
 // Un ordre peut être choisi hors drag, hors changement de phase, si le tutoriel le permet et,
@@ -27,60 +27,60 @@ export function canChooseOrder(battle, order) {
 }
 
 // Clic sur un ordre : démarre la sélection (pause d'interaction), ou change d'ordre (l'unité
-// déjà sélectionnée est oubliée). Re-cliquer l'ordre en cours annule la commande.
+// déjà sélectionnée est oubliée). Re-cliquer l'ordre en cours annule l'ordre.
 export function chooseOrder(battle, order) {
-  if (battle.commandSelection?.order === order) {
-    cancelCommand(battle);
+  if (battle.orderSelection?.order === order) {
+    cancelOrder(battle);
     return false;
   }
   if (!canChooseOrder(battle, order)) return false;
-  startInteraction(battle.pause, 'command');
-  battle.commandSelection = { order, unit: null };
+  startInteraction(battle.pause, 'order');
+  battle.orderSelection = { order, unit: null };
   return true;
 }
 
 function close(battle) {
-  battle.commandSelection = null;
-  if (battle.pause.interaction === 'command') endInteraction(battle.pause);
+  battle.orderSelection = null;
+  if (battle.pause.interaction === 'order') endInteraction(battle.pause);
 }
 
-export function cancelCommand(battle) {
+export function cancelOrder(battle) {
   if (isOpen(battle)) close(battle);
 }
 
 function complete(battle, issued) {
   if (!issued) return false;
   close(battle);
-  recordPlayerAction(battle.pause, 'command');
+  recordPlayerAction(battle.pause, 'order');
   return true;
 }
 
 export function selectUnit(battle, unit) {
   if (!isOpen(battle) || unit.faction !== 'player' || !unit.isOnField) return false;
-  const { order } = battle.commandSelection;
+  const { order } = battle.orderSelection;
   if (!tutorialAllows(battle, `selectUnit:${order}`)) return false;
-  battle.commandSelection.unit = unit;
-  if (order === 'flee') return complete(battle, issuePlayerFlee(battle, unit));
+  battle.orderSelection.unit = unit;
+  if (order === 'flee') return complete(battle, issuePlayerFlee(battle.playerFleeState, battle.elapsedSeconds, unit));
   return true;
 }
 
 function selectedActor(battle) {
-  const unit = battle.commandSelection?.unit;
+  const unit = battle.orderSelection?.unit;
   return unit?.isOnField ? unit : null;
 }
 
 export function selectEnemy(battle, enemy) {
   const unit = selectedActor(battle);
-  if (!unit || battle.commandSelection.order !== 'attack' || enemy.faction !== 'enemy' || !enemy.isOnField) return false;
+  if (!unit || battle.orderSelection.order !== 'attack' || enemy.faction !== 'enemy' || !enemy.isOnField) return false;
   if (!tutorialAllows(battle, 'selectTarget')) return false;
-  return complete(battle, issuePlayerAttack(battle, unit, enemy));
+  return complete(battle, issuePlayerAttack(unit, enemy));
 }
 
 export function selectCell(battle, x, y) {
   const unit = selectedActor(battle);
-  if (!unit || battle.commandSelection.order !== 'move' || !isInsideGrid(battle.grid, x, y)) return false;
+  if (!unit || battle.orderSelection.order !== 'move' || !isInsideGrid(battle.grid, x, y)) return false;
   if (!tutorialAllows(battle, 'selectTarget')) return false;
-  return complete(battle, issuePlayerMoveTo(battle, unit, x, y));
+  return complete(battle, issuePlayerMoveTo(unit, x, y));
 }
 
 function isInsideGrid(grid, x, y) {
@@ -116,7 +116,7 @@ export function getClickableHighlights(battle) {
   }
   if (!isOpen(battle)) return { zone: null, unitIds: new Set() };
   if (!selectedActor(battle)) return { zone: null, unitIds: idsOf('player') };
-  return battle.commandSelection.order === 'attack'
+  return battle.orderSelection.order === 'attack'
     ? { zone: null, unitIds: idsOf('enemy') }
     : { zone: wholeField, unitIds: new Set() };
 }

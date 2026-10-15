@@ -1,6 +1,6 @@
 import fs from 'node:fs';
-import Grid, { parseObstacleMap } from '../../src/logic/grid.js';
-import { DIRECTIONS, canStep } from '../../src/logic/pathfinding.js';
+import Grid, { parseObstacleMap } from '../../src/logic/battles/grid.js';
+import { DIRECTIONS, canStep } from '../../src/logic/battles/pathfinding.js';
 import { BATTLES, TUTO_BATTLE_ID, WAR_BATTLE_IDS } from '../../src/data/battles/index.js';
 import { WAR_MAP_01 } from '../../src/data/battles/war01/warMap01.js';
 import { TEXT } from '../../src/ui/strings.js';

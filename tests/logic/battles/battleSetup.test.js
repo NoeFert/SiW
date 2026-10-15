@@ -1,10 +1,10 @@
-import { createBattleFromDefinition, opposingFaction, resolvePhases } from '../../src/logic/battleSetup.js';
-import { getReserve } from '../../src/logic/deployment.js';
-import { tutorialAllows } from '../../src/logic/tutorial.js';
-import { BATTLES } from '../../src/data/battles/index.js';
-import { STARTER_TUTORIAL } from '../../src/data/tutorials.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
+import { createBattleFromDefinition, opposingFaction, resolvePhases } from '../../../src/logic/battles/battleSetup.js';
+import { getReserve } from '../../../src/logic/battles/deployment.js';
+import { tutorialAllows } from '../../../src/logic/battles/tutorial.js';
+import { BATTLES } from '../../../src/data/battles/index.js';
+import { STARTER_TUTORIAL } from '../../../src/data/tutorials.js';
+import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
+import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
 
 const PLAYER_UNITS = [
   { id: 'w1', species: 'lambtonWorm', xp: 0 },

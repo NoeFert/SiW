@@ -1,4 +1,4 @@
-import Grid from '../../src/logic/grid.js';
+import Grid from '../../../src/logic/battles/grid.js';
 
 describe('Grid', () => {
   test('default dimensions match the v1 battlefield (24x14)', () => {

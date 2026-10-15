@@ -1,8 +1,9 @@
 // Outil de debug temporaire : affiche l'état d'une bataille en ASCII dans le terminal.
 // Pas une fonctionnalité du jeu — sert uniquement à vérifier la logique sans Phaser.
-import Grid, { parseObstacleMap } from '../logic/grid.js';
-import { footprint } from '../logic/pathfinding.js';
-import { createBattle, deployPlayerUnit, issuePlayerFlee, tickBattle } from '../logic/battle.js';
+import Grid, { parseObstacleMap } from '../logic/battles/grid.js';
+import { footprint } from '../logic/battles/pathfinding.js';
+import { createBattle, tickBattle } from '../logic/battles/battle.js';
+import { deployPlayerUnit, issuePlayerFlee } from '../logic/battles/playerActions.js';
 import { WYRMS_ROSTER } from '../data/wyrmsRoster.js';
 import { UNDEAD_ROSTER } from '../data/undeadRoster.js';
 import { BATTLES } from '../data/battles/index.js';
@@ -106,7 +107,7 @@ function runFullBattleDemo() {
 
     if (t === 15) {
       console.log(`\n--- t=${t}s : le joueur ordonne à Fafnir #${fafnir.id} de fuir ---`);
-      issuePlayerFlee(battle, fafnir);
+      issuePlayerFlee(battle.playerFleeState, battle.elapsedSeconds, fafnir);
     }
 
     if (t % 5 === 0 || battle.outcome !== 'ongoing') {

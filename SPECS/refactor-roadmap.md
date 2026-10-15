@@ -41,7 +41,7 @@ Problèmes à résoudre (feedback) :
 - [x] Mettre à jour les profils de test du menu devs (`src/dev/testProfiles.js`) et supprimer `test-wyrm-fallen` ; chaque profil de test liste tous les champs du profil, comme un profil sauvegardé (vérifié par un test)
 - [x] Tests des actions du store : `tests/state/profileStore.test.js`
 
-### Étape 3 — Données des batailles, préparation de la bataille et flux de jeu ✅
+### Étape 3 — Données des batailles, préparation de la bataille et flux de jeu ✅ (`e523215`)
 - [x] Toutes les données d'une bataille dans un seul fichier, dans `src/data/battles/` (`battleTuto.js`, puis un sous-dossier par guerre : `war01/` avec sa map `warMap01.js` et ses batailles `battleStartW01.js`, `battleLow1W01.js`, `battleLow2W01.js`) : récompense, tutoriel, et pour chaque phase son fond, son plan d'obstacles (ASCII) et les scripts de l'IA. `src/data/battles/index.js` liste les batailles et décrit le format. Remplace `battles.js`, `battleScript.js` et `battlefield.js`
 - [x] Sortir la préparation de la bataille de la Scene vers une fonction testée de `logic/` : `createBattleFromDefinition(definition, faction, playerUnits)` (`src/logic/battleSetup.js`), utilisée aussi par l'outil d'équilibrage. `createBattle` reçoit directement les individus du joueur (plus de réserve créée puis remplacée)
 - [x] Sortir de `App.jsx` la logique « fin de bataille → profil » vers les actions du store du profil (fait à l'étape 2)
@@ -49,9 +49,15 @@ Problèmes à résoudre (feedback) :
 - [x] Vocabulaire : une **guerre** (war) est un ensemble de batailles sur une map ; une **bataille** (battle) n'est plus jamais appelée « war ». Identifiants : `firstBattle` → `battleTuto` (et `tutoBattleWon`, `TUTO_BATTLE_ID`… partout), `war1/2/3` → `battle` + id de l'emplacement + `W01`
 - [x] `tests/logic/battleData.test.js` vérifie automatiquement chaque bataille et chaque phase (fond présent, plan 24 x 14, entrée de l'IA libre, aucune zone isolée, scripts triés, nom et emplacement sur la map)
 
-### Étape 4 — Sous-objets de la bataille
-- [ ] Découper l'objet `battle` en sous-objets : `sim` (grille, unités, temps, phases, IA, réserves, fin de bataille), `interaction` (pause, commande en cours de sélection, tutoriel), `events` (événements visuels du dernier tick)
-- [ ] Adapter `logic/`, les tests et l'outil d'équilibrage ; l'instantané de `battleReplay` ne change pas
+### Étape 4 — Découper la logique de bataille par rôle ✅
+- [x] Fichiers du moteur de bataille rangés dans `src/logic/battles/` (tests en miroir dans `tests/logic/battles/`) ; `src/logic/` ne garde que la couche méta (armée, fontaine, conseils, niveaux, individus, invocation, victoire, guerre)
+- [x] Quatre rôles, décrits par une carte du moteur en tête de `battle.js` :
+  1. Déroulé de la bataille : `battleSetup.js`, `battle.js` (l'objet bataille et la boucle `tickBattle`, lisible de haut en bas), `phases.js`, `pause.js`, `tutorial.js`
+  2. Unités sur le terrain, identiques pour les deux camps : `unit.js`, `unitBehavior.js`, `pathfinding.js`, `deployment.js`
+  3. Les deux commandants : `playerActions.js` (nouveau : déployer, ordres, pause, abandon, sortis de `battle.js` ; les ordres de l'ancien `commands.js` y sont fusionnés), `orderSelection.js` (ex-`commandSelection.js` : déroulé d'un ordre en plusieurs clics) et `fleeCooldown.js` (cooldown de la fuite, rules.md 5.1) ; `aiScript.js` (l'arrivée des ennemis, `deployDueEnemies`, y est déplacée)
+  4. Fin de bataille : `battleEnd.js` contient toutes les règles de fin (délai de victoire, abandon, IA vaincue à la fin du script, verdict), sorties de `battle.js`
+- [x] L'objet `battle` garde sa forme (champs à plat) : la Scene, la tour et les tests lisent les mêmes champs ; l'instantané de `battleReplay` ne change pas
+- [ ] Option, si Noémie la veut : ordonner la déclaration de `createBattle` en sections commentées, une par rôle, sans renommer de champ
 
 ### Étape 5 — Store de la bataille
 - [ ] Un store Zustand de la bataille en cours remplace l'objet global `interactionState`
@@ -147,3 +153,10 @@ Changements apportés au plan initial, du plus ancien au plus récent.
   - Contrôle : les nouvelles définitions ont été comparées aux anciennes (obstacles, scripts, récompenses, sens du fond) avant suppression ; instantané de référence inchangé.
   - Ajustement de Noémie en cours d'étape : un sous-dossier par guerre (`war01/`, avec sa map), batailles nommées battle + emplacement + W + numéro de guerre, `firstBattle` → `battleTuto` partout dans le code (y compris le champ du profil `tutoBattleWon` et les commentaires « bataille 01 » → « bataille tutoriel »). La « bataille 01 » des specs sera alignée à l'étape 8.
   - Les instantanés de référence ont été renommés (clés seulement) et passent tels quels : les batailles renommées se jouent à l'identique.
+- **2026-10-15 — Étape 4**
+  - Première version (sous-objets `sim` / `interaction` / `events`) annulée par Noémie : elle renommait les accès dans 25 fichiers sans rendre la logique plus facile à suivre.
+  - Nouvelle version, sur proposition de Noémie (fichier central, unités, interactions du joueur, fin de bataille), ajustée : on répartit les fonctions par rôle au lieu de changer la forme de l'objet ; l'arrivée des ennemis est rangée avec le joueur dans « les deux commandants » (une décision, pas de la simulation) ; la fin de bataille détecte elle-même ses conditions ; l'armée du joueur est donnée au moteur, qui ne lit jamais le profil.
+  - Ajout de Noémie en cours d'étape : les fichiers du moteur de bataille dans `src/logic/battles/`.
+  - Ajustement demandé par Noémie : `commands.js` fusionné dans `playerActions.js` (un ordre traversait trois fichiers, `orderSelection` → `playerActions` → `commands`). Le cooldown de la fuite reste à part dans `fleeCooldown.js` : le mettre dans `playerActions.js` aurait créé un import circulaire avec `tutorial.js`.
+  - Vocabulaire « ordre » partout pour ce que donne le joueur : `commandSelection` → `orderSelection` (fichier et champ de la bataille), `cancelCommand` → `cancelOrder`, pause d'interaction `'command'` → `'order'`, commentaires « commande » → « ordre ». Seul `unit.command` (l'ordre que l'unité exécute) garde son nom.
+  - `combat.js` renommé `unitBehavior.js` (choix de Noémie) : il fait agir toutes les unités à chaque tick (cible, déplacement, attaques, aptitudes, ordres, fuite), pas seulement le combat. Sa fonction principale `resolveCombatTick` devient `updateUnitBehaviors`, et son test `unitBehavior.test.js`.

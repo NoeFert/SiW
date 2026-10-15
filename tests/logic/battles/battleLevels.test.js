@@ -1,13 +1,13 @@
 // Niveaux en bataille (rules.md 2, 11.6) : stats de niveau, réserve par individu, tour par
 // espèce et niveau, XP des coups fatals.
-import Grid from '../../src/logic/grid.js';
-import Unit from '../../src/logic/unit.js';
-import { WYRMS_ROSTER } from '../../src/data/wyrmsRoster.js';
-import { UNDEAD_ROSTER } from '../../src/data/undeadRoster.js';
-import { resolveCombatTick } from '../../src/logic/combat.js';
+import Grid from '../../../src/logic/battles/grid.js';
+import Unit from '../../../src/logic/battles/unit.js';
+import { WYRMS_ROSTER } from '../../../src/data/wyrmsRoster.js';
+import { UNDEAD_ROSTER } from '../../../src/data/undeadRoster.js';
+import { updateUnitBehaviors } from '../../../src/logic/battles/unitBehavior.js';
 import {
   createDeploymentState, deployUnit, getTowerRows, groupTowerRows, recordReturn,
-} from '../../src/logic/deployment.js';
+} from '../../../src/logic/battles/deployment.js';
 
 describe('Unit — stats du niveau (rules.md 11.6)', () => {
   test('niveau 1 par défaut : stats de units.md, sans individu', () => {
@@ -113,7 +113,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
-    resolveCombatTick([worm, skeleton], grid, 0.02);
+    updateUnitBehaviors([worm, skeleton], grid, 0.02);
 
     expect(skeleton.isAlive).toBe(false);
     expect(worm.killXp).toBe(6);
@@ -126,7 +126,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
-    resolveCombatTick([right, left, skeleton], grid, 0.02); // l'ordre de la liste ne compte pas
+    updateUnitBehaviors([right, left, skeleton], grid, 0.02); // l'ordre de la liste ne compte pas
 
     expect(left.killXp).toBe(6);
     expect(right.killXp).toBe(0);
@@ -141,7 +141,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
     skeleton.hp = 1;
 
-    resolveCombatTick([left, right, skeleton], grid, 0.02);
+    updateUnitBehaviors([left, right, skeleton], grid, 0.02);
 
     expect(left.killXp).toBe(0);
     expect(right.killXp).toBe(6);
@@ -158,7 +158,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     skeleton.target = left;
     skeleton.attackTimer = skeleton.species.attackSpeed - 0.01;
 
-    resolveCombatTick([left, right, skeleton], grid, 0.02);
+    updateUnitBehaviors([left, right, skeleton], grid, 0.02);
 
     expect(left.isAlive).toBe(false);
     expect(right.killXp).toBe(6);
@@ -169,7 +169,7 @@ describe('XP des coups fatals (rules.md 11.6)', () => {
     const worm = striker(0);
     const skeleton = new Unit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 1, 0);
 
-    resolveCombatTick([worm, skeleton], grid, 0.02);
+    updateUnitBehaviors([worm, skeleton], grid, 0.02);
 
     expect(skeleton.isAlive).toBe(true);
     expect(worm.killXp).toBe(0);

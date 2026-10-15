@@ -5,10 +5,10 @@ import {
   Tooltip, TooltipContent, TooltipTrigger,
 } from '@/components/ui/8bit/tooltip.jsx';
 import { cn } from '@/lib/utils';
-import { FLEE_COOLDOWN_SECONDS, getFleeCooldownRemaining } from '../logic/commands.js';
+import { FLEE_COOLDOWN_SECONDS, getFleeCooldownRemaining } from '../logic/battles/fleeCooldown.js';
 import {
-  ORDERS, canChooseOrder, chooseOrder, cancelCommand,
-} from '../logic/commandSelection.js';
+  ORDERS, canChooseOrder, chooseOrder, cancelOrder,
+} from '../logic/battles/orderSelection.js';
 import PauseButton from './PauseButton.jsx';
 import { TEXT } from './strings.js';
 
@@ -28,11 +28,11 @@ const SELECTED_CLASS = {
 // clic droit sur le terrain ou appuyer sur Échap annule. Seul Fuir a un cooldown, qui remplit
 // son bouton de bas en haut.
 export default function OrdersRow({ battle, playerFaction }) {
-  const selectedOrder = battle.commandSelection?.order ?? null;
+  const selectedOrder = battle.orderSelection?.order ?? null;
 
   useEffect(() => {
     const onKey = (event) => {
-      if (event.key === 'Escape') cancelCommand(battle);
+      if (event.key === 'Escape') cancelOrder(battle);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
