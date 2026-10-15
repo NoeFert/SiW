@@ -1,13 +1,9 @@
-import {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ROSTERS } from '../data/rosters.js';
 import { SOVEREIGN_SPRITES, spritePath } from '../data/sprites.js';
-import { homeTipToShow, markTipSeen } from '../logic/homeTips.js';
+import { homeTipToShow } from '../logic/homeTips.js';
 import { playerProgress } from '../logic/levels.js';
-import {
-  getArmy, getHomeTipsSeen, getOwnedUnits, getPlayerXp, getSpiritStones, saveHomeTipsSeen, saveSpiritStones,
-} from '../persistence.js';
+import { useProfileStore, markHomeTipSeen } from '../state/profileStore.js';
 import HomeTip from '../ui/HomeTip.jsx';
 import HomeWanderer from '../ui/HomeWanderer.jsx';
 import { XpBar } from '../ui/LevelDisplay.jsx';
@@ -44,47 +40,43 @@ const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rec
 export default function HomeScreen({
   playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon, onOpenCodex, onResetGame, justSummoned, onArrived,
 }) {
-  const [spiritStones, setSpiritStones] = useState(getSpiritStones);
+  const spiritStones = useProfileStore((profile) => profile.spiritStones);
+  const unitCount = useProfileStore((profile) => profile.units.length);
+  const playerXp = useProfileStore((profile) => profile.playerXp);
+  const progress = playerProgress(playerXp);
 
-  // technical.md 5.5 : au plus un conseil par arrivée, marqué vu dès qu'il s'affiche.
-  // `justSummoned` : au moins une invocation depuis l'arrivée précédente (remis à zéro par
-  // `onArrived`).
-  const [tip, setTip] = useState(() => homeTipToShow({
-    seen: getHomeTipsSeen(),
-    justSummoned,
-    units: getOwnedUnits() ?? [],
-    army: getArmy(),
-    roster: ROSTERS[playerFaction],
-    spiritStones: getSpiritStones(),
-  }));
+  // technical.md 5.5 : au plus un conseil par arrivée, choisi à l'arrivée et marqué vu dès qu'il
+  // s'affiche. `justSummoned` : au moins une invocation depuis l'arrivée précédente (remis à
+  // zéro par `onArrived`).
+  const [tip, setTip] = useState(() => {
+    const profile = useProfileStore.getState();
+    return homeTipToShow({
+      seen: profile.homeTipsSeen,
+      justSummoned,
+      units: profile.units,
+      army: profile.army,
+      roster: ROSTERS[playerFaction],
+      spiritStones: profile.spiritStones,
+    });
+  });
   useEffect(() => {
-    if (tip) saveHomeTipsSeen(markTipSeen(getHomeTipsSeen(), tip));
+    if (tip) markHomeTipSeen(tip);
     onArrived();
   }, []); // une seule fois, à l'arrivée
-  const progress = playerProgress(getPlayerXp());
 
-  // rules.md 11.8 : la récolte est sauvegardée tout de suite ; le solde affiché n'augmente qu'à
-  // l'arrivée des gemmes qui volent de la fontaine jusqu'à lui (au plus 5), pour montrer où
-  // elles vont. `landedBalance` : solde à afficher à l'arrivée.
+  // rules.md 11.8 : la récolte est ajoutée au solde tout de suite (SpiritFountain) ; le solde
+  // affiché n'augmente qu'à l'arrivée des gemmes qui volent de la fontaine jusqu'à lui (au plus
+  // 5), pour montrer où elles vont. `flight.amount` : gemmes encore en vol, pas encore affichées.
   const [flight, setFlight] = useState(null);
-  const landedBalance = useRef(null);
   const collect = (amount, iconRect) => {
-    const balance = getSpiritStones() + amount;
-    saveSpiritStones(balance);
-    landedBalance.current = balance;
     const target = document.querySelector('[data-spirit-balance-icon]')?.getBoundingClientRect();
-    if (!iconRect || !target) {
-      setSpiritStones(balance);
-      return;
-    }
+    if (!iconRect || !target) return;
     setFlight({
-      key: Date.now(), from: rectCenter(iconRect), to: rectCenter(target), count: Math.min(amount, 5),
+      key: Date.now(), from: rectCenter(iconRect), to: rectCenter(target), count: Math.min(amount, 5), amount,
     });
   };
-  const land = useCallback(() => {
-    setSpiritStones(landedBalance.current);
-    setFlight(null);
-  }, []);
+  const land = useCallback(() => setFlight(null), []);
+  const shownSpiritStones = spiritStones - (flight?.amount ?? 0);
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 text-white">
@@ -94,7 +86,7 @@ export default function HomeScreen({
         style={{ backgroundImage: `url(${HOME_BACKGROUNDS[playerFaction]})` }}
       />
       <div className="absolute top-0 right-0 z-10 flex items-center gap-4">
-        <SpiritStonesBalance amount={spiritStones} />
+        <SpiritStonesBalance amount={shownSpiritStones} />
         <SettingsMenu onOpenCodex={onOpenCodex} onReset={onResetGame} />
       </div>
       <div className="absolute top-0 left-0 flex items-center gap-4">
@@ -114,7 +106,7 @@ export default function HomeScreen({
       <nav className="absolute left-5 top-1/2 -mt-8 flex -translate-y-1/2 flex-col items-start gap-8">
         <MenuItem onClick={onOpenWar} tutorial="home-war">{TEXT.home.goToWar}</MenuItem>
         <MenuItem onClick={onOpenUnits}>
-          {TEXT.home.units(TEXT.factions[playerFaction], (getOwnedUnits() ?? []).length)}
+          {TEXT.home.units(TEXT.factions[playerFaction], unitCount)}
         </MenuItem>
         <MenuItem onClick={onOpenArmy} tutorial="home-army">{TEXT.home.army}</MenuItem>
         <MenuItem onClick={onOpenSummon} tutorial="home-summon">{TEXT.home.summon}</MenuItem>

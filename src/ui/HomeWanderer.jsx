@@ -3,7 +3,7 @@ import {
 } from 'react';
 import { ROSTERS } from '../data/rosters.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
-import { getOwnedUnits } from '../persistence.js';
+import { useProfileStore } from '../state/profileStore.js';
 
 const CROWD_SIZE = 3;
 const PICK_INTERVAL_MS = 5 * 60 * 1000;
@@ -14,9 +14,9 @@ const OUTSIDE_RIGHT = 106;
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 
 // Jusqu'à 3 individus différents, tirés au hasard parmi les individus possédés d'une case (1×1) :
-// leurs espèces. Liste vide s'il n'y en a pas.
+// leurs espèces. Liste vide s'il n'y en a pas. Lit le profil au moment du tirage.
 function pickCrowd(roster) {
-  const candidates = (getOwnedUnits() ?? []).filter((unit) => roster[unit.species].size === 1);
+  const candidates = useProfileStore.getState().units.filter((unit) => roster[unit.species].size === 1);
   const picked = [];
   while (picked.length < CROWD_SIZE && candidates.length > 0) {
     picked.push(candidates.splice(Math.floor(Math.random() * candidates.length), 1)[0]);

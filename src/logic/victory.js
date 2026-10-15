@@ -1,5 +1,5 @@
-// Couche méta du jeu normal : ce que change une victoire (rules.md 11). Logique pure — App.jsx
-// lit la sauvegarde, appelle resolveVictory, puis sauvegarde le résultat.
+// Couche méta du jeu normal : ce que change une victoire (rules.md 11). Logique pure — le store
+// du profil (src/state/profileStore.js) appelle resolveVictory et enregistre le résultat.
 import { armyCost, createArmy, removeDeadFromArmy } from './army.js';
 import {
   FIRST_BATTLE_PLAYER_XP, applyVictoryToUnits, individualXpGains, levelUps, playerLevelReward,

@@ -10,7 +10,7 @@ import { SPECIES_SPRITES } from '../data/sprites.js';
 import {
   invaderSpecies, invadersRepelled, isWarCompleted, victoryReward, warBattleState,
 } from '../logic/war.js';
-import { getArmy, getOwnedUnits, getWonWarBattles } from '../persistence.js';
+import { useProfileStore } from '../state/profileStore.js';
 import RewardRow from '../ui/RewardRow.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import SpeciesSprite from '../ui/SpeciesSprite.jsx';
@@ -119,9 +119,10 @@ function Connector({ from, to, color }) {
 // panneau : nom, état, récompense de la prochaine victoire (pleine ou réduite au rejeu) et
 // « Combattre », désactivé si verrouillée ou si l'armée est vide.
 export default function WarScreen({ playerFaction, onFight, onBack }) {
-  const units = getOwnedUnits() ?? [];
-  const wonIds = getWonWarBattles();
-  const armyIsEmpty = armyUnits(getArmy(), units).length === 0;
+  const units = useProfileStore((profile) => profile.units);
+  const army = useProfileStore((profile) => profile.army);
+  const wonIds = useProfileStore((profile) => profile.wonWarBattles);
+  const armyIsEmpty = armyUnits(army, units).length === 0;
   const color = PLAYER_COLOR[playerFaction];
   const nodes = WAR_MAP_1.nodes.map((node) => ({
     ...node,

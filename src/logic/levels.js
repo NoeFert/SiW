@@ -1,5 +1,5 @@
 // Couche méta du jeu normal (rules.md 11.5 et 11.6) : niveaux du joueur et des individus.
-// Logique pure, sans Phaser ni localStorage (la sauvegarde vit dans persistence.js).
+// Logique pure, sans Phaser ni localStorage (la sauvegarde vit dans src/state/profileStore.js).
 
 // --- Individus (rules.md 11.6) ---
 

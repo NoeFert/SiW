@@ -1,5 +1,5 @@
 // Couche méta du jeu normal (rules.md 11.2) : l'armée du joueur. Logique pure, sans Phaser ni
-// localStorage (la sauvegarde vit dans persistence.js).
+// localStorage (la sauvegarde vit dans src/state/profileStore.js).
 import { individualLevel, sortByLevel } from './levels.js';
 
 // rules.md 11.2 : plafond de coût d'une armée, en points de présence (distinct des 150 du terrain).

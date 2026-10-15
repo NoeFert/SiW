@@ -12,37 +12,19 @@ import SummonScreen from './screens/SummonScreen.jsx';
 import WarScreen from './screens/WarScreen.jsx';
 import CodexScreen from './screens/CodexScreen.jsx';
 import DevMenu from './dev/DevMenu.jsx';
-import { TEST_PROFILES, loadTestProfile } from './dev/testProfiles.js';
-import { ROSTERS } from './data/rosters.js';
-import {
-  BATTLES, FIRST_BATTLE_ID, WAR_BATTLE_IDS,
-} from './data/battles.js';
+import { TEST_PROFILES } from './dev/testProfiles.js';
+import { FIRST_BATTLE_ID, WAR_BATTLE_IDS } from './data/battles.js';
 import { armyUnits } from './logic/army.js';
-import { createStartingUnits } from './logic/ownedUnits.js';
-import { STARTING_SPIRIT_STONES } from './logic/summon.js';
-import { resolveVictory } from './logic/victory.js';
-import { resolveWarDefeat, victoryReward } from './logic/war.js';
 import {
-  getSavedFaction, savePlayerFaction, hasWonFirstBattle, markFirstBattleWon, getOwnedUnits,
-  saveOwnedUnits, getArmy, saveArmy, getSpiritStones, saveSpiritStones, getPlayerXp, savePlayerXp,
-  getFallenLegendaryLevel, saveFallenLegendaryLevel, getWonWarBattles, saveWonWarBattles,
-  getFountainLastHarvest, saveFountainLastHarvest, isLegacySave, clearProgress, getHomeTipsSeen,
-  saveHomeTipsSeen,
-} from './persistence.js';
-import { markTipSeen } from './logic/homeTips.js';
-import { TEXT } from './ui/strings.js';
+  useProfileStore, chooseFaction, applyVictory, applyWarDefeat, startFountain, resetProfile,
+  replaceProfile,
+} from './state/profileStore.js';
 
-// rules.md 11.8 : la Spirit Fountain se met en route, vide, à la première arrivée sur l'accueil.
-function startFountain() {
-  if (getFountainLastHarvest() === null) saveFountainLastHarvest(Date.now());
-}
-
-// technical.md 5.2 : l'écran de départ se déduit de l'état persistant, pas d'un routeur.
-// Une sauvegarde à l'ancien format (technical.md 5.4) est effacée : l'app repart de l'intro.
+// technical.md 5.2 : l'écran de départ se déduit du profil sauvegardé, pas d'un routeur.
 function initialScreen() {
-  if (isLegacySave()) clearProgress();
-  if (!getSavedFaction()) return 'intro';
-  if (!hasWonFirstBattle()) return 'battle';
+  const { faction, firstBattleWon } = useProfileStore.getState();
+  if (!faction) return 'intro';
+  if (!firstBattleWon) return 'battle';
   startFountain();
   return 'home';
 }
@@ -63,8 +45,10 @@ export default function App() {
   // « recrue hors de l'armée » du tutoriel de l'accueil).
   const [summonedSinceHome, setSummonedSinceHome] = useState(false);
   const [saveVersion, setSaveVersion] = useState(0); // menu devs : recharge l'écran après un profil
+  const playerFaction = useProfileStore((profile) => profile.faction);
+  const ownedUnits = useProfileStore((profile) => profile.units);
+  const army = useProfileStore((profile) => profile.army);
   const isWarBattle = WAR_BATTLE_IDS.includes(battleId);
-  const playerFaction = getSavedFaction();
 
   // GRAPHICS.md « Curseur de la souris » : couleur du curseur selon la faction (pixel-ui.css),
   // posée sur <html> pour couvrir aussi les tooltips et dialogues rendus hors de l'app. Sans
@@ -83,11 +67,8 @@ export default function App() {
     setScreen('home');
   }, []);
 
-  // rules.md 11.1/11.3 : au choix de la faction, dotation de départ et somme de départ.
-  const chooseFaction = useCallback((faction) => {
-    savePlayerFaction(faction);
-    saveOwnedUnits(createStartingUnits(ROSTERS[faction]));
-    saveSpiritStones(STARTING_SPIRIT_STONES);
+  const startFirstBattle = useCallback((faction) => {
+    chooseFaction(faction);
     setBattleId(FIRST_BATTLE_ID);
     startBattle();
   }, [startBattle]);
@@ -99,76 +80,31 @@ export default function App() {
   }, [startBattle]);
 
   // technical.md 5.4 : dans la bataille 01, pertes et XP ne sont comptées qu'à la victoire — une
-  // tentative ratée ne sauvegarde rien. La victoire (resolveVictory, rules.md 11) retire les
-  // morts, donne l'XP et la récompense (réduites au rejeu, 11.7), crée l'armée de départ après la
-  // bataille 01, retient les batailles de guerre gagnées.
-  // `battleUnits` : unités de la bataille (battle.units) ; vide quand la bataille 01 est passée
-  // (rules.md 11 : skip). Renvoie le bilan de l'écran de victoire.
-  const saveGameVictory = useCallback((battleUnits) => {
-    const wonIds = getWonWarBattles();
-    const { save, report } = resolveVictory(
-      {
-        units: getOwnedUnits(),
-        army: getArmy(),
-        playerXp: getPlayerXp(),
-        spiritStones: getSpiritStones(),
-        fallenLegendaryLevel: getFallenLegendaryLevel(),
-      },
-      battleUnits,
-      ROSTERS[playerFaction],
-      {
-        firstBattle: battleId === FIRST_BATTLE_ID,
-        armyName: TEXT.defaultArmyName,
-        reward: victoryReward(BATTLES[battleId].reward, wonIds.includes(battleId)),
-        replay: wonIds.includes(battleId),
-      },
-    );
-    saveOwnedUnits(save.units);
-    saveArmy(save.army);
-    savePlayerXp(save.playerXp);
-    saveSpiritStones(save.spiritStones);
-    if (save.fallenLegendaryLevel !== null) saveFallenLegendaryLevel(save.fallenLegendaryLevel);
-    if (battleId === FIRST_BATTLE_ID) markFirstBattleWon();
-    else if (!wonIds.includes(battleId)) saveWonWarBattles([...wonIds, battleId]);
-    return report;
-  }, [playerFaction, battleId]);
-
+  // tentative ratée ne change rien au profil.
   const handleVictory = useCallback((battle) => {
-    setVictoryProgress(saveGameVictory(battle.units));
+    setVictoryProgress(applyVictory(battleId, battle.units));
     setScreen('victory');
-  }, [saveGameVictory]);
+  }, [battleId]);
 
   // Menu devs, pendant la bataille 01 (rules.md 11) : comptée comme gagnée sans combat (aucune
   // perte, armée de départ avec toute la dotation, récompense et XP fixe du joueur), puis retour
   // direct à l'accueil.
   const skipFirstBattle = useCallback(() => {
-    saveGameVictory([]);
+    applyVictory(FIRST_BATTLE_ID, []);
     goHome();
-  }, [saveGameVictory, goHome]);
+  }, [goHome]);
 
   // rules.md 8.1 : un match nul n'est pas une victoire — même suite qu'une défaite (réessayer),
   // mais annoncé comme tel. rules.md 11.7 : dans « Partir en guerre », les individus tués sont
   // perdus quand même (défaite, abandon ou match nul).
   const handleDefeat = useCallback((outcome, battle) => {
-    if (isWarBattle) {
-      const { save, lost } = resolveWarDefeat(
-        { units: getOwnedUnits(), army: getArmy(), fallenLegendaryLevel: getFallenLegendaryLevel() },
-        battle.units,
-        ROSTERS[playerFaction],
-      );
-      saveOwnedUnits(save.units);
-      saveArmy(save.army);
-      if (save.fallenLegendaryLevel !== null) saveFallenLegendaryLevel(save.fallenLegendaryLevel);
-      setDefeatLosses(lost);
-    } else {
-      setDefeatLosses(null);
-    }
+    setDefeatLosses(isWarBattle ? applyWarDefeat(battle.units) : null);
     setScreen(outcome === 'draw' ? 'draw' : 'defeat');
-  }, [isWarBattle, playerFaction]);
+  }, [isWarBattle]);
 
   // Repart comme au tout premier lancement (menu des paramètres de l'accueil, menu devs).
   const restartGame = useCallback(() => {
-    clearProgress();
+    resetProfile();
     setBattleId(FIRST_BATTLE_ID);
     setScreen('intro');
   }, []);
@@ -177,12 +113,11 @@ export default function App() {
     { label: 'restart game', run: restartGame },
     ...(screen === 'battle' && battleId === FIRST_BATTLE_ID
       ? [{ label: 'skip tutorial', run: skipFirstBattle }] : []),
-    ...[['test-wyrm', TEST_PROFILES.testWyrm], ['test-wyrm-fallen', TEST_PROFILES.testWyrmFallen],
-      ['test-undead', TEST_PROFILES.testUndead]]
-      .map(([label, profile]) => ({
+    ...Object.entries(TEST_PROFILES)
+      .map(([label, createProfile]) => ({
         label,
         run: () => {
-          loadTestProfile(profile);
+          replaceProfile(createProfile());
           setSaveVersion((v) => v + 1);
           goHome();
         },
@@ -190,10 +125,7 @@ export default function App() {
   ];
 
   // rules.md 2 : bataille 01 = tous les individus possédés ; « Partir en guerre » = l'armée.
-  const battleUnits = () => {
-    const owned = getOwnedUnits();
-    return isWarBattle ? armyUnits(getArmy(), owned) : owned;
-  };
+  const battleUnits = isWarBattle ? armyUnits(army, ownedUnits) : ownedUnits;
 
   let content;
   if (screen === 'intro') {
@@ -201,14 +133,14 @@ export default function App() {
       <IntroScreen onContinue={() => setScreen('factionChoice')} />
     );
   } else if (screen === 'factionChoice') {
-    content = <FactionChoiceScreen onChoose={chooseFaction} />;
+    content = <FactionChoiceScreen onChoose={startFirstBattle} />;
   } else if (screen === 'battle') {
     content = (
       <BattleScreen
         key={battleAttempt}
         playerFaction={playerFaction}
         battleId={battleId}
-        playerUnits={battleUnits()}
+        playerUnits={battleUnits}
         onVictory={handleVictory}
         onDefeat={handleDefeat}
       />
@@ -228,7 +160,7 @@ export default function App() {
         onRetry={startBattle}
         lost={defeatLosses}
         onHome={isWarBattle ? goHome : null}
-        canRetry={!isWarBattle || armyUnits(getArmy(), getOwnedUnits()).length > 0}
+        canRetry={battleUnits.length > 0}
       />
     );
   } else if (screen === 'war') {
@@ -252,11 +184,7 @@ export default function App() {
     content = (
       <SummonScreen
         playerFaction={playerFaction}
-        onSummoned={() => {
-          setSummonedSinceHome(true);
-          // technical.md 5.5 : invoquer de soi-même rend le conseil d'invocation inutile.
-          saveHomeTipsSeen(markTipSeen(getHomeTipsSeen(), 'summon'));
-        }}
+        onSummoned={() => setSummonedSinceHome(true)}
         onBack={() => (summonBack === 'units' ? setScreen('units') : goHome())}
       />
     );

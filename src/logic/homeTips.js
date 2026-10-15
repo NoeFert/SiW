@@ -1,6 +1,6 @@
 // technical.md 5.5 : tutoriel de l'accueil — des conseils non bloquants, un par un, au moment
 // où la fonction devient utile. Chaque conseil n'apparaît qu'une fois (liste des conseils vus,
-// sauvegardée par persistence.js). Logique pure, sans React ni localStorage.
+// sauvegardée dans src/state/profileStore.js). Logique pure, sans React ni localStorage.
 
 import { countUnitsBySpecies } from './ownedUnits.js';
 import { summonPrice } from './summon.js';

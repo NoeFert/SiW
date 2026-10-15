@@ -1,5 +1,5 @@
 // Couche méta du jeu normal (rules.md 11.7) : « Partir en guerre ». Logique pure, sans Phaser ni
-// localStorage (la sauvegarde vit dans persistence.js).
+// localStorage (la sauvegarde vit dans src/state/profileStore.js).
 import { removeDeadFromArmy } from './army.js';
 import { individualXpGains } from './levels.js';
 import { countUnitsBySpecies, fallenLegendaryLevelAfter } from './ownedUnits.js';

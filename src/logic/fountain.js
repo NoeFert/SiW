@@ -1,6 +1,6 @@
 // Couche méta du jeu normal (rules.md 11.8) : Spirit Fountain de l'accueil. Logique pure — le
 // temps est passé en paramètre (horodatages en millisecondes), la sauvegarde vit dans
-// persistence.js.
+// src/state/profileStore.js.
 
 // rules.md 11.8 : 3 Spirit Stones par minute entière, capacité 80 + 10 × niveau (provisoires).
 export const FOUNTAIN_MINUTE_MS = 60 * 1000;

@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/8bit/tooltip.jsx';
-import {
-  FOUNTAIN_STONES_PER_MINUTE, fountainCapacity, fountainContent, harvestFountain,
-} from '../logic/fountain.js';
-import { getFountainLastHarvest, saveFountainLastHarvest } from '../persistence.js';
+import { FOUNTAIN_STONES_PER_MINUTE, fountainCapacity, fountainContent } from '../logic/fountain.js';
+import { useProfileStore, harvestSpiritFountain } from '../state/profileStore.js';
 import { spritePath } from '../data/sprites.js';
 import { SpiritStoneIcon } from './SpiritStonesBalance.jsx';
 import { TEXT } from './strings.js';
@@ -13,14 +11,14 @@ import { TEXT } from './strings.js';
 // rules.md 11.8 / GRAPHICS.md : Spirit Fountain de l'accueil, cliquable sans cadre de bouton —
 // contenu actuel avec l'icône des Spirit Stones, au-dessus de la statue de pierre (stone-statue,
 // taille d'origine, assombrie), recalculé chaque seconde depuis l'heure de la dernière récolte.
-// Vide, elle reste opaque mais n'est pas cliquable. Un clic récolte : `onHarvest(collected,
-// iconRect)` crédite le solde ; `iconRect` (position de la gemme) sert de départ à l'animation
+// Vide, elle reste opaque mais n'est pas cliquable. Un clic récolte et crédite le solde, puis
+// appelle `onHarvest(collected, iconRect)` ; `iconRect` (position de la gemme) sert de départ à l'animation
 // vers le solde. Au survol, un tooltip provisoire (sous la fontaine) explique ce qu'elle produit ;
 // le déclencheur est un <span> autour du bouton pour qu'il s'affiche aussi quand la fontaine est
 // vide (bouton désactivé). Radix exige un TooltipProvider.
 export default function SpiritFountain({ playerLevel, onHarvest }) {
   const [now, setNow] = useState(Date.now);
-  const [lastHarvest, setLastHarvest] = useState(getFountainLastHarvest);
+  const lastHarvest = useProfileStore((profile) => profile.fountainLastHarvest);
   const iconRef = useRef(null);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -32,11 +30,8 @@ export default function SpiritFountain({ playerLevel, onHarvest }) {
   const content = fountainContent(lastHarvest, now, capacity);
 
   const harvest = () => {
-    const result = harvestFountain(lastHarvest, Date.now(), capacity);
-    if (result.collected === 0) return;
-    saveFountainLastHarvest(result.lastHarvestMs);
-    setLastHarvest(result.lastHarvestMs);
-    onHarvest(result.collected, iconRef.current?.getBoundingClientRect() ?? null);
+    const collected = harvestSpiritFountain(capacity);
+    if (collected > 0) onHarvest(collected, iconRef.current?.getBoundingClientRect() ?? null);
   };
 
   return (

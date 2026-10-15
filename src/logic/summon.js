@@ -1,5 +1,5 @@
 // Couche méta du jeu normal (rules.md 11.3 et 11.4) : Spirit Stones et invocation. Logique pure,
-// sans Phaser ni localStorage (la sauvegarde vit dans persistence.js).
+// sans Phaser ni localStorage (la sauvegarde vit dans src/state/profileStore.js).
 import { createUnit, isLegendary } from './ownedUnits.js';
 import { individualXpForLevel } from './levels.js';
 

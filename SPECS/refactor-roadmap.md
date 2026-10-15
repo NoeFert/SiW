@@ -24,7 +24,7 @@ Problèmes à résoudre (feedback) :
 - [x] Écrire la checklist de tests manuels (voir « Contrôles de fin d'étape »)
 - [x] Ajouter une simulation headless déterministe (aléa fixé) : `tests/logic/battleReplay.test.js` rejoue chaque bataille et compare à un instantané (32 victoires, 8 défaites)
 
-### Étape 1 — Retirer le clickbait et l'entraînement ✅ (commit à faire par Noémie)
+### Étape 1 — Retirer le clickbait et l'entraînement ✅ (`08fadea`)
 - [x] Supprimer le mode clickbait : bataille, scripts, tutoriel, bilan de victoire, textes, entrée du menu devs, tests
 - [x] Supprimer le mode entraînement : `training.js`, `setupTraining`, entrée du menu devs, tests
 - [x] Supprimer les champs de bataille qui ne servaient qu'à eux (`orders`, `surrenderAllowed`, `playerRoster`), après vérification
@@ -32,17 +32,18 @@ Problèmes à résoudre (feedback) :
 - [x] Supprimer le code devenu mort : condition de tutoriel `phaseElapsed`, cible de main `playerUnit`, `getCasualtyReport` et `countOwnedCopies`, palette CSS « Dungeon Torch »
 - [x] Zones « Le mur », « Les trois couloirs », « Le fort » conservées (utilisées par « Partir en guerre ») ; leur test devient `battleZones.test.js`
 
-### Étape 2 — État du joueur
-- [ ] Installer Zustand
-- [ ] Un seul objet `PlayerProfile` (faction, première victoire, individus, armée, Spirit Stones, XP, niveau du Légendaire mort, batailles gagnées, fontaine, conseils vus) dans un store Zustand
-- [ ] Sauvegardé à un seul endroit : middleware `persist`, une seule clé localStorage versionnée. Pas de migration des anciennes clés (aucun joueur réel)
-- [ ] Le store n'est transformé que par des fonctions pures de `logic/` (`resolveVictory`, `resolveWarDefeat`, invocation, armée, fontaine…)
-- [ ] Plus aucun écran n'importe `persistence.js` ; `persistence.js` disparaît ou se réduit au strict nécessaire
-- [ ] Mettre à jour les profils de test du menu devs (`src/dev/testProfiles.js`) et supprimer `test-wyrm-fallen`
+### Étape 2 — État du joueur ✅
+- [x] Installer Zustand
+- [x] Un seul objet profil (faction, première victoire, individus, armée, Spirit Stones, XP, niveau du Légendaire mort, batailles gagnées, fontaine, conseils vus) dans un store Zustand : `src/state/profileStore.js`
+- [x] Sauvegardé à un seul endroit : middleware `persist`, une seule clé localStorage versionnée (`siw.save`). Pas de migration des anciennes clés (aucun joueur réel)
+- [x] Le profil n'est modifié que par les actions du store, qui appellent les fonctions pures de `logic/` (`resolveVictory`, `resolveWarDefeat`, invocation, fontaine…)
+- [x] Plus aucun écran n'importe `persistence.js`, qui est supprimé
+- [x] Mettre à jour les profils de test du menu devs (`src/dev/testProfiles.js`) et supprimer `test-wyrm-fallen` ; chaque profil de test liste tous les champs du profil, comme un profil sauvegardé (vérifié par un test)
+- [x] Tests des actions du store : `tests/state/profileStore.test.js`
 
 ### Étape 3 — Préparation de la bataille et flux de jeu
 - [ ] Sortir la préparation de la bataille de la Scene vers une fonction testée de `logic/`, par exemple `createBattleFromDefinition(definition, faction, playerUnits)`. Au passage : `createBattle` crée une réserve du joueur que la Scene remplace aussitôt par celle de ses individus
-- [ ] Sortir de `App.jsx` la logique « fin de bataille → profil » vers les actions du store du profil
+- [x] Sortir de `App.jsx` la logique « fin de bataille → profil » vers les actions du store du profil (fait à l'étape 2)
 - [ ] `App.jsx` ne garde que la navigation entre écrans
 
 ### Étape 4 — Sous-objets de la bataille
@@ -129,3 +130,8 @@ Changements apportés au plan initial, du plus ancien au plus récent.
 - **2026-10-15 — Étape 1**
   - Plus de tests après l'étape (438 : +40 du test de référence, −20 tests clickbait/entraînement) ; instantané de référence inchangé.
   - Code mort découvert en route : supprimé s'il venait du clickbait, sinon noté pour l'étape 7.
+- **2026-10-15 — Étape 2**
+  - La logique « fin de bataille → profil » d'`App.jsx` est passée dans les actions du store dès cette étape (prévue à l'étape 3) : il fallait de toute façon la réécrire pour quitter `persistence.js`.
+  - Les champs du profil gardent les noms qu'attendent déjà `resolveVictory` et `resolveWarDefeat` (`units`, `army`, `playerXp`…) : le profil leur est passé tel quel.
+  - Les actions sont des fonctions exportées à côté du store (pas dans l'état) : seules les données sont sauvegardées, et les actions s'appellent aussi bien depuis React que depuis les tests.
+  - Les anciennes clés `siw.*` restent dans le localStorage des navigateurs de dev, sans effet : le jeu repart de l'intro une fois.

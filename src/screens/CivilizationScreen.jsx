@@ -11,7 +11,7 @@ import {
 } from '../logic/levels.js';
 import { isLegendary } from '../logic/ownedUnits.js';
 import { summonAction } from '../logic/summon.js';
-import { getArmy, getOwnedUnits, saveArmy } from '../persistence.js';
+import { useProfileStore, setArmy } from '../state/profileStore.js';
 import ArrowButton from '../ui/ArrowButton.jsx';
 import CornerDecor from '../ui/CornerDecor.jsx';
 import { LevelBadge, XpBar } from '../ui/LevelDisplay.jsx';
@@ -268,16 +268,12 @@ export default function CivilizationScreen({
   // Espèces dégroupées dans la grille des unités (toutes regroupées par défaut, rien n'est
   // sauvegardé), comme dans la tour de commandement.
   const [ungroupedSpecies, setUngroupedSpecies] = useState(() => new Set());
-  const [army, setArmy] = useState(getArmy);
+  const army = useProfileStore((profile) => profile.army);
+  const units = useProfileStore((profile) => profile.units);
   const roster = ROSTERS[playerFaction];
-  const [units] = useState(() => getOwnedUnits() ?? []);
   const armyIds = new Set(army?.unitIds ?? []);
   const speciesUnits = (key) => sortByLevel(units.filter((unit) => unit.species === key));
 
-  const changeArmy = (newArmy) => {
-    saveArmy(newArmy);
-    setArmy(newArmy);
-  };
   const toggle = (key) => setOpenKeys((current) => {
     const next = new Set(current);
     if (!next.delete(key)) next.add(key);
@@ -306,7 +302,7 @@ export default function CivilizationScreen({
     content = (
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
-          <ArmyName name={army.name} onRename={(name) => changeArmy(renameArmy(army, name))} />
+          <ArmyName name={army.name} onRename={(name) => setArmy(renameArmy(army, name))} />
           <span className="retro text-xs">{T.armyCost(armyCost(army, units, roster), ARMY_PP_CAP)}</span>
         </div>
         {/* Une colonne par espèce, côte à côte. */}
@@ -331,9 +327,9 @@ export default function CivilizationScreen({
                       faction={playerFaction}
                       inArmy={group.unitIds.filter((id) => armyIds.has(id)).length}
                       onAdd={addId && canAddToArmy(army, units, roster, addId)
-                        ? () => changeArmy(addToArmy(army, units, roster, addId)) : null}
+                        ? () => setArmy(addToArmy(army, units, roster, addId)) : null}
                       onRemove={removeId && canRemoveFromArmy(army, units, removeId)
-                        ? () => changeArmy(removeFromArmy(army, units, removeId)) : null}
+                        ? () => setArmy(removeFromArmy(army, units, removeId)) : null}
                     />
                   );
                 })}

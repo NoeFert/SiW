@@ -7,11 +7,9 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { ROSTERS } from '../data/rosters.js';
 import { countUnitsBySpecies } from '../logic/ownedUnits.js';
 import {
-  canSummon, maxSummonCount, resummonPrice, summon, summonAction, summonMany, summonPrice,
+  canSummon, maxSummonCount, resummonPrice, summonAction, summonPrice,
 } from '../logic/summon.js';
-import {
-  getFallenLegendaryLevel, getOwnedUnits, getSpiritStones, saveOwnedUnits, saveSpiritStones,
-} from '../persistence.js';
+import { useProfileStore, summonUnits, resummonLegendary } from '../state/profileStore.js';
 import CornerDecor from '../ui/CornerDecor.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import SpeciesSprite from '../ui/SpeciesSprite.jsx';
@@ -34,27 +32,23 @@ const SELECTION_CORNERS = { wyrms: 'gold', undead: 'purple' };
 // dépense rien.
 export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
   const roster = ROSTERS[playerFaction];
-  const [units, setUnits] = useState(() => getOwnedUnits() ?? []);
-  const [spiritStones, setSpiritStones] = useState(getSpiritStones);
+  const units = useProfileStore((profile) => profile.units);
+  const spiritStones = useProfileStore((profile) => profile.spiritStones);
   const [confirm, setConfirm] = useState(null); // { key, level } : [Légendaire] à réinvoquer
   const [selectedKey, setSelectedKey] = useState(null); // espèce en avant (null : la première)
   const [count, setCount] = useState(1); // nombre d'individus à invoquer d'un coup
-  const fallenLevel = getFallenLegendaryLevel() ?? 1;
+  const fallenLevel = useProfileStore((profile) => profile.fallenLegendaryLevel) ?? 1;
   const owned = countUnitsBySpecies(roster, units);
   // Espèces proposées : toutes sauf un [Légendaire] encore vivant (déjà à vos côtés).
   const available = Object.keys(roster)
     .filter((key) => summonAction(roster[key], owned[key]) !== 'alreadyOwned');
 
-  const apply = (result) => {
-    if (!result) return;
-    saveOwnedUnits(result.units);
-    saveSpiritStones(result.spiritStones);
-    setUnits(result.units);
-    setSpiritStones(result.spiritStones);
+  // Après une invocation réussie, le compteur − / + repart de 1.
+  const afterSummon = (summoned) => {
+    if (!summoned) return;
     setCount(1);
     onSummoned();
   };
-  const doSummon = (key, level = 1) => apply(summon(roster, units, spiritStones, key, level, fallenLevel));
   const selectSpecies = (key) => {
     setSelectedKey(key);
     setCount(1);
@@ -75,7 +69,7 @@ export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
   // Un [Légendaire] mort passe par la confirmation (choix du niveau gardé) ; sinon, invocation directe.
   const summonSelected = () => (action === 'resummon'
     ? setConfirm({ key: focusKey, level: 1 })
-    : apply(summonMany(roster, units, spiritStones, focusKey, quantity)));
+    : afterSummon(summonUnits(focusKey, quantity)));
 
   return (
     <ScreenLayout title={T.title} onBack={onBack}>
@@ -156,7 +150,7 @@ export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{TEXT.cancel}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => doSummon(confirm.key, confirm.level)}>
+            <AlertDialogAction onClick={() => afterSummon(resummonLegendary(confirm.key, confirm.level))}>
               {TEXT.summonActions.resummon}
             </AlertDialogAction>
           </AlertDialogFooter>
