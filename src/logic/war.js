@@ -1,4 +1,4 @@
-// Couche méta du jeu normal (rules.md 11.7) : « Partir en guerre ». Logique pure, sans Phaser ni
+// Couche méta (rules.md 11.7) : « Partir en guerre ». Logique pure, sans Phaser ni
 // localStorage (la sauvegarde vit dans src/state/profileStore.js).
 import { removeDeadFromArmy } from './army.js';
 import { individualXpGains } from './levels.js';
@@ -46,7 +46,7 @@ export function victoryReward(fullReward, alreadyWon) {
 }
 
 // Unités perdues par espèce, dans l'ordre du roster, au format du bilan des pertes
-// (technical.md 5.6) : [{ species, lost }], espèces sans perte omises.
+// des écrans de victoire et de défaite : [{ species, lost }], espèces sans perte omises.
 export function lossReport(roster, units, dead) {
   const lost = countUnitsBySpecies(roster, units.filter((unit) => dead.has(unit.id)));
   return Object.entries(roster)

@@ -8,14 +8,13 @@ import SpeciesSprite from './SpeciesSprite.jsx';
 import { CountSquare, GroupArrow } from './TileGroupBadges.jsx';
 import { TEXT } from './strings.js';
 
-// ui-battle-screen-decisions.md 2.2 : case d'une ligne de la tour, deux par rangée. Même
-// panneau que les cases de UnitsScreen (PanelLarge, doré avec coins pour un
-// [Légendaire]) ; le nombre de copies dans un carré en haut à gauche (« 8x »), seulement à partir de 2. Puis : sprite (+ mini
-// barre de vie si blessé), PV et niveau, tag de
-// présence ; ni nom ni keywords (consultables dans l'écran des unités). Sur la première
-// case d'une espèce à plusieurs lignes, une flèche en haut à droite la regroupe / dégroupe
-// (`onToggleGroup`, voir groupTowerRows). forwardRef : sert de déclencheur au tooltip "budget insuffisant"
-// (DeploymentList).
+// ui-battle-screen-decisions.md 2.2 : case d'une ligne de la tour, deux par rangée. Même panneau
+// que les cases de UnitsScreen (PanelLarge, doré avec coins pour un [Légendaire]) ; le nombre de
+// copies dans un carré en haut à gauche (« 8x »), seulement à partir de 2. Puis : sprite (+ mini
+// barre de vie si blessé), PV et niveau, tag de présence ; ni nom ni keywords (consultables dans
+// l'écran des unités). Sur la première case d'une espèce à plusieurs lignes, une flèche en haut à
+// droite la regroupe / dégroupe (`onToggleGroup`, voir groupTowerRows). forwardRef : sert de
+// déclencheur au tooltip "budget insuffisant" (DeploymentList).
 const UnitRow = forwardRef(({
   row, onToggleGroup, className, ...props
 }, ref) => {

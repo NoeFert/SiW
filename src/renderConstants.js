@@ -1,8 +1,8 @@
 import { FACTIONS } from './data/factions/index.js';
 
 // Constantes et conversions de rendu partagées entre la Scene Phaser (champ de bataille) et la
-// couche React (glisser-déposer : pixel écran -> case de grille). Ni Phaser ni React ne
-// dépendent l'un de l'autre : les deux importent seulement ce fichier neutre.
+// couche React (glisser-déposer, main du tutoriel : pixel écran <-> case de grille), qui ne
+// manipulent pas les objets l'une de l'autre.
 // technical.md section 3 : une case de grille fait 64x64 px à l'affichage, à la résolution de
 // référence (base design resolution) — celle que le Scale Manager de Phaser utilise en interne
 // et vers laquelle il traduit toujours les coordonnées de pointeur, quelle que soit la taille
@@ -55,6 +55,7 @@ export function canvasToScreen(rect, x, y) {
   return { x: rect.left + x * scale, y: rect.top + y * scale };
 }
 
+// Point de l'écran (px) -> case de la grille sous ce point.
 export function screenToGrid(rect, clientX, clientY) {
   const scale = rect.width / GAME_WIDTH;
   return {

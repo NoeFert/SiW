@@ -75,8 +75,8 @@ Problèmes à résoudre (feedback) :
 - [x] La Scene ne garde que l'orchestration : 90 lignes (649 avant)
 - [x] Les textes flottants affichés au joueur (« COUP CRITIQUE ! », « Raté ! ») passent dans `src/ui/strings.js` (`fieldTexts`)
 
-### Étape 7 — Passe de lisibilité
-- [ ] Commentaires : expliquer ce que fait le code, pas son historique ; renvois aux specs courts, seulement là où une règle est implémentée (7b)
+### Étape 7 — Passe de lisibilité ✅ (7a : `712ebc8`)
+- [x] Commentaires (7b) : notions disparues retirées (« jeu normal », note sur la v2, compte à rebours de 15 s, renvoi à la section clickbait de technical.md), justifications historiques reformulées, références à du code renommé corrigées ; lignes de commentaire ramenées à 100 caractères. Code mort trouvé en route : le signal `timeControl` de `deployUnit`, que plus rien ne lisait
 - [x] Code mort (7a) : `showLevel` / `withLevels` supprimés (la tour affiche toujours le niveau), `findNearestEnemy` (plus utilisé par le jeu) déplacé dans son test, import `lossReport` inutilisé retiré. La clé de sauvegarde legacy a disparu avec `persistence.js` (étape 2)
 - [x] Gros écrans découpés (7a) : `CivilizationScreen.jsx` (372 lignes) devient `UnitsScreen.jsx` (grille des unités) et `ArmyScreen.jsx` (armée), plus `ui/IndividualDetail.jsx` (page d'un individu) ; `WarScreen.jsx` garde l'écran et le panneau, la map part dans `ui/WarMap.jsx` ; `App.jsx` : actions du menu devs dans `DevMenu.jsx`, ouverture de l'invocation factorisée
 - [x] Fichiers périmés supprimés (7a) : `SPECS-REVIEW.md`, `PRE-RENDU-CHECK.md` (`gamejam-skills-claude/` n'existait déjà plus)
@@ -176,3 +176,5 @@ Changements apportés au plan initial, du plus ancien au plus récent.
 - **2026-10-15 — Étape 6**
   - `PauseTint` est une fonction plutôt qu'une classe : elle ne garde aucun état, elle calcule le niveau de désaturation et le transmet au terrain et aux unités (`tint`).
   - Ajustement de Noémie : le missile de chaque faction (et sa couleur d'impact) rejoint ses données (`projectile`, src/data/factions/) ; `src/data/effects.js` ne garde que les effets communs (entaille, aptitudes, compteurs, durée de vol).
+- **2026-10-15 — Étape 7**
+  - 7a et 7b relus et commités séparément. Les renvois aux specs (« rules.md 4.1 : … ») sont gardés : déjà courts, ils disent quelle règle chaque fonction applique ; leur numérotation sera vérifiée à l'étape 8 avec les specs.

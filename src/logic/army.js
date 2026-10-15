@@ -1,4 +1,4 @@
-// Couche méta du jeu normal (rules.md 11.2) : l'armée du joueur. Logique pure, sans Phaser ni
+// Couche méta (rules.md 11.2) : l'armée du joueur. Logique pure, sans Phaser ni
 // localStorage (la sauvegarde vit dans src/state/profileStore.js).
 import { individualLevel, sortByLevel } from './levels.js';
 

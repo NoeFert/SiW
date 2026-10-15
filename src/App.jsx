@@ -35,7 +35,7 @@ function initialScreen() {
 export default function App() {
   const [screen, setScreen] = useState(initialScreen);
   const [battleAttempt, setBattleAttempt] = useState(0); // change de clé = BattleScreen tout neuf
-  // Bataille du jeu normal en cours : la bataille tutoriel, ou une de « Partir en guerre » (rules.md 11.7).
+  // Bataille en cours : la bataille tutoriel, ou une de « Partir en guerre » (rules.md 11.7).
   const [battleId, setBattleId] = useState(TUTO_BATTLE_ID);
   const [victoryProgress, setVictoryProgress] = useState(null); // XP, niveaux et pertes de la victoire
   const [defeatLosses, setDefeatLosses] = useState(null); // pertes d'une défaite de guerre
@@ -78,16 +78,16 @@ export default function App() {
     startBattle();
   }, [startBattle]);
 
-  // technical.md 5.4 : dans la bataille tutoriel, pertes et XP ne sont comptées qu'à la victoire — une
-  // tentative ratée ne change rien au profil.
+  // technical.md 5.4 : dans la bataille tutoriel, pertes et XP ne sont comptées qu'à la victoire —
+  // une tentative ratée ne change rien au profil.
   const handleVictory = useCallback((battle) => {
     setVictoryProgress(applyVictory(battleId, battle.units));
     setScreen('victory');
   }, [battleId]);
 
-  // Menu devs, pendant la bataille tutoriel (rules.md 11) : comptée comme gagnée sans combat (aucune
-  // perte, armée de départ avec toute la dotation, récompense et XP fixe du joueur), puis retour
-  // direct à l'accueil.
+  // Menu devs, pendant la bataille tutoriel (rules.md 11) : comptée comme gagnée sans combat
+  // (aucune perte, armée de départ avec toute la dotation, récompense et XP fixe du joueur), puis
+  // retour direct à l'accueil.
   const skipTutoBattle = useCallback(() => {
     applyVictory(TUTO_BATTLE_ID, []);
     goHome();

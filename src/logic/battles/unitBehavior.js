@@ -271,7 +271,7 @@ function applyAttacks(pendingAttacks) {
   return events;
 }
 
-// Fait avancer la bataille de `deltaSeconds` : ordres, ciblage, mouvement, attaque
+// Fait agir toutes les unités pendant `deltaSeconds` : ordres, ciblage, mouvement, attaque
 // (rules.md sections 4, 5 et 6). Une unité sans ordre garde son comportement autonome.
 // Renvoie les évènements d'aptitude déclenchés ce tick (voir applyAttacks).
 export function updateUnitBehaviors(units, grid, deltaSeconds) {

@@ -1,10 +1,10 @@
 // rules.md 5.2 : deux familles de pause, indépendantes et combinables.
 // - Pause principale : interrupteur manuel du joueur (bouton ⏸ / Espace).
-// - Pause d'interaction : automatique pendant un geste (drag de déploiement, sélection d'une
+// - Pause d'interaction : automatique pendant un geste (drag de déploiement, sélection d'un
 //   ordre, confirmation d'abandon), levée à la fin ou à l'annulation du geste.
-// S'y ajoute le gel du tutoriel (tutorial.js, première bataille seulement).
-// Le temps de bataille ne s'écoule que si aucune n'est active. Comme tous les
-// compteurs (timers d'attaque, mouvements, cooldown, script IA, compte à rebours de 15 s)
+// S'y ajoutent le gel d'une étape du tutoriel (tutorial.js, bataille tutoriel seulement) et le
+// changement de phase (phases.js). Le temps de bataille ne s'écoule que si aucune n'est active.
+// Comme tous les compteurs (timers d'attaque, mouvements, cooldown de la fuite, script de l'IA)
 // dépendent du temps de bataille, `tickBattle` n'a qu'à ne rien faire pour tous les geler.
 
 // Choix par défaut encore à valider par le design (ui-battle-screen-decisions.md 2.3 / 3) :

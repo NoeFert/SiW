@@ -4,7 +4,8 @@ import { CELL_SIZE, cellCenter } from '../../renderConstants.js';
 // le réafficher pendant qu'on travaille sur le placement des obstacles ou des scripts.
 const DEBUG_SHOW_GRID = false;
 
-// Clé de texture Phaser de l'image de fond `image` (champ `background` des phases, src/data/battles/).
+// Clé de texture Phaser de l'image de fond `image` (champ `background` des phases,
+// src/data/battles/).
 const backgroundKey = (image) => `background-${image}`;
 
 // Le terrain de la bataille : image de fond et rochers de la zone affichée (rules.md 1, 7.3).

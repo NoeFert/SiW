@@ -53,8 +53,8 @@ export function chooseFaction(faction) {
 
 // rules.md 11 : conséquences d'une victoire — morts retirés, XP, récompense (réduite au rejeu,
 // 11.7), armée de départ créée après la bataille tutoriel, batailles de guerre gagnées retenues.
-// `battleUnits` : unités de la bataille (battle.units), vide si la bataille tutoriel est passée depuis
-// le menu devs. Renvoie le bilan affiché sur l'écran de victoire.
+// `battleUnits` : unités de la bataille (battle.units), vide si la bataille tutoriel est passée
+// depuis le menu devs. Renvoie le bilan affiché sur l'écran de victoire.
 export function applyVictory(battleId, battleUnits) {
   const profile = getProfile();
   const tutoBattle = battleId === TUTO_BATTLE_ID;

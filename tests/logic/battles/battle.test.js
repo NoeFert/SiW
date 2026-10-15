@@ -32,7 +32,6 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
     const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
 
     expect(result.success).toBe(true);
-    expect(result.timeControl).toBe('pause');
     expect(battle.units).toContain(result.unit);
   });
 

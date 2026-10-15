@@ -4,14 +4,14 @@
 //
 // Options (valeurs multiples séparées par des virgules, `all` pour toutes) :
 //   --faction wyrms,undead     faction du joueur (défaut : all)
-//   --battle battleStartW01,battleLow1W01,battleLow2W01    batailles de src/data/battles/ (défaut : les trois de « Partir en guerre »)
+//   --battle battleStartW01,...  batailles de src/data/battles/ (défaut : celles de la guerre 01)
 //   --strategy basics,...      basics, flyers, mixed, legendaryFirst (défaut : all)
 //   --level 1,3,5              niveau de toute l'armée de départ (défaut : 1)
-//   --army lambtonWorm:5@2,... armée sur mesure (espèce:nombre@niveau) au lieu de la dotation de départ
+//   --army lambtonWorm:5@2,... armée sur mesure (espèce:nombre@niveau) au lieu de la dotation
 //   --n 50                     batailles par configuration (défaut : 50)
 //   --seed 1                   seed de la première bataille (défaut : 1)
 //   --replay                   récompense de rejeu (25 %) au lieu de la première victoire
-//   --player-xp 100            XP du joueur avant la bataille (récompenses de niveau ; défaut : 100)
+//   --player-xp 100            XP du joueur avant la bataille (récompenses de niveau ; déf. : 100)
 //   --json                     sortie JSON
 import { STRATEGIES } from './bot.js';
 import { buildArmy, runConfig, starterArmy } from './simulate.js';

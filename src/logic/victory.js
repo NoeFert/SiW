@@ -1,4 +1,4 @@
-// Couche méta du jeu normal : ce que change une victoire (rules.md 11). Logique pure — le store
+// Couche méta : ce que change une victoire (rules.md 11). Logique pure — le store
 // du profil (src/state/profileStore.js) appelle resolveVictory et enregistre le résultat.
 import { armyCost, createArmy, removeDeadFromArmy } from './army.js';
 import {
@@ -35,7 +35,8 @@ export function resolveVictory(save, battleUnits, roster, {
   // rules.md 11.2 : armée de départ avec tous les survivants, sinon morts retirés de l'armée.
   const army = tutoBattle ? createArmy(armyName, units) : removeDeadFromArmy(save.army, units);
 
-  // technical.md 5.3 : un seul total de Spirit Stones, récompense de victoire + récompenses de niveau.
+  // technical.md 5.3 : un seul total de Spirit Stones, récompense de victoire + récompenses de
+  // niveau.
   const spiritStonesGained = reward + playerLevelReward(save.playerXp, playerXp);
 
   return {

@@ -1,4 +1,4 @@
-// Couche méta du jeu normal (rules.md 11.8) : Spirit Fountain de l'accueil. Logique pure — le
+// Couche méta (rules.md 11.8) : Spirit Fountain de l'accueil. Logique pure — le
 // temps est passé en paramètre (horodatages en millisecondes), la sauvegarde vit dans
 // src/state/profileStore.js.
 

@@ -1,12 +1,12 @@
-// Statique — faction des Morts-Vivants (rules.md 9, units.md). Son nom et le titre de son souverain,
-// affichés au joueur, sont dans src/ui/strings.js (`factions`, `sovereignName`).
+// Statique — faction des Morts-Vivants (rules.md 9, units.md). Son nom et le titre de son
+// souverain, affichés au joueur, sont dans src/ui/strings.js (`factions`, `sovereignName`).
 export default {
   id: 'undead',
   sovereignSprite: 'undead_sovereign', // assets/sprites/<sovereignSprite>.png
   // Couleur principale (menthe) : textes et jauges de la faction, barres de vie sur le terrain.
   color: '#73ecbc',
-  // Palette d'interface : dossier assets/ui/<uiColor>/ (survol des boutons, curseurs, coins,
-  // barre de défilement, map de guerre, badge et barre d'XP de la faction ; voir src/ui/factionTheme.js).
+  // Palette d'interface : dossier assets/ui/<uiColor>/ (survol des boutons, curseurs, coins, barre
+  // de défilement, map de guerre, badge et barre d'XP de la faction ; voir src/ui/factionTheme.js).
   uiColor: 'purple',
   // Missile des attaques à distance des unités de la faction (GRAPHICS.md « Projectiles »), joué
   // en entier pendant son vol : planche d'effets assets/effect/ (images de 64 × 64, une ligne par

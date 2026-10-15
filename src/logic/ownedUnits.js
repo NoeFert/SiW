@@ -1,4 +1,4 @@
-// Couche méta du jeu normal (rules.md 11.1) : individus possédés par le joueur. Logique pure,
+// Couche méta (rules.md 11.1) : individus possédés par le joueur. Logique pure,
 // sans Phaser ni localStorage (la sauvegarde vit dans src/state/profileStore.js).
 
 // rules.md 11.1 : un individu a un identifiant, une espèce (clé de roster) et une XP (11.6 ;

@@ -12,7 +12,7 @@ function Reward({ icon, amount }) {
 }
 
 // GRAPHICS.md « Partir en guerre » / technical.md 5.3 : rangée de récompenses — Spirit Stones,
-// puis XP du joueur. Panneau d'une bataille de WarScreen et écran de victoire du jeu normal.
+// puis XP du joueur. Panneau d'une bataille de WarScreen et écran de victoire.
 export default function RewardRow({ spiritStones, xp }) {
   return (
     <div className="flex gap-3">

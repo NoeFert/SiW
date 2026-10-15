@@ -5,8 +5,8 @@ export default {
   sovereignSprite: 'wyrm_sovereign', // assets/sprites/<sovereignSprite>.png
   // Couleur principale (doré) : textes et jauges de la faction, barres de vie sur le terrain.
   color: '#eab532',
-  // Palette d'interface : dossier assets/ui/<uiColor>/ (survol des boutons, curseurs, coins,
-  // barre de défilement, map de guerre, badge et barre d'XP de la faction ; voir src/ui/factionTheme.js).
+  // Palette d'interface : dossier assets/ui/<uiColor>/ (survol des boutons, curseurs, coins, barre
+  // de défilement, map de guerre, badge et barre d'XP de la faction ; voir src/ui/factionTheme.js).
   uiColor: 'gold',
   // Missile des attaques à distance des unités de la faction (GRAPHICS.md « Projectiles »), joué
   // en entier pendant son vol : planche d'effets assets/effect/ (images de 64 × 64, une ligne par

@@ -156,7 +156,8 @@ export default function HomeWanderer({ playerFaction }) {
   if (crowd.species.length === 0) return null;
   return (
     // Couloir sur toute la largeur de la fenêtre (padding du jeu compris), en bas de l'accueil.
-    // Découpé sur les côtés seulement (unités hors écran cachées), pas en haut : le sursaut dépasse.
+    // Découpé sur les côtés seulement (unités hors écran cachées), pas en haut : le sursaut
+    // dépasse.
     <div className="pointer-events-none absolute -right-game -bottom-0.5 -left-game h-14.5 overflow-x-clip">
       {crowd.species.map((species, i) => (
         <Wanderer

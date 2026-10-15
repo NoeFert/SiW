@@ -24,7 +24,8 @@ export default class Grid {
   constructor(width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, obstacles = []) {
     this.width = width;
     this.height = height;
-    // Un obstacle occupe un bloc carré de `size` cases (1 par défaut) à partir de son coin haut-gauche.
+    // Un obstacle occupe un bloc carré de `size` cases (1 par défaut) à partir de son coin
+    // haut-gauche.
     this.obstacles = new Set();
     for (const { x, y, size = 1 } of obstacles) {
       for (let dx = 0; dx < size; dx++) {

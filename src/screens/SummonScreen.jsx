@@ -64,7 +64,8 @@ export default function SummonScreen({ playerFaction, onBack, onSummoned }) {
   const multiple = action === 'summon';
   const maxCount = maxSummonCount(selected, spiritStones);
   const quantity = multiple ? Math.max(1, Math.min(count, maxCount)) : 1;
-  // Un [Légendaire] mort passe par la confirmation (choix du niveau gardé) ; sinon, invocation directe.
+  // Un [Légendaire] mort passe par la confirmation (choix du niveau gardé) ; sinon, invocation
+  // directe.
   const summonSelected = () => (action === 'resummon'
     ? setConfirm({ key: focusKey, level: 1 })
     : afterSummon(summonUnits(focusKey, quantity)));

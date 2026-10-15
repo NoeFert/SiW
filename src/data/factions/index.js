@@ -7,7 +7,7 @@ import undead from './undead.js';
 // - id              : identifiant de la faction
 // - sovereignSprite : sprite du souverain (choix de faction, accueil)
 // - color           : couleur principale de la faction
-// - uiColor         : palette d'interface, nom du dossier assets/ui/<uiColor>/ (voir src/ui/factionTheme.js)
+// - uiColor         : palette d'interface, dossier assets/ui/<uiColor>/ (src/ui/factionTheme.js)
 // - projectile      : missile des attaques à distance de ses unités (assets/effect/)
 // - roster          : les espèces de la faction et leurs stats (units.md)
 // - startingArmy    : armée de début de jeu, nombre d'individus par espèce (rules.md 11.1)

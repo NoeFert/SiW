@@ -11,8 +11,8 @@ import { HOME_TIPS } from '../logic/homeTips.js';
 // Dernière récolte il y a 24 h : la fontaine est pleine (rules.md 11.8).
 const fullFountain = () => Date.now() - 24 * 60 * FOUNTAIN_MINUTE_MS;
 
-// Joueur Wyrms après la bataille tutoriel : 3 Vers de Lambton et 1 Amphiptère perdus, restent 9 / 7 / 1
-// individus, tous dans l'armée.
+// Joueur Wyrms après la bataille tutoriel : 3 Vers de Lambton et 1 Amphiptère perdus, restent
+// 9 / 7 / 1 individus, tous dans l'armée.
 const WYRM_UNITS = [
   { id: 'lambton-1', species: 'lambtonWorm', xp: 500 }, // niveau 5
   { id: 'lambton-2', species: 'lambtonWorm', xp: 320 }, // niveau 4

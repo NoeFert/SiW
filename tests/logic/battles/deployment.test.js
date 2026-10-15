@@ -178,14 +178,6 @@ describe('deployUnit — limite du [Légendaire] (rules.md 2)', () => {
   });
 });
 
-describe('deployUnit — signal de pause tactique (rules.md 2)', () => {
-  test('un déploiement réussi signale une pause ; le vrai contrôle du temps viendra de Phaser', () => {
-    const state = createDeploymentState(ROSTER, startingArmyOf(ROSTER));
-    const result = deployUnit(state, 'player', ROSTER.grunt, 0, 0, []);
-    expect(result.timeControl).toBe('pause');
-  });
-});
-
 describe('isValidDeploymentPosition (rules.md 1/2)', () => {
   const grid = new Grid(10, 6, [{ x: 2, y: 2 }]); // moitié joueur : x 0-4, moitié IA : x 5-9
 

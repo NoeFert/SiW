@@ -16,7 +16,7 @@ const MESSAGE_DURATION_MS = 2500;
 const rowKey = (row) => `${row.species.name}-${row.level}-${row.hp}`;
 
 // Fantôme tenu pendant le drag : à la taille réelle de l'unité sur le terrain affiché (taille
-// d'une case à l'écran x `size`, sprite à 90 % comme dans BattleScene.createUnitView), tourné
+// d'une case à l'écran x `size`, sprite à 90 % comme dans UnitViews.create), tourné
 // vers la droite comme les unités du joueur. Le curseur est au centre de la case haut-gauche du
 // bloc : c'est elle que screenToGrid vise au relâché, donc le fantôme couvre exactement les
 // cases où l'unité sera déployée.

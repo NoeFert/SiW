@@ -48,7 +48,7 @@ export function getReserve(state, species) {
 // Lignes de la tour de commandement (ui-battle-screen-decisions.md 2.2) : uniquement les
 // copies en réserve (ni mortes, ni sur le terrain). Deux copies partagent une ligne seulement
 // si elles sont strictement identiques : même espèce, même niveau (rules.md 11.6) et mêmes PV
-// actuels. Les traits (v2+) s'ajouteront à cette clé.
+// actuels.
 // Ordre : roster, puis niveaux décroissants, puis copies intactes et blessés (PV décroissants)
 // juste sous leur groupe. `deployable` est faux si le coût dépasse le budget restant (ou si le
 // [Légendaire] est déjà déployé). `copyChoice` ({ level, hp }) est à transmettre à deployUnit.
@@ -138,7 +138,7 @@ export function groupTowerRows(rows, ungroupedSpecies) {
 
 // rules.md 1/2 : une position de déploiement doit rester dans les limites du terrain, sur la
 // moitié du camp concerné, hors obstacle, et libre de toute autre unité déjà présente.
-// Séparée de `deployUnit` (qui ne connaît pas la grille) pour ne pas casser sa signature.
+// Vérifiée à part : `deployUnit` ne connaît pas la grille.
 export function isValidDeploymentPosition(grid, faction, species, x, y, unitsOnField) {
   const halfWidth = Math.floor(grid.width / 2);
   const withinHalf = faction === 'player'
@@ -171,7 +171,7 @@ function takeFresh(speciesState, species, level) {
 // - { level, hp } (lignes de la tour) ou un nombre (= PV, niveau 1) : exige une copie de ce
 //   niveau ayant EXACTEMENT ces PV — une revenue de fuite, ou une fraîche si ces PV sont les PV
 //   max du niveau (les deux sont alors strictement identiques, voir getTowerRows).
-// - omis/null : comportement historique — revenue de fuite en priorité, puis fraîche.
+// - omis/null : choix par défaut — revenue de fuite en priorité, puis fraîche.
 // Ne fait que muter `speciesState`, et renvoie { hp, level, individualId } ou null si la copie
 // demandée n'est pas disponible.
 function takeCopy(speciesState, species, copyChoice) {
@@ -194,9 +194,9 @@ function takeCopy(speciesState, species, copyChoice) {
 // permet à l'appelant (la tour de commandement) de garantir la copie exacte affichée —
 // fraîche ('fresh'), ou d'un niveau et de PV précis ({ level, hp }) — plutôt que de laisser le
 // choix par défaut (revenue de fuite en priorité, voir `takeCopy`). L'unité déployée porte le
-// niveau et l'individu de la copie (rules.md 11.6). Ne vérifie pas la position
-// (voir `isValidDeploymentPosition`) ni le temps : signale juste l'intention à l'appelant
-// (`timeControl: 'pause'`).
+// niveau et l'individu de la copie (rules.md 11.6). Ne vérifie pas la position (voir
+// `isValidDeploymentPosition`) ; la pause pendant un glisser est gérée par startDeploymentDrag
+// (playerActions.js).
 export function deployUnit(state, faction, species, x, y, unitsOnField, copyChoice = null) {
   if (
     species.keywords.includes('legendary')
@@ -215,7 +215,7 @@ export function deployUnit(state, faction, species, x, y, unitsOnField, copyChoi
   const unit = new BattleUnit(species, faction, x, y, copy.level, copy.individualId);
   unit.hp = copy.hp;
 
-  return { success: true, unit, timeControl: 'pause' };
+  return { success: true, unit };
 }
 
 // rules.md 2 : à appeler quand une unité quitte le terrain en fuite (rules.md 5) — sa copie
@@ -229,7 +229,8 @@ export function recordReturn(state, unit) {
 
 // rules.md 7 : les déploiements scriptés de l'IA (aiScript.js) sont pré-autorisés — le script
 // est déjà équilibré (rules.md 7.1) — donc pas de vérification de plafond/légendaire ici, juste
-// la tenue du registre de copies pour que les réserves restent exactes pour battleEnd.js (8).
+// la tenue du registre de copies pour que les réserves restent exactes pour la fin de bataille
+// (battleEnd.js, rules.md 8).
 export function consumeFreshCopy(state, species) {
   const speciesState = state.bySpecies.get(species);
   speciesState.freshRemaining = Math.max(0, speciesState.freshRemaining - 1);

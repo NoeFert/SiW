@@ -90,7 +90,7 @@ function runFullBattleDemo() {
     const result = deployPlayerUnit(battle, species, x, y);
     console.log(
       `Déploiement ${species.name} en (${x},${y}) : `
-      + (result.success ? `OK (signal: ${result.timeControl})` : `refusé (${result.reason})`),
+      + (result.success ? 'OK' : `refusé (${result.reason})`),
     );
     return result.unit;
   };

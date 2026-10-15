@@ -3,8 +3,8 @@
 // bas) et les liens qui les relient. Deux emplacements liés sont toujours sur la même ligne ou la
 // même colonne, sans autre emplacement ni autre lien entre eux (connecteur droit). `battle` :
 // bataille de WAR_BATTLE_IDS (src/data/battles/) portée par l'emplacement ; les autres sont
-// affichés verrouillés, en attendant leurs batailles. `invader` : emplacement d'une bataille de boss,
-// surmonté d'un envahisseur — le sprite de l'espèce ennemie de ce rôle ('basic', 'flying' ou
+// affichés verrouillés, en attendant leurs batailles. `invader` : emplacement d'une bataille de
+// boss, surmonté d'un envahisseur — le sprite de l'espèce ennemie de ce rôle ('basic', 'flying' ou
 // 'legendary', voir invaderSpecies dans src/logic/war.js).
 //
 // Map 1 : trois chemins du départ (en bas à gauche) au boss (en haut à droite), de longueurs
