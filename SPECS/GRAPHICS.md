@@ -88,6 +88,7 @@ Les missiles des attaques à distance sont des **effets animés**, tirés de pla
 
 ## Signaux visuels en bataille
 
+- **Entrée des unités de l'IA** (`RULES.md` 7.2) : chaque unité arrive depuis l'extérieur de l'écran, à droite, jusqu'à sa case d'entrée (purement visuel).
 - **Pause** : terrain désaturé ; ce qui reste cliquable garde ses couleurs (`ui-battle-screen-decisions.md` section 3).
 - **Barres de vie** au-dessus des unités (et mini barre des lignes blessées de la tour) : dans la **couleur principale de la faction** de l'unité — doré (#eab532) pour les Wyrms, menthe (#73ecbc) pour les Morts-Vivants —, quel que soit le niveau de PV.
 - **Dégâts de zone des [Légendaire]** (`RULES.md` 4.6) : chaque ennemi touché par la zone **clignote dans la couleur principale de la faction du [Légendaire]** au moment de l'impact (doré #eab532 pour Fafnir, menthe #73ecbc pour Athos) : une silhouette pleine de son sprite apparaît par-dessus lui, 3 clignotements rapides de 70 ms, sans texte, secousse ni animation. C'est une copie du sprite, pas une teinte du sprite lui-même : celui-ci porte le filtre de désaturation de la pause, qui ne rend pas la teinte de façon fiable. Un ennemi tué par la zone disparaît sans clignoter. Aucun nouvel asset.

@@ -2,357 +2,391 @@
 
 > **Rôle** : le quoi — les règles du scope v1, chiffrées et testables : moteur de bataille (sections 1 à 9), couche méta (section 11). Le pourquoi des valeurs est dans `DECISIONS.md`, les stats des unités dans `units.md`. Index des fichiers : `README.md`.
 
+Chaque section donne la règle de base, puis ses valeurs, puis ses **cas limites**.
+
 ---
 
 ## 1. Terrain
 
-- Le terrain de bataille est une grille rectangulaire de **24 cases de large × 14 cases de haut**.
-- Deux unités ne peuvent jamais occuper la même case.
-- Certaines cases peuvent être des obstacles infranchissables. Pour la bataille v1 : **16 obstacles : 12 d'une case et 4 blocs de 2×2 cases**, dispersés sur le terrain plutôt que concentrés, en évitant de former des couloirs fermés ou des culs-de-sac, répartis symétriquement de part et d'autre de la ligne médiane pour que le terrain reste équitable quel que soit le camp (positions exactes : plan de la zone dans `src/data/battles/battleTuto.js`).
+- Grille de **24 cases de large × 14 de haut**. Deux unités ne partagent jamais une case.
+- Certaines cases sont des **obstacles** infranchissables au sol. Le plan de chaque zone est dans le fichier de sa bataille (`src/data/battles/`) ; les zones sont décrites en 7.3.
+- **Le champ** (bataille tutoriel) : 16 obstacles — 12 d'une case et 4 blocs 2×2 —, dispersés, sans couloir fermé ni cul-de-sac, symétriques de part et d'autre de la ligne médiane.
 
 ## 2. Déploiement
 
-- Le camp du joueur est la **moitié gauche** du terrain, collée à la tour de commandement ; l'IA occupe la moitié droite. Le joueur attaque donc de gauche à droite.
-- **Zone de déploiement** : le joueur déploie ses unités dans le **premier quart du terrain** de son côté, les **colonnes 0 à 5** (6 colonnes sur 24, toutes les rangées), sur des cases libres (ni obstacle, ni unité). Une unité 2×2 doit avoir ses 4 cases dans la zone. Les unités [Vol] suivent la même règle. Il n'y a pas de distance minimale à un ennemi : une case libre de la zone reste valide même au contact d'un ennemi. Le reste de sa moitié (colonnes 6 à 11) n'est plus une zone de déploiement, mais ses unités s'y déplacent librement. Pendant un glisser-déposer, seules les cases de la zone restent en couleur (`ui-battle-screen-decisions.md` 3). Réduite pour que le placement de départ se décide à l'avance (`strategic-depth.md`).
-- Déployer une unité **arrête le temps** : la bataille se met en pause (pause d'interaction, section 5.2) dès le début du glisser-déposer, pendant que le joueur choisit et positionne son unité.
-- Le déploiement est limité par les **points de présence** disponibles : le joueur dispose d'un plafond de **150 points de présence pouvant être déployés simultanément** (voir section 9 et `units.md` pour le détail du coût de chaque unité).
-- Ce plafond est **vivant, pas un budget dépensé une seule fois** : le coût en points de présence d'une unité se libère dès qu'elle meurt ou fuit le terrain (commande de retraite, section 5), permettant au joueur de redéployer d'autres unités en cours de bataille tant que le total des unités actuellement sur le terrain reste sous le plafond.
-- **Limite de quantité par unité [Légendaire] :** un seul exemplaire de l'unité [Légendaire] d'une faction (Fafnir ou Athos selon le camp) peut être déployé simultanément sur le terrain, indépendamment du budget de points disponible.
-- **Copies disponibles pour la bataille :** chaque unité (légendaire ou non) dispose d'un nombre fixe de copies pour une même bataille. Pour le joueur, ce sont **tous les individus qu'il possède** pour la bataille tutoriel (section 11.1 — l'armée n'existe pas encore), puis **les individus de son armée** (11.2) pour les batailles de « Partir en guerre », chacun avec les stats de son niveau (11.6) ; pour l'IA, les copies de `units.md`.
-  - Une unité **tuée** en combat consomme définitivement une copie (perdue pour le reste de la bataille, cohérent avec la mort définitive, section 4.4). C'est aussi le cas d'une unité tuée à l'instant même où elle atteint le bord en fuyant : elle est morte, pas en fuite.
-  - Une unité qui **fuit** (retraite, section 5) retourne en réserve avec ses points de vie réduits conservés, et **reste disponible** pour un redéploiement ultérieur dans la même bataille — sa copie n'est pas perdue.
-- L'IA se déploie sur l'autre moitié du terrain (moitié droite, 12 colonnes), selon un script prédéfini (voir section 7).
+Le joueur pose ses unités par glisser-déposer dans sa **zone de déploiement**. Le temps s'arrête dès le début du geste (pause d'interaction, 5.2).
+
+- **Camps** : le joueur a la moitié gauche (colonnes 0 à 11) et attaque vers la droite ; l'IA a la moitié droite et entre par le bord droit (7.2).
+- **Zone de déploiement du joueur** : les **colonnes 0 à 5**, sur des cases libres (ni obstacle, ni unité). Une unité 2×2 doit y avoir ses 4 cases. Les unités [Vol] suivent la même règle.
+- **Plafond vivant** : au plus **150 points de présence (PP)** sur le terrain par camp. Les points d'une unité se libèrent dès qu'elle meurt ou quitte le terrain en fuyant ; le joueur peut alors redéployer.
+- **[Légendaire]** : un seul à la fois sur le terrain par camp, quel que soit le plafond.
+- **Copies** : chaque espèce a un nombre de copies fixe pour la bataille (toutes ses phases).
+
+| Camp | Copies |
+|---|---|
+| Joueur, bataille tutoriel | tous ses individus (11.1) |
+| Joueur, « Partir en guerre » | les individus de son armée (11.2), chacun avec les stats de son niveau (11.6) |
+| IA | les copies de départ de `units.md` |
+
+**Cas limites**
+- Pas de distance minimale à un ennemi : une case libre de la zone reste valide au contact d'un ennemi.
+- Les colonnes 6 à 11 ne servent pas au déploiement, mais les unités du joueur s'y déplacent librement.
+- Une unité **tuée** perd sa copie pour le reste de la bataille (4.4) — y compris tuée à l'instant même où elle atteint le bord en fuyant.
+- Une unité qui **fuit** revient en réserve avec ses PV réduits et reste redéployable.
 
 ## 3. Mouvement
 
-- Le déplacement est possible en 8 directions (y compris diagonale).
-- **Diagonale et obstacles :** une unité ne coupe jamais le coin d'un obstacle — un pas en diagonale est interdit dès qu'**une des deux cases** du coin traversé est un obstacle (l'unité doit d'abord faire un pas droit pour le contourner). Les **unités**, elles, ne bloquent jamais la diagonale : on peut passer en diagonale entre deux unités qui ne se touchent que par un coin. Les unités [Vol] ne sont pas concernées (elles ignorent les obstacles, voir plus bas).
-- **Distances :** toutes les distances du jeu (portée de tir, ennemi le plus proche, longueur d'un trajet) se comptent en cases, et une case en diagonale vaut une case, comme une case droite. Pour une unité occupant 4 cases (2×2), la distance se mesure entre les **cases les plus proches** des deux unités — que ce soit pour la portée de tir, l'ennemi le plus proche ou l'arrêt à 2 cases d'Athos (section 4.5).
-- **Sans ennemi sur le terrain**, une unité sans commande reste sur place jusqu'à l'arrivée d'un ennemi.
-- Une unité se déplace vers l'ennemi le plus proche par défaut, en contournant les obstacles et les autres unités qui bloquent le passage.
-- **Égalité de distance :** si plusieurs ennemis sont à la même distance, l'unité choisit celui qui a **le moins de PV actuels**. En cas de nouvelle égalité, le premier déployé.
-- **Ennemi inatteignable :** pour une unité au sol, « l'ennemi le plus proche » ne compte d'abord que les ennemis qu'elle peut atteindre en contournant les obstacles du terrain : une case adjacente libre pour le corps-à-corps, une case d'où il est à portée pour une unité à distance. Les autres unités, qui bougent, ne rendent jamais un ennemi inatteignable. S'il ne reste **que des ennemis inatteignables**, l'unité se dirige quand même vers le plus proche d'entre eux et s'en approche au plus près possible, pour être sur place dès qu'il devient atteignable. Les unités [Vol] ne sont pas concernées.
-- Chaque unité a sa propre vitesse de déplacement (voir `units.md` pour les valeurs du roster).
-- **Unités occupant 4 cases (2×2) :** se déplacent comme un bloc rigide — un déplacement n'est valide que si les 4 cases de destination sont toutes libres. Si le passage est trop étroit (couloir d'une seule case de large), l'unité attend ou contourne, exactement comme une unité normale face à un obstacle.
-- **Unités [Vol] :** ignorent les obstacles terrestres dans leur pathfinding — un obstacle qui bloquerait une unité au sol n'a aucun effet sur leur trajectoire. Cette règle ne s'applique qu'aux obstacles de terrain : les autres unités continuent de bloquer le passage normalement (deux unités ne peuvent jamais occuper la même case, voir section 1). Une unité [Vol] peut s'arrêter au-dessus d'un obstacle. Le déploiement, lui, se fait toujours sur une case libre, même pour une unité [Vol] (section 2).
+Sans ordre, une unité va vers l'**ennemi le plus proche**, en contournant obstacles et unités. Sans ennemi sur le terrain, elle reste sur place.
+
+- Déplacement en **8 directions**, à la vitesse de l'unité (`units.md`).
+- **Distances** (portée, ennemi le plus proche, trajet) : en cases, une diagonale valant une case. Pour une unité 2×2, entre les **cases les plus proches** des deux unités.
+- **Unité 2×2** : un bloc rigide ; un pas n'est valide que si ses 4 cases d'arrivée sont libres.
+- **Unité [Vol]** : ignore les obstacles du terrain (pas les unités) et peut s'arrêter au-dessus d'un obstacle.
+
+**Cas limites**
+- **Coin d'obstacle** : un pas en diagonale est interdit si l'une des deux cases du coin traversé est un obstacle. Les unités, elles, ne bloquent jamais une diagonale. Les [Vol] ne sont pas concernées.
+- **Égalité de distance** : l'ennemi qui a le moins de PV actuels, puis le premier déployé.
+- **Ennemi inatteignable** (unité au sol) : on ne compte d'abord que les ennemis atteignables par le terrain — une case adjacente libre pour le corps-à-corps, une case d'où tirer pour un tireur. Les unités, qui bougent, ne rendent jamais un ennemi inatteignable. S'il ne reste que des ennemis inatteignables, l'unité s'approche au plus près du plus proche.
+- **Passage trop étroit** pour une unité 2×2 : elle attend ou contourne, comme devant un obstacle.
 
 ## 4. Combat
 
 ### 4.1 Déroulement dans le temps
-- Le temps de bataille s'écoule en continu (pas de tour par tour). Chaque unité attaque selon son propre rythme, déterminé par sa vitesse d'attaque (voir `units.md` pour les valeurs du roster). Ce rythme repart de zéro chaque fois qu'une unité arrive au contact ou à portée de tir : elle porte son premier coup après un intervalle complet, jamais instantanément. Une unité qui attaque déjà garde son rythme quand elle change de cible (sa cible est morte, et un autre ennemi est déjà au contact ou à portée). C'est aussi le cas d'une unité hybride qui passe du tir au corps-à-corps. Le rythme ne repart de zéro que pour une unité qui n'attaquait pas.
-- Quand plusieurs unités infligent des dégâts au même instant, **toutes les attaques de cet instant sont d'abord calculées, puis appliquées ensemble** — aucune unité n'a d'avantage d'ordre sur une autre. Concrètement : si deux unités s'entretuent au même instant, elles meurent toutes les deux.
-- **Coup fatal simultané :** si plusieurs attaques du même instant tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal (utile pour les aptitudes déclenchées au coup fatal, ex : Soif de sang d'Athos) — sauf un attaquant qui meurt lui-même à cet instant : une unité morte ne bénéficie d'aucun effet.
-- **Effets posés à un instant donné :** un effet qui vise « les prochaines attaques » d'une cible (ex : Frappe paralysante d'Athos) ne touche jamais une attaque de cette même cible portée au même instant — seulement les suivantes.
+Le temps est **continu**. Chaque unité attaque à son propre rythme (vitesse d'attaque, `units.md`). Toutes les attaques d'un même instant sont **calculées, puis appliquées ensemble** : aucune unité n'a l'avantage de l'ordre.
+
+**Cas limites**
+- Une unité qui arrive au contact ou à portée porte son premier coup après un intervalle complet. Une unité qui attaquait déjà garde son rythme en changeant de cible, ou en passant du tir au corps-à-corps.
+- Deux unités qui s'entretuent au même instant meurent toutes les deux.
+- **Coup fatal simultané** : si plusieurs attaques du même instant tuent une cible, chaque attaquant compte comme ayant porté le coup fatal pour les aptitudes (Soif de sang), sauf un attaquant qui meurt lui-même à cet instant. Pour l'XP, un seul tueur : 11.6.
+- Un effet qui vise « les prochaines attaques » d'une cible (Frappe paralysante) ne touche jamais une attaque de cette cible portée au même instant.
 
 ### 4.2 Engagement au corps-à-corps
-- Si deux unités alliées veulent attaquer la même cible au corps-à-corps, la seconde arrivée contourne la première pour trouver une case libre également adjacente à la cible.
-- S'il n'y a plus de case adjacente libre sur cette cible, l'unité **se redirige vers le prochain ennemi le plus proche** plutôt que d'attendre. Elle n'attend qu'une place se libère que s'il ne reste **aucun autre ennemi** disponible à attaquer (le premier ennemi occupé est alors la seule option restante).
-- Une unité **engagée** (en train d'échanger des attaques au corps-à-corps) ne peut pas changer de cible tant que l'ennemi n'est pas mort.
-- Une unité alliée en attente d'une place libre peut, elle, se rediriger vers un autre ennemi qui se rapproche.
+Une unité au corps-à-corps rejoint une case adjacente libre de sa cible et frappe. **Engagée**, elle garde sa cible jusqu'à sa mort (sauf ordre Attaquer, 5).
 
-### 4.3 Adjacence des unités 4 cases (2×2)
-- Une unité occupant 4 cases est considérée **adjacente à une cible** dès qu'**une seule** de ses 4 cases touche une case adjacente à la cible (pas besoin que le bloc entier soit collé).
+**Cas limites**
+- Un second allié sur la même cible contourne le premier pour trouver une autre case adjacente libre.
+- Plus de case adjacente libre : l'unité se redirige vers le prochain ennemi le plus proche ; elle n'attend une place que s'il n'y a aucun autre ennemi.
+- Une unité qui attend une place (non engagée) peut se rediriger vers un ennemi qui se rapproche.
+
+### 4.3 Adjacence des unités 2×2
+Une unité 2×2 est adjacente à une cible dès qu'**une seule** de ses cases touche une case adjacente à la cible.
 
 ### 4.4 Mort
-- Quand les points de vie d'une unité atteignent 0, elle meurt et est retirée du terrain.
-- Une unité morte en bataille est perdue définitivement : l'individu ne revient jamais. Le joueur peut invoquer un nouvel individu de la même espèce (une nouvelle créature, jamais celle qui est tombée), ou réinvoquer son [Légendaire] (section 11.4).
+À 0 PV, une unité meurt et quitte le terrain. L'individu est perdu pour toujours (11.1) ; le joueur peut invoquer un **nouvel** individu de l'espèce, ou réinvoquer son [Légendaire] (11.4).
 
 ### 4.5 Attaque à distance
-- Une unité à distance a une **portée de tir**, une valeur fixe propre à l'unité (voir `units.md` pour les valeurs du roster).
-- **Dégâts immédiats** : les dégâts d'un tir sont appliqués à l'instant du tir, comme une attaque au corps-à-corps (et soumis à la même résolution simultanée, section 4.1). Le projectile affiché est purement visuel.
-- **Pas de ligne de vue** : dans cette version, un tir atteint toute cible dans sa portée, même s'il y a entre les deux des obstacles ou d'autres unités (alliées ou ennemies). Une ligne de vue pourra être ajoutée dans une version future (hors scope v1).
-- Une attaque à distance **ne peut jamais se déclencher sur une cible adjacente** (case collée) — en dessous de sa portée minimale de 2 cases, une unité à distance ne peut pas tirer.
-- **Unité purement à distance (jamais de corps-à-corps)** : elle reste immobile et continue de tirer tant que sa cible reste dans sa portée de tir. Elle ne recule que si la cible devient adjacente (hors de portée par défaut) ; elle ne cherche pas activement à s'éloigner tant qu'elle reste à portée. Pour reculer, elle rejoint la case hors contact la plus proche en contournant si le recul direct est bloqué (bord, obstacle, autre unité). Si elle est complètement encerclée (aucune case hors contact atteignable), elle reste sur place **sans tirer** jusqu'à ce qu'un passage se libère.
-- **Unité purement à distance qui tire en avançant (ex : Athos)** : exception à la règle précédente — comme une unité hybride, elle **continue d'avancer** vers sa cible pendant qu'elle tire, mais elle **s'arrête à 2 cases** (sa portée minimale de tir) : elle n'entre jamais au contact, puisqu'elle ne peut pas combattre au corps-à-corps. Si la cible vient malgré tout se coller à elle, elle recule comme toute unité purement à distance.
-- **Unité hybride capable des deux modes (ex : Fafnir)** :
-  - Elle attaque à distance dès que sa cible entre dans sa portée de tir
-  - Contrairement à une unité purement à distance, elle **continue d'avancer** vers sa cible pendant qu'elle tire, plutôt que de rester immobile à distance
-  - Elle peut tirer tout en se déplaçant (le tir n'interrompt pas la marche vers la cible)
-  - Une fois adjacente à sa cible, elle bascule au corps-à-corps et suit dès lors les règles de la section 4.2
+Un tireur attaque une cible dans sa **portée** (`units.md`), jamais une cible adjacente (portée minimale : 2 cases). Les dégâts sont appliqués à l'instant du tir, avec la résolution de 4.1 ; le projectile n'est qu'un visuel. **Pas de ligne de vue** : obstacles et unités n'arrêtent pas un tir.
+
+| Type | Exemple | Pendant qu'il tire | Si la cible se colle à lui |
+|---|---|---|---|
+| Purement à distance | Amphiptère, Necromant Initiate | reste immobile tant que la cible est à portée | recule vers la case hors contact la plus proche |
+| Tire en avançant | Athos | avance vers la cible, s'arrête à 2 cases | recule, comme ci-dessus |
+| Hybride | Fafnir | avance vers la cible sans s'arrêter de tirer | passe au corps-à-corps (4.2) |
+
+**Cas limites**
+- Un recul bloqué (bord, obstacle, unité) contourne. Un tireur encerclé, sans case hors contact atteignable, reste sur place **sans tirer** jusqu'à ce qu'un passage se libère.
 
 ### 4.6 Dégâts de zone des [Légendaire]
-Les unités [Légendaire] (Fafnir et Athos, des deux camps) punissent les unités serrées : chaque coup blesse aussi les ennemis collés à la cible (`strategic-depth.md`).
+Chaque attaque d'un [Légendaire] (Fafnir, Athos, des deux camps), à distance comme au corps-à-corps, touche sa cible **et tous les autres ennemis à 1 case** de la cible — le carré 3×3 autour d'une cible d'une case. Ces ennemis subissent **50 %** des dégâts de l'attaque (provisoire, section 10), arrondis au plus proche (0,5 au-dessus). Valeurs par unité : `units.md`.
 
-- **Chaque attaque** portée par une unité [Légendaire], à distance comme au corps-à-corps, touche sa cible **et** tous les autres ennemis situés **à 1 case** de la cible (distance de la section 3 : pour une cible 2×2, les cases les plus proches). Pour une cible d'une case, c'est le carré de 3×3 cases autour d'elle.
-- **Dégâts de zone** : **50 %** des dégâts de cette attaque (niveau, 11.6, et Attaque dévastatrice compris ; même si la cible avait moins de PV), arrondis à l'entier le plus proche (0,5 arrondi au-dessus). Au niveau 1 : Fafnir 15 à distance et 23 au corps-à-corps (30 et 45 pour l'Attaque dévastatrice), Athos 25.
-- **Seuls les ennemis** sont touchés, jamais les alliés. Les unités [Vol] et les unités en fuite sont touchées comme les autres.
-- **Même instant** : les dégâts de zone sont appliqués en même temps que ceux de l'attaque, avec la résolution simultanée de la section 4.1. Pour départager les tueurs (XP, 11.6), ils comptent comme des dégâts infligés à la victime.
-- **Coup fatal** : un ennemi tué par les dégâts de zone compte comme achevé par le [Légendaire] : XP de kill (11.6) et Soif de sang (Athos se soigne de 40 PV pour **chaque** ennemi tué par la cible ou par la zone, plafonné à ses PV max).
-- **Aptitudes** : une attaque avec sa zone ne compte qu'**une fois** dans les compteurs « toutes les N attaques » (section 6.1). La Frappe paralysante d'Athos ne touche que la **cible** de l'attaque, jamais la zone. Une attaque annulée (Frappe paralysante) ne fait aucun dégât de zone. La **dernière attaque gratuite** portée sur une unité qui fuit (section 5) n'a pas de zone : elle ne touche que l'unité qui fuit.
-- La position des ennemis est celle de l'instant de l'attaque.
+**Cas limites**
+- La base est le dégât de l'attaque, niveau (11.6) et Attaque dévastatrice compris, même si la cible avait moins de PV.
+- Jamais les alliés. Les unités [Vol] et les unités en fuite sont touchées. Les positions sont celles de l'instant de l'attaque.
+- Les dégâts de zone sont appliqués au même instant que l'attaque (4.1) et comptent comme dégâts infligés pour départager les tueurs (11.6).
+- Un ennemi tué par la zone est achevé par le [Légendaire] : XP de kill (11.6) et Soif de sang (40 PV par ennemi tué, cible ou zone).
+- Une attaque et sa zone comptent **une fois** dans les compteurs d'aptitude (6.1). La Frappe paralysante ne touche que la cible. Une attaque annulée n'a pas de zone. La dernière attaque gratuite sur une unité qui fuit (5) n'a pas de zone.
 
-## 5. Commandes du joueur
+## 5. Ordres du joueur
 
-- Le joueur peut donner 3 types de commandes à une unité déployée :
-  1. **Attaquer** : désigner une cible ennemie précise
-  2. **Se déplacer** : désigner une case du terrain à atteindre. Si cette case est inatteignable (obstacle, case occupée, bloc 2×2 qui déborderait du terrain), l'unité s'arrête au plus près possible et reprend son comportement autonome.
-  3. **Fuir** : l'unité doit atteindre le bord du terrain pour quitter la bataille et revenir dans la liste du joueur ; elle ne récupère pas ses points de vie avant la fin de la bataille
-- Donner une commande **met le jeu en pause** (pause d'interaction, section 5.2) : le clic sur un ordre (rangée « Ordres » de la tour de commandement) arrête le temps pendant que le joueur choisit l'unité et la cible ; la bataille reprend dès que la commande est donnée ou annulée, **sauf** si la pause principale est active (décision prise après tests de jeu).
-- **Déroulé d'une commande** : cliquer l'ordre (Aller, Attaquer, Fuir), puis une unité du joueur sur le terrain, puis la cible — un ennemi pour Attaquer, une case pour Aller, aucune pour Fuir (l'unité fuit dès qu'elle est sélectionnée). Il n'y a pas de raccourci : sans ordre choisi, un clic sur le terrain ne fait rien. Cliquer un autre ordre en cours de route remplace l'ordre (l'unité est à resélectionner).
-  - **Annulation** possible à n'importe quel stade (re-clic sur l'ordre en cours, clic droit sur le terrain ou touche Échap) : aucune commande n'est émise et le cooldown de la fuite n'est pas consommé.
-- Les commandes sont **optionnelles** : une unité sans commande agit de façon autonome (se déplace vers l'ennemi le plus proche, attaque à portée).
-- **Priorité des commandes :** une unité n'a qu'une commande à la fois. La **dernière commande donnée remplace toujours la précédente**, quelle qu'elle soit (Aller, Attaquer ou Fuir).
-- **Commande Aller :** pendant le trajet, l'unité **ne combat pas** (ni attaque ni riposte), même si elle est frappée. Arrivée sur la case, la commande prend fin et l'unité reprend son comportement autonome.
-- **Commande Attaquer :**
-  - Elle l'emporte sur l'engagement (section 4.2) : une unité engagée au corps-à-corps quitte son combat pour aller vers la cible désignée.
-  - Une unité à distance avance jusqu'à avoir la cible à portée, puis tire selon ses règles habituelles (section 4.5).
-  - La commande prend fin quand la cible meurt ou fuit le terrain, ou quand une nouvelle commande (Aller ou Fuir) est donnée à l'unité. L'unité reprend alors son comportement autonome (ou exécute la nouvelle commande).
-- **Fuite d'une unité engagée** : la fuite est toujours possible immédiatement, même en plein engagement corps-à-corps. L'ennemi engagé a le droit de porter une dernière attaque au moment où l'unité se désengage. Si **plusieurs ennemis** sont engagés au corps-à-corps sur elle, **chacun** porte sa dernière attaque, une seule fois (au moment où la fuite commence). Cette dernière attaque est **gratuite** : elle ne modifie pas le rythme d'attaque de l'ennemi (section 4.1) et **ne compte pas** comme une attaque portée pour les aptitudes (compteurs « toutes les N attaques », section 6.1). La fuite vise la case de bord atteignable la plus proche, n'importe laquelle : un bord bloqué est contourné.
-  - Une unité déjà sur un bord quitte le terrain dès que l'ordre de fuite est donné.
-  - **Aucun bord atteignable** (unité encerclée par d'autres unités, ou entrée du « Fort » bouchée) : l'unité reste en fuite sur place, mais **riposte au corps-à-corps** contre un ennemi adjacent, à son rythme d'attaque habituel (section 4.1). Une unité purement à distance, qui ne peut pas frapper au contact (section 4.5), ne riposte pas. Dès qu'un chemin vers un bord se libère, l'unité cesse de riposter et reprend sa fuite.
-  - Après leur dernière attaque, les ennemis peuvent poursuivre l'unité en fuite et la frapper s'ils la rattrapent : fuir comporte un risque.
-  - Une nouvelle commande (Aller, Attaquer) donnée à une unité en fuite remplace la fuite (priorité à la dernière commande, voir plus haut).
+Le joueur peut donner un **ordre** à une de ses unités sur le terrain. Les ordres sont optionnels : sans ordre, l'unité agit seule (3, 4). Une unité n'a qu'un ordre à la fois : **le dernier donné remplace le précédent**.
 
-### 5.1 Limitation des commandes
-- Seul l'ordre **Fuir** est limité, par un **cooldown** entre deux fuites (pas de quota fixe par bataille en v1). **Aller et Attaquer n'ont pas de cooldown.**
-- Durée du cooldown : **5 secondes** de temps de bataille entre deux fuites, peu importe l'unité. Le cooldown **ne s'écoule pas pendant les pauses** (section 5.2). Pendant le cooldown, le bouton Fuir ne peut pas être cliqué.
-- Cette limitation de cooldown diminuera avec le niveau du joueur (11.5) dans la Suite (`roadmap-mvp.md`) : **dans le MVP, le cooldown reste fixe à 5 s, quel que soit le niveau du joueur**.
+| Ordre | Cible | Pendant l'ordre | Fin |
+|---|---|---|---|
+| **Aller** | une case | l'unité ne combat pas, ni ne riposte, même frappée | arrivée sur la case, ou au plus près si elle est inatteignable (obstacle, case occupée, bloc 2×2 qui déborderait du terrain) |
+| **Attaquer** | un ennemi | l'unité quitte son engagement (4.2) ; un tireur avance jusqu'à la portée puis tire (4.5) | cible morte ou sortie du terrain, ou nouvel ordre |
+| **Fuir** | — | l'unité va vers la case de bord atteignable la plus proche | sortie au bord : retour en réserve, sans récupérer ses PV |
+
+À la fin d'un ordre, l'unité reprend son comportement autonome.
+
+- **Donner un ordre** met le jeu en pause d'interaction (5.2) dès le clic sur l'ordre ; la bataille reprend quand l'ordre est donné ou annulé, sauf pendant la pause principale. Déroulé des clics et annulation : `ui-battle-screen-decisions.md` 2.3. Un ordre annulé n'est pas émis et ne consomme pas le cooldown de la fuite.
+
+**Cas limites — fuite**
+- La fuite est toujours possible, même engagée. Chaque ennemi alors engagé sur l'unité porte **une dernière attaque**, une seule fois, au début de la fuite. Elle est gratuite : elle ne change pas le rythme de l'ennemi (4.1) et ne compte pas pour les aptitudes (6.1).
+- Une unité déjà sur un bord quitte le terrain aussitôt.
+- **Aucun bord atteignable** (unité encerclée, entrée du « Fort » bouchée) : l'unité reste en fuite sur place et **riposte au corps-à-corps** contre un ennemi adjacent, à son rythme ; un tireur pur ne riposte pas. Elle reprend sa fuite dès qu'un chemin se libère.
+- Les ennemis peuvent poursuivre et frapper l'unité qui fuit.
+
+### 5.1 Cooldown de la fuite
+**5 secondes** de temps de bataille entre deux ordres Fuir, toutes unités confondues ; Fuir est impossible pendant ce délai. Le cooldown est gelé pendant les pauses. Aller et Attaquer n'ont pas de cooldown. Dans le MVP, le cooldown ne dépend pas du niveau du joueur (réduction : Suite, `roadmap-mvp.md`).
 
 ### 5.2 Pauses
-Deux familles de pause, indépendantes et combinables. Le temps de bataille ne s'écoule que si **aucune** n'est active.
+Le temps de bataille ne s'écoule que si **aucune** pause n'est active. Pendant une pause, tout est gelé : timers d'attaque, mouvements, cooldown de la fuite, script de l'IA.
 
-- **Pause principale** : interrupteur activé et désactivé par le joueur (bouton ⏸ / ▶, raccourci barre Espace). Pendant cette pause, le joueur peut encore déployer et donner une commande.
-- **Pause d'interaction** : automatique pendant un glisser-déposer de déploiement (section 2), pendant la sélection d'une commande (dès le clic sur un ordre, section 5) et pendant la confirmation d'abandon (section 8.2 ; une commande en cours de sélection est alors annulée). Elle se termine d'elle-même à la fin ou à l'annulation du geste.
-- **Gel du tutoriel** (`technical.md` 5.5) : pendant une étape qui demande ou explique quelque chose, la bataille est figée comme pendant une pause, et seule l'action demandée est possible.
-- Pendant toute pause, **tous les compteurs sont gelés** : timers d'attaque, mouvements, cooldown de la fuite et script de l'IA (section 7). Les animations des unités sont gelées elles aussi.
-- Le cooldown étant gelé, **une seule fuite est possible par pause principale** ; Aller et Attaquer restent possibles autant de fois que voulu.
-- Le déploiement reste possible **plusieurs fois** pendant une pause principale, dans la limite du plafond de points de présence (section 2).
-- Après un déploiement ou une commande effectués pendant la pause principale, le jeu **reste en pause** jusqu'à ce que le joueur la relance.
+| Pause | Déclenchement | Fin |
+|---|---|---|
+| **Principale** | le joueur (⏸ / ▶, barre Espace) | le joueur |
+| **D'interaction** | glisser-déposer de déploiement (2), choix d'un ordre (5), confirmation d'abandon (8.2) | fin ou annulation du geste |
+| **Gel du tutoriel** | étape du tutoriel qui demande ou explique (`technical.md` 5.5) ; seule l'action demandée est possible | action faite |
+
+- Pendant la pause principale, le joueur peut déployer (plusieurs fois, sous le plafond, 2) et donner des ordres ; le jeu reste en pause après.
+
+**Cas limites**
+- Le cooldown étant gelé, une seule fuite est possible par pause principale ; Aller et Attaquer restent illimités.
+- La confirmation d'abandon annule un ordre en cours de sélection.
 
 ## 6. Aptitudes
 
-- Les **aptitudes** sont des pouvoirs spéciaux propres à certains monstres — une stat séparée des autres caractéristiques d'une unité (voir `units.md` pour les aptitudes de chaque unité).
-- Toutes les unités n'ont pas d'aptitude ; c'est une stat optionnelle propre à certains individus/espèces.
-- Une aptitude appartient à l'un des deux types suivants :
+Une **aptitude** est un pouvoir propre à certaines espèces (`units.md`). Deux types :
 
 ### 6.1 Type automatique
-- Se déclenche seule selon sa propre condition (ex : après un certain nombre d'attaques), **sans action du joueur**.
-- Exemple pour la v1 : l'attaque dévastatrice de Fafnir (voir `units.md`).
-- Une attaque annulée par un effet (ex. : Frappe paralysante d'Athos) ne compte pas dans les compteurs « toutes les N attaques ». Seules les attaques réellement portées comptent. La dernière attaque gratuite portée sur une unité qui fuit (section 5) ne compte pas non plus.
+Se déclenche seule, selon sa condition (ex : toutes les N attaques, au coup fatal), sans action du joueur. Exemples v1 : Attaque dévastatrice de Fafnir, Frappe paralysante et Soif de sang d'Athos.
+
+**Cas limites**
+- Les compteurs « toutes les N attaques » ne comptent que les attaques réellement portées : ni une attaque annulée (Frappe paralysante), ni la dernière attaque gratuite sur une unité qui fuit (5).
 
 ### 6.2 Type à usage limité
-- Le joueur **choisit lui-même le moment d'activation**, via une icône dédiée sur le côté de l'écran.
-- Utilisable un nombre limité de fois par bataille (ex : 1 fois par bataille).
-- Aucune unité du roster v1 n'a d'aptitude de ce type pour l'instant.
+Activée par le joueur, depuis une icône dédiée, un nombre limité de fois par bataille. Aucune unité du roster v1 n'en a.
 
-Les aptitudes spécifiques de chaque unité (déclencheur exact, effet, valeurs) sont documentées dans [`units.md`](units.md), avec les autres stats.
+## 7. IA adverse
 
-## 7. Comportement de l'IA adverse
+L'IA ne gère aucune ressource : elle suit un **script**. Pour chaque phase, le script dit quelle espèce entre à quel instant (en secondes depuis le début de la phase) ; la case est choisie au moment de l'entrée (7.2). Une fois entrée, une unité de l'IA se comporte comme une unité du joueur sans ordre.
 
-- L'IA ne gère aucune ressource dynamiquement (pas d'achat, pas de progression) — son comportement est entièrement scripté.
-- Le script définit à l'avance, pour une bataille donnée : quelle unité est déployée et à quel instant précis depuis le début de la bataille. La case d'apparition n'est pas fixée à l'avance : elle est choisie au moment du déploiement selon la situation du terrain (voir 7.2).
-- La bataille tutoriel est scriptée (section 7.1). Les quatre batailles de « Partir en guerre » le sont aussi, zone par zone (scripts provisoires, section 11.7).
-- Une fois déployée, une unité IA se comporte exactement comme une unité du joueur non commandée : mouvement et combat autonomes selon les mêmes règles (sections 3 et 4).
+- **Plafond** : le même plafond vivant de 150 PP que le joueur (2). Une entrée qui le dépasserait **attend** que des points se libèrent (l'IA ne fait jamais fuir), et les entrées suivantes attendent derrière elle. Le coût total d'un script n'est donc pas un budget.
+- **Copies** : les copies de départ de sa faction (`units.md`), pour toute la bataille.
 
-### 7.1 Script de bataille v1
-Le même schéma de timing s'applique quelle que soit la faction jouée par l'IA (déterminée par le choix du joueur — voir section 8) : 4 unités basiques, 1 unité [Vol] à distance, 1 unité [Légendaire], déployées progressivement en 5 vagues.
+### 7.1 Script de la bataille tutoriel (provisoire, section 10)
 
-**Si l'IA joue les Wyrms :**
-- t=0s : déployer 1 Ver de Lambton
-- t=8s : déployer 1 Amphiptère
-- t=20s : déployer 1 Ver de Lambton
-- t=28s : déployer 2 Vers de Lambton
-- t=35s : déployer Fafnir
+| Instant | IA Wyrms | IA Morts-Vivants |
+|---|---|---|
+| 0 s | 1 Ver de Lambton | 1 New-reborn Skeleton |
+| 8 s | 1 Amphiptère | 1 Necromant Initiate |
+| 20 s | 1 Ver de Lambton | 1 New-reborn Skeleton |
+| 28 s | 2 Vers de Lambton | 2 New-reborn Skeletons |
+| 35 s | Fafnir | Athos |
 
-Coût total du script : 175 points de présence (10 + 25 + 10 + 2 × 10 + 110).
+À 35 s, le [Légendaire] (110 PP) attend sous le plafond tant que les unités de l'IA encore sur le terrain dépassent 40 PP.
 
-**Si l'IA joue les Morts-Vivants :**
-- t=0s : déployer 1 New-reborn Skeleton
-- t=8s : déployer 1 Necromant Initiate
-- t=20s : déployer 1 New-reborn Skeleton
-- t=28s : déployer 2 New-reborn Skeletons
-- t=35s : déployer Athos
+### 7.2 Entrée par le bord droit
+Les unités de l'IA **entrent par le bord droit**, jamais au milieu du terrain. Leur case est tirée **au hasard** parmi les positions qui passent ces filtres, dans l'ordre :
+1. **Valide** : bloc entier collé au bord droit (dernière colonne, ou les deux dernières pour un 2×2), sur des cases libres.
+2. **Stratégique** : la rangée la plus proche d'une **cible stratégique** — d'abord un **renfort** (un ennemi engagé au corps-à-corps avec un allié de l'IA à 50 % de ses PV max ou moins, dans un sens ou dans l'autre de l'engagement) ; sinon l'**éradication** (le ou les ennemis qui ont le plus de PV actuels).
 
-Coût total du script : 159 points de présence (6 + 25 + 6 + 2 × 6 + 110).
+Les unités d'une même vague entrent ensemble, sur des rangées voisines.
 
-Le coût total d'un script n'est pas un budget : ce qui limite l'IA, c'est le même **plafond simultané de 150 points** que le joueur (voir ci-dessous). Conséquence : à t=35s, la [Légendaire] (110) n'apparaît que si les unités IA encore sur le terrain totalisent 40 points ou moins. Tant que toutes les unités des vagues précédentes sont en vie, elle attend — Fafnir derrière 65 points, Athos derrière 49 points.
-
-**Plafond de présence :** l'IA est soumise au même plafond vivant de 150 points que le joueur (section 2) : les unités IA encore sur le terrain comptent, et une unité du script qui ferait dépasser le plafond **attend** qu'assez de points se libèrent (mort d'une unité IA ; l'IA ne fait jamais fuir ses unités) ; les unités suivantes du script attendent derrière elle pour garder l'ordre.
-
-> Script provisoire (section 10).
-
-### 7.2 Choix de la case d'apparition : entrée par le bord droit
-Les unités de l'IA **entrent par le bord droit du terrain** : elles n'apparaissent jamais directement au milieu du champ de bataille. Le joueur les voit arriver et traverser le terrain, ce qui lui laisse le temps de réagir (décision de design : une apparition soudaine au contact paraissait injuste).
-
-Au moment de déployer une unité, l'IA choisit sa case **au hasard** parmi les positions retenues par les filtres suivants, appliqués dans l'ordre :
-
-1. **Valide** : bloc entier (2×2 compris) **collé au bord droit** (dernière colonne, ou les deux dernières pour un 2×2), sur des cases libres (ni obstacle, ni unité). Si le bord est plein, le déploiement attend qu'une case se libère (les entrées suivantes du script aussi, pour garder l'ordre).
-2. **Stratégique** : parmi celles-ci, les positions dont la **rangée est la plus proche** d'une **cible stratégique** (définition ci-dessous).
-
-S'il n'y a aucun ennemi sur le terrain, la case est tirée parmi toutes les positions valides du bord.
-
-Les unités d'une même vague (même instant du script) entrent ensemble. S'il y a au moins un ennemi sur le terrain, elles se placent sur des rangées voisines ; sinon, la case de chacune est tirée au hasard sur le bord. À l'écran, chaque unité arrive depuis l'extérieur du terrain jusqu'à sa case d'entrée (animation purement visuelle), puis se comporte comme n'importe quelle unité (sections 3 et 4).
-
-**Cible stratégique**, par ordre de priorité :
-1. **Renfort** : un ennemi engagé au corps-à-corps avec un allié qui a 50 % de ses PV max ou moins (dans un sens ou dans l'autre de l'engagement). Si au moins une cible de renfort existe, seules celles-ci comptent.
-2. **Éradication** : sinon, le ou les ennemis qui ont le plus de PV actuels.
+**Cas limites**
+- Aucun ennemi sur le terrain : case tirée parmi toutes les positions valides du bord ; pour une vague, chaque unité est tirée au hasard.
+- Bord plein : l'entrée attend qu'une case se libère, et les suivantes derrière elle.
 
 ### 7.3 Bataille en plusieurs phases
-Une bataille peut enchaîner plusieurs **phases**, chacune avec son propre script IA et sa propre zone. Les batailles de « Partir en guerre » en ont deux (11.7) ; la bataille tutoriel n'a qu'**une phase** (sections 1 et 7.1). Les phases d'une bataille sont décrites dans son fichier (`src/data/battles/`).
+Une bataille enchaîne une ou plusieurs **phases**, chacune avec sa zone et son script. La bataille tutoriel en a une ; celles de « Partir en guerre » en ont deux (11.7).
 
-- **Fin d'une phase** : quand l'IA a déployé tout le script de la phase **et** qu'elle n'a plus aucune unité sur le terrain. Ce n'est pas une victoire : s'il reste une phase, la bataille continue.
-- **Transition** : tout est figé (aucune action possible, compteurs gelés) pendant que l'armée du joueur présente sur le terrain part vers la droite, puis entre par la gauche dans la zone suivante. Chaque unité arrive sur la case libre la plus à gauche de sa rangée (ou de la rangée libre la plus proche), les unités les plus avancées en premier. Les ordres en cours sont annulés. Seule exception : le bouton Abandonner reste utilisable pendant la transition (section 8.2).
-- **Fin d'une phase et élimination du joueur au même instant** (plus aucune unité sur le terrain ni en réserve) : défaite immédiate, sans transition vers la zone suivante.
-- **Zones** : chaque phase a ses propres obstacles, dessinés pour poser une question au joueur (plan ASCII dans le fichier de la bataille ; propriétés vérifiées par `tests/logic/battleData.test.js`). La même image de fond sert à toutes les zones, affichée dans un sens ou dans l'autre. Dans toutes les zones, le bord d'entrée de l'IA (dernière colonne) reste libre, aucune case libre n'est isolée, et une Légendaire 2×2 peut traverser.
-  - **Le champ** : terrain de la bataille tutoriel (section 1).
-  - **« Le mur »** (fond retourné) : un mur de rochers qui serpente (colonnes 14-17), percé d'un passage étroit d'une case (rangée 3 — une Légendaire 2×2 n'y passe pas) et d'un passage large de deux cases (rangées 10-11). Les tireurs ennemis tirent par-dessus le mur (pas de ligne de vue, section 4.5) ; les unités [Vol] le survolent.
-  - **« Les trois couloirs »** : deux crêtes qui séparent trois couloirs, franchissables seulement en volant.
-  - **« Le fort »** (provisoire) : une ruine en fer à cheval côté joueur, salle intérieure de 4×4 cases, ouverte vers l'ennemi par une entrée de deux cases. Elle protège du corps-à-corps mais pas des tirs. C'est un cul-de-sac assumé : exception à la règle « pas de cul-de-sac » de la section 1, qui ne vaut que pour la bataille tutoriel.
-  - **« L'essaim »** : terrain nu, sauf deux rochers 2×2 juste devant l'entrée de l'IA (colonnes 20-21, rangées 3-4 et 9-10), que les ennemis contournent en se groupant (11.7).
-- **Murs** : les rochers d'un mur se touchent par un côté. Une unité au sol ne coupe jamais le coin d'un rocher (section 3).
-- **Ce qui est conservé** : les morts restent perdus, les PV perdus ne reviennent pas. La réserve du joueur (copies jamais déployées, unités revenues de fuite) reste déployable dans la zone de déploiement de la nouvelle zone (colonnes 0 à 5, section 2), avec le même plafond de 150 points. Le cooldown de la fuite continue.
-- **Script de la phase suivante** : ses instants sont comptés depuis le début de la phase.
-- **Victoire** : dès que l'IA est à la fin du script de la **dernière** phase et qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (section 8.1).
+- **Fin d'une phase** : l'IA a déployé tout son script de la phase et n'a plus aucune unité sur le terrain. S'il reste une phase, ce n'est pas une victoire.
+- **Transition** : tout est figé (seul Abandonner reste possible, 8.2) ; l'armée du joueur sort par la droite puis entre par la gauche de la zone suivante, chaque unité sur la case libre la plus à gauche de sa rangée (ou de la rangée libre la plus proche), les plus avancées en premier. Les ordres en cours sont annulés.
+- **Conservé** : les morts, les PV perdus, la réserve (redéployable dans la zone de déploiement, 2), le plafond de 150 PP, le cooldown de la fuite. Le script de la phase suivante se compte depuis son début.
+
+**Zones** (plan ASCII dans le fichier de la bataille). Dans toutes : le bord d'entrée de l'IA (dernière colonne) reste libre, aucune case libre n'est isolée, une unité 2×2 peut traverser, et les rochers d'un mur se touchent par un côté.
+
+| Zone | Description |
+|---|---|
+| **Le champ** | terrain de la bataille tutoriel (1) |
+| **« Le mur »** (fond retourné) | mur de rochers qui serpente (colonnes 14-17), percé d'un passage d'une case (rangée 3 — une unité 2×2 n'y passe pas) et d'un passage de deux cases (rangées 10-11) ; les tireurs tirent par-dessus, les [Vol] le survolent |
+| **« Les trois couloirs »** | deux crêtes séparent trois couloirs, franchissables seulement en volant |
+| **« Le fort »** (provisoire) | ruine en fer à cheval côté joueur, salle de 4×4 cases ouverte vers l'ennemi par une entrée de deux cases ; protège du corps-à-corps, pas des tirs. Cul-de-sac assumé |
+| **« L'essaim »** | terrain nu, sauf deux rochers 2×2 juste devant l'entrée de l'IA (colonnes 20-21, rangées 3-4 et 9-10), que les ennemis contournent en se groupant |
+
+**Cas limites**
+- Fin d'une phase et élimination du joueur au même instant (plus aucune unité, terrain et réserve) : défaite immédiate, sans transition.
 
 ## 8. Fin de bataille
 
-Pas de compte à rebours (l'ancien délai de 15 s quand un terrain se vide est supprimé, pour les deux camps et dans toutes les batailles). Un terrain vide avec des réserves ne met jamais fin à la bataille : elle continue tant que ni la victoire, ni la défaite, ni le match nul ci-dessous n'est atteint.
-
 ### 8.1 Victoire, défaite et match nul
-- **Victoire du joueur** (toutes les batailles) : dès que l'IA a déployé tout le script de sa **dernière** phase (une seule phase pour la bataille tutoriel) **et** qu'elle n'a plus aucune unité vivante sur le terrain, même s'il lui reste des copies en réserve (elle ne les redéploie jamais).
-  - **Fin 2 s plus tard** : la victoire est **acquise** dès cet instant, mais la bataille continue de tourner encore **2 secondes** (temps de bataille) avant l'écran de victoire, pour laisser voir la fin du combat. Pendant ces 2 s, plus rien ne peut changer le verdict (ni abandon, ni perte d'unité).
-- **Défaite du joueur** : quand il n'a plus **aucune unité**, ni sur le terrain ni en réserve (toutes ses copies sont mortes), ou quand il abandonne (section 8.2).
-- **Match nul :** la résolution simultanée des dégâts (section 4.1) rend possible une élimination mutuelle au même instant — le joueur perd sa dernière unité au moment où la condition de victoire est remplie. Dans ce cas, la bataille se termine sur un **match nul**, sans vainqueur. Aucune règle de départage n'est nécessaire : un match nul ne rapporte aucune récompense (section 11.3). Un match nul n'est pas une victoire : la bataille tutoriel n'est pas validée, le joueur voit un écran « Match nul » et peut réessayer, comme après une défaite (voir `technical.md` 5.1).
-- Un joueur dont le terrain est vide mais qui a encore des unités en réserve n'a **aucun délai** : il redéploie quand il veut, pendant que l'IA continue son script.
+
+| Issue | Condition |
+|---|---|
+| **Victoire** | l'IA a déployé tout le script de sa **dernière** phase et n'a plus aucune unité sur le terrain (même s'il lui reste des copies : elle ne les redéploie jamais) |
+| **Défaite** | le joueur n'a plus aucune unité, ni sur le terrain ni en réserve, ou il abandonne (8.2) |
+| **Match nul** | la victoire et la défaite arrivent au même instant (résolution simultanée, 4.1) |
+
+- La victoire est acquise à l'instant où elle est remplie ; l'écran de victoire s'affiche **2 s** (temps de bataille) plus tard. Pendant ces 2 s, rien ne change le verdict (ni abandon, ni perte).
+- Un match nul ne rapporte rien et n'est pas une victoire : la bataille tutoriel n'est pas validée, le joueur peut réessayer.
+
+**Cas limites**
+- Pas de compte à rebours : un terrain vide ne termine jamais la bataille. Un joueur dont le terrain est vide mais qui a une réserve redéploie quand il veut, pendant que l'IA continue son script.
 
 ### 8.2 Abandon
-- Le joueur peut abandonner à tout moment de la bataille (bouton Abandonner, tutoriel compris, avec confirmation) : c'est une **défaite** — mais ses unités survivantes en réserve ne sont **pas exterminées** (elles restent disponibles pour la suite, contrairement à une unité tuée au combat qui est perdue définitivement, voir section 4.4).
+Possible à tout moment (tutoriel compris), avec confirmation : c'est une **défaite**. Les unités en réserve ne sont pas tuées ; les règles de pertes de la bataille s'appliquent aux morts (11.1).
 
 ## 9. Roster
 
-Deux factions sont disponibles en v1 : **Souveraine des Wyrms** et **Souverain des Morts-Vivants**. Le joueur choisit l'une des deux en début de partie ; l'IA contrôle automatiquement l'autre, pour éviter que le joueur affronte sa propre armée en miroir. Chaque faction dispose d'un roster minimal de 3 unités (une basique, une [Vol], une [Légendaire]).
+Deux factions : **Souveraine des Wyrms** et **Souverain des Morts-Vivants**. Le joueur en choisit une au début de la partie ; l'IA joue toujours l'autre. Chacune a 3 espèces : une basique, une [Vol], une [Légendaire]. Stats : `units.md`.
 
-Les stats précises de chaque unité (points de vie, dégâts, coût, vitesses, portée, aptitudes) sont des **données**, pas des règles — voir le document séparé [`units.md`](units.md).
+## 10. Valeurs provisoires
 
-**Plafond simultané sur le terrain : 150 points de présence par camp** (section 2). À ne pas confondre avec le plafond de l'armée, 500 points (section 11.2), qui limite ce que le joueur emmène en bataille.
+Toutes les autres valeurs sont tranchées.
 
-## 10. Valeurs à définir
-
-Les valeurs de la bataille sont tranchées, sauf deux, **provisoires** en attendant `/balancer` : le script de la bataille tutoriel (7.1) et les **50 %** des dégâts de zone des [Légendaire] (4.6). Restent ouvertes, pour la couche méta (section 11) :
-- somme de départ en Spirit Stones : **0, provisoire**, donnée au choix de la faction (montant définitif au second passage de `roadmap-mvp.md`) ;
-- récompenses de victoire en Spirit Stones : bataille tutoriel : **50** ; « Partir en guerre » : **60 / 80 / 100** (batailles 1 à 3) et **80** (« L'essaim ») à la première victoire, **rien** au rejeu — **provisoires** (11.7) ;
-- coefficient de prix k : **1, provisoire** ; multiplicateur du [Légendaire] : **aucun (×1), provisoire** (valeurs définitives au second passage de `roadmap-mvp.md`) ;
-- nom par défaut de l'armée de départ : **« Armée 1 »** (tranché) ;
-- Spirit Fountain : **3 Spirit Stones par minute**, capacité **80 + 10 × niveau du joueur** — **provisoires** (11.8) ;
-- récompense de niveau du joueur : **50 × le nouveau niveau** en Spirit Stones, **provisoire** (revue avec k au second passage de `roadmap-mvp.md`) ; les autres valeurs de niveau (XP, courbes, bonus de stats, prix des niveaux gardés) sont tranchées en 11.5, 11.6 et 11.4 ;
-- zones et scripts de l'IA définitifs des batailles de « Partir en guerre » (**provisoires**, 11.7) ;
-- réserve d'XP de survie partagée des individus : **200 XP** par bataille, **provisoire** (11.6, à mesurer avec `/balancer`).
+| Valeur | Provisoire | Section |
+|---|---|---|
+| Script de la bataille tutoriel | tableau de 7.1 | 7.1 |
+| Dégâts de zone des [Légendaire] | 50 % | 4.6 |
+| Zones et scripts de « Partir en guerre » | tableaux de 11.7 | 11.7 |
+| Somme de départ en Spirit Stones | 0 | 11.3 |
+| Récompenses de victoire | tutoriel 50 ; batailles 1 / 2 / 3 : 60 / 80 / 100 ; « L'essaim » : 80 ; rejeu : 0 | 11.7 |
+| Coefficient de prix k ; multiplicateur du [Légendaire] | 1 ; ×1 | 11.4 |
+| Récompense de niveau du joueur | 50 × le nouveau niveau | 11.5 |
+| Réserve d'XP de survie | 200 par bataille | 11.6 |
+| Spirit Fountain : production ; capacité | 3 / min ; 80 + 10 × niveau du joueur | 11.8 |
 
 ## 11. Couche méta
 
-Détail du périmètre et des écrans : `roadmap-mvp.md`.
-
-**Passer la bataille tutoriel (outil de développement)** : pendant la bataille tutoriel, l'entrée **« skip tutorial »** du menu devs (`technical.md` 5.6, absent du build publié) permet de ne pas la jouer ; le joueur n'a pas de bouton pour la passer. Elle compte alors comme **gagnée sans combat** : **aucune perte** (la dotation de départ est intacte), aucune XP pour les individus, **armée de départ** avec toute la dotation (11.2), **100 XP** fixes pour le joueur (11.5) et la récompense de **50** Spirit Stones (11.7) — comme une victoire où rien ne s'est passé sur le terrain. Le joueur arrive directement sur l'accueil, sans écran de victoire. L'entrée n'existe pas pour les batailles de « Partir en guerre ».
+Périmètre : `roadmap-mvp.md` ; écrans : `technical.md` 5.
 
 ### 11.1 Individus possédés
-- Le joueur possède une **liste d'individus**. Un individu a trois caractéristiques : un **identifiant unique**, son **espèce** et son **XP** (section 11.6). Ses stats sont celles de l'espèce (`units.md`), augmentées selon son niveau (11.6).
-- **Dotation de départ** : au choix de la faction, le joueur reçoit, pour chaque espèce de sa faction, autant d'individus que la colonne « Copies de départ » de `units.md` (ex : Wyrms : 12 Vers de Lambton, 8 Amphiptères, 1 Fafnir).
-- **Pertes** : à **chaque victoire** (bataille tutoriel, puis batailles de « Partir en guerre »), chaque individu tué pendant la bataille est retiré de la liste (et de l'armée, 11.2). Dans la **bataille tutoriel**, une tentative perdue ou un match nul ne retire aucun individu. Dans **« Partir en guerre »**, les individus tués sont perdus **même en cas de défaite, d'abandon ou de match nul** (11.7).
-- **Dotation de départ et invocation** : tout nouvel individu est **niveau 1, 0 XP** (sauf réinvocation du [Légendaire] à un niveau gardé, 11.4).
-- Les individus sont **discernables** par leur niveau : l'interface les regroupe par espèce, puis par niveau (grille des unités, `technical.md` 5.1 ; accordéons de l'écran Armées, 11.2 ; tour de bataille, `ui-battle-screen-decisions.md` 2.2). Deux individus de même espèce et même niveau restent interchangeables.
+Le joueur possède une liste d'**individus** : un identifiant unique, une espèce, une XP (11.6). Leurs stats sont celles de l'espèce (`units.md`), augmentées selon leur niveau.
+
+- **Dotation de départ**, au choix de la faction : pour chaque espèce, les « copies de départ » de `units.md` (ex : Wyrms : 12 Vers de Lambton, 8 Amphiptères, 1 Fafnir).
+- Tout nouvel individu est **niveau 1, 0 XP**, sauf le [Légendaire] réinvoqué à un niveau gardé (11.4).
+- **Pertes** : un individu tué en bataille est retiré de la liste et de l'armée.
+
+| Bataille | Victoire | Défaite, abandon, match nul |
+|---|---|---|
+| Tutoriel | morts perdus | rien n'est perdu |
+| « Partir en guerre » | morts perdus | morts perdus quand même |
+
+**Cas limites**
+- Deux individus de même espèce et de même niveau sont interchangeables.
+- Page rechargée ou fermée pendant une bataille : la bataille est annulée comme si elle n'avait pas eu lieu (aucune perte, XP ni récompense ; `technical.md` 5.4).
+- **« Skip tutorial »** (menu devs, `technical.md` 5.6, pendant la bataille tutoriel seulement) : la bataille compte comme gagnée sans combat — aucune perte, aucune XP d'individu, armée de départ avec toute la dotation, 100 XP pour le joueur, 50 Spirit Stones ; le joueur arrive sur l'accueil sans écran de victoire.
 
 ### 11.2 Armée
-- L'**armée** est une liste d'identifiants d'individus possédés, avec un **nom**.
-- Le joueur n'a **qu'une armée**. Les emplacements supplémentaires sont hors scope (`roadmap-mvp.md`).
-- **Plafond** : la somme des coûts en points de présence de ses individus ne dépasse jamais **500**. Ce plafond est distinct du plafond simultané de 150 points sur le terrain (section 2).
-- **Minimum** : le joueur ne peut pas retirer lui-même le **dernier individu** de l'armée. L'armée peut en revanche être **vidée par les morts** (11.1) : « Combattre » est alors désactivé (11.7) jusqu'à ce que le joueur y ajoute un individu. Il n'y a pas d'ajout automatique.
-- **Composition** : le joueur ajoute ou retire des individus **un par un**. Dans l'accordéon de chaque espèce, les individus sont **regroupés comme dans la tour de commandement** : seuls les individus strictement identiques (même espèce, même niveau) partagent une ligne (`technical.md` 5.1). Chaque ligne a un bouton **−** et un bouton **+** : « + » ajoute l'individu du groupe **le plus avancé en XP** qui n'est pas encore dans l'armée, « − » retire **le moins avancé** qui y est. Un ajout qui ferait dépasser 500 est impossible, tout comme le retrait du dernier individu de l'armée. Le coût d'un individu est celui de son espèce, quel que soit son niveau (11.6).
-- **Renommage** : le joueur peut renommer l'armée à tout moment depuis la gestion de civilisation.
-  - Le nom fait de **1 à 20 caractères**, sans filtre (accents, chiffres, emojis acceptés).
-  - Validation par Entrée ou par un bouton ✓, annulation par Échap.
-  - Un nom vide ou fait uniquement d'espaces est refusé : l'ancien nom est conservé.
-  - Les espaces au début et à la fin du nom sont retirés avant l'enregistrement (« ␣␣Horde␣␣ » devient « Horde ») ; la limite de 20 caractères se compte après ce retrait, un emoji comptant pour un caractère.
-- **Armée de départ** : créée automatiquement à la victoire de la bataille tutoriel, avec **tous les individus survivants**. Les dotations de départ totalisent au plus 430 points (Wyrms) et 418 points (Morts-Vivants) : elles tiennent toujours sous le plafond.
-- **Mort d'un individu** : il est retiré de l'armée en même temps que de la liste des individus possédés (11.1).
+L'**armée** est une liste d'individus possédés, avec un nom. Le joueur n'en a qu'**une**.
+
+- **Plafond** : la somme des coûts en PP de ses individus ne dépasse jamais **500** (le coût ne dépend pas du niveau). Distinct du plafond de 150 PP du terrain (2).
+- **Composition**, un individu à la fois. Les individus strictement identiques (même espèce, même niveau) sont groupés ; pour un groupe, « + » ajoute celui qui a le plus d'XP parmi ceux hors de l'armée, « − » retire celui qui en a le moins parmi ceux dans l'armée.
+- **Nom** : 1 à 20 caractères, sans filtre (accents, chiffres, emojis). Les espaces de début et de fin sont retirés avant de compter ; un emoji compte pour un caractère. Nom par défaut : « Armée 1 ».
+- **Armée de départ** : créée à la victoire de la bataille tutoriel avec **tous les survivants** (les dotations, 430 PP pour les Wyrms et 418 pour les Morts-Vivants, tiennent sous le plafond).
+
+**Cas limites**
+- Un ajout qui dépasserait 500 PP est impossible. Le joueur ne peut pas retirer lui-même le dernier individu.
+- Les morts peuvent vider l'armée : « Combattre » est alors impossible (11.7) jusqu'à ce que le joueur ajoute un individu. Pas d'ajout automatique.
+- Un nom vide, ou fait seulement d'espaces, est refusé : l'ancien nom reste.
 
 ### 11.3 Spirit Stones
-- Monnaie du jeu, appelée **« gemmes obscures »** dans les textes affichés au joueur (« Spirit Stones » reste le nom interne des specs et du code). Le solde est un **nombre entier**, jamais négatif, affiché en haut à droite de l'écran d'accueil.
-- **Gains** : une somme de départ, puis une récompense à chaque victoire (bataille tutoriel, puis batailles de « Partir en guerre »), une récompense à chaque niveau du joueur (11.5), et la Spirit Fountain (11.8). Montants : section 10.
-- **Défaite, abandon ou match nul** : aucune récompense.
-- **Spirit Fountain** : revenu continu, récolté depuis l'accueil (11.8). Elle garantit qu'un joueur qui a tout perdu pourra toujours réinvoquer.
+La monnaie, appelée « **gemmes obscures** » dans les textes du jeu. Le solde est un entier, jamais négatif.
+
+- **Gains** : la somme de départ, les récompenses de victoire (11.7), les récompenses de niveau du joueur (11.5), la Spirit Fountain (11.8). Montants : section 10.
+- Défaite, abandon ou match nul : aucune récompense.
 
 ### 11.4 Invocation
-- L'écran Invocation propose chaque espèce de la faction du joueur. Invoquer, c'est **payer son prix** et **ajouter un nouvel individu** de cette espèce à la liste (11.1).
-- **Prix** : coût en points de présence de l'espèce × k, avec un multiplicateur éventuel pour le [Légendaire] (valeurs : section 10).
-- **Solde insuffisant** : l'invocation est impossible (bouton désactivé).
-- **Confirmation** : un clic invoque directement une unité non légendaire. La réinvocation du [Légendaire] passe par une boîte de confirmation, où le joueur choisit aussi le niveau (voir ci-dessous) ; l'annuler ne dépense rien.
-- **Espèces non légendaires** : aucun plafond de possession. Un individu invoqué est niveau 1, 0 XP.
-- **[Légendaire]** : au plus **un** individu possédé. Tant qu'il est vivant, l'invocation est impossible : son espèce est **masquée** de l'écran Invocation (`technical.md` 5.1) ; s'il est mort, elle est possible et s'appelle « Réinvoquer ». Invocation et réinvocation sont la même action : pas de délai, pas de coût croissant d'une réinvocation à l'autre.
-- **Niveau gardé à la réinvocation** : le niveau du [Légendaire] à sa mort est mémorisé, et **écrasé à chaque nouvelle mort** (ex : mort niveau 5, réinvoqué niveau 1, remort niveau 2 → on ne peut plus le reprendre qu'au niveau 2 au plus : réinvoquer bas, c'est renoncer au niveau d'avant). À la réinvocation, le joueur choisit un niveau **entre 1 et ce niveau mémorisé**. Chaque niveau gardé au-delà du 1 coûte **+25 % du prix de base** : prix = prix de base × (1 + 0,25 × (niveau choisi − 1)), arrondi à l'entier inférieur (ex : Fafnir mort niveau 5, prix de base 110 → 110 au niveau 1, 165 au niveau 3, 220 au niveau 5). L'individu réinvoqué a l'XP du **début** du niveau choisi (11.6) : la progression au-delà est perdue. Un [Légendaire] mort au niveau 1 se réinvoque donc au niveau 1, au prix de base.
-- Pas de gacha : seules les espèces du roster de la faction du joueur sont proposées.
-- **Invocation multiple** : une espèce qui n'est pas [Légendaire] peut être invoquée plusieurs fois d'un coup ; le prix total est la somme des prix, et l'invocation n'a lieu que si le solde couvre le tout. Un [Légendaire] s'invoque toujours un par un.
-- Un individu invoqué **n'est pas ajouté à l'armée** : le joueur l'y ajoute lui-même depuis la gestion de civilisation (11.2).
+Invoquer, c'est **payer le prix** d'une espèce de sa faction et **ajouter un nouvel individu** de cette espèce. Pas de gacha.
+
+- **Prix** : coût en PP de l'espèce × k, avec un multiplicateur pour le [Légendaire] (section 10).
+- **Espèce non légendaire** : pas de plafond de possession ; on peut en invoquer plusieurs d'un coup, pour la somme des prix, si le solde couvre le tout.
+- **[Légendaire]** : au plus un possédé. L'invoquer est impossible tant qu'il est vivant ; mort, il peut être **réinvoqué** (même action, sans délai ni coût croissant), un par un, après confirmation.
+- **Niveau gardé** : le niveau du [Légendaire] à sa mort est mémorisé. À la réinvocation, le joueur choisit un niveau entre 1 et ce niveau ; prix = prix de base × (1 + 0,25 × (niveau − 1)), arrondi à l'entier inférieur (Fafnir, base 110 : 110 au niveau 1, 165 au niveau 3, 220 au niveau 5). Il reprend l'XP du **début** du niveau choisi.
+- Un individu invoqué n'est **pas** ajouté à l'armée.
+
+**Cas limites**
+- Solde insuffisant : invocation impossible. Annuler la confirmation ne dépense rien.
+- Le niveau mémorisé est **écrasé à chaque mort** (mort niveau 5, réinvoqué niveau 1, remort niveau 2 → niveau 2 au plus).
 
 ### 11.5 Niveau du joueur
-- Le joueur a un **XP** cumulé, qui détermine son **niveau** (niveau 1 à 0 XP).
-- **Gain d'XP à la victoire** d'une bataille de « Partir en guerre » : **100 XP**, plus un bonus de **100 × (PP des survivants / PP de l'armée)**, arrondi à l'entier inférieur. Les deux totaux portent sur **toute l'armée emmenée** en bataille (individus déployés ou restés en réserve) ; un survivant est un individu de l'armée encore en vie à la fin. Victoire sans perte : 200 XP.
-- **Rejeu** d'une bataille déjà gagnée (11.7) : **25 %** de ce gain, arrondi à l'entier inférieur (25 à 50 XP), pour que rejouer ne rapporte pas plus de 2 fois la Spirit Fountain par minute en récompenses de niveau (`BALANCE-REVIEW.md`).
-- **Bataille tutoriel** : **100 XP fixes**, sans bonus (l'armée n'existe pas encore, et le tutoriel garde ainsi moins de facteurs variables).
-- **Défaite, abandon ou match nul** : aucun XP.
-- **Courbe** : passer du niveau N au niveau N + 1 demande **500 × N XP** (500 XP du niveau 1 au 2, 1 000 du 2 au 3, etc. — 1 500 XP cumulés pour le niveau 3). **Pas de niveau maximum.**
-- **Récompense de niveau** : chaque niveau atteint rapporte **50 × le nouveau niveau** en Spirit Stones (100 au niveau 2, 150 au niveau 3). Si un gain d'XP fait franchir plusieurs niveaux, chacun est récompensé.
-- **Affichage** : niveau et barre d'XP (« XP dans le niveau / XP du niveau ») sur l'écran d'accueil, en haut à gauche à côté du portrait du souverain ; XP gagnée sur l'écran de victoire.
-- Hors MVP (`roadmap-mvp.md`, Suite) : déblocage d'emplacements d'armée et hausse ponctuelle du plafond de l'armée à certains niveaux.
+Le joueur a une **XP** cumulée, qui donne son niveau (niveau 1 à 0 XP, sans maximum).
+
+| Situation | XP gagnée |
+|---|---|
+| Victoire, « Partir en guerre » | 100 + 100 × (PP des survivants / PP de l'armée), arrondi inférieur (200 sans perte) |
+| Rejeu d'une bataille déjà gagnée | 25 % du gain ci-dessus, arrondi inférieur |
+| Victoire, bataille tutoriel | 100 |
+| Défaite, abandon, match nul | 0 |
+
+- Les PP portent sur **toute l'armée emmenée** (déployés et réserve) ; un survivant est un individu de l'armée vivant à la fin.
+- **Courbe** : du niveau N au niveau N + 1, **500 × N XP** (1 500 XP cumulés pour le niveau 3).
+- **Récompense** : chaque niveau atteint rapporte **50 × le nouveau niveau** en Spirit Stones ; chaque niveau franchi d'un coup est récompensé.
 
 ### 11.6 Niveau des individus
-- Chaque individu du joueur a un **XP** cumulé, qui détermine son **niveau**, de **1 à 5**.
-- **Gain d'XP**, compté **seulement à la victoire** (comme les pertes, 11.1 : une défaite, un abandon ou un match nul ne changent rien), **bataille tutoriel comprise** :
-  - **XP de survie partagée** : une **réserve de 200 XP** par bataille (provisoire, section 10) est divisée par le **nombre d'individus déployés** au moins une fois pendant la bataille, **morts compris**, arrondie à l'entier inférieur. Chaque individu déployé et **vivant à la fin** (sur le terrain ou revenu en réserve après une fuite) reçoit cette part ; la part d'un mort est perdue. Ex : 5 déployés → 40 chacun ; 8 déployés dont 2 morts → 25 pour chacun des 6 survivants. Un individu déployé plusieurs fois (après une fuite, ou dans les deux zones d'une bataille) ne compte qu'une fois. Remplace l'ancien +40 par survivant, pour que sur-déployer coûte de la progression (`strategic-depth.md`) ;
-  - **+ le coût en PP de chaque ennemi qu'il a achevé** (coup fatal, section 4.1 ; ex : un New-reborn Skeleton rapporte 6, Athos 110). Coup fatal simultané (4.1) : **un seul** des attaquants qui ont achevé l'ennemi au même instant gagne son coût — celui qui a infligé le plus de dégâts à la cible à cet instant ; à égalité, celui qui a été déployé le premier (dans cette bataille). Un attaquant qui meurt lui-même à cet instant est écarté. Cette règle ne concerne que l'XP : pour les aptitudes déclenchées au coup fatal (Soif de sang), chacun compte toujours comme ayant porté le coup fatal (4.1). Sans elle, des unités qui frappent en rythme (ex : plusieurs Vers déployés ensemble) gagnaient chacune les 110 d'Athos (`BALANCE-REVIEW.md`). Un individu mort pendant la bataille ne gagne rien (mort définitive).
-  - **Rejeu** d'une bataille de « Partir en guerre » déjà gagnée (11.7) : chaque individu gagne **25 %** de son total (survie + ennemis achevés), arrondi à l'entier inférieur, pour qu'une unité basique ne passe pas du niveau 1 au niveau 5 en moins de 30 minutes de rejeu (`BALANCE-REVIEW.md`).
-- **Courbe** : passer du niveau N au niveau N + 1 demande **50 × N XP** (50, 100, 150, 200 — niveau 5 à 500 XP cumulés). Au niveau 5, l'XP n'augmente plus (plafonnée à 500).
-- **Effet du niveau** : **+10 % de PV max et de dégâts par niveau au-dessus du 1** (+40 % au niveau 5), **arrondi à l'entier le plus proche** (0,5 arrondi au-dessus ; calcul en entiers : base × (9 + niveau) / 10, pour éviter les erreurs de virgule). Ex : dégâts du Ver de Lambton 8 / 9 / 10 / 10 / 11, PV 40 / 44 / 48 / 52 / 56 ; dégâts du New-reborn Skeleton 5 / 6 / 6 / 7 / 7. Pour une attaque hybride, les deux valeurs de dégâts sont augmentées. Les vitesses, la portée, la taille et le **coût en PP ne changent pas**. Le niveau ne change jamais pendant une bataille : l'XP n'étant comptée qu'à la victoire, un individu combat toute la bataille avec les stats du niveau qu'il avait au début.
-- **Aptitudes** : les aptitudes qui multiplient les dégâts (Attaque dévastatrice de Fafnir) s'appliquent aux dégâts du niveau ; la régénération de Soif de sang (Athos) reste de 40 PV, plafonnée aux PV max du niveau.
-- **Affichage** : sur l'écran de victoire, les individus qui ont gagné au moins un niveau (`technical.md` 5.3).
-- Les unités de l'IA sont toujours **niveau 1** (stats de `units.md`).
+Chaque individu a une **XP** cumulée, qui donne son niveau, de **1 à 5**. L'XP n'est gagnée **qu'à la victoire** (tutoriel compris) ; un individu mort pendant la bataille ne gagne rien.
+
+- **XP de survie** : une réserve de **200 XP** par bataille, divisée par le **nombre d'individus déployés** au moins une fois (morts compris), arrondie à l'entier inférieur ; chaque déployé vivant à la fin (sur le terrain ou revenu de fuite) reçoit cette part, celle des morts est perdue. Ex : 8 déployés dont 2 morts → 25 pour chacun des 6 survivants.
+- **XP de kill** : + le coût en PP de chaque ennemi qu'il a achevé (ex : 6 pour un New-reborn Skeleton, 110 pour Athos).
+- **Rejeu** d'une bataille déjà gagnée : 25 % du total, arrondi inférieur.
+- **Courbe** : du niveau N au niveau N + 1, **50 × N XP** (niveau 5 à 500 XP cumulés) ; l'XP est plafonnée à 500.
+- **Effet** : +10 % de PV max et de dégâts par niveau au-dessus du 1, arrondi au plus proche (0,5 au-dessus) ; calcul en entiers : base × (9 + niveau) / 10. Les deux dégâts d'un hybride augmentent ; vitesses, portée, taille et coût ne changent pas.
+
+| Niveau | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| Dégâts du Ver de Lambton | 8 | 9 | 10 | 10 | 11 |
+| PV du Ver de Lambton | 40 | 44 | 48 | 52 | 56 |
+| Dégâts du New-reborn Skeleton | 5 | 6 | 6 | 7 | 7 |
+
+- Les unités de l'IA sont toujours niveau 1.
+
+**Cas limites**
+- Un individu déployé plusieurs fois (après une fuite, ou dans les deux zones) compte une fois dans le partage ; ses kills se cumulent.
+- **Coup fatal simultané** : un seul des attaquants gagne l'XP de kill — celui qui a infligé le plus de dégâts à la cible à cet instant (dégâts de zone compris, 4.6), puis le premier déployé ; un attaquant mort à cet instant est écarté. Pour les aptitudes, chacun compte toujours (4.1).
+- Le niveau ne change jamais pendant une bataille.
+- Les aptitudes qui multiplient les dégâts s'appliquent aux dégâts du niveau ; Soif de sang rend toujours 40 PV, plafonnée aux PV max du niveau.
 
 ### 11.7 Partir en guerre
-- **Quatre batailles**. Noms provisoires : **« La passe »** (bataille 1), **« Les crevasses »** (bataille 2), **« La citadelle »** (bataille 3), **« L'essaim »** (`strings.js`).
-- **Déblocage par les liens de la map** : la bataille du départ de la map est disponible dès la victoire de la bataille tutoriel ; toute autre bataille se débloque dès qu'**une bataille d'un emplacement relié** à son emplacement par un lien de la map est gagnée (première victoire). Ex : gagner « La passe » (départ) débloque à la fois « Les crevasses » (low1) et « L'essaim » (top1). Un emplacement sans bataille ne débloque rien et reste verrouillé.
-- **Map** : les batailles sont placées sur la **map 1**, un **réseau** d'emplacements (`src/data/battles/war01/warMap01.js`) : trois chemins du départ au boss, des passerelles entre ces chemins et des impasses (19 emplacements). Les batailles 1 à 3 occupent le départ et les deux emplacements suivants du chemin du bas ; « L'essaim » occupe le premier emplacement du chemin de gauche (top1, à 5 pas du boss). Les autres emplacements n'ont pas encore de bataille : ils sont affichés **verrouillés** (« À venir ») et ne se débloquent pas (leurs batailles, zones, scripts et récompenses restent à définir). Pas d'autre map ni de changement de map pour l'instant.
-- **Envahisseurs (objectif de la map)** : trois emplacements portent les **batailles de boss** de la map, chacun surmonté d'un **envahisseur** de la faction ennemie — son unité [Vol] (Amphiptère / Necromant Initiate) sur l'intersection du milieu de la ligne du haut, son unité basique (Ver de Lambton / New-reborn Skeleton) sur l'intersection du chemin de droite, son [Légendaire] (Fafnir / Athos) sur le boss (`invader` dans `src/data/battles/war01/warMap01.js`). L'objectif de la map est de **gagner ces trois batailles** ; l'écran affiche « Repousse l'envahisseur N/3 », N étant le nombre de ces batailles gagnées. Elles n'existent pas encore : ces emplacements restent verrouillés, et le compteur reste à 0/3.
-- **Difficulté selon la distance au boss** (règle de conception des scripts, pas une mécanique calculée par le jeu) : plus un emplacement est proche du boss, plus sa bataille est dure, quel que soit le chemin.
-  - **Distance au boss** : nombre minimal de liens à parcourir dans le réseau de la map (`src/data/battles/war01/warMap01.js`) pour aller de l'emplacement au boss. Les impasses suivent la même règle que les emplacements des chemins.
-  - **Cible** : le script de chaque emplacement est écrit à la main (comme ceux des batailles 1 à 3, ci-dessous) pour que les **pertes moyennes**, en PP de l'armée, d'un joueur passif avec l'**armée de départ niveau 1** suivent la table ci-dessous, mesurées avec l'outil d'équilibrage (`/balancer`, `npm run balance`).
+Des batailles placées sur la **map 1**, un réseau de 19 emplacements (`src/data/battles/war01/warMap01.js`) : trois chemins du départ au boss, des passerelles et des impasses. Le joueur y part avec **son armée** (11.2). Chaque bataille a **2 zones** ; ordres et abandon comme au tutoriel, sans tutoriel.
 
-    | Distance | Emplacements de la map 1 | Pertes visées |
-    |---|---|---|
-    | 7 | deadA | 1 % |
-    | 6 | start (bataille 1), mid1 | 5 % |
-    | 5 | low1 (bataille 2), mid2, top1 | 9 % |
-    | 4 | low2 (bataille 3), mid3, top2, deadB, deadC | 13 % |
-    | 3 | low3, mid4, top3 | 17 % |
-    | 2 | low4, top4 | 21 % |
-    | 1 | low5, top5 | 25 % |
-    | 0 | boss | 30 % |
+| Bataille | Emplacement | Zones | Récompense (première victoire) |
+|---|---|---|---|
+| **« La passe »** | start | le champ → « Le mur » | 60 |
+| **« Les crevasses »** | low1 | « Le mur » → « Les trois couloirs » | 80 |
+| **« La citadelle »** | low2 | « Les trois couloirs » → « Le fort » | 100 |
+| **« L'essaim »** | top1 | « L'essaim » → « L'essaim » | 80 |
 
-  - **Mesure** : pertes moyennes en **victoire seulement** (une défaite est mesurée par le taux de victoire), en moyenne sur les **4 stratégies** du bot (`basics`, `flyers`, `mixed`, `legendaryFirst`), **séparément pour chaque faction** du joueur, avec **N = 50** batailles par configuration et le seed 1.
-  - **Conformité** : pour chacune des deux factions, pertes à **±3 points** de la cible (ex : 10 à 16 % pour 13 %), et taux de victoire du bot d'au moins **90 %**, sauf au **boss : au moins 60 %** (le boss peut demander de vraies commandes ou une armée vétérane).
-  - Un script qui n'est pas conforme est retouché avant d'être ajouté à la map. La table vaut pour toute nouvelle bataille de la map 1 ; une autre map aura sa propre table.
-- **Rejeu** : une bataille déjà gagnée reste jouable à volonté, sans Spirit Stones (voir Récompenses) et avec l'XP du joueur (11.5) et des individus (11.6) réduite à 25 % : le rejeu entraîne l'armée, mais lentement.
-- **Armée** : le joueur part avec **son armée** (11.2) ; bouton « Combattre » **désactivé si l'armée est vide** (message « Composez votre armée »).
-- **Zones** (section 7.3) : chaque bataille enchaîne **2 zones** (2 phases). Provisoire, en attendant les zones et scripts définitifs :
-  - bataille 1 : le champ (bataille tutoriel) → « Le mur » ;
-  - bataille 2 : « Le mur » → « Les trois couloirs » ;
-  - bataille 3 : « Les trois couloirs » → « Le fort » ;
-  - « L'essaim » : deux fois la zone **« L'essaim »** : aucun obstacle sauf deux rochers 2×2 juste devant l'entrée de l'IA (colonnes 20-21, rangées 3-4 et 9-10). Les vagues de basiques qui entrent les contournent en trois flux qui se resserrent : une proie pour les dégâts de zone (4.6).
-- **Scripts de l'IA** (provisoires), propres à « Partir en guerre », instants comptés depuis le début de chaque zone. La difficulté monte à mesure qu'on approche du boss : pertes visées pour un joueur passif avec l'armée de départ niveau 1, 5 % au départ → environ 30 % au boss (`BALANCE-REVIEW.md`). Transition entre zones, conservation des morts, des PV et de la réserve : section 7.3.
-  - **Bataille 1** — champ : IA Wyrms : t=0s 1 Ver de Lambton, t=4s 1 Amphiptère, t=10s 1 Ver de Lambton, t=14s 3 Vers de Lambton ; IA Morts-Vivants : t=0s 1 New-reborn Skeleton, t=4s 1 Necromant Initiate, t=10s 1 New-reborn Skeleton, t=14s 3 New-reborn Skeletons, t=18s 2 New-reborn Skeletons. « Le mur » : IA Wyrms : t=0s 2 Vers de Lambton, t=5s 1 Amphiptère, t=12s 2 Vers de Lambton ; IA Morts-Vivants : t=0s 2 New-reborn Skeletons, t=5s 1 Necromant Initiate, t=12s 3 New-reborn Skeletons, t=18s 2 New-reborn Skeletons.
-  - **Bataille 2** — « Le mur » puis « Les trois couloirs », même script dans les deux zones : IA Wyrms : t=0s 3 Vers de Lambton, t=5s 1 Amphiptère, t=12s 2 Vers de Lambton ; IA Morts-Vivants : t=0s 3 New-reborn Skeletons, t=5s 1 Necromant Initiate, t=12s 3 New-reborn Skeletons, t=18s 3 New-reborn Skeletons.
-  - **Bataille 3** — « Les trois couloirs » : script de la bataille 2. « Le fort » : IA Wyrms : t=0s 4 Vers de Lambton, t=10s Fafnir ; IA Morts-Vivants : t=0s 6 New-reborn Skeletons, t=10s 3 Necromant Initiates, t=15s 3 New-reborn Skeletons, t=20s Athos (il attend sous le plafond de 150 points, section 7.1).
-  - **« L'essaim »** — seulement des basiques (au plus les copies de `units.md` pour toute la bataille : 12 Vers de Lambton, 18 New-reborn Skeletons). Zone 1 : IA Wyrms : t=0s 4 Vers de Lambton, t=3s 2 Vers de Lambton ; IA Morts-Vivants : t=0s 5 New-reborn Skeletons, t=3s 4 New-reborn Skeletons. Zone 2 : IA Wyrms : t=0s 3 Vers de Lambton, t=4s 3 Vers de Lambton ; IA Morts-Vivants : t=0s 9 New-reborn Skeletons. Mesuré le 2026-10-17 (N = 50, seed 1, 4 stratégies) : pertes en victoire 8,0 % (joueur Wyrms) et 9,9 % (joueur Morts-Vivants) pour une cible de 9 % ±3, 100 % de victoires.
-- **Commandes et abandon** : comme la bataille tutoriel — les trois ordres (Aller, Attaquer, Fuir), bouton Abandonner disponible ; pas de tutoriel.
-- **Victoire** : dès que l'IA a fini le script de la **dernière zone** et n'a plus aucune unité vivante sur le terrain (section 8.1). Conséquences : pertes (11.1), XP (11.5, 11.6), récompense en Spirit Stones (ci-dessous).
-- **Défaite, abandon ou match nul** : les individus **tués pendant la bataille sont perdus quand même** (mort définitive, retirés de la liste et de l'armée), et le niveau du [Légendaire] mort est mémorisé (11.4). **Aucune** XP, **aucune** récompense. L'écran de défaite liste les unités perdues et propose **« Réessayer »** (même bataille, avec l'armée telle qu'elle reste) et **« Retour à l'accueil »** (pour réinvoquer et recomposer l'armée). Si l'armée est vide, « Réessayer » est désactivé.
-- **Page rechargée ou fermée pendant une bataille** : la bataille est annulée, comme si elle n'avait jamais eu lieu. Aucune perte, aucune XP, aucune récompense : l'état d'une bataille en cours n'est pas sauvegardé (`technical.md` 5.4). Faille assumée pour le MVP.
-- **Récompenses** en Spirit Stones (provisoires, section 10) : bataille tutoriel : **50** ; batailles 1 / 2 / 3 : **60 / 80 / 100**, « L'essaim » : **80** (même distance au boss que la bataille 2), à la **première** victoire seulement ; **aucune** aux victoires suivantes (rejeu).
-- **Fin du contenu** : une fois les quatre batailles gagnées, l'écran « Partir en guerre » affiche « D'autres terres à conquérir arrivent bientôt… » ; les quatre batailles restent rejouables.
+- **Déblocage** : la bataille du départ est disponible après la victoire de la bataille tutoriel ; toute autre bataille se débloque dès qu'une bataille d'un **emplacement relié** par un lien de la map est gagnée.
+- **Rejeu** à volonté d'une bataille gagnée : aucune Spirit Stone, XP du joueur et des individus à 25 % (11.5, 11.6).
+- **Victoire** : section 8.1, puis pertes (11.1), XP (11.5, 11.6) et récompense.
+- **Défaite, abandon ou match nul** : les morts sont perdus quand même et le niveau du [Légendaire] mort est mémorisé (11.4) ; aucune XP, aucune récompense. « Réessayer » relance la même bataille avec l'armée restante.
+- **Envahisseurs** : trois emplacements portent les batailles de boss, chacun surmonté d'une espèce ennemie — son [Vol] au milieu de la ligne du haut, sa basique sur le chemin de droite, son [Légendaire] au boss. Objectif de la map : gagner ces trois batailles (compteur « N/3 »).
+- Les autres emplacements, dont les boss, n'ont pas encore de bataille : ils restent verrouillés. Une seule map.
+
+**Scripts de l'IA** (provisoires, section 10 ; instants depuis le début de la zone) :
+
+| Bataille, zone | IA Wyrms | IA Morts-Vivants |
+|---|---|---|
+| La passe, le champ | 0 s : 1 Ver ; 4 s : 1 Amphiptère ; 10 s : 1 Ver ; 14 s : 3 Vers | 0 s : 1 Squelette ; 4 s : 1 Necromant ; 10 s : 1 Squelette ; 14 s : 3 Squelettes ; 18 s : 2 Squelettes |
+| La passe, « Le mur » | 0 s : 2 Vers ; 5 s : 1 Amphiptère ; 12 s : 2 Vers | 0 s : 2 Squelettes ; 5 s : 1 Necromant ; 12 s : 3 Squelettes ; 18 s : 2 Squelettes |
+| Les crevasses, les deux zones | 0 s : 3 Vers ; 5 s : 1 Amphiptère ; 12 s : 2 Vers | 0 s : 3 Squelettes ; 5 s : 1 Necromant ; 12 s : 3 Squelettes ; 18 s : 3 Squelettes |
+| La citadelle, « Les trois couloirs » | script des Crevasses | script des Crevasses |
+| La citadelle, « Le fort » | 0 s : 4 Vers ; 10 s : Fafnir | 0 s : 6 Squelettes ; 10 s : 3 Necromants ; 15 s : 3 Squelettes ; 20 s : Athos |
+| L'essaim, zone 1 | 0 s : 4 Vers ; 3 s : 2 Vers | 0 s : 5 Squelettes ; 3 s : 4 Squelettes |
+| L'essaim, zone 2 | 0 s : 3 Vers ; 4 s : 3 Vers | 0 s : 9 Squelettes |
+
+(Ver = Ver de Lambton, Squelette = New-reborn Skeleton, Necromant = Necromant Initiate.)
+
+**Difficulté selon la distance au boss** (règle de conception des scripts, pas une mécanique du jeu). La **distance** est le nombre minimal de liens jusqu'au boss. Chaque script vise les pertes moyennes ci-dessous, en PP de l'armée, pour un joueur passif avec l'armée de départ niveau 1.
+
+| Distance | Emplacements de la map 1 | Pertes visées |
+|---|---|---|
+| 7 | deadA | 1 % |
+| 6 | start, mid1 | 5 % |
+| 5 | low1, mid2, top1 | 9 % |
+| 4 | low2, mid3, top2, deadB, deadC | 13 % |
+| 3 | low3, mid4, top3 | 17 % |
+| 2 | low4, top4 | 21 % |
+| 1 | low5, top5 | 25 % |
+| 0 | boss | 30 % |
+
+- **Mesure** (`npm run balance`) : pertes en victoire seulement, moyenne des 4 stratégies du bot, pour chaque faction du joueur, N = 50, seed 1.
+- **Conformité** : pertes à ±3 points de la cible pour chaque faction, et au moins 90 % de victoires (60 % au boss). Un script non conforme est retouché avant d'entrer sur la map. La table vaut pour toute nouvelle bataille de la map 1 ; une autre map aura la sienne.
+
+**Cas limites**
+- Armée vide : « Combattre » et « Réessayer » sont impossibles.
+- Un emplacement sans bataille ne débloque rien.
+- Les quatre batailles gagnées : le contenu est terminé, tout reste rejouable.
 
 ### 11.8 Spirit Fountain
-- Objet de l'**écran d'accueil** qui **génère des Spirit Stones en continu**, que le joueur récolte d'un clic. Elle garantit qu'un joueur qui a perdu toutes ses unités pourra toujours en réinvoquer (elle remplace l'ancien « filet de sécurité »).
-- **Mise en route** : à la **première arrivée sur l'accueil** (après la victoire de la bataille tutoriel), **vide**.
-- **Production** : **3 Spirit Stones par minute**, en **temps réel** — y compris jeu fermé ou pendant une bataille. Le contenu vaut **3 × le nombre de minutes entières** écoulées depuis la dernière récolte (ou la mise en route), **plafonné à la capacité**.
-- **Capacité** : **80 + 10 × niveau du joueur** (11.5 ; 90 au niveau 1, 110 au niveau 3 : une Fountain pleine au niveau 1, en 30 minutes, suffit à réinvoquer une armée qui gagne la bataille 1 de « Partir en guerre », et la Fountain reste un complément des batailles, `BALANCE-REVIEW.md`). La capacité est toujours celle du niveau **actuel** : monter de niveau l'augmente immédiatement.
-- **Récolte** : un clic sur la fontaine ajoute **tout son contenu** au solde et la vide. Sans effet si elle est vide. La minute entamée n'est pas perdue (la production continue là où elle en était) ; si la fontaine était **pleine**, ce qui aurait dépassé la capacité est perdu et la production repart de la récolte.
-- **Horloge reculée** (heure de l'appareil changée) : le contenu n'est jamais négatif (0).
-- Valeurs de production et de capacité **provisoires** (section 10).
+Une fontaine de l'accueil qui **produit des Spirit Stones en continu** ; le joueur récolte d'un clic. Elle garantit qu'un joueur qui a tout perdu pourra toujours réinvoquer.
+
+- **Mise en route** : vide, à la première arrivée sur l'accueil.
+- **Production** : **3 par minute**, en temps réel (jeu fermé ou en bataille compris). Contenu = 3 × minutes entières depuis la dernière récolte (ou la mise en route), plafonné à la capacité.
+- **Capacité** : **80 + 10 × niveau du joueur**, celle du niveau actuel.
+- **Récolte** : tout le contenu passe au solde ; la fontaine se vide.
+
+**Cas limites**
+- Récolte d'une fontaine vide : sans effet.
+- La minute entamée n'est pas perdue. Si la fontaine était pleine, l'excédent est perdu et la production repart de la récolte.
+- Horloge de l'appareil reculée : le contenu n'est jamais négatif.
