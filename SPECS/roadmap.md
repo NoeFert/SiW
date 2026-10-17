@@ -27,7 +27,7 @@ Le projet a connu deux versions. La première, une **version clickbait** (le POC
 - IA adverse scriptée (`rules.md` 7 et 11.7), script symétrique selon la faction jouée par l'IA ; les unités IA entrent par le bord droit du terrain, sur une rangée choisie au moment du déploiement selon la situation du terrain (voir `rules.md` section 7)
 - Conditions de fin de bataille : victoire dès la fin du script de l'IA avec son terrain vide, défaite quand le joueur n'a plus aucune unité ou abandonne, match nul ; pas de compte à rebours (voir `rules.md` section 8)
 - **Enchaînement d'écrans complet** (voir `technical.md` section 5) : écran d'introduction puis écran de choix de faction (une seule fois, au tout début) → écran de bataille (tour de commandement React à gauche + canevas Phaser) → écran de victoire ou de défaite (« Réessayer ») → après la victoire de la bataille tutoriel, écran d'accueil, point central de la couche méta
-- **Couche méta** (`roadmap-mvp.md`, `rules.md` 11) : gestion de civilisation (unités possédées, composition et nom de l'armée), invocation, Spirit Stones, niveaux du joueur et des individus, « Partir en guerre » (trois batailles en séquence), Spirit Fountain
+- **Couche méta** (`roadmap-mvp.md`, `rules.md` 11) : gestion de civilisation (unités possédées, composition et nom de l'armée), invocation, Spirit Stones, niveaux du joueur et des individus, « Partir en guerre » (quatre batailles, débloquées par les liens de la map), Spirit Fountain
 - **Profil du joueur sauvegardé** (localStorage, `technical.md` 5.4) : faction, individus possédés avec leur XP, armée, solde, XP du joueur, batailles gagnées… — une exception ciblée, pas un système de sauvegarde généralisé
 
 ### Exclus (renvoyés au scope v2+)
@@ -73,7 +73,7 @@ Le projet a connu deux versions. La première, une **version clickbait** (le POC
 | Conflit [Vol] + retraite sans bord accessible | Face aux obstacles, un bord est toujours géométriquement atteignable ; une unité encerclée par d'autres unités reste en fuite sur place et riposte au corps-à-corps (`rules.md` section 5) |
 | Déclenchement du script IA | Timing en temps absolu depuis le début de la phase |
 | Case d'apparition des unités IA | Entrée par le bord droit du terrain (jamais d'apparition au milieu du champ de bataille), sur la rangée la plus proche d'une cible stratégique (renfort, puis éradication), au hasard en cas d'égalité (`rules.md` 7.2) |
-| Nombre de batailles scriptées | La bataille tutoriel, en une seule phase (`rules.md` 7.1), puis les trois batailles de la guerre 01 (« Partir en guerre »), en deux phases chacune (`rules.md` 11.7, `roadmap-mvp.md`) |
+| Nombre de batailles scriptées | La bataille tutoriel, en une seule phase (`rules.md` 7.1), puis les quatre batailles de la guerre 01 (« Partir en guerre »), en deux phases chacune (`rules.md` 11.7, `roadmap-mvp.md`) |
 | Choix de faction | Le joueur choisit entre Wyrms et Morts-Vivants, l'IA joue l'autre — pour préserver la cohérence narrative. Écran séparé, une seule fois au début, choix sauvegardé dans le profil |
 | Points de présence | Plafond vivant de 150 points, se libère à la mort/fuite d'une unité |
 | Zone de déploiement | Colonnes 0 à 5 (premier quart du terrain), sans distance minimale à un ennemi |

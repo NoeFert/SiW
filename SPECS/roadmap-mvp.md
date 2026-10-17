@@ -23,13 +23,13 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 - **Tutoriel de l'accueil** : des conseils non bloquants, un par un, au moment où la fonction devient utile — pour l'instant l'arrivée (vers « Partir en guerre »), les premières pertes, quand le joueur peut faire grandir à nouveau son peuple (vers « Invocation ») et la première recrue invoquée (vers « Gestion d'armée ») ; chaque conseil n'apparaît qu'une fois (`technical.md` 5.5)
 
 ### Partir en guerre (`rules.md` 11.7)
-- **Trois batailles en séquence** (« La passe », « Les crevasses », « La citadelle », noms provisoires) : chacune se débloque en gagnant la précédente ; une bataille gagnée reste **rejouable**, sans Spirit Stones et avec l'XP du joueur et des individus réduite à 25 %
-- **Écran « Partir en guerre »** : la map 1 en arbre de compétences : un réseau de trois chemins du départ au boss, avec passerelles et impasses ; 3 batailles jouables, les autres emplacements verrouillés « À venir » ; trois emplacements surmontés d'un envahisseur ennemi ([Vol], basique, [Légendaire] au boss) marquent les batailles de boss, objectif de la map affiché « Repousse l'envahisseur 0/3 » (batailles de boss pas encore écrites) ; un clic sur un losange affiche dans un panneau son nom, son état (verrouillée / disponible / gagnée) et sa récompense, bouton « Combattre » (désactivé si l'armée est vide)
+- **Quatre batailles** (« La passe », « Les crevasses », « La citadelle », « L'essaim », noms provisoires) : chacune se débloque en gagnant une bataille reliée sur la map (`rules.md` 11.7) ; une bataille gagnée reste **rejouable**, sans Spirit Stones et avec l'XP du joueur et des individus réduite à 25 %
+- **Écran « Partir en guerre »** : la map 1 en arbre de compétences : un réseau de trois chemins du départ au boss, avec passerelles et impasses ; 4 batailles jouables, les autres emplacements verrouillés « À venir » ; trois emplacements surmontés d'un envahisseur ennemi ([Vol], basique, [Légendaire] au boss) marquent les batailles de boss, objectif de la map affiché « Repousse l'envahisseur 0/3 » (batailles de boss pas encore écrites) ; un clic sur un losange affiche dans un panneau son nom, son état (verrouillée / disponible / gagnée) et sa récompense, bouton « Combattre » (désactivé si l'armée est vide)
 - **Deux zones par bataille** (provisoire) : champ → « Le mur » ; « Le mur » → « Les trois couloirs » ; « Les trois couloirs » → « Le fort ». Scripts de l'IA provisoires, propres à « Partir en guerre » (`rules.md` 11.7), plus durs à mesure qu'on approche du boss. Zones et scripts définitifs : plus tard
 - **Difficulté selon la distance au boss** (`rules.md` 11.7) : règle de conception des scripts, pas une mécanique du jeu. Chaque emplacement vise des pertes fixées par sa distance au boss (5 % au départ → 30 % au boss), vérifiées avec `npm run balance` avant d'ajouter sa bataille à la map
 - **Victoire** dès la fin du script de la dernière zone ; ordres complets et abandon possibles, pas de tutoriel
 - **Défaite, abandon ou match nul** : les individus tués sont **perdus quand même** ; aucune XP ni récompense ; écran de défaite avec les pertes, « Réessayer » et « Retour à l'accueil »
-- **Fin du contenu** : les trois batailles gagnées, un message annonce la suite ; tout reste rejouable
+- **Fin du contenu** : les quatre batailles gagnées, un message annonce la suite ; tout reste rejouable
 
 ### Unités possédées : individus avec niveau, regroupés par espèce
 - Le joueur possède une **liste d'individus** `{ id, species, xp }` (pas de nom, pas de PV propres, pas de trait) ; le niveau se déduit de l'XP ; les stats sont celles de l'espèce (`units.md`), augmentées selon le niveau (`rules.md` 11.6)
@@ -58,7 +58,7 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 
 ### Monnaie : Spirit Stones
 - Somme de départ donnée au joueur au choix de la faction (0, provisoire)
-- Récompense à chaque victoire : bataille tutoriel : 50 ; « Partir en guerre » : 60 / 80 / 100 à la première victoire, rien au rejeu (provisoire)
+- Récompense à chaque victoire : bataille tutoriel : 50 ; « Partir en guerre » : 60 / 80 / 100 et 80 (« L'essaim ») à la première victoire, rien au rejeu (provisoire)
 
 ### Écran Invocation (nouveau)
 - Achat d'un individu d'une **espèce déjà connue** (roster de la faction du joueur) — pas de gacha
@@ -129,10 +129,10 @@ Brancher sur le moteur de bataille une première boucle méta : perdre des créa
 | Armée | Une seule armée (preset d'identifiants), renommable, 500 PP max, 1 unité min ; créée automatiquement avec tous les survivants de la bataille tutoriel, nommée « Armée 1 » ; composée individu par individu (accordéons) |
 | Invocation | Achat d'espèces connues sans plafond ; Légendaire unique, réinvocable seulement s'il est mort ; même action pour invocation et réinvocation ; prix = coût PP × k ; à la réinvocation, niveau gardé au choix, +25 % du prix par niveau |
 | Monnaie | Spirit Stones (nom provisoire) : somme de départ + récompenses de victoire (aucune au rejeu) + récompenses de niveau ; solde affiché en haut à droite de l'accueil |
-| Partir en guerre | Trois batailles en séquence, deux zones chacune, rejouables ; pertes définitives même en défaite ; la Spirit Fountain évite le blocage ; difficulté fixée par la distance au boss (règle de conception, `rules.md` 11.7) |
+| Partir en guerre | Quatre batailles, débloquées par les liens de la map, deux zones chacune, rejouables ; pertes définitives même en défaite ; la Spirit Fountain évite le blocage ; difficulté fixée par la distance au boss (règle de conception, `rules.md` 11.7) |
 
 ## Points encore ouverts
 
-- **Économie** (valeurs provisoires, à chiffrer après playtest) : somme de départ (0), k (1), multiplicateur du Légendaire (×1), récompenses de victoire (50 ; 60 / 80 / 100 ; rien au rejeu), Spirit Fountain (3 / min, 80 + 10 × niveau)
-- **Partir en guerre** : zones et scripts de l'IA définitifs des trois batailles (scripts provisoires dans `rules.md` 11.7, chiffrés par `/balancer`)
+- **Économie** (valeurs provisoires, à chiffrer après playtest) : somme de départ (0), k (1), multiplicateur du Légendaire (×1), récompenses de victoire (50 ; 60 / 80 / 100 / 80 ; rien au rejeu), Spirit Fountain (3 / min, 80 + 10 × niveau)
+- **Partir en guerre** : zones et scripts de l'IA définitifs des quatre batailles (scripts provisoires dans `rules.md` 11.7, chiffrés par `/balancer`)
 - **Récompense de niveau du joueur** : 50 × nouveau niveau en Spirit Stones, provisoire, à revoir avec k

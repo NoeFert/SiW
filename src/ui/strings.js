@@ -121,7 +121,9 @@ export const TEXT = {
   // « Partir en guerre » (rules.md 11.7). Noms des batailles provisoires.
   war: {
     title: 'Partir en guerre',
-    battleNames: { battleStartW01: 'La passe', battleLow1W01: 'Les crevasses', battleLow2W01: 'La citadelle' },
+    battleNames: {
+      battleStartW01: 'La passe', battleLow1W01: 'Les crevasses', battleLow2W01: 'La citadelle', battleTop1W01: "L'essaim",
+    },
     upcoming: 'À venir', // emplacement de la map sans bataille définie (rules.md 11.7)
     xp: 'XP', // icône de la récompense en XP du joueur
     xpRange: (min, max) => `${min}–${max}`, // XP du joueur : selon les PP survivants (rules.md 11.5)

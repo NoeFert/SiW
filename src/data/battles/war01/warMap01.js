@@ -27,8 +27,8 @@ export const WAR_MAP_01 = {
     { id: 'mid2', col: 4, row: 4 },
     { id: 'mid3', col: 4, row: 2 },
     { id: 'mid4', col: 7, row: 2 },
-    // Chemin de gauche, puis du haut.
-    { id: 'top1', col: 0, row: 2 },
+    // Chemin de gauche, puis du haut : top1 porte « L'essaim ».
+    { id: 'top1', col: 0, row: 2, battle: 'battleTop1W01' },
     { id: 'top2', col: 3, row: 2 },
     { id: 'top3', col: 3, row: 0, invader: 'flying' },
     { id: 'top4', col: 6, row: 0 },

@@ -70,7 +70,7 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
   const armyIsEmpty = armyUnits(army, units).length === 0;
   const nodes = WAR_MAP_01.nodes.map((node) => ({
     ...node,
-    state: node.battle ? warBattleState(WAR_BATTLE_IDS, wonIds, node.battle) : 'locked',
+    state: node.battle ? warBattleState(WAR_MAP_01, wonIds, node.battle) : 'locked',
   }));
   // Sélection par défaut : la dernière bataille débloquée, là où en est le joueur.
   const [selectedId, setSelectedId] = useState(

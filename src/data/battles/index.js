@@ -2,6 +2,7 @@ import battleTuto from './battleTuto.js';
 import battleStartW01 from './war01/battleStartW01.js';
 import battleLow1W01 from './war01/battleLow1W01.js';
 import battleLow2W01 from './war01/battleLow2W01.js';
+import battleTop1W01 from './war01/battleTop1W01.js';
 
 // Statique — toutes les batailles du jeu, une par fichier :
 // - battleTuto.js : la bataille tutoriel, jouée une seule fois au début du jeu ;
@@ -18,7 +19,8 @@ import battleLow2W01 from './war01/battleLow2W01.js';
 //                    retournée
 //   - obstacles    : plan de la zone, une chaîne par rangée (24 x 14 cases) — '.' case libre,
 //                    '#' rocher d'une case, '@@/@@' rocher 2x2 (voir parseObstacleMap). Colonnes
-//                    0-11 : déploiement du joueur ; colonne 23 : entrée de l'IA, toujours libre.
+//                    0-5 : déploiement du joueur (rules.md 2) ; colonne 23 : entrée de l'IA,
+//                    toujours libre.
 //   - enemyScripts : arrivée des ennemis selon la faction jouée par l'IA (rules.md 7.1), écrite
 //                    avec `waves` (waves.js)
 //
@@ -32,8 +34,9 @@ export const BATTLES = {
   battleStartW01,
   battleLow1W01,
   battleLow2W01,
+  battleTop1W01,
 };
 
 export const TUTO_BATTLE_ID = 'battleTuto';
-// Batailles de la guerre 01, dans leur ordre de déblocage (rules.md 11.7).
-export const WAR_BATTLE_IDS = ['battleStartW01', 'battleLow1W01', 'battleLow2W01'];
+// Batailles de la guerre 01. Leur déblocage suit les liens de la map (rules.md 11.7, warMap01.js).
+export const WAR_BATTLE_IDS = ['battleStartW01', 'battleLow1W01', 'battleLow2W01', 'battleTop1W01'];

@@ -7,12 +7,18 @@ import { countUnitsBySpecies, fallenLegendaryLevelAfter } from './ownedUnits.js'
 // rules.md 11.7 : au rejeu, aucune Spirit Stone (provisoire).
 export const REPLAY_REWARD_PERCENT = 0;
 
-// rules.md 11.7 : 'won' (déjà gagnée), 'available' (première, ou précédente gagnée) ou 'locked'.
-// `battleIds` : les batailles dans l'ordre de déblocage ; `wonIds` : celles déjà gagnées.
-export function warBattleState(battleIds, wonIds, battleId) {
+// rules.md 11.7 : 'won' (déjà gagnée), 'available' ou 'locked'. Une bataille est disponible si
+// elle est au départ de la map (son premier emplacement) ou si un emplacement relié par un lien
+// porte une bataille gagnée. `map` : réseau de la map (warMap01.js) ; `wonIds` : batailles gagnées.
+export function warBattleState(map, wonIds, battleId) {
   if (wonIds.includes(battleId)) return 'won';
-  const index = battleIds.indexOf(battleId);
-  return index === 0 || wonIds.includes(battleIds[index - 1]) ? 'available' : 'locked';
+  const node = map.nodes.find((n) => n.battle === battleId);
+  if (node === map.nodes[0]) return 'available';
+  const battleOf = new Map(map.nodes.map((n) => [n.id, n.battle]));
+  const neighbours = map.links
+    .filter((link) => link.includes(node.id))
+    .map(([a, b]) => battleOf.get(a === node.id ? b : a));
+  return neighbours.some((id) => wonIds.includes(id)) ? 'available' : 'locked';
 }
 
 export function isWarCompleted(battleIds, wonIds) {

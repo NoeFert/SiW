@@ -10,10 +10,10 @@ import { FACTIONS } from '../../src/data/factions/index.js';
 const UNDEAD_ROSTER = FACTIONS.undead.roster;
 const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
-const IDS = ['battleStartW01', 'battleLow1W01', 'battleLow2W01'];
+const IDS = ['battleStartW01', 'battleLow1W01', 'battleLow2W01', 'battleTop1W01'];
 
 describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
-  test('trois batailles de deux zones, victoire à la fin du script de la dernière zone, sans tutoriel', () => {
+  test('quatre batailles de deux zones, victoire à la fin du script de la dernière zone, sans tutoriel', () => {
     expect(WAR_BATTLE_IDS).toEqual(IDS);
     for (const id of IDS) {
       expect(BATTLES[id].phases).toHaveLength(2);
@@ -24,8 +24,20 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
   test('scripts propres à « Partir en guerre » (11.7), coût en PP par zone selon la faction de l\'IA', () => {
     const cost = (script) => script.reduce((sum, { species }) => sum + species.cost, 0);
     const costs = (faction) => IDS.map((id) => BATTLES[id].phases.map((p) => cost(p.enemyScripts[faction])));
-    expect(costs('wyrms')).toEqual([[75, 65], [75, 75], [75, 150]]);
-    expect(costs('undead')).toEqual([[67, 67], [79, 79], [79, 239]]);
+    expect(costs('wyrms')).toEqual([[75, 65], [75, 75], [75, 150], [60, 60]]);
+    expect(costs('undead')).toEqual([[67, 67], [79, 79], [79, 239], [54, 54]]);
+  });
+
+  test('« L\'essaim » : seulement des basiques, deux fois la même zone (deux rochers 2x2)', () => {
+    const { phases } = BATTLES.battleTop1W01;
+    for (const phase of phases) {
+      for (const faction of ['wyrms', 'undead']) {
+        expect(phase.enemyScripts[faction].every(({ species }) => species.keywords.length === 0)).toBe(true);
+      }
+    }
+    expect(phases[1].obstacles).toEqual(phases[0].obstacles);
+    expect(phases[0].obstacles.join('').split('@').length - 1).toBe(8); // 2 rochers 2x2
+    expect(phases[0].obstacles.join('')).not.toContain('#');
   });
 
   test('scripts : triés par instant, légendaire seulement au Fort, copies de units.md suffisantes par bataille', () => {
@@ -46,24 +58,31 @@ describe('batailles de « Partir en guerre » (rules.md 11.7)', () => {
     }
   });
 
-  test('récompenses provisoires : 50 pour la bataille tutoriel, 60 / 80 / 100 ensuite', () => {
+  test('récompenses provisoires : 50 pour la bataille tutoriel, 60 / 80 / 100 ensuite, 80 pour « L\'essaim »', () => {
     expect(BATTLES.battleTuto.reward).toBe(50);
-    expect(IDS.map((id) => BATTLES[id].reward)).toEqual([60, 80, 100]);
+    expect(IDS.map((id) => BATTLES[id].reward)).toEqual([60, 80, 100, 80]);
   });
 });
 
-describe('déblocage en séquence (rules.md 11.7)', () => {
-  test('au départ, seule la première bataille de la guerre est disponible', () => {
-    expect(IDS.map((id) => warBattleState(IDS, [], id))).toEqual(['available', 'locked', 'locked']);
+describe('déblocage par les liens de la map (rules.md 11.7)', () => {
+  const state = (wonIds) => IDS.map((id) => warBattleState(WAR_MAP_01, wonIds, id));
+
+  test('au départ, seule la bataille du départ de la map est disponible', () => {
+    expect(state([])).toEqual(['available', 'locked', 'locked', 'locked']);
   });
 
-  test('gagner une bataille débloque la suivante ; une bataille gagnée reste marquée « gagnée »', () => {
-    expect(IDS.map((id) => warBattleState(IDS, ['battleStartW01'], id))).toEqual(['won', 'available', 'locked']);
+  test('gagner une bataille débloque celles qui lui sont reliées (« Les crevasses » et « L\'essaim »)', () => {
+    expect(state(['battleStartW01'])).toEqual(['won', 'available', 'locked', 'available']);
   });
 
-  test('contenu terminé une fois les trois gagnées', () => {
-    expect(isWarCompleted(IDS, ['battleStartW01', 'battleLow1W01'])).toBe(false);
-    expect(isWarCompleted(IDS, ['battleStartW01', 'battleLow1W01', 'battleLow2W01'])).toBe(true);
+  test('une bataille non reliée à une bataille gagnée reste verrouillée ; une bataille gagnée reste « gagnée »', () => {
+    expect(state(['battleStartW01', 'battleTop1W01'])).toEqual(['won', 'available', 'locked', 'won']);
+    expect(state(['battleStartW01', 'battleLow1W01'])).toEqual(['won', 'won', 'available', 'available']);
+  });
+
+  test('contenu terminé une fois les quatre gagnées', () => {
+    expect(isWarCompleted(IDS, ['battleStartW01', 'battleLow1W01', 'battleLow2W01'])).toBe(false);
+    expect(isWarCompleted(IDS, IDS)).toBe(true);
   });
 });
 
