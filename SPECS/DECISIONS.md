@@ -33,3 +33,18 @@ Format : **quoi** — pourquoi (source, date). Les plus récentes en haut de cha
 - **Armée de 500 PP, au-dessus des 150 du terrain** — l'armée emporte des réserves, à déployer à mesure que le terrain se libère (ancienne roadmap-mvp).
 
 ## Interface
+
+- **Tour de commandement verticale, à gauche du terrain** — une barre sous le terrain le réduirait d'environ un tiers sur un écran 16:9 (≈ 1320 × 770 px au lieu de ≈ 1630 × 950 px en 1920 × 1080) ; la liste défile naturellement à la molette ; attaquer de gauche à droite est une convention plus forte que la place d'une barre d'outils, et l'œil tombe d'abord sur les actions. Coût accepté : le bouton Pause n'est pas en haut à droite (`ui-battle-screen-decisions.md`).
+- **Bouton Pause dans la rangée « Ordres »** — tout ce qui agit sur le déroulé de la bataille au même endroit ; il a remplacé l'ancien menu « Commandes » en bas de la tour (`ui-battle-screen-decisions.md`).
+- **Signal de pause : terrain désaturé + bouton ▶ qui pulse** — retenu parmi cinq propositions (bandeau « PAUSE », cadre coloré, animations gelées seules…) : signal immédiat qui ne cache rien ; les pauses d'interaction gardent en couleur ce qui est cliquable (`ui-battle-screen-decisions.md`).
+- **Pause principale en interrupteur, pas en menu** — laisser aux joueurs plus lents le temps de réfléchir sans stress constant, tout en gardant le terrain et la tour utilisables (`ui-battle-screen-decisions.md`).
+- **Abandon disponible en permanence, tutoriel compris** — la v1 est une bêta : toutes les fonctionnalités doivent pouvoir être testées (`ui-battle-screen-decisions.md`).
+- **Dégâts de zone montrés par une silhouette, pas par une teinte** — le sprite porte le filtre de désaturation de la pause (preFX), qui ne rend pas la teinte de façon fiable ; une teinte multipliée se voit à peine sur des sprites sombres (playtest, 2026-10-17).
+
+## Stack
+
+- **JavaScript** — démarrer vite, sans système de types à maintenir pour un prototype v1.
+- **Phaser 3 plutôt que Phaser 4** — Phaser 4 (maintenu depuis avril 2026) est trop récent pour être bien connu des outils d'IA qui codent le projet ; Phaser 3, figé à 3.90.0, est stable et très documenté. Migration possible plus tard.
+- **React + Tailwind + shadcn/ui (8bitcn) pour l'interface** — Phaser se prête mal à l'interface HTML classique (listes, boutons, panneaux) ; des composants génériques évitent de tout recréer en CSS, et le thème 8bitcn colle à l'identité rétro.
+- **Vite** — standard pour Phaser, rechargement à chaud rapide, et son plugin React fait cohabiter Phaser et React.
+- **Navigation sans librairie de routing** — une session continue dans un seul onglet, sans besoin d'URL par écran.

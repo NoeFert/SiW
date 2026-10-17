@@ -1,144 +1,117 @@
 # GRAPHICS.md — Direction artistique
 
-> **Rôle** : l'apparence — direction artistique, assets, effets visuels. Les règles du jeu sont dans `rules.md`. Index des fichiers : `README.md`.
+> **Rôle** : l'apparence — direction artistique, assets, effets visuels. Les règles du jeu sont dans `rules.md`, le contenu des écrans dans `technical.md` 5. Index des fichiers : `README.md`.
 
 ## Intention
 
-**Dark fantasy rétro.** Des souverains masqués et des monstres effrayamt dessinés en pixel art, sur un champ de bataille sombre et peu engageant. L'interface reprend le même esprit : composants shadcn/8bitcn (`TECHNICAL.md` section 1) habillés avec les sprites du pack **Pixel UI & HUD** (section « Interface » ci-dessous).
+**Dark fantasy rétro** : des souverains masqués et des monstres effrayants en pixel art, sur un champ de bataille sombre et peu engageant. Tous les assets du jeu (unités, souverains, décor) sont **dessinés à la main** ; seule l'interface vient du pack acheté **Pixel UI & HUD** (Dead Revolver, itch.io), qui habille les composants shadcn/8bitcn.
 
-Tous les assets du jeu (unités, souverains, décor) sont **dessinés à la main** ; seuls les éléments d'interface viennent du pack acheté Pixel UI & HUD (Dead Revolver, itch.io).
-
-Principes :
-- **Silhouettes lisibles** sur un fond neutre et peu contrasté
-- **Une couleur signature par faction**, reprise partout : sprites, jauge de présence, projectiles.
-- **Ambiance plutôt qu'effets** : le décor encadre la bataille, sans détails qui gênent la lecture de la grille.
+- **Silhouettes lisibles** sur un fond neutre et peu contrasté.
+- **Une couleur signature par faction**, reprise partout.
+- **Ambiance plutôt qu'effets** : le décor encadre la bataille sans gêner la lecture de la grille.
 
 ## Palettes des factions
 
 | Faction | Couleur signature | Tons secondaires | Utilisée pour |
 |---|---|---|---|
-| Souveraine des Wyrms | **doré** | rouge sombre, noir | jauge de présence, barres de vie, projectiles (orange) |
-| Souverain des Morts-Vivants | **menthe** (vert spectral) | violet, gris ardoise | jauge de présence, barres de vie, projectiles (menthe) |
+| Souveraine des Wyrms | **doré** (#eab532) | rouge sombre, noir | jauge de présence, barres de vie, niveaux, projectiles (orange) |
+| Souverain des Morts-Vivants | **menthe** (#73ecbc) | violet, gris ardoise | jauge de présence, barres de vie, niveaux, projectiles (menthe) |
 
-## Les souverains (écran de choix de faction)
+**Accents de l'interface** (survol du bouton principal et du menu de l'accueil, curseur, coins décoratifs) : dorés pour les Wyrms, violets pour les Morts-Vivants et les écrans d'avant le choix de faction.
+
+## Les souverains (choix de faction)
 
 | Souveraine des Wyrms | Souverain des Morts-Vivants |
 |---|---|
 | ![Souveraine des Wyrms](assets/wyrm_sovereign.png) | ![Souverain des Morts-Vivants](assets/undead_sovereign.png) |
-| |
 
 ## Les unités
 
-Sprites en pixel art, à 2× leur taille d'affichage : 128 × 128 px pour une unité d'une case, 256 × 256 px pour une unité 2 × 2 (`TECHNICAL.md` section 3).
+Sprites à 2× leur taille d'affichage (`technical.md` 3). Les unités du joueur regardent vers la droite, celles de l'IA vers la gauche (sprite retourné).
 
 | Wyrms | | Morts-Vivants | |
 |---|---|---|---|
 | ![Ver de Lambton](assets/lambton-worm.png) | Ver de Lambton (basique) | ![New-reborn Skeleton](assets/new-reborn-skeleton.png) | New-reborn Skeleton (basique) |
 | ![Amphiptère](assets/ampiptere.png) | Amphiptère ([Vol], à distance) | ![Necromant Initiate](assets/necromant.png) | Necromant Initiate ([Vol], à distance) |
-| ![Fafnir](assets/fafnir.png) | Fafnir the Cursed One ([Légendaire]) | ![Athos](assets/athos.png) | Athos the Lord of Pain ([Légendaire])|
-
-Les unités du joueur regardent vers la droite et celles de l'IA vers la gauche : le sprite est retourné selon le camp.
+| ![Fafnir](assets/fafnir.png) | Fafnir the Cursed One ([Légendaire]) | ![Athos](assets/athos.png) | Athos the Lord of Pain ([Légendaire]) |
 
 ## Le champ de bataille
 
 ![Champ de bataille](assets/battlefield-01.png)
 
-Une plaine désertique, gris-beige et peu contrastée, encadrée de rochers noirs déchiquetés et de racines. Une porte éclairée à gauche marque le côté du joueur. La même image sert à toutes les zones des batailles ; elle est retournée horizontalement pour « Le mur » (`RULES.md` section 7.3). Ce terrain reprend le thème visuel des wyrms.
-
-Les obstacles de la grille utilisent un seul sprite de rocher, d'autres pourront être ajoutés :
+Une plaine désertique gris-beige, peu contrastée, encadrée de rochers noirs et de racines, au thème des wyrms ; une porte éclairée à gauche marque le côté du joueur. La même image sert à toutes les zones, retournée pour « Le mur » (`rules.md` 7.3). Un seul sprite de rocher pour les obstacles (d'autres pourront venir) :
 
 ![Rocher](assets/rocks.png)
 
+## Effets en bataille
+
+| Évènement | Effet |
+|---|---|
+| **Tir** | missile animé tiré d'une planche d'effets (`assets/effect/`, images de 64 × 64, une ligne par couleur), joué en entier pendant son vol (220 ms), orienté vers la cible ; à l'arrivée, un éclat rond dans la couleur de la faction. Wyrms : `missile-burst.png` (15 étapes, ligne orange, la 1re) ; Morts-Vivants : `missile-streak.png` (8 étapes, ligne verte, la 4e) |
+| **Coup au corps-à-corps** (dernière attaque sur une unité qui fuit comprise) | entaille blanche (6e ligne de `hit-slash.png`, 8 étapes, 300 ms) sur la victime, à la taille de son emprise, pour les deux factions |
+| **Attaque dévastatrice** (Fafnir) | « COUP CRITIQUE ! », tremblement d'écran, victime qui clignote en jaune (3 fois 70 ms), pics orange (1re ligne de `hit-spikes.png`, 1,5 s, deux fois la taille de l'unité) |
+| **Frappe paralysante** (Athos) | tourbillon vert (4e ligne de `hit-swirl.png`, 1,5 s par cycle) **en boucle** sur la victime tant qu'elle est paralysée ; « Raté ! » à chaque attaque annulée |
+| **Soif de sang** (Athos) | « +40 » en vert |
+| **Dégâts de zone** ([Légendaire], `rules.md` 4.6) | chaque ennemi touché clignote dans la couleur de la faction du [Légendaire] (doré pour Fafnir, menthe pour Athos) : une silhouette pleine de son sprite, posée par-dessus lui, 3 fois 70 ms, au moment de l'impact ; pas de texte, de secousse ni d'animation |
+| **Entrée d'une unité de l'IA** | elle arrive depuis l'extérieur de l'écran, à droite, jusqu'à sa case d'entrée |
+
+- Les effets sur une victime la suivent ; si le coup la tue, l'effet finit là où elle est morte. Un ennemi tué par la zone disparaît sans clignoter. Un tourbillon dont la victime meurt du coup est joué une fois.
+- **Barres de vie** au-dessus des unités (et mini barre des cases blessées de la tour) : couleur principale de la faction de l'unité, quels que soient ses PV.
+- **Compteur des aptitudes périodiques**, sous la barre de vie : une rangée de N cases (ValueSlots/StepSlotA) — vertes pour la Frappe paralysante (N = 4), rouges pour l'Attaque dévastatrice (N = 5) ; une case remplie par attaque portée depuis le dernier déclenchement.
+- **Pause** et **zone de déploiement** : terrain désaturé, ce qui est cliquable reste en couleur (`ui-battle-screen-decisions.md` 3).
+- Les unités en bataille ne montrent pas leur niveau.
+
 ## Accueil
 
-Fond **provisoire** : un château sombre en pixel art (200 × 93 px), affiché en plein écran sans lissage, jusqu'au bord de la fenêtre, derrière tous les éléments de l'accueil.
+- **Fond** (provisoire) : un château sombre en pixel art (200 × 93 px), en plein écran sans lissage, jusqu'au bord de la fenêtre — gris chaud (`assets/backgrounds/dark-castle-warm-grey.png`) pour les Wyrms, gris froid (`dark-castle-cold-grey.png`) pour les Morts-Vivants.
+- **Portrait du souverain**, en haut à gauche, dans un cadre en creux (Frame) ; à sa droite, son nom, la barre d'XP avec « Niveau X » (sans badge) et « XP / XP du niveau » en dessous.
+- **Menu** : quatre entrées sur le bord gauche (20 px de marge en plus du padding), entre le portrait et la fontaine, sans cadre de bouton ni séparateur ; texte rétro, violet clair au survol (doré chez les Wyrms).
+- **Spirit Fountain** : la statue de pierre (`assets/sprites/stone-statue.png`, 72 × 115 px, taille d'origine, luminosité 75 %) surmontée de l'icône des Spirit Stones et de son contenu, en bas à gauche, posée sur le sol du château. Cliquable sans cadre de bouton, plus lumineuse au survol ; vide, elle reste opaque mais n'est pas cliquable. À la récolte, des gemmes (autant que de Spirit Stones récoltées, 5 au plus) volent l'une après l'autre jusqu'au solde (0,7 s), qui augmente à leur arrivée. Infobulle provisoire : « Cette statue génère 3 gemmes obscures par minute. Puisse le souverain faire bon usage de cette ressource précieuse. » (le nombre suit `rules.md` 11.8).
+- **Unités qui errent** : jusqu'à trois individus différents d'une case (pas les [Légendaire]), tirés au hasard, au bas de l'écran à la hauteur de la fontaine ; moins s'il en manque. Chacune entre par un bord, 2 s après la précédente, puis va et vient au hasard entre la gauche et la droite (lentement, pauses de 1 à 4 s), sans sortir de l'écran, le sprite tourné dans le sens de la marche. Toutes les 5 minutes, elles sortent par le bord le plus proche et un nouveau groupe entre. Sprites d'environ 58 px (la moitié de la statue) ; un clic fait sursauter l'unité (0,35 s). Elles passent derrière la fontaine et le menu.
 
-Version **gris chaud** (`assets/backgrounds/dark-castle-warm-grey.png`) pour la Souveraine des Wyrms, **gris froid** (`dark-castle-cold-grey.png`) pour le Souverain des Morts-Vivants.
+## Spirit Stones
 
-**Jusqu'à trois unités du joueur errent** en bas de l'écran, à la même hauteur que la Spirit Fountain par rapport au bas. Ce sont des individus différents, tirés au hasard parmi ceux d'une case (1 × 1, donc pas les [Légendaire] 2 × 2) ; moins de trois si le joueur n'en a pas assez, aucun s'il n'en a pas. Chacune entre par un bord, **2 s après la précédente** (pour qu'elles ne se superposent pas), puis va et vient **au hasard** entre la gauche et la droite de l'écran (lentement, avec des pauses de 1 à 4 s entre deux trajets), sans sortir de l'écran ; son sprite regarde dans le sens de sa marche. **Toutes les 5 minutes**, elles sortent par le bord le plus proche, puis un **nouveau groupe**, tiré au hasard, entre. Sprites à la moitié de la hauteur de la statue de la fontaine (≈ 58 px). Un clic sur une unité la fait **sursauter** (petit saut de 0,35 s). Elles passent derrière la fontaine et le menu.
+Icône : la **gemme noire** du pack (Black/Jewel_Spin, `assets/ui/spirit-stone.png`), fixe (première image seulement), à 22 × 22 px, la même pour les deux factions. Sur l'accueil et l'écran Invocation, le solde est l'icône et le nombre, sans le mot, dans un cadre (Panels/Black/Panel).
 
-## Spirit Stones (monnaie)
+## Niveaux
 
-Icône : la **gemme noire** du pack Pixel UI & HUD (Black/Jewel_Spin, `assets/ui/spirit-stone.png`, 9 images de 11 × 11 px), **fixe** : seule la première image est affichée, à 22 × 22 px, sans animation. Sur l'accueil et l'écran Invocation, le solde est réduit à **l'icône et le nombre**, sans le mot « Spirit Stones », dans un **cadre** (Panels/Black/Panel du pack). Elle accompagne partout le solde et les prix en Spirit Stones : en haut à droite de l'accueil, sur l'écran Invocation (`rules.md` 11.3 et 11.4).
-
-## Spirit Fountain (accueil)
-
-Un élément cliquable **sans cadre de bouton** (plus lumineux au survol) : l'icône des Spirit Stones et le **contenu actuel** seul, **au-dessus** de la **statue de pierre** (`assets/sprites/stone-statue.png`, 72 × 115 px, à sa taille d'origine et **assombrie**, luminosité 75 %), le tout en bas à gauche de l'accueil, dans le padding du jeu, posé sur le sol du château du fond (position exacte réglée à l'œil dans `HomeScreen.jsx`). Vide, la fontaine reste **opaque** (pas de transparence), simplement non cliquable. À la **récolte**, des gemmes (autant que de Spirit Stones récoltées, 5 au plus) partent de l'icône de la fontaine et **volent jusqu'au solde** en haut à droite, l'une après l'autre (0,7 s) ; le solde affiché augmente à leur arrivée (sans la capacité ni barre de remplissage) (`rules.md` 11.8). Au survol, un **tooltip provisoire** sous la fontaine : « Cette statue génère 3 gemmes obscures par minute. Puisse le souverain faire bon usage de cette ressource précieuse. » (le nombre suit la production de `rules.md` 11.8).
-
-## Niveaux (joueur et individus)
-
-Les niveaux (`rules.md` 11.5 et 11.6) reprennent la **couleur signature de la faction du joueur** (doré pour les Wyrms, menthe pour les Morts-Vivants) :
-- **« niv X » en texte coloré** (doré / menthe) dans les cases de la grille des unités et dans les cases de la tour de bataille, à côté des PV (`ui-battle-screen-decisions.md` 2.2) ;
-- **badge « niv X »** (bannière du pack, dorée pour les Wyrms, menthe pour les Morts-Vivants) : accordéons de l'écran Armées et page de détail d'un individu ;
-- **barre d'XP** : barre RegularBarA du pack, remplissage menthe (barre verte du pack) ou doré (barre orange recolorée, `assets/ui/bar-fill-wyrms.png`) ; pleine avec « MAX » au niveau 5 d'un individu ;
-- **accueil** : en haut à gauche, le portrait du souverain dans un cadre en creux (Frame du pack) ; à sa droite, son nom, la barre d'XP avec « Niveau X » à côté (sans badge), et « XP / XP du niveau » en dessous.
-
-Rien n'est ajouté sur le terrain : les unités en bataille ne montrent pas leur niveau.
-
-## Projectiles
-
-Les missiles des attaques à distance sont des **effets animés**, tirés de planches d'effets (`assets/effect/`) : images de 64 × 64 (une case), une ligne par couleur (9 couleurs), une colonne par étape de l'animation. Le missile joue toute son animation pendant son vol (220 ms), orienté vers sa cible ; à l'arrivée, un éclat rond dans la couleur de la faction.
-
-| Faction | Planche | Couleur |
-|---|---|---|
-| Souveraine des Wyrms | `missile-burst.png` (15 étapes, gerbe qui éclate) | ligne orange (1re) |
-| Souverain des Morts-Vivants | `missile-streak.png` (8 étapes, traînée) | ligne verte (4e) — la plus proche du menthe |
-
-**Corps-à-corps** : chaque coup porté au corps-à-corps (y compris la dernière attaque d'un ennemi sur une unité qui fuit, `rules.md` 5) joue une fois l'animation d'entaille **blanche** (6e ligne de `assets/effect/hit-slash.png`, 8 étapes, 300 ms) sur la victime, à la taille de son emprise ; elle suit la victime, et se joue là où elle est morte si le coup la tue. Même animation pour les deux factions.
-
-## Signaux visuels en bataille
-
-- **Entrée des unités de l'IA** (`RULES.md` 7.2) : chaque unité arrive depuis l'extérieur de l'écran, à droite, jusqu'à sa case d'entrée (purement visuel).
-- **Pause** : terrain désaturé ; ce qui reste cliquable garde ses couleurs (`ui-battle-screen-decisions.md` section 3).
-- **Barres de vie** au-dessus des unités (et mini barre des lignes blessées de la tour) : dans la **couleur principale de la faction** de l'unité — doré (#eab532) pour les Wyrms, menthe (#73ecbc) pour les Morts-Vivants —, quel que soit le niveau de PV.
-- **Dégâts de zone des [Légendaire]** (`RULES.md` 4.6) : chaque ennemi touché par la zone **clignote dans la couleur principale de la faction du [Légendaire]** au moment de l'impact (doré #eab532 pour Fafnir, menthe #73ecbc pour Athos) : une silhouette pleine de son sprite apparaît par-dessus lui, 3 clignotements rapides de 70 ms, sans texte, secousse ni animation. C'est une copie du sprite, pas une teinte du sprite lui-même : celui-ci porte le filtre de désaturation de la pause, qui ne rend pas la teinte de façon fiable. Un ennemi tué par la zone disparaît sans clignoter. Aucun nouvel asset.
-- **Zone de déploiement** (`RULES.md` 2, colonnes 0 à 5) : pendant un glisser-déposer, elle seule reste en couleur sur le terrain désaturé (`ui-battle-screen-decisions.md` 3).
-- **Aptitudes** : « COUP CRITIQUE ! », tremblement d'écran, victime qui **clignote en jaune** (3 clignotements rapides de 70 ms) et animation de pics orange (1re ligne de `assets/effect/hit-spikes.png`, 1,5 s, deux fois la taille de l'unité) sur la victime, à distance comme au corps-à-corps — elle suit la victime, et si la victime meurt du coup, la fin de l'animation se joue là où elle est morte (Attaque dévastatrice de Fafnir) ; animation de tourbillon verte (4e ligne de `assets/effect/hit-swirl.png`, 1,5 s par cycle) **en boucle** sur la victime tant qu'elle est paralysée (si le coup la tue, l'animation est jouée une fois là où elle est morte), et « Raté ! » à chaque attaque annulée (Frappe paralysante d'Athos) ; « +40 » en vert (Soif de sang). **Compteur des aptitudes périodiques** sous la barre de vie de l'unité qui les porte : une rangée de N cases (ValueSlots/StepSlotA du pack ; **vertes** pour la Frappe paralysante d'Athos, N = 4 ; **rouges** pour l'Attaque dévastatrice de Fafnir, N = 5), une case remplie par attaque portée depuis le dernier déclenchement — les cases vides sont les attaques restantes, celle qui déclenche l'aptitude comprise.
+- **« niv X » en texte coloré** (couleur de la faction du joueur) : cases de l'écran des unités et de la tour de bataille.
+- **Badge « niv X »** (bannière du pack, dorée ou menthe) : accordéons de l'écran Armées, page de détail d'un individu.
+- **Barre d'XP** : RegularBarA, remplissage menthe (barre verte du pack) ou doré (barre orange recolorée, `assets/ui/bar-fill-wyrms.png`) ; pleine avec « MAX » au niveau 5.
 
 ## Partir en guerre
 
-La **map 1** est une carte en **arbre de compétences** (sprites SkillTree du pack, à 2×) : un **réseau** de losanges (SkillSlotSharp) sur une grille de 10 × 7 cases espacées de 80 px, reliés de pointe à pointe par des connecteurs droits. **Trois chemins** de longueurs inégales mènent du départ (en bas à gauche) au **boss** (en haut à droite) — par la gauche puis le haut, par le milieu, par le bas puis la droite —, avec **deux passerelles** entre ces chemins et **trois impasses** (`src/data/battles/war01/warMap01.js`). Un **panneau à droite** de la map montre l'emplacement sélectionné : nom (« À venir » sans bataille) avec son état à sa droite, « Combattre », puis une **rangée de récompenses** (panneaux Panels/Black/Panel) : l'icône des Spirit Stones avec la quantité gagnée en dessous, et « XP » avec l'XP gagnée par le joueur en dessous (« 100–200 », selon les PP survivants). Pas de récompenses affichées pour un emplacement verrouillé. Le nom de l'armée et ses PP ne sont plus affichés.
-
-- **Fond** (provisoire) : `assets/backgrounds/temporary-map1.png` (2048 × 1536, plaine et montagnes), affiché **sur tout l'écran** (jusqu'au bord de la fenêtre), en **monochrome**, avec un **contraste augmenté** (×1,5) et **assombri** (luminosité 50 %). Chaque losange a un **intérieur noir** pour se détacher du fond.
-- **Boss** : l'emplacement d'arrivée des trois chemins (bataille de boss, `boss: true` dans `src/data/battles/war01/warMap01.js`) a un losange **un peu plus grand** — SkillSlotLarge (28 × 28) à 2×, soit 56 px au lieu de 42, avec son sélecteur SelectorLarge. Affichage seulement : la bataille elle-même reste à définir (`rules.md` 11.7).
-- **Envahisseurs** : au-dessus de chacun des trois emplacements d'envahisseur (`rules.md` 11.7), le sprite de l'espèce ennemie, tourné vers la gauche comme l'IA en bataille, à 5 px au-dessus de la pointe haute du losange (40 px, 64 px pour le [Légendaire]), assombri, et éclairci quand son losange est sélectionné. Au-dessus de la map, aligné à gauche, le compteur « Repousse l'envahisseur N/3 ».
-- **Couleur du souverain du joueur** : jaune (Yellow, doré) quand le joueur joue les Wyrms, violet (Purple) quand il joue les Morts-Vivants — comme les accents de l'interface.
-- **États** : disponible = losange vide ; gagnée = losange plein (SkillSlotSharpPlaceholder) ; verrouillée = losange gris (Grey), panneau à moitié transparent ; un connecteur est gris dès qu'un de ses deux bouts est verrouillé.
-- **Sélection** : le sélecteur (SelectorSharp, à 3× pour entourer le losange) marque l'emplacement affiché dans le panneau ; gris sur un emplacement verrouillé.
-- Les zones traversées par chaque bataille ne sont pas affichées.
+- **Map** : un arbre de compétences (sprites SkillTree, à 2×) — des losanges (SkillSlotSharp) sur une grille de 10 × 7 cases espacées de 80 px, reliés de pointe à pointe par des connecteurs droits ; chaque losange a un intérieur noir. Le départ est en bas à gauche, le boss en haut à droite.
+- **Fond** (provisoire) : `assets/backgrounds/temporary-map1.png` (2048 × 1536), sur tout l'écran, monochrome, contraste ×1,5, luminosité 50 %.
+- **Boss** : losange plus grand (SkillSlotLarge, 56 px au lieu de 42), avec son sélecteur SelectorLarge.
+- **Envahisseurs** : le sprite de l'espèce ennemie, tourné vers la gauche, 5 px au-dessus de la pointe du losange (40 px, 64 px pour le [Légendaire]), assombri, éclairci quand son losange est sélectionné. Compteur « Repousse l'envahisseur N/3 » au-dessus de la map, aligné à gauche.
+- **États** : disponible = losange vide ; gagnée = losange plein (SkillSlotSharpPlaceholder) ; verrouillée = losange gris, panneau à moitié transparent. Un connecteur est gris dès qu'un de ses bouts est verrouillé. Couleur du joueur sur la map : jaune (Wyrms) ou violet (Morts-Vivants).
+- **Sélection** : SelectorSharp à 3× autour du losange, gris sur un emplacement verrouillé.
+- **Panneau** : nom (avec l'état à sa droite), « Combattre », puis la rangée de récompenses (panneaux Panels/Black/Panel : l'icône des Spirit Stones et « XP », avec les montants en dessous) ; rien pour un emplacement verrouillé. Les zones des batailles ne sont pas affichées.
 
 ## Interface
 
-Les composants React gardent leur API shadcn/8bitcn, mais leur cadre est un sprite du pack **Pixel UI & HUD**, découpé en 9-slice (`border-image`) et affiché à **2×** sans lissage (`src/components/ui/8bit/styles/pixel-ui.css`). Le pack complet reste dans `asset-packs/` (local, ignoré par git, hors build) ; seuls les fichiers utilisés sont copiés dans `assets/ui/`.
+Les composants React gardent leur API shadcn/8bitcn ; leur cadre est un sprite du pack, en 9-slice (`border-image`), affiché à 2× sans lissage (`src/components/ui/8bit/styles/pixel-ui.css`). Le pack complet reste dans `asset-packs/` (local, ignoré par git) ; seuls les fichiers utilisés sont copiés dans `assets/ui/`.
 
-**Curseur de la souris** : curseurs du pack (Cursors, agrandis ×2, taille d'un curseur système) dans la couleur de la faction du joueur — **doré** pour les Wyrms, **violet** pour les Morts-Vivants, **blanc** tant qu'il n'a pas de faction (intro, choix de faction) — sur tous les écrans — flèche par défaut (boutons compris), main sur les éléments cliquables sans cadre de bouton, main fermée sur une unité de la tour qu'on peut glisser, « interdit » sur ce qui est indisponible.
-
-**Main du tutoriel** (`technical.md` 5.5) : la main **blanche** des curseurs (`cursor-hand-white`), quelle que soit la faction, affichée deux fois plus grande que le curseur ; le bout de l'index pointe la cible.
-
-**Padding du jeu** : sur tous les écrans (accueil, écrans de la couche méta, bataille, intro, fins de bataille), les éléments sont à **48 px** du bord de la fenêtre (une seule valeur, `--spacing-game` dans `src/index.css`) ; le fond des écrans (dégradé, château de l'accueil, map de « Partir en guerre », colonnes des souverains du choix de faction) et les unités qui errent sur l'accueil vont jusqu'au bord, sans bande autour. En bataille, la tour de commandement et le terrain vont eux aussi jusqu'au bord. Les éléments placés « dans un coin » (portrait, solde, menu, fontaine, « Retour ») sont collés à ce padding.
-
-**Fond des écrans** : un **dégradé vertical**, de **#2a2c2f** en haut à **#838796** en bas, sur toute la fenêtre (padding compris). L'intro, le choix de faction et la **bataille** gardent le **fond noir** (#171717) : en bataille, il remplit l'espace que le terrain laisse libre en gardant ses proportions. L'accueil le recouvre de son château ; la tour de bataille garde son propre fond.
-
-**Mise en page plein écran** : comme l'accueil, les écrans « Partir en guerre », unités, « Armées » et Invocation occupent tout l'écran, sans carte centrée. En-tête commun en haut à gauche : une **flèche vers la gauche** (◀, sans cadre de bouton, à la place du bouton « Retour ») puis le titre ; le contenu prend toute la surface restante et défile si besoin (`src/ui/ScreenLayout.jsx`). La grille des unités et la liste d'invocation remplissent la largeur avec autant de colonnes qu'il en tient.
-
-**Tags d'une unité** (page de détail seulement ; la tour de bataille n'en affiche pas, `ui-battle-screen-decisions.md` 2.2) : son type d'attaque — « Corps-à-corps », « Tirs », ou les deux pour Fafnir (hybride) — puis ses keywords (« Légendaire », « Vol »). Plus de tag « basique ».
-
-**Accents selon la faction du joueur** : dorés (variantes Gold du pack) pour la Souveraine des Wyrms, violets pour le Souverain des Morts-Vivants et les écrans d'avant le choix de faction. Concerne le survol du bouton principal et le survol du menu de l'accueil. L'icône des Spirit Stones (gemme noire) est la même pour les deux factions.
+- **Curseur** : curseurs du pack (×2) dans la couleur de la faction du joueur — doré, violet, ou blanc tant qu'il n'a pas de faction. Flèche par défaut (boutons compris), main sur un élément cliquable sans cadre de bouton, main fermée sur une unité de la tour qu'on peut glisser, « interdit » sur ce qui est indisponible.
+- **Main du tutoriel** : la main blanche des curseurs (`cursor-hand-white`), quelle que soit la faction, deux fois plus grande qu'un curseur ; le bout de l'index pointe la cible.
+- **Padding** : 48 px du bord de la fenêtre sur tous les écrans (`--spacing-game`, `src/index.css`) ; les fonds et les unités qui errent vont jusqu'au bord, et en bataille la tour et le terrain aussi. Les éléments « dans un coin » (portrait, solde, menu, fontaine, « Retour ») sont collés au padding.
+- **Fond des écrans** : dégradé vertical de #2a2c2f (haut) à #838796 (bas), sur toute la fenêtre. Fond noir (#171717) pour l'intro, le choix de faction et la bataille (où il remplit l'espace que le terrain laisse libre) ; la tour de bataille garde son propre fond, et le château de l'accueil recouvre le dégradé.
+- **Plein écran** : « Partir en guerre », les unités, « Armées » et Invocation occupent tout l'écran. En-tête commun en haut à gauche : une flèche ◀ sans cadre (le « Retour ») puis le titre, et dessous un séparateur (DividerD recoloré en gris très foncé) ; le contenu défile si besoin (`src/ui/ScreenLayout.jsx`). Grilles et listes remplissent la largeur.
+- **Page de détail d'un individu** : flèches ◀ ▶ sans cadre de bouton, à gauche et à droite, centrées en hauteur.
+- **Tags d'une unité** (page de détail seulement) : son type d'attaque — « Corps-à-corps », « Tirs », ou les deux pour Fafnir — puis ses keywords (« Légendaire », « Vol »).
 
 | Composant | Sprite | Comportement |
 |---|---|---|
-| Bouton | ButtonA (34 × 18) | Repos : liseré gris (secondaire) ou blanc (principal), rouge pour « destructive ». Survol : liseré blanc, violet pour le bouton principal. Clic : enfoncé. |
-| Carte | PanelLarge noir (48 × 48) | Panneau noir à liseré gris ; le contenu passe en thème sombre. Plus utilisée par les écrans de la couche méta (voir ci-dessous). |
-| Panneau de ligne ou de case | PanelLarge noir (48 × 48) | Lignes des bilans de victoire et de défaite, lignes de la liste d'invocation (éclaircies au survol), accordéons des espèces (Armées), cases des monstres du choix de faction. |
-| Panneau uni | Panel noir (48 × 48) | Solde de Spirit Stones, menu des paramètres, titre « Choisis ta faction », champ de renommage d'une armée. |
-| Boîte de confirmation | PanelLarge noir (48 × 48), boutons ButtonA | Réinitialiser le jeu, abandonner la bataille, réinvoquer le [Légendaire] : cadre du pack, contenu en thème sombre ; « Annuler » au liseré gris, l'action au liseré blanc. |
-| Infobulle | SpeechTooltip noir (32 × 32) | Liseré gris, fond noir, sans flèche : liste de déploiement, ordres de la tour, Spirit Fountain. |
-| Bulle de tutoriel | Speech blanc (32 × 32) | Liseré blanc, fond noir (`technical.md` 5.5). |
-| Badge | Bannières (64 × 15), hauteur fixe 30 px | Liseré blanc (par défaut), gris (secondaire), doré ou menthe (niveaux, faction du joueur). |
-| Barre d'XP | RegularBarA | Couleur de la faction du joueur. |
-| Case d'un groupe d'individus (écran des unités) | PanelLarge noir (48 × 48) | Case carrée par groupe d'individus strictement identiques (même niveau) : sprite, puis nom et « niv X » en couleur de la faction ; un groupe de plusieurs individus porte un **carré en haut à gauche** de la case (Panels/Black/GridPanelInactive du pack) avec leur nombre (« 3x ») — rien pour un individu seul ; case d'une espèce [Légendaire] avec un **panneau doré** (Gold/PanelLarge) et des **coins dorés** (Decorators/Gold/BorderC) ; grille qui remplit la largeur. |
-| Menu de l'accueil | — | Quatre entrées sur le bord gauche de l'écran (marge de 20 px en plus du padding), centrées en hauteur puis remontées de 20 px (entre le portrait et la fontaine), alignées à gauche, sans cadre de bouton ni séparateur : texte rétro, violet clair au survol (doré chez les Wyrms). |
-| Espèce sélectionnée (Invocation) | BorderC (11 × 11, à 2×) | Quatre coins posés dans les coins de la ligne sélectionnée : dorés pour les Wyrms, violets pour les Morts-Vivants (à la place d'un cadre blanc). |
-| Séparateur d'en-tête (Partir en guerre, unités, Armées, Invocation) | DividerD noir (48 × 4) | Sous la flèche « Retour » et le titre, sur toute la largeur : sépare l'en-tête du contenu. Le pack n'a pas de DividerD noir : c'est le doré recoloré en gris très foncé. |
-| Portrait du souverain (accueil) | Frame noir (32 × 32) | Cadre en creux autour du sprite du souverain. |
-
+| Bouton | ButtonA (34 × 18) | repos : liseré gris (secondaire), blanc (principal), rouge (« destructive ») ; survol : blanc, violet pour le principal ; clic : enfoncé |
+| Panneau de ligne ou de case | PanelLarge noir (48 × 48) | bilans de victoire et de défaite, liste d'invocation (éclaircie au survol), accordéons de l'écran Armées, cases du choix de faction |
+| Panneau uni | Panel noir (48 × 48) | solde, menu des paramètres, titre « Choisis ta faction », champ de renommage de l'armée |
+| Carte | PanelLarge noir (48 × 48) | liseré gris, contenu en thème sombre (plus utilisée par la couche méta) |
+| Boîte de confirmation | PanelLarge noir, boutons ButtonA | réinitialiser, abandonner, réinvoquer : « Annuler » au liseré gris, l'action au liseré blanc |
+| Infobulle | SpeechTooltip noir (32 × 32) | liseré gris, sans flèche : tour de bataille, Spirit Fountain |
+| Bulle de tutoriel | Speech blanc (32 × 32) | liseré blanc, fond noir |
+| Badge | bannières (64 × 15), hauteur 30 px | liseré blanc (défaut), gris (secondaire), doré ou menthe (niveaux) |
+| Barre d'XP | RegularBarA | couleur de la faction du joueur |
+| Case d'un groupe d'individus (écran des unités) | PanelLarge noir | sprite, nom et « niv X » ; nombre (« 3x ») dans un carré en haut à gauche (GridPanelInactive), à partir de 2 ; [Légendaire] : panneau doré (Gold/PanelLarge) et coins dorés (Decorators/Gold/BorderC) |
+| Espèce sélectionnée (Invocation) | BorderC (11 × 11, à 2×) | quatre coins dans les coins de la ligne, dorés ou violets, au lieu d'un cadre |
+| Portrait du souverain | Frame noir (32 × 32) | cadre en creux |
