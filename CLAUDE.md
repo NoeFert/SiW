@@ -8,6 +8,8 @@ Jeu de stratégie autobattler en JavaScript : Phaser 3 pour le champ de bataille
 
 **Assets disponibles** dans `assets/` (voir `assets/README.md` pour le détail) : sprites des six unités, des deux souverains et des rochers, et le background de la bataille.
 
+Rôle de chaque fichier de `SPECS/` (un fait, un seul endroit) : `SPECS/README.md`. Inutiles pour coder : `SPECS/archive/` (historique) et `SPECS/DECISIONS.md` (le pourquoi des valeurs).
+
 Lire dans cet ordre avant toute tâche de code :
 1. `SPECS/CONCEPT.md` — le jeu, les deux versions du projet et ce que contient le MVP
 2. `SPECS/ROADMAP.md` — périmètre exact de la v1 (ce qui est inclus/exclu)
@@ -18,7 +20,7 @@ Lire dans cet ordre avant toute tâche de code :
 
 Voir aussi `SPECS/AGENTIC-WORKFLOW.md` pour la boucle de travail attendue.
 
-**Refactor d'octobre 2026 terminé** : étapes, décisions et contrôles de fin d'étape dans `SPECS/refactor-roadmap.md` (historique).
+**Refactor d'octobre 2026 terminé** : étapes, décisions et contrôles de fin d'étape dans `SPECS/archive/refactor-roadmap.md` (historique).
 
 ## Règles de travail
 

@@ -1,6 +1,6 @@
 # TECHNICAL.md
 
-Les technologies choisies, pourquoi, et la stratégie de tests. Ce fichier couvre le **comment** — pour le **quoi** (comportement du jeu), voir `rules.md` et `units.md`.
+> **Rôle** : le comment — stack, architecture, écrans, stratégie de tests. Le comportement du jeu est dans `rules.md` et `units.md`. Index des fichiers : `README.md`.
 
 ---
 

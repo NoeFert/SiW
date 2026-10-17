@@ -1,6 +1,6 @@
 # UI / UX — Écran de bataille : décisions de design
 
-Récapitulatif de la session de travail sur l'interface. Complète `rules.md`, `technical.md` et `roadmap.md`.
+> **Rôle** : l'écran de bataille — disposition et comportement de l'interface. Les règles du jeu sont dans `rules.md`. Index des fichiers : `README.md`.
 
 **Méthode de travail en deux étapes :**
 1. **Description et reformulation** (étape en cours). Le designer du jeu décrit l'interface, et on vérifie qu'elle est bien comprise.

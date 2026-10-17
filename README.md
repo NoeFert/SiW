@@ -78,7 +78,7 @@ Détail de l'architecture : [`SPECS/technical.md`](SPECS/technical.md) section 2
 
 ## À corriger pour le MVP
 
-Le refactor d'octobre 2026 (`SPECS/refactor-roadmap.md`) a soldé une partie de cette dette : code mort (`findNearestEnemy`, `timeControl`), textes en dur de la Scene Phaser, assemblage de la bataille sorti de la Scene, sauvegarde réécrite (un seul profil, store Zustand). Reste :
+Le refactor d'octobre 2026 (`SPECS/archive/refactor-roadmap.md`) a soldé une partie de cette dette : code mort (`findNearestEnemy`, `timeControl`), textes en dur de la Scene Phaser, assemblage de la bataille sorti de la Scene, sauvegarde réécrite (un seul profil, store Zustand). Reste :
 
 - Sauvegarde : vérifier le comportement avec un localStorage corrompu ou bloqué depuis le passage à Zustand (`src/state/profileStore.js`).
 - Au premier tick d'une fuite, un ennemi peut frapper deux fois (coup normal et dernière attaque).

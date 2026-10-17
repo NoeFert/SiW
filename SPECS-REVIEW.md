@@ -2,7 +2,7 @@
 
 Produit par `/spec-reviewer` le 2026-10-15, juste après l'intégration de `SPECS/strategic-depth.md` par `/enricher` (dégâts de zone des [Légendaire], zone de déploiement réduite, XP de survie partagée).
 
-Fichiers relus ensemble : `CONCEPT.md`, `rules.md`, `units.md`, `roadmap.md`, `roadmap-mvp.md`, `technical.md`, `GRAPHICS.md`, `ui-battle-screen-decisions.md`, `AGENTIC-WORKFLOW.md`, `strategic-depth.md`. Documents historiques non audités : `refactor-roadmap.md`, `FEEDBACK-POC.md`.
+Fichiers relus ensemble : `CONCEPT.md`, `rules.md`, `units.md`, `roadmap.md`, `roadmap-mvp.md`, `technical.md`, `GRAPHICS.md`, `ui-battle-screen-decisions.md`, `AGENTIC-WORKFLOW.md`, `strategic-depth.md`. Documents historiques non audités (depuis rangés dans `SPECS/archive/`) : `refactor-roadmap.md`, `FEEDBACK-POC.md`.
 
 ---
 

@@ -1,6 +1,6 @@
 # UNITS.md — Scope v1
 
-Stats des unités des deux factions. Ce fichier contient des **données**, pas des règles — pour le fonctionnement des mécaniques (comment le corps-à-corps, le tir à distance, les aptitudes se comportent), voir `rules.md`.
+> **Rôle** : les données — les stats des unités des deux factions. Le fonctionnement des mécaniques (corps-à-corps, tir, aptitudes) est dans `rules.md`. Index des fichiers : `README.md`.
 
 **Plafond simultané sur le terrain, pour chaque camp (joueur ou IA) : 150 points de présence** (plafond vivant, voir `rules.md` 2). À ne pas confondre avec le plafond de l'armée du joueur, 500 points (`rules.md` 11.2). Le joueur choisit l'une des deux factions, l'IA joue l'autre (`rules.md` 9).
 

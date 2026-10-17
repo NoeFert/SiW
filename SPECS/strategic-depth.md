@@ -1,5 +1,7 @@
 # STRATEGIC-DEPTH.md — Profondeur stratégique des batailles
 
+> **Rôle** : les pistes de profondeur stratégique — retenues (devenues des règles) et autres idées. Rien ici n'est à coder tel quel. Index des fichiers : `README.md`.
+
 Pistes pour que le choix des unités, leur placement et le nombre déployé comptent dans une bataille. Les pistes retenues sont désormais des règles (`rules.md`, `units.md`) : en cas d'écart, les règles font foi. Les « Autres idées » n'en sont pas : chacune devrait passer par `/enricher` avant d'être codée, et leurs valeurs sont des exemples.
 
 ---

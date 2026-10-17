@@ -1,5 +1,7 @@
 # AGENTIC-WORKFLOW.md — Travailler avec l'IA
 
+> **Rôle** : la méthode — la boucle de travail avec l'IA. Index des fichiers : `README.md`.
+
 Le code du jeu est écrit avec **Claude Code**. Les décisions de game design, les règles et la validation restent de mon côté : l'IA implémente, elle ne décide pas.
 
 ## Ma boucle de travail

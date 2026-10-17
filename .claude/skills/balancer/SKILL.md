@@ -34,7 +34,8 @@ Une seule question à la fois. Attends la réponse avant de continuer. Présente
 
 - `SPECS/units.md` : stats, coûts, copies de départ.
 - `SPECS/rules.md` : section 7 (scripts de l'IA), 8 (victoire, défaite, match nul), 10 (valeurs provisoires de l'économie), 11 (individus, armée, Spirit Stones, invocation, niveaux, « Partir en guerre », Spirit Fountain).
-- `SPECS/roadmap-mvp.md` : « Points encore ouverts » (valeurs provisoires à chiffrer).
+- `SPECS/roadmap-mvp.md` : « Points ouverts » (renvoie aux valeurs provisoires de `rules.md` 10).
+- `SPECS/DECISIONS.md` : le pourquoi des valeurs déjà tranchées.
 - `BALANCE-REVIEW.md` s'il existe déjà : les décisions précédentes et les cibles fixées, pour ne pas revenir sur ce qui est tranché.
 - Le code, pour vérifier que les valeurs réelles correspondent aux specs : `src/data/` (rosters, scripts, batailles, map), `src/logic/levels.js`, `summon.js`, `fountain.js`, `war.js`, `victory.js`. Un écart code / specs est signalé comme tel : ce n'est pas un problème d'équilibre, c'est un bug ou une spec à mettre à jour.
 

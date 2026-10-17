@@ -1,5 +1,7 @@
 # GRAPHICS.md — Direction artistique
 
+> **Rôle** : l'apparence — direction artistique, assets, effets visuels. Les règles du jeu sont dans `rules.md`. Index des fichiers : `README.md`.
+
 ## Intention
 
 **Dark fantasy rétro.** Des souverains masqués et des monstres effrayamt dessinés en pixel art, sur un champ de bataille sombre et peu engageant. L'interface reprend le même esprit : composants shadcn/8bitcn (`TECHNICAL.md` section 1) habillés avec les sprites du pack **Pixel UI & HUD** (section « Interface » ci-dessous).

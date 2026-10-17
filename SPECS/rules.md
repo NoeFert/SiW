@@ -1,8 +1,6 @@
 # RULES.md — Scope v1
 
-Règles du jeu en détail, chiffrées. Chaque ligne doit être vérifiable en jouant une bataille.
-
-Ce fichier couvre le **scope v1** : le moteur de bataille (sections 1 à 9) et la couche méta du MVP (section 11 : individus, armée, Spirit Stones, invocation, niveaux). Voir `roadmap.md` et `roadmap-mvp.md` pour ce qui est repoussé en suite.
+> **Rôle** : le quoi — les règles du scope v1, chiffrées et testables : moteur de bataille (sections 1 à 9), couche méta (section 11). Le pourquoi des valeurs est dans `DECISIONS.md`, les stats des unités dans `units.md`. Index des fichiers : `README.md`.
 
 ---
 

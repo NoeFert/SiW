@@ -1,5 +1,7 @@
 # CONCEPT.md — Sovereign in War
 
+> **Rôle** : le pourquoi — le jeu, l'objectif du joueur, ce que contient le MVP. Pas de règle chiffrée (→ `rules.md`). Index des fichiers : `README.md`.
+
 ## Le jeu en une phrase
 
 Un jeu de stratégie en temps réel où le joueur, souverain d'une espèce de monstres, déploie ses troupes sur un champ de bataille puis les regarde combattre seules, en n'intervenant que par quelques ordres rares et bien choisis.
