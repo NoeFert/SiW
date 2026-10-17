@@ -1,6 +1,6 @@
 import Grid from './grid.js';
 import { createAiScriptState } from './aiScript.js';
-import { isValidDeploymentPosition } from './deployment.js';
+import { isFreeBetweenColumns } from './deployment.js';
 
 // rules.md 7.3 : bataille en plusieurs phases (« Partir en guerre »). Une phase = un script IA et
 // une zone (obstacles). Quand l'IA a déployé tout le script de la phase et qu'il ne lui reste
@@ -35,13 +35,15 @@ export function startPhaseTransition(battle) {
   battle.orderSelection = null;
 }
 
-// Case la plus à gauche libre sur la rangée `y` de la zone du joueur, sinon sur la rangée la
-// plus proche : l'unité entre par la gauche, à la même hauteur si possible.
+// Case la plus à gauche libre sur la rangée `y` de la moitié du joueur, sinon sur la rangée la
+// plus proche : l'unité entre par la gauche, à la même hauteur si possible. C'est une arrivée,
+// pas un déploiement : elle n'est pas limitée à la zone de déploiement (rules.md 2).
 function entryPosition(grid, unit, placed) {
+  const halfWidth = Math.floor(grid.width / 2);
   for (let dy = 0; dy < grid.height; dy++) {
     for (const row of dy === 0 ? [unit.y] : [unit.y - dy, unit.y + dy]) {
-      for (let x = 0; x < Math.floor(grid.width / 2); x++) {
-        if (isValidDeploymentPosition(grid, 'player', unit.species, x, row, placed)) return { x, y: row };
+      for (let x = 0; x < halfWidth; x++) {
+        if (isFreeBetweenColumns(grid, unit.species, x, row, placed, 0, halfWidth)) return { x, y: row };
       }
     }
   }

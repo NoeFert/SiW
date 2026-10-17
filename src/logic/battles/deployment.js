@@ -100,53 +100,66 @@ export function getTowerRows(state, faction, unitsOnField) {
 // ui-battle-screen-decisions.md 2.2 : cases affichées dans la tour, à partir de getTowerRows.
 // Par défaut, toutes les lignes d'une espèce sont regroupées en une seule case (niveaux et PV
 // confondus) : son `count` est le total de l'espèce, et ses autres champs (niveau, PV,
-// `copyChoice`) sont ceux de sa première ligne — l'individu de plus haut niveau, puis aux PV les
-// plus hauts, qui est donc le prochain déployé. `minLevel` / `maxLevel` : tranche des niveaux de
-// la case (un seul niveau pour une case dégroupée). Une espèce présente dans `ungroupedSpecies`
-// garde ses lignes séparées (déploiement du niveau et des PV choisis). La première case de chaque
-// espèce porte `speciesHead` ; `groupable` est vrai si l'espèce a plusieurs lignes (le
-// regroupement change alors quelque chose) et `grouped` dit si elle est regroupée.
+// `copyChoice`) sont ceux du prochain individu déployé — le premier intact (plus haut niveau),
+// les blessés passant en dernier (plus haut niveau, puis PV les plus hauts). `minLevel` /
+// `maxLevel` : tranche des niveaux de la case (un seul niveau pour une case dégroupée). Une
+// espèce présente dans `ungroupedSpecies` garde ses lignes séparées (déploiement du niveau et
+// des PV choisis). La première case de chaque espèce porte `speciesHead` ; `groupable` est vrai
+// si l'espèce a plusieurs lignes (le regroupement change alors quelque chose) et `grouped` dit
+// si elle est regroupée.
 export function groupTowerRows(rows, ungroupedSpecies) {
-  const displayed = [];
-  const heads = new Map();
+  const rowsBySpecies = new Map();
   for (const row of rows) {
-    const head = heads.get(row.species);
-    if (!head) {
-      const first = {
+    if (!rowsBySpecies.has(row.species)) rowsBySpecies.set(row.species, []);
+    rowsBySpecies.get(row.species).push(row);
+  }
+
+  const displayed = [];
+  for (const [species, speciesRows] of rowsBySpecies) {
+    const groupable = speciesRows.length > 1;
+    if (ungroupedSpecies.has(species)) {
+      speciesRows.forEach((row, index) => displayed.push({
         ...row,
         minLevel: row.level,
         maxLevel: row.level,
-        speciesHead: true,
-        groupable: false,
-        grouped: !ungroupedSpecies.has(row.species),
-      };
-      heads.set(row.species, first);
-      displayed.push(first);
-    } else {
-      head.groupable = true;
-      if (head.grouped) {
-        head.count += row.count;
-        head.minLevel = Math.min(head.minLevel, row.level);
-        head.maxLevel = Math.max(head.maxLevel, row.level);
-      } else {
-        displayed.push({ ...row, minLevel: row.level, maxLevel: row.level });
-      }
+        ...(index === 0 && { speciesHead: true, groupable, grouped: false }),
+      }));
+      continue;
     }
+    const levels = speciesRows.map((row) => row.level);
+    displayed.push({
+      ...(speciesRows.find((row) => !row.wounded) ?? speciesRows[0]),
+      count: speciesRows.reduce((sum, row) => sum + row.count, 0),
+      minLevel: Math.min(...levels),
+      maxLevel: Math.max(...levels),
+      speciesHead: true,
+      groupable,
+      grouped: true,
+    });
   }
   return displayed;
 }
 
-// rules.md 1/2 : une position de déploiement doit rester dans les limites du terrain, sur la
-// moitié du camp concerné, hors obstacle, et libre de toute autre unité déjà présente.
-// Vérifiée à part : `deployUnit` ne connaît pas la grille.
-export function isValidDeploymentPosition(grid, faction, species, x, y, unitsOnField) {
-  const halfWidth = Math.floor(grid.width / 2);
-  const withinHalf = faction === 'player'
-    ? x >= 0 && x + species.size <= halfWidth
-    : x >= halfWidth && x + species.size <= grid.width;
-  if (!withinHalf) return false;
+// rules.md 2 : le joueur ne déploie que dans le premier quart du terrain (colonnes 0 à 5 sur 24).
+export function playerDeploymentColumns(grid) {
+  return Math.floor(grid.width / 4);
+}
 
+// Bloc entier entre les colonnes `fromX` (incluse) et `toX` (exclue), hors obstacle et libre de
+// toute autre unité déjà présente.
+export function isFreeBetweenColumns(grid, species, x, y, unitsOnField, fromX, toX) {
+  if (x < fromX || x + species.size > toX) return false;
   return isPositionFree(x, y, species.size, grid, occupiedCells(unitsOnField, null), false);
+}
+
+// rules.md 1/2 : une position de déploiement doit être dans la zone de déploiement du camp — le
+// premier quart du terrain pour le joueur, la moitié droite pour l'IA (qui entre en fait par le
+// bord droit, aiScript.js) —, bloc 2×2 compris. Vérifiée à part : `deployUnit` ne connaît pas
+// la grille.
+export function isValidDeploymentPosition(grid, faction, species, x, y, unitsOnField) {
+  return faction === 'player'
+    ? isFreeBetweenColumns(grid, species, x, y, unitsOnField, 0, playerDeploymentColumns(grid))
+    : isFreeBetweenColumns(grid, species, x, y, unitsOnField, Math.floor(grid.width / 2), grid.width);
 }
 
 // Prélève une copie fraîche (jamais déployée) d'un niveau donné (`null` : la première venue,

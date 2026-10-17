@@ -4,7 +4,9 @@
 // --- Individus (rules.md 11.6) ---
 
 export const INDIVIDUAL_MAX_LEVEL = 5;
-export const SURVIVAL_XP = 40;
+// rules.md 11.6 : réserve d'XP de survie d'une bataille, partagée entre les individus déployés
+// (provisoire, rules.md 10).
+export const SURVIVAL_XP_POOL = 200;
 
 // rules.md 11.5 / 11.6 : au rejeu d'une bataille de « Partir en guerre » déjà gagnée, le joueur
 // et les individus gagnent 25 % de leur XP, arrondi à l'entier inférieur.
@@ -54,19 +56,23 @@ export function levelDamage(damage, level) {
 
 // rules.md 11.6 : XP gagnée par chaque individu du joueur à la victoire, à partir des unités de
 // la bataille (`battle.units` : une instance par déploiement, qui reste dans la liste après une
-// mort ou une fuite). Un individu déployé et vivant à la fin gagne 40 + le coût des ennemis
-// qu'il a achevés (`killXp`, cumulé sur tous ses déploiements) ; un individu mort ne gagne rien.
+// mort ou une fuite). Un individu déployé et vivant à la fin gagne sa part de la réserve de
+// survie (200 / nombre d'individus déployés, morts compris, arrondi inférieur ; un individu
+// déployé plusieurs fois compte une fois) + le coût des ennemis qu'il a achevés (`killXp`,
+// cumulé sur tous ses déploiements) ; un individu mort ne gagne rien, sa part est perdue.
 // `replay` : rejeu d'une bataille déjà gagnée, gains réduits à 25 % (replayXp).
 // Renvoie aussi les individus morts et leur niveau (mémoire du [Légendaire], rules.md 11.4).
 export function individualXpGains(battleUnits, replay = false) {
   const deployed = battleUnits.filter((u) => u.faction === 'player' && u.individualId);
   const dead = new Map(); // individualId -> niveau à la mort
   for (const unit of deployed) if (!unit.isAlive) dead.set(unit.individualId, unit.level);
+  const deployedCount = new Set(deployed.map((u) => u.individualId)).size;
+  const survivalShare = deployedCount > 0 ? Math.floor(SURVIVAL_XP_POOL / deployedCount) : 0;
 
   const gains = new Map();
   for (const unit of deployed) {
     if (dead.has(unit.individualId)) continue;
-    const previous = gains.get(unit.individualId) ?? SURVIVAL_XP;
+    const previous = gains.get(unit.individualId) ?? survivalShare;
     gains.set(unit.individualId, previous + unit.killXp);
   }
   if (replay) for (const [id, xp] of gains) gains.set(id, replayXp(xp));

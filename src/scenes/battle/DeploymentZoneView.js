@@ -1,8 +1,9 @@
 import { CELL_SIZE, factionColor } from '../../renderConstants.js';
+import { playerDeploymentColumns } from '../../logic/battles/deployment.js';
 
 const BORDER = 3; // épaisseur du liseré, en px
 
-// rules.md 2 : halo sur la moitié gauche du terrain (zone de déploiement du joueur, voir
+// rules.md 2 : halo sur le premier quart du terrain (zone de déploiement du joueur, voir
 // isValidDeploymentPosition), visible uniquement pendant un glisser depuis la tour. Les cases de
 // rochers en sont exclues : on n'y déploie pas. Couleur de la faction du joueur ; le liseré suit
 // le contour de la zone, rochers compris, tracé à l'intérieur des cases de la zone.
@@ -14,7 +15,7 @@ export default class DeploymentZoneView {
 
   // Redessine la zone pour la grille `grid` (celle de la phase affichée).
   draw(grid) {
-    const zoneColumns = Math.floor(grid.width / 2);
+    const zoneColumns = playerDeploymentColumns(grid);
     const inZone = (x, y) => x < zoneColumns && grid.isFree(x, y);
     const far = CELL_SIZE - BORDER;
     const zone = this.graphics.clear();

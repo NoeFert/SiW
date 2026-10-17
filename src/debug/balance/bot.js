@@ -3,7 +3,9 @@
 // d'espèces, et ne donne jamais d'ordre (ni focus, ni fuite) : une borne basse de ce qu'un
 // humain obtient.
 import { deployPlayerUnit } from '../../logic/battles/playerActions.js';
-import { getPresenceUsed, isValidDeploymentPosition, PRESENCE_CAP } from '../../logic/battles/deployment.js';
+import {
+  getPresenceUsed, isValidDeploymentPosition, playerDeploymentColumns, PRESENCE_CAP,
+} from '../../logic/battles/deployment.js';
 
 export const STRATEGIES = ['basics', 'flyers', 'mixed', 'legendaryFirst'];
 
@@ -32,14 +34,14 @@ function hasCopy(battle, species) {
   return state.freshRemaining > 0 || state.returning.length > 0;
 }
 
-// Case de déploiement : la colonne la plus avancée de la moitié gauche, puis la rangée la plus
-// proche du centre. Déterministe, pour que seul le seed de l'IA fasse varier les batailles.
+// Case de déploiement : la colonne la plus avancée de la zone de déploiement, puis la rangée la
+// plus proche du centre. Déterministe, pour que seul le seed de l'IA fasse varier les batailles.
 function deploymentPosition(battle, species, unitsOnField) {
   const { grid } = battle;
   const center = (grid.height - species.size) / 2;
   const rows = Array.from({ length: grid.height - species.size + 1 }, (_, y) => y)
     .sort((a, b) => Math.abs(a - center) - Math.abs(b - center) || a - b);
-  for (let x = Math.floor(grid.width / 2) - species.size; x >= 0; x--) {
+  for (let x = playerDeploymentColumns(grid) - species.size; x >= 0; x--) {
     for (const y of rows) {
       if (isValidDeploymentPosition(grid, 'player', species, x, y, unitsOnField)) return { x, y };
     }

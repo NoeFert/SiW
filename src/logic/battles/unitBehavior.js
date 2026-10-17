@@ -152,6 +152,21 @@ function applyOnKillAbilities(attacker) {
   return healed;
 }
 
+// rules.md 4.6 : chaque attaque d'un [Légendaire] touche aussi les ennemis à 1 case de sa cible,
+// pour 50 % des dégâts de l'attaque (niveau et Attaque dévastatrice compris), arrondis au plus
+// proche (0,5 au-dessus) — provisoire, rules.md 10.
+export const ZONE_DAMAGE_PERCENT = 50;
+
+function zoneDamage(damage) {
+  return Math.floor((damage * ZONE_DAMAGE_PERCENT + 50) / 100);
+}
+
+// Ennemis de l'attaquant (jamais ses alliés) à 1 case de la cible, à l'instant de l'attaque.
+function zoneVictims(attacker, target, units) {
+  return units.filter((u) => u.isOnField && u.faction !== attacker.faction && u !== target
+    && minDistanceBetweenFootprints(u, target) === 1);
+}
+
 function isOnEdge(x, y, size, grid) {
   return footprint(x, y, size).some(
     ({ x: cx, y: cy }) => cx === 0 || cy === 0 || cx === grid.width - 1 || cy === grid.height - 1,
@@ -220,7 +235,11 @@ function processMoveCommand(unit, grid, aliveUnits, deltaSeconds) {
 // tick tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal pour
 // les aptitudes — sauf s'il meurt lui-même ce tick (un mort ne se soigne pas) — mais un seul
 // gagne l'XP du coup fatal (rules.md 11.6).
-function applyAttacks(pendingAttacks) {
+// Dégâts de zone d'un [Légendaire] (rules.md 4.6) : appliqués au même instant, comme des coups de
+// l'attaquant sur chaque victime (coup fatal, XP et Soif de sang compris) ; un évènement
+// 'zoneHit' par victime. Ni la paralysie, ni les compteurs d'aptitude ne les voient, et la
+// dernière attaque gratuite sur une unité qui fuit (`free`) n'a pas de zone.
+function applyAttacks(pendingAttacks, units) {
   const events = [];
   const landed = [];
   const toParalyze = [];
@@ -241,6 +260,13 @@ function applyAttacks(pendingAttacks) {
     events.push(...triggered);
     if (paralyzes > 0) toParalyze.push({ target, attacks: paralyzes });
     landed.push({ attacker, target, damage, targetWasAlive: target.isAlive });
+
+    if (attacker.isLegendary && !free) {
+      for (const victim of zoneVictims(attacker, target, units)) {
+        events.push({ type: 'zoneHit', unit: attacker, target: victim });
+        landed.push({ attacker, target: victim, damage: zoneDamage(damage), targetWasAlive: victim.isAlive });
+      }
+    }
   }
 
   for (const { target, damage } of landed) target.takeDamage(damage);
@@ -344,5 +370,5 @@ export function updateUnitBehaviors(units, grid, deltaSeconds) {
     }
   }
 
-  return applyAttacks(pendingAttacks);
+  return applyAttacks(pendingAttacks, aliveUnits);
 }

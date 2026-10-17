@@ -57,18 +57,31 @@ const battleUnit = (individualId, { alive = true, killXp = 0, level = 1, faction
 });
 
 describe('XP des individus à la victoire (rules.md 11.6)', () => {
-  test('+40 pour un individu déployé et vivant, + coût des ennemis achevés', () => {
+  test('réserve de survie de 200 partagée entre les déployés, + coût des ennemis achevés', () => {
     const { gains } = individualXpGains([battleUnit('a'), battleUnit('b', { killXp: 16 })]);
-    expect(gains.get('a')).toBe(40);
-    expect(gains.get('b')).toBe(56);
+    expect(gains.get('a')).toBe(100);
+    expect(gains.get('b')).toBe(116);
+  });
+
+  test('les morts comptent dans le partage, leur part est perdue (8 déployés dont 2 morts : 25 chacun)', () => {
+    const units = ['a', 'b', 'c', 'd', 'e', 'f'].map((id) => battleUnit(id));
+    units.push(battleUnit('g', { alive: false }), battleUnit('h', { alive: false }));
+    const { gains } = individualXpGains(units);
+    expect(gains.size).toBe(6);
+    expect([...gains.values()].every((xp) => xp === 25)).toBe(true);
+  });
+
+  test('part arrondie à l\'entier inférieur (3 déployés : 66)', () => {
+    const { gains } = individualXpGains([battleUnit('a'), battleUnit('b'), battleUnit('c')]);
+    expect(gains.get('a')).toBe(66);
   });
 
   test('rejeu : 25 % du total (survie + kills), arrondi inférieur', () => {
     const { gains, dead } = individualXpGains([
       battleUnit('a'), battleUnit('b', { killXp: 16 }), battleUnit('c', { alive: false, level: 2 }),
     ], true);
-    expect(gains.get('a')).toBe(10);
-    expect(gains.get('b')).toBe(14); // 56 × 25 % = 14
+    expect(gains.get('a')).toBe(16); // part de 66 (3 déployés) × 25 % = 16
+    expect(gains.get('b')).toBe(20); // (66 + 16) × 25 % = 20
     expect(dead.get('c')).toBe(2); // les morts restent comptés
   });
 
@@ -78,9 +91,9 @@ describe('XP des individus à la victoire (rules.md 11.6)', () => {
     expect(dead.get('a')).toBe(4);
   });
 
-  test('plusieurs déploiements (fuite puis retour) : kills cumulés, survie comptée une fois', () => {
+  test('plusieurs déploiements (fuite puis retour) : kills cumulés, individu compté une fois dans le partage', () => {
     const { gains } = individualXpGains([battleUnit('a', { killXp: 6 }), battleUnit('a', { killXp: 25 })]);
-    expect(gains.get('a')).toBe(71);
+    expect(gains.get('a')).toBe(231); // seul déployé : 200 + 6 + 25
   });
 
   test('mort après une fuite et un redéploiement : rien', () => {

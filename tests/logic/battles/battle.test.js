@@ -29,7 +29,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
   test('deployPlayerUnit ajoute l\'unité à la bataille et signale la pause', () => {
     const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
 
-    const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
+    const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 1, 5);
 
     expect(result.success).toBe(true);
     expect(battle.units).toContain(result.unit);
@@ -37,7 +37,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
 
   test('une bataille minimale se termine par une victoire du joueur une fois l\'IA éliminée', () => {
     const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
-    deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
+    deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 1, 5);
 
     let outcome = 'ongoing';
     for (let t = 0; t < 10 && outcome === 'ongoing'; t++) {
@@ -119,7 +119,7 @@ describe('battle.js — câblage déploiement/combat/fin de bataille', () => {
 
   test('tickBattle expose les évènements d\'aptitude du tick dans battle.abilityEvents', () => {
     const battle = createBattle(new Grid(10, 10), testFaction(PLAYER_ROSTER), testFaction(ENEMY_ROSTER), ENEMY_SCRIPT);
-    deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 4, 5);
+    deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 1, 5);
 
     tickBattle(battle, 1);
 

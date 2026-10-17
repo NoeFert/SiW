@@ -134,11 +134,11 @@ describe('déroulé : ordre, unité, cible (rules.md 5)', () => {
 
   test('cliquer une autre unité du joueur change l\'unité sélectionnée', () => {
     const { battle, unit } = setup();
-    const { unit: other } = deployPlayerUnit(battle, ROSTER.fighter, 2, 5);
+    const { unit: other } = deployPlayerUnit(battle, ROSTER.fighter, 0, 5);
     chooseOrder(battle, 'attack');
 
     clickField(battle, 1, 1);
-    clickField(battle, 2, 5);
+    clickField(battle, 0, 5);
 
     expect(battle.orderSelection.unit).toBe(other);
     expect(unit.command).toBeNull();
@@ -221,12 +221,12 @@ describe('éléments cliquables mis en valeur (ui-battle-screen-decisions.md 3)'
     expect(getClickableHighlights(battle)).toEqual({ zone: null, unitIds: new Set() });
   });
 
-  test('drag de déploiement : la moitié du joueur', () => {
+  test('drag de déploiement : la zone de déploiement du joueur (premier quart, rules.md 2)', () => {
     const { battle } = setup();
     startDeploymentDrag(battle);
 
     expect(getClickableHighlights(battle)).toEqual({
-      zone: { x: 0, y: 0, width: 5, height: 10 }, unitIds: new Set(),
+      zone: { x: 0, y: 0, width: 2, height: 10 }, unitIds: new Set(),
     });
   });
 });

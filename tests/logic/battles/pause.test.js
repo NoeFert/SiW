@@ -177,7 +177,7 @@ describe('actions pendant la pause principale (rules.md 5.2)', () => {
     for (let y = 0; y < 10; y++) deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 0, y);
     for (let y = 0; y < 5; y++) deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 1, y); // 150 points
 
-    const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 2, 0);
+    const result = deployPlayerUnit(battle, PLAYER_ROSTER.fighter, 1, 6); // case libre de la zone
 
     expect(result.success).toBe(false);
     expect(result.reason).toBe('presenceCapExceeded');

@@ -72,6 +72,31 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
     expect([deployLambton(), deployLambton(), deployLambton()]).toEqual([3, 1, 1]);
   });
 
+  test('regroupée, l\'espèce déploie les intacts d\'abord, les blessés en dernier (même de plus haut niveau)', () => {
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
+    const veteran = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 3, hp: 48 }).unit;
+    veteran.hp = 30;
+    recordReturn(state, veteran); // le niveau 3 revient blessé de fuite
+    const deployLambton = () => {
+      const [tile] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
+      const { unit } = deployUnit(state, 'player', tile.species, 0, 0, [], tile.copyChoice);
+      return [unit.level, unit.hp];
+    };
+
+    expect([deployLambton(), deployLambton(), deployLambton()]).toEqual([[1, 40], [1, 40], [3, 30]]);
+  });
+
+  test('regroupée : la case affiche le prochain individu déployé (intact) et le total de l\'espèce', () => {
+    const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
+    const veteran = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 3, hp: 48 }).unit;
+    veteran.hp = 30;
+    recordReturn(state, veteran);
+
+    const [lambtons] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
+
+    expect(lambtons).toMatchObject({ count: 3, level: 1, hp: 40, wounded: false, minLevel: 1, maxLevel: 3 });
+  });
+
   test('déployer une ligne déploie un individu de ce niveau, avec ses stats', () => {
     const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const [row] = getTowerRows(state, 'player', []);

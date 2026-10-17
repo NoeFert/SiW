@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/8bit/button.jsx';
 import { continueTutorial, visibleTutorialStep, weakestPlayerUnit } from '../logic/battles/tutorial.js';
+import { playerDeploymentColumns } from '../logic/battles/deployment.js';
 import { canvasToScreen, getCanvasRect, gridToScreen } from '../renderConstants.js';
 import {
   TutorialBubble, TutorialHand, elementCenter, handPosition,
@@ -14,9 +15,9 @@ const HAND_TARGETS = {
   basicUnitPresenceTag: () => elementCenter('[data-tutorial="basic-unit"] [data-tutorial="presence-tag"]'),
   presenceGauge: () => elementCenter('[data-tutorial="presence-gauge"]'),
   fleeOrder: () => elementCenter('[data-tutorial="order-flee"]'),
-  // Centre de la zone de déploiement du joueur (moitié gauche du terrain).
+  // Centre de la zone de déploiement du joueur (premier quart du terrain, rules.md 2).
   deploymentZone: ({ battle, canvasRect }) => canvasRect
-    && gridToScreen(canvasRect, Math.floor(battle.grid.width / 4), Math.floor(battle.grid.height / 2)),
+    && gridToScreen(canvasRect, Math.floor(playerDeploymentColumns(battle.grid) / 2), Math.floor(battle.grid.height / 2)),
   weakestPlayerUnit: (context) => unitOnScreen(context, weakestPlayerUnit(context.battle)),
 };
 

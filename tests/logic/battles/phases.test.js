@@ -29,7 +29,7 @@ const PHASE_2_OBSTACLES = [{ x: 9, y: 0 }];
 function twoPhaseBattle() {
   const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), PHASE_1_SCRIPT, () => 0);
   setUpcomingPhases(battle, [{ enemyScript: PHASE_2_SCRIPT, obstacles: PHASE_2_OBSTACLES }]);
-  const { unit } = deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
+  const { unit } = deployPlayerUnit(battle, ROSTER.fighter, 1, 4);
   unit.hp = 60;
   tickBattle(battle, 0.1);
   return { battle, unit };
@@ -63,7 +63,7 @@ describe('fin de phase (rules.md 7.3)', () => {
   test('pas de transition tant que le script de la phase n\'est pas épuisé', () => {
     const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
     setUpcomingPhases(battle, [{ enemyScript: PHASE_2_SCRIPT, obstacles: [] }]);
-    deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
+    deployPlayerUnit(battle, ROSTER.fighter, 1, 4);
     tickBattle(battle, 0.1);
     killEnemies(battle);
 
@@ -74,7 +74,7 @@ describe('fin de phase (rules.md 7.3)', () => {
 
   test('sans phase suivante, pas de transition : la victoire est acquise (rules.md 8.1)', () => {
     const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), PHASE_1_SCRIPT, () => 0);
-    deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
+    deployPlayerUnit(battle, ROSTER.fighter, 1, 4);
     tickBattle(battle, 0.1);
     killEnemies(battle);
 
@@ -125,7 +125,7 @@ describe('entrée dans la phase suivante (rules.md 7.3)', () => {
 
   test('les morts de la phase 1 ne reviennent pas', () => {
     const { battle, unit } = twoPhaseBattle();
-    const { unit: dead } = deployPlayerUnit(battle, ROSTER.fighter, 2, 2);
+    const { unit: dead } = deployPlayerUnit(battle, ROSTER.fighter, 1, 2);
     dead.hp = 0;
     killEnemies(battle);
     tickBattle(battle, 0.1);
@@ -157,7 +157,7 @@ describe('entrée dans la phase suivante (rules.md 7.3)', () => {
     finishTransition(battle);
 
     expect(startDeploymentDrag(battle)).toBe(true);
-    expect(deployPlayerUnit(battle, ROSTER.fighter, 2, 7).success).toBe(true);
+    expect(deployPlayerUnit(battle, ROSTER.fighter, 1, 7).success).toBe(true);
   });
 
   test('deux unités sur la même rangée : la suivante prend la case libre d\'à côté', () => {
@@ -181,7 +181,7 @@ describe('trois phases (rules.md 7.3)', () => {
       { enemyScript: PHASE_2_SCRIPT, obstacles: [{ x: 9, y: 0 }] },
       { enemyScript: PHASE_2_SCRIPT, obstacles: [{ x: 9, y: 9 }] },
     ]);
-    deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
+    deployPlayerUnit(battle, ROSTER.fighter, 1, 4);
 
     for (const expectedPhase of [1, 2]) {
       tickBattle(battle, 2.1); // la vague de la phase arrive
@@ -261,7 +261,7 @@ describe('victoire à la fin du script (rules.md 7.3)', () => {
 
   test('pas de victoire tant que l\'IA a encore des unités du script à déployer', () => {
     const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), [...PHASE_1_SCRIPT, { time: 50, species: ROSTER.fighter }], () => 0);
-    deployPlayerUnit(battle, ROSTER.fighter, 3, 4);
+    deployPlayerUnit(battle, ROSTER.fighter, 1, 4);
     tickBattle(battle, 0.1);
     killEnemies(battle);
 

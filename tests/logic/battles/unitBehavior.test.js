@@ -285,6 +285,102 @@ describe('aptitudes automatiques (rules.md 6, units.md)', () => {
   });
 });
 
+describe('dégâts de zone des [Légendaire] (rules.md 4.6)', () => {
+  // Fafnir (2x2 en 0,0) tire sur une cible en (4,0) : distance 3, à portée.
+  function fafnirShooting(others) {
+    const fafnir = new BattleUnit(WYRMS_ROSTER.fafnir, 'player', 0, 0);
+    const target = new BattleUnit(DUMMY, 'enemy', 4, 0);
+    fafnir.command = { type: 'attack', target };
+    return { fafnir, target, units: [fafnir, target, ...others] };
+  }
+
+  test('les ennemis à 1 case de la cible prennent 50 % des dégâts ; ni les alliés, ni les plus éloignés', () => {
+    const grid = new Grid(10, 10);
+    const neighbour = new BattleUnit(DUMMY, 'enemy', 5, 1); // diagonale de la cible
+    const far = new BattleUnit(DUMMY, 'enemy', 6, 0); // à 2 cases de la cible
+    const ally = new BattleUnit(DUMMY, 'player', 4, 1); // allié collé à la cible
+    const { fafnir, target, units } = fafnirShooting([neighbour, far, ally]);
+
+    const events = updateUnitBehaviors(units, grid, fafnir.species.attackSpeed);
+
+    expect(target.hp).toBe(DUMMY.maxHp - 30);
+    expect(neighbour.hp).toBe(DUMMY.maxHp - 15);
+    expect(far.hp).toBe(DUMMY.maxHp);
+    expect(ally.hp).toBe(DUMMY.maxHp);
+    expect(events).toContainEqual({ type: 'zoneHit', unit: fafnir, target: neighbour });
+    expect(fafnir.attacksLanded).toBe(1); // l'attaque et sa zone comptent une fois
+  });
+
+  test('la zone suit l\'Attaque dévastatrice (60 → 30) et les dégâts du niveau', () => {
+    const grid = new Grid(10, 10);
+    const neighbour = new BattleUnit(DUMMY, 'enemy', 5, 0);
+    const { fafnir, units } = fafnirShooting([neighbour]);
+    fafnir.attacksLanded = 4;
+
+    updateUnitBehaviors(units, grid, fafnir.species.attackSpeed);
+
+    expect(neighbour.hp).toBe(DUMMY.maxHp - 30);
+  });
+
+  test('arrondi au plus proche, 0,5 au-dessus : 45 au corps-à-corps → 23', () => {
+    const grid = new Grid(10, 10);
+    const fafnir = new BattleUnit(WYRMS_ROSTER.fafnir, 'player', 0, 0);
+    const target = new BattleUnit(DUMMY, 'enemy', 2, 0); // adjacent
+    const neighbour = new BattleUnit(DUMMY, 'enemy', 3, 0);
+
+    updateUnitBehaviors([fafnir, target, neighbour], grid, fafnir.species.attackSpeed);
+
+    expect(target.hp).toBe(DUMMY.maxHp - 45);
+    expect(neighbour.hp).toBe(DUMMY.maxHp - 23);
+  });
+
+  test('Athos : la paralysie ne touche que la cible ; Soif de sang et XP pour chaque ennemi tué par la zone', () => {
+    const grid = new Grid(10, 10);
+    const athos = new BattleUnit(UNDEAD_ROSTER.athos, 'enemy', 0, 0);
+    athos.attacksLanded = 3; // la prochaine attaque est la 4e : Frappe paralysante
+    athos.hp = 50;
+    const target = new BattleUnit(DUMMY, 'player', 4, 0);
+    const fragile = { ...DUMMY, maxHp: 25, cost: 10 }; // tué par les 25 de la zone
+    const victims = [new BattleUnit(fragile, 'player', 5, 0), new BattleUnit(fragile, 'player', 4, 1)];
+    athos.command = { type: 'attack', target };
+
+    updateUnitBehaviors([athos, target, ...victims], grid, athos.species.attackSpeed);
+
+    expect(target.hp).toBe(DUMMY.maxHp - 50);
+    expect(target.paralyzedAttacks).toBe(2);
+    expect(victims.every((v) => !v.isAlive && v.paralyzedAttacks === 0)).toBe(true);
+    expect(athos.hp).toBe(130); // 50 + 2 × 40
+    expect(athos.killXp).toBe(2 * fragile.cost);
+  });
+
+  test('la dernière attaque gratuite sur une unité qui fuit n\'a pas de zone (rules.md 5)', () => {
+    const grid = new Grid(10, 10);
+    const fafnir = new BattleUnit(WYRMS_ROSTER.fafnir, 'enemy', 0, 0);
+    const fleeing = new BattleUnit(DUMMY, 'player', 2, 0);
+    const neighbour = new BattleUnit(DUMMY, 'player', 3, 0);
+    fafnir.status = 'engaged';
+    fafnir.target = fleeing;
+    fleeing.command = { type: 'flee' };
+
+    updateUnitBehaviors([fafnir, fleeing, neighbour], grid, 0.1);
+
+    expect(fleeing.hp).toBe(DUMMY.maxHp - 45);
+    expect(neighbour.hp).toBe(DUMMY.maxHp);
+  });
+
+  test('une unité qui n\'est pas [Légendaire] n\'a pas de zone', () => {
+    const grid = new Grid(10, 10);
+    const worm = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
+    const target = new BattleUnit(DUMMY, 'enemy', 1, 0);
+    const neighbour = new BattleUnit(DUMMY, 'enemy', 2, 0);
+
+    updateUnitBehaviors([worm, target, neighbour], grid, worm.species.attackSpeed);
+
+    expect(target.hp).toBe(DUMMY.maxHp - 8);
+    expect(neighbour.hp).toBe(DUMMY.maxHp);
+  });
+});
+
 describe('mort (rules.md 4.4)', () => {
   test('une unité tuée est retirée du ciblage et ne compte plus comme ennemie', () => {
     const grid = new Grid(10, 10);

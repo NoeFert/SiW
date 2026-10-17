@@ -179,15 +179,28 @@ describe('deployUnit — limite du [Légendaire] (rules.md 2)', () => {
 });
 
 describe('isValidDeploymentPosition (rules.md 1/2)', () => {
-  const grid = new Grid(10, 6, [{ x: 2, y: 2 }]); // moitié joueur : x 0-4, moitié IA : x 5-9
+  // Zone du joueur : premier quart, x 0-5 ; moitié IA : x 12-23.
+  const grid = new Grid(24, 6, [{ x: 2, y: 2 }]);
 
-  test('accepte une case libre dans la moitié du camp', () => {
-    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 3, 3, [])).toBe(true);
+  test('accepte une case libre dans la zone de déploiement du joueur (colonnes 0 à 5)', () => {
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 0, 3, [])).toBe(true);
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 5, 3, [])).toBe(true);
+  });
+
+  test('refuse le reste de la moitié du joueur (colonnes 6 à 11), même au contact d\'aucun ennemi', () => {
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 6, 3, [])).toBe(false);
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 11, 3, [])).toBe(false);
+  });
+
+  test('pas de distance minimale : une case libre de la zone reste valide au contact d\'un ennemi', () => {
+    const enemy = new BattleUnit(ROSTER.grunt, 'enemy', 4, 3);
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 3, 3, [enemy])).toBe(true);
   });
 
   test('refuse une case dans la moitié adverse', () => {
-    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 6, 3, [])).toBe(false);
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 14, 3, [])).toBe(false);
     expect(isValidDeploymentPosition(grid, 'enemy', ROSTER.grunt, 3, 3, [])).toBe(false);
+    expect(isValidDeploymentPosition(grid, 'enemy', ROSTER.grunt, 12, 3, [])).toBe(true);
   });
 
   test('refuse une case occupée par un obstacle', () => {
@@ -199,10 +212,10 @@ describe('isValidDeploymentPosition (rules.md 1/2)', () => {
     expect(isValidDeploymentPosition(grid, 'player', ROSTER.grunt, 1, 1, [occupant])).toBe(false);
   });
 
-  test('un bloc 2x2 doit tenir entièrement dans la moitié du camp', () => {
-    // champion (taille 2) à x=4 déborderait sur la moitié adverse (4+2=6 > halfWidth=5)
-    expect(isValidDeploymentPosition(grid, 'player', ROSTER.champion, 4, 0, [])).toBe(false);
-    expect(isValidDeploymentPosition(grid, 'player', ROSTER.champion, 3, 0, [])).toBe(true);
+  test('un bloc 2x2 doit tenir entièrement dans la zone de déploiement', () => {
+    // champion (taille 2) à x=5 déborderait sur la colonne 6, hors de la zone
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.champion, 5, 0, [])).toBe(false);
+    expect(isValidDeploymentPosition(grid, 'player', ROSTER.champion, 4, 0, [])).toBe(true);
   });
 });
 

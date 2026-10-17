@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ABILITY_EFFECTS, MELEE_EFFECT, PROJECTILE_FLIGHT_MS } from '../../data/effects.js';
 import { FACTIONS } from '../../data/factions/index.js';
-import { CELL_SIZE, cellCenter } from '../../renderConstants.js';
+import { CELL_SIZE, cellCenter, factionColor } from '../../renderConstants.js';
 import { TEXT } from '../../ui/strings.js';
 
 const EFFECT_DEPTH = 10; // au-dessus des unités
@@ -65,6 +65,12 @@ export default class CombatEffects {
         this.flash(event.target, 0xffff00);
         this.scene.cameras.main.shake(120, 0.006);
         this.floatingText(event.target, TEXT.fieldTexts.criticalHit, '#ffcc00');
+      } else if (event.type === 'zoneHit') {
+        // rules.md 4.6 / GRAPHICS.md : clignotement dans la couleur principale de la faction du
+        // [Légendaire] (doré pour Fafnir, menthe pour Athos), à l'arrivée du missile s'il a tiré.
+        const shot = events.some((e) => e.type === 'rangedAttack' && e.unit === event.unit);
+        const color = factionColor(this.factions[event.unit.faction]);
+        this.scene.time.delayedCall(shot ? PROJECTILE_FLIGHT_MS : 0, () => this.flashSilhouette(event.target, color));
       } else if (event.type === 'missed') {
         this.floatingText(event.unit, TEXT.fieldTexts.missed, '#cccccc');
       } else if (event.type === 'heal') {
@@ -130,6 +136,30 @@ export default class CombatEffects {
         scene.events.off('update', follow);
         sprite.destroy();
       });
+    });
+  }
+
+  // rules.md 4.6 / GRAPHICS.md : silhouette de la couleur pleine `color` posée sur le sprite de
+  // `unit`, qui clignote 3 fois puis disparaît. Une copie à part plutôt qu'une teinte du sprite :
+  // celui-ci porte le preFX de la désaturation (UnitViews), qui ne rend pas la teinte de façon
+  // fiable, et une teinte multipliée se voit à peine sur des sprites sombres.
+  flashSilhouette(unit, color) {
+    const view = this.units.get(unit.id);
+    if (!view) return;
+    const { visual, container } = view;
+    const silhouette = this.scene.add.image(visual.x, visual.y, visual.texture.key)
+      .setDisplaySize(visual.displayWidth, visual.displayHeight)
+      .setFlipX(visual.flipX)
+      .setTintFill(color)
+      .setAlpha(0);
+    container.add(silhouette);
+    this.scene.tweens.add({
+      targets: silhouette,
+      alpha: 0.9,
+      duration: 70,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => silhouette.destroy(),
     });
   }
 

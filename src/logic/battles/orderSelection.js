@@ -1,4 +1,5 @@
 import { footprint } from './pathfinding.js';
+import { playerDeploymentColumns } from './deployment.js';
 import { canFlee } from './fleeCooldown.js';
 import { issuePlayerAttack, issuePlayerMoveTo, issuePlayerFlee } from './playerActions.js';
 import { startInteraction, endInteraction, recordPlayerAction } from './pause.js';
@@ -112,7 +113,7 @@ export function getClickableHighlights(battle) {
   const idsOf = (faction) => new Set(onField.filter((u) => u.faction === faction).map((u) => u.id));
 
   if (battle.pause.interaction === 'deploy') {
-    return { zone: { ...wholeField, width: Math.floor(battle.grid.width / 2) }, unitIds: new Set() };
+    return { zone: { ...wholeField, width: playerDeploymentColumns(battle.grid) }, unitIds: new Set() };
   }
   if (!isOpen(battle)) return { zone: null, unitIds: new Set() };
   if (!selectedActor(battle)) return { zone: null, unitIds: idsOf('player') };

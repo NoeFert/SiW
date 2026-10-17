@@ -23,9 +23,9 @@ describe('resolveVictory — bataille tutoriel (rules.md 11)', () => {
   const battleUnits = [deployed('w1', { killXp: 6 }), deployed('w2', { alive: false }), deployed('f', { alive: false, level: 4 })];
   const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { tutoBattle: true, armyName: 'Armée 1' });
 
-  test('morts retirés ; XP : +40 de survie + coût des ennemis achevés, jamais-déployés inchangés', () => {
+  test('morts retirés ; XP : part de la réserve de survie (200 / 3 déployés = 66) + coût des ennemis achevés, jamais-déployés inchangés', () => {
     expect(after.units).toEqual([
-      { id: 'w1', species: 'lambtonWorm', xp: 86 },
+      { id: 'w1', species: 'lambtonWorm', xp: 112 },
       { id: 'w3', species: 'lambtonWorm', xp: 0 },
     ]);
   });
@@ -105,7 +105,7 @@ describe('resolveVictory — rejeu (rules.md 11.5, 11.6, 11.7)', () => {
     const battleUnits = [deployed('w1', { killXp: 6 }), deployed('w2', { alive: false })];
     const { save: after, report } = resolveVictory(save, battleUnits, WYRMS_ROSTER, { tutoBattle: false, replay: true });
     expect(report.xpGained).toBe(Math.floor((100 + Math.floor((100 * 130) / 140)) / 4)); // 192 → 48
-    expect(after.units.find((u) => u.id === 'w1').xp).toBe(40 + 11); // 46 × 25 % = 11
+    expect(after.units.find((u) => u.id === 'w1').xp).toBe(40 + 26); // (100 + 6) × 25 % = 26
     expect(after.units.map((u) => u.id)).toEqual(['w1', 'w3', 'f']);
   });
 });
