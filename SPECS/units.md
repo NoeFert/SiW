@@ -38,10 +38,7 @@
 
 **Frappe paralysante :** toutes les 4 attaques, la cible touchée voit ses **2 prochaines attaques annulées** (elle continue de se déplacer et de combattre normalement ensuite, elle manque simplement ses 2 prochains coups). Une nouvelle Frappe paralysante sur une cible qui a encore une attaque annulée en attente **remet le compteur à 2**, sans cumul.
 
-**Soif de sang :** chaque fois qu'Athos porte le coup fatal sur un ennemi, il **régénère 40 PV** (plafonné à son maximum de 145). Contrairement à la frappe paralysante (garantie tous les 4 coups), cet effet est conditionnel — il ne se déclenche que si Athos porte effectivement le coup qui tue, pas s'il blesse une cible achevée par un allié. Si Athos et un allié tuent la cible au même instant, Athos compte comme ayant porté le coup fatal et se soigne, sauf s'il meurt lui-même à cet instant (voir `rules.md` 4.1).
-
-Ces deux aptitudes ensemble compensent une résistance de base plus faible que celle de Fafnir (145 contre 220 PV) : Athos reste plus vulnérable au burst/focus, mais peut regagner en résilience s'il enchaîne des éliminations — un profil de risque différent, cohérent avec son identité d'artillerie fragile plutôt qu'une simple copie de Fafnir. Valeurs à ajuster en playtesting.
-
+**Soif de sang :** chaque fois qu'Athos porte le coup fatal sur un ennemi, il **régénère 40 PV**, plafonné à ses PV max (145 au niveau 1, `rules.md` 11.6). Contrairement à la frappe paralysante (garantie tous les 4 coups), cet effet est conditionnel — il ne se déclenche que si Athos porte effectivement le coup qui tue, pas s'il blesse une cible achevée par un allié. Si Athos et un allié tuent la cible au même instant, Athos compte comme ayant porté le coup fatal et se soigne, sauf s'il meurt lui-même à cet instant (voir `rules.md` 4.1).
 ---
 
 ## Comparaison d'équilibrage Wyrms / Morts-Vivants
@@ -51,5 +48,3 @@ Ces deux aptitudes ensemble compensent une résistance de base plus faible que c
 | Ver de Lambton / New-reborn Skeleton | 0,80 / 0,83 | 4,0 / 3,7 |
 | Amphiptère / Necromant Initiate | 0,31 / 0,31 (identiques) | 0,72 / 0,72 (identiques) |
 | Fafnir / Athos | 0,27 / 0,23 (sans compter les aptitudes ni la zone, `rules.md` 4.6) | 2,0 / 1,32 |
-
-Fafnir et Athos restent volontairement différents dans leur profil (Fafnir = tank offensif hybride, Athos = artillerie fragile avec contrôle + sustain conditionnel), mais leur DPS brut a été rapproché pour éviter qu'une des deux factions soit systématiquement plus forte au choix initial. L'écart en PV/point est assumé et partiellement compensé par la régénération au kill d'Athos, un effet plus aléatoire que le burst garanti de Fafnir. Équilibrage à valider en playtesting.

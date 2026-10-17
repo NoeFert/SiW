@@ -184,12 +184,12 @@ Une bataille enchaîne une ou plusieurs **phases**, chacune avec sa zone et son 
 - **Transition** : tout est figé (seul Abandonner reste possible, 8.2) ; l'armée du joueur sort par la droite puis entre par la gauche de la zone suivante, chaque unité sur la case libre la plus à gauche de sa rangée (ou de la rangée libre la plus proche), les plus avancées en premier. Les ordres en cours sont annulés.
 - **Conservé** : les morts, les PV perdus, la réserve (redéployable dans la zone de déploiement, 2), le plafond de 150 PP, le cooldown de la fuite. Le script de la phase suivante se compte depuis son début.
 
-**Zones** (plan ASCII dans le fichier de la bataille). Dans toutes : le bord d'entrée de l'IA (dernière colonne) reste libre, aucune case libre n'est isolée, une unité 2×2 peut traverser, et les rochers d'un mur se touchent par un côté.
+**Zones** (plan ASCII dans le fichier de la bataille). Dans toutes : le bord d'entrée de l'IA (dernière colonne) reste libre, aucune case libre n'est isolée, une unité 2×2 au sol peut traverser, et les rochers d'un mur se touchent par un côté. (Aucune unité 2×2 au sol n'existe en v1 : Fafnir et Athos volent. Ces contraintes préparent un roster étendu.)
 
 | Zone | Description |
 |---|---|
 | **Le champ** | terrain de la bataille tutoriel (1) |
-| **« Le mur »** (fond retourné) | mur de rochers qui serpente (colonnes 14-17), percé d'un passage d'une case (rangée 3 — une unité 2×2 n'y passe pas) et d'un passage de deux cases (rangées 10-11) ; les tireurs tirent par-dessus, les [Vol] le survolent |
+| **« Le mur »** (fond retourné) | mur de rochers qui serpente (colonnes 14-17), percé d'un passage d'une case (rangée 3 — une unité 2×2 au sol n'y passe pas) et d'un passage de deux cases (rangées 10-11) ; les tireurs tirent par-dessus, les [Vol] le survolent |
 | **« Les trois couloirs »** | deux crêtes séparent trois couloirs, franchissables seulement en volant |
 | **« Le fort »** (provisoire) | ruine en fer à cheval côté joueur, salle de 4×4 cases ouverte vers l'ennemi par une entrée de deux cases ; protège du corps-à-corps, pas des tirs. Cul-de-sac assumé |
 | **« L'essaim »** | terrain nu, sauf deux rochers 2×2 juste devant l'entrée de l'IA (colonnes 20-21, rangées 3-4 et 9-10), que les ennemis contournent en se groupant |

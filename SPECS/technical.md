@@ -134,7 +134,7 @@ Dans la grille des unités et dans les accordéons, les individus sont triés pa
 
 **WarScreen** — « Partir en guerre » (11.7).
 - La map 1 en plein écran, en réseau de losanges (`GRAPHICS.md`) ; les emplacements sans bataille sont verrouillés (« À venir »). Au-dessus de la map : « Repousse l'envahisseur N/3 ».
-- Un clic sélectionne un losange (par défaut, la dernière bataille débloquée) et l'affiche dans un panneau à droite : nom, état (verrouillée, disponible, gagnée), bouton **« Combattre »** pour une bataille débloquée (désactivé si l'armée est vide : « Composez votre armée »), puis les récompenses de la prochaine victoire — Spirit Stones (0 au rejeu) et XP du joueur en fourchette (« 100–200 » ; « 25–50 » au rejeu).
+- Un clic sélectionne un losange (par défaut, le dernier emplacement non verrouillé dans l'ordre de la liste de `warMap01.js`) et l'affiche dans un panneau à droite : nom, état (verrouillée, disponible, gagnée), bouton **« Combattre »** pour une bataille débloquée (désactivé si l'armée est vide : « Composez votre armée »), puis les récompenses de la prochaine victoire — Spirit Stones (0 au rejeu) et XP du joueur en fourchette (« 100–200 » ; « 25–50 » au rejeu).
 - Toutes les batailles gagnées : « D'autres terres à conquérir arrivent bientôt… ». « Retour » vers l'accueil.
 
 ### 5.2 Enchaînement

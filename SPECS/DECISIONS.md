@@ -6,6 +6,8 @@ Format : **quoi** — pourquoi (source, date). Les plus récentes en haut de cha
 
 ## Bataille
 
+- **Fafnir et Athos : profils différents, DPS brut rapproché** — Fafnir est un tank offensif hybride, Athos une artillerie fragile (145 PV contre 220) avec contrôle (Frappe paralysante) et soin conditionnel (Soif de sang) : il reste plus vulnérable au focus, mais regagne en résilience s'il enchaîne les kills. Leur DPS brut est rapproché (0,27 / 0,23 par PP) pour qu'aucune faction ne soit systématiquement plus forte au choix initial ; l'écart de PV par PP est assumé (ancien `units.md`).
+
 - **Dégâts de zone des [Légendaire], zone de déploiement réduite, XP de survie partagée** — surcharger le terrain gagnait toujours ; ces trois règles rendent la masse risquée (`strategic-depth.md`, 2026-10-15).
 - **L'IA joue toujours l'autre faction** — cohérence narrative : le joueur n'affronte jamais sa propre armée en miroir (ancienne roadmap).
 - **Une unité encerclée en fuite riposte sur place** — aucun obstacle ne peut couper tous les bords : seule une foule d'unités peut bloquer une fuite, et l'unité ne doit pas rester sans défense (ancienne roadmap).
