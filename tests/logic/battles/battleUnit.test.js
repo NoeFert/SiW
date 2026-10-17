@@ -28,7 +28,7 @@ describe('BattleUnit', () => {
     test('takeDamage reduces HP', () => {
       const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
       unit.takeDamage(15);
-      expect(unit.hp).toBe(25);
+      expect(unit.hp).toBe(35);
       expect(unit.isAlive).toBe(true);
     });
 

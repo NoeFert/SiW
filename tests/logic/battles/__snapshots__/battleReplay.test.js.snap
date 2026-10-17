@@ -2,26 +2,26 @@
 
 exports[`replay of every battle with a fixed seed undead battleLow1W01 basics starter army 1`] = `
 {
-  "dead": 11,
-  "deployed": 22,
-  "levelUps": 2,
+  "dead": 8,
+  "deployed": 21,
+  "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 184,
-  "ppLost": 66,
-  "rebuyCost": 66,
-  "seconds": 47.69999999999943,
+  "playerXp": 188,
+  "ppLost": 48,
+  "rebuyCost": 48,
+  "seconds": 48.04999999999941,
   "spiritStones": 80,
-  "survivorXp": 249,
-  "survivors": 11,
+  "survivorXp": 257,
+  "survivors": 13,
   "xpBySpecies": {
     "necromantInitiate": {
-      "survivors": 4,
-      "xp": 186,
+      "survivors": 3,
+      "xp": 127,
     },
     "newRebornSkeleton": {
-      "survivors": 7,
-      "xp": 63,
+      "survivors": 10,
+      "xp": 130,
     },
   },
 }
@@ -29,22 +29,22 @@ exports[`replay of every battle with a fixed seed undead battleLow1W01 basics st
 
 exports[`replay of every battle with a fixed seed undead battleLow1W01 flyers starter army 1`] = `
 {
-  "dead": 1,
-  "deployed": 7,
-  "levelUps": 3,
+  "dead": 2,
+  "deployed": 8,
+  "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 194,
-  "ppLost": 25,
-  "rebuyCost": 25,
-  "seconds": 36.40000000000007,
+  "playerXp": 188,
+  "ppLost": 50,
+  "rebuyCost": 50,
+  "seconds": 41.049999999999805,
   "spiritStones": 80,
-  "survivorXp": 278,
+  "survivorXp": 225,
   "survivors": 6,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 6,
-      "xp": 278,
+      "xp": 225,
     },
   },
 }
@@ -60,14 +60,14 @@ exports[`replay of every battle with a fixed seed undead battleLow1W01 legendary
   "playerXp": 179,
   "ppLost": 85,
   "rebuyCost": 85,
-  "seconds": 53.99999999999907,
+  "seconds": 52.54999999999915,
   "spiritStones": 80,
-  "survivorXp": 197,
+  "survivorXp": 227,
   "survivors": 7,
   "xpBySpecies": {
     "athos": {
       "survivors": 1,
-      "xp": 131,
+      "xp": 161,
     },
     "newRebornSkeleton": {
       "survivors": 6,
@@ -79,32 +79,153 @@ exports[`replay of every battle with a fixed seed undead battleLow1W01 legendary
 
 exports[`replay of every battle with a fixed seed undead battleLow1W01 mixed starter army 1`] = `
 {
-  "dead": 3,
-  "deployed": 15,
+  "dead": 5,
+  "deployed": 17,
   "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 195,
-  "ppLost": 18,
-  "rebuyCost": 18,
-  "seconds": 36.500000000000064,
+  "playerXp": 192,
+  "ppLost": 30,
+  "rebuyCost": 30,
+  "seconds": 45.84999999999953,
   "spiritStones": 80,
-  "survivorXp": 306,
+  "survivorXp": 282,
   "survivors": 12,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 4,
-      "xp": 192,
+      "xp": 194,
     },
     "newRebornSkeleton": {
       "survivors": 8,
-      "xp": 114,
+      "xp": 88,
     },
   },
 }
 `;
 
 exports[`replay of every battle with a fixed seed undead battleLow1W01 two basic units 1`] = `
+{
+  "dead": 2,
+  "deployed": 2,
+  "levelUps": 0,
+  "outcome": "enemyVictory",
+  "phasesReached": 1,
+  "playerXp": 0,
+  "ppLost": 12,
+  "rebuyCost": 12,
+  "seconds": 11.150000000000023,
+  "spiritStones": 0,
+  "survivorXp": 0,
+  "survivors": 0,
+}
+`;
+
+exports[`replay of every battle with a fixed seed undead battleLow2W01 basics starter army 1`] = `
+{
+  "dead": 17,
+  "deployed": 23,
+  "levelUps": 2,
+  "outcome": "playerVictory",
+  "phasesReached": 2,
+  "playerXp": 175,
+  "ppLost": 102,
+  "rebuyCost": 102,
+  "seconds": 48.249999999999396,
+  "spiritStones": 100,
+  "survivorXp": 263,
+  "survivors": 6,
+  "xpBySpecies": {
+    "necromantInitiate": {
+      "survivors": 5,
+      "xp": 145,
+    },
+    "newRebornSkeleton": {
+      "survivors": 1,
+      "xp": 118,
+    },
+  },
+}
+`;
+
+exports[`replay of every battle with a fixed seed undead battleLow2W01 flyers starter army 1`] = `
+{
+  "dead": 15,
+  "deployed": 26,
+  "levelUps": 1,
+  "outcome": "playerVictory",
+  "phasesReached": 2,
+  "playerXp": 142,
+  "ppLost": 242,
+  "rebuyCost": 242,
+  "seconds": 51.84999999999919,
+  "spiritStones": 100,
+  "survivorXp": 187,
+  "survivors": 11,
+  "xpBySpecies": {
+    "newRebornSkeleton": {
+      "survivors": 11,
+      "xp": 187,
+    },
+  },
+}
+`;
+
+exports[`replay of every battle with a fixed seed undead battleLow2W01 legendaryFirst starter army 1`] = `
+{
+  "dead": 16,
+  "deployed": 25,
+  "levelUps": 1,
+  "outcome": "playerVictory",
+  "phasesReached": 2,
+  "playerXp": 147,
+  "ppLost": 219,
+  "rebuyCost": 219,
+  "seconds": 58.799999999998796,
+  "spiritStones": 100,
+  "survivorXp": 192,
+  "survivors": 9,
+  "xpBySpecies": {
+    "necromantInitiate": {
+      "survivors": 5,
+      "xp": 160,
+    },
+    "newRebornSkeleton": {
+      "survivors": 4,
+      "xp": 32,
+    },
+  },
+}
+`;
+
+exports[`replay of every battle with a fixed seed undead battleLow2W01 mixed starter army 1`] = `
+{
+  "dead": 8,
+  "deployed": 20,
+  "levelUps": 1,
+  "outcome": "playerVictory",
+  "phasesReached": 2,
+  "playerXp": 188,
+  "ppLost": 48,
+  "rebuyCost": 48,
+  "seconds": 41.749999999999766,
+  "spiritStones": 100,
+  "survivorXp": 345,
+  "survivors": 12,
+  "xpBySpecies": {
+    "necromantInitiate": {
+      "survivors": 4,
+      "xp": 265,
+    },
+    "newRebornSkeleton": {
+      "survivors": 8,
+      "xp": 80,
+    },
+  },
+}
+`;
+
+exports[`replay of every battle with a fixed seed undead battleLow2W01 two basic units 1`] = `
 {
   "dead": 2,
   "deployed": 2,
@@ -121,153 +242,28 @@ exports[`replay of every battle with a fixed seed undead battleLow1W01 two basic
 }
 `;
 
-exports[`replay of every battle with a fixed seed undead battleLow2W01 basics starter army 1`] = `
-{
-  "dead": 18,
-  "deployed": 24,
-  "levelUps": 1,
-  "outcome": "playerVictory",
-  "phasesReached": 2,
-  "playerXp": 169,
-  "ppLost": 127,
-  "rebuyCost": 127,
-  "seconds": 44.89999999999959,
-  "spiritStones": 100,
-  "survivorXp": 213,
-  "survivors": 6,
-  "xpBySpecies": {
-    "necromantInitiate": {
-      "survivors": 5,
-      "xp": 205,
-    },
-    "newRebornSkeleton": {
-      "survivors": 1,
-      "xp": 8,
-    },
-  },
-}
-`;
-
-exports[`replay of every battle with a fixed seed undead battleLow2W01 flyers starter army 1`] = `
-{
-  "dead": 20,
-  "deployed": 26,
-  "levelUps": 0,
-  "outcome": "playerVictory",
-  "phasesReached": 2,
-  "playerXp": 144,
-  "ppLost": 234,
-  "rebuyCost": 234,
-  "seconds": 47.84999999999942,
-  "spiritStones": 100,
-  "survivorXp": 42,
-  "survivors": 6,
-  "xpBySpecies": {
-    "necromantInitiate": {
-      "survivors": 2,
-      "xp": 14,
-    },
-    "newRebornSkeleton": {
-      "survivors": 4,
-      "xp": 28,
-    },
-  },
-}
-`;
-
-exports[`replay of every battle with a fixed seed undead battleLow2W01 legendaryFirst starter army 1`] = `
-{
-  "dead": 13,
-  "deployed": 20,
-  "levelUps": 1,
-  "outcome": "playerVictory",
-  "phasesReached": 2,
-  "playerXp": 176,
-  "ppLost": 97,
-  "rebuyCost": 97,
-  "seconds": 52.94999999999913,
-  "spiritStones": 100,
-  "survivorXp": 265,
-  "survivors": 7,
-  "xpBySpecies": {
-    "athos": {
-      "survivors": 1,
-      "xp": 205,
-    },
-    "newRebornSkeleton": {
-      "survivors": 6,
-      "xp": 60,
-    },
-  },
-}
-`;
-
-exports[`replay of every battle with a fixed seed undead battleLow2W01 mixed starter army 1`] = `
-{
-  "dead": 10,
-  "deployed": 22,
-  "levelUps": 1,
-  "outcome": "playerVictory",
-  "phasesReached": 2,
-  "playerXp": 185,
-  "ppLost": 60,
-  "rebuyCost": 60,
-  "seconds": 41.99999999999975,
-  "spiritStones": 100,
-  "survivorXp": 333,
-  "survivors": 12,
-  "xpBySpecies": {
-    "necromantInitiate": {
-      "survivors": 4,
-      "xp": 261,
-    },
-    "newRebornSkeleton": {
-      "survivors": 8,
-      "xp": 72,
-    },
-  },
-}
-`;
-
-exports[`replay of every battle with a fixed seed undead battleLow2W01 two basic units 1`] = `
-{
-  "dead": 2,
-  "deployed": 2,
-  "levelUps": 0,
-  "outcome": "enemyVictory",
-  "phasesReached": 1,
-  "playerXp": 0,
-  "ppLost": 12,
-  "rebuyCost": 12,
-  "seconds": 9.149999999999995,
-  "spiritStones": 0,
-  "survivorXp": 0,
-  "survivors": 0,
-}
-`;
-
 exports[`replay of every battle with a fixed seed undead battleStartW01 basics starter army 1`] = `
 {
-  "dead": 6,
+  "dead": 8,
   "deployed": 21,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 191,
-  "ppLost": 36,
-  "rebuyCost": 36,
-  "seconds": 43.74999999999965,
+  "playerXp": 188,
+  "ppLost": 48,
+  "rebuyCost": 48,
+  "seconds": 47.049999999999464,
   "spiritStones": 60,
-  "survivorXp": 265,
-  "survivors": 15,
+  "survivorXp": 202,
+  "survivors": 13,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 3,
-      "xp": 112,
+      "xp": 92,
     },
     "newRebornSkeleton": {
-      "survivors": 12,
-      "xp": 153,
+      "survivors": 10,
+      "xp": 110,
     },
   },
 }
@@ -277,20 +273,20 @@ exports[`replay of every battle with a fixed seed undead battleStartW01 flyers s
 {
   "dead": 1,
   "deployed": 7,
-  "levelUps": 1,
+  "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 2,
   "playerXp": 194,
   "ppLost": 25,
   "rebuyCost": 25,
-  "seconds": 38.949999999999925,
+  "seconds": 42.649999999999714,
   "spiritStones": 60,
-  "survivorXp": 233,
+  "survivorXp": 253,
   "survivors": 6,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 6,
-      "xp": 233,
+      "xp": 253,
     },
   },
 }
@@ -306,18 +302,18 @@ exports[`replay of every battle with a fixed seed undead battleStartW01 legendar
   "playerXp": 186,
   "ppLost": 55,
   "rebuyCost": 55,
-  "seconds": 47.79999999999942,
+  "seconds": 46.89999999999947,
   "spiritStones": 60,
-  "survivorXp": 165,
+  "survivorXp": 210,
   "survivors": 4,
   "xpBySpecies": {
     "athos": {
       "survivors": 1,
-      "xp": 105,
+      "xp": 130,
     },
     "necromantInitiate": {
       "survivors": 1,
-      "xp": 20,
+      "xp": 40,
     },
     "newRebornSkeleton": {
       "survivors": 2,
@@ -334,17 +330,17 @@ exports[`replay of every battle with a fixed seed undead battleStartW01 mixed st
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 191,
-  "ppLost": 37,
-  "rebuyCost": 37,
-  "seconds": 38.399999999999956,
+  "playerXp": 195,
+  "ppLost": 18,
+  "rebuyCost": 18,
+  "seconds": 40.79999999999982,
   "spiritStones": 60,
-  "survivorXp": 261,
+  "survivorXp": 296,
   "survivors": 12,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 4,
-      "xp": 147,
+      "xp": 182,
     },
     "newRebornSkeleton": {
       "survivors": 8,
@@ -364,7 +360,7 @@ exports[`replay of every battle with a fixed seed undead battleStartW01 two basi
   "playerXp": 0,
   "ppLost": 12,
   "rebuyCost": 12,
-  "seconds": 10.95000000000002,
+  "seconds": 12.150000000000038,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -381,18 +377,18 @@ exports[`replay of every battle with a fixed seed undead battleTop1W01 basics st
   "playerXp": 188,
   "ppLost": 48,
   "rebuyCost": 48,
-  "seconds": 29.750000000000288,
+  "seconds": 31.600000000000314,
   "spiritStones": 80,
-  "survivorXp": 207,
+  "survivorXp": 197,
   "survivors": 13,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 3,
-      "xp": 67,
+      "xp": 37,
     },
     "newRebornSkeleton": {
       "survivors": 10,
-      "xp": 140,
+      "xp": 160,
     },
   },
 }
@@ -400,26 +396,26 @@ exports[`replay of every battle with a fixed seed undead battleTop1W01 basics st
 
 exports[`replay of every battle with a fixed seed undead battleTop1W01 flyers starter army 1`] = `
 {
-  "dead": 3,
-  "deployed": 12,
+  "dead": 7,
+  "deployed": 16,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 182,
-  "ppLost": 75,
-  "rebuyCost": 75,
-  "seconds": 41.049999999999805,
+  "playerXp": 176,
+  "ppLost": 99,
+  "rebuyCost": 99,
+  "seconds": 42.8999999999997,
   "spiritStones": 80,
-  "survivorXp": 254,
+  "survivorXp": 198,
   "survivors": 9,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 5,
-      "xp": 190,
+      "xp": 140,
     },
     "newRebornSkeleton": {
       "survivors": 4,
-      "xp": 64,
+      "xp": 58,
     },
   },
 }
@@ -427,30 +423,30 @@ exports[`replay of every battle with a fixed seed undead battleTop1W01 flyers st
 
 exports[`replay of every battle with a fixed seed undead battleTop1W01 legendaryFirst starter army 1`] = `
 {
-  "dead": 9,
-  "deployed": 13,
+  "dead": 13,
+  "deployed": 17,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 187,
-  "ppLost": 54,
-  "rebuyCost": 54,
-  "seconds": 47.94999999999941,
+  "playerXp": 181,
+  "ppLost": 78,
+  "rebuyCost": 78,
+  "seconds": 58.39999999999882,
   "spiritStones": 80,
-  "survivorXp": 170,
+  "survivorXp": 134,
   "survivors": 4,
   "xpBySpecies": {
     "athos": {
       "survivors": 1,
-      "xp": 105,
+      "xp": 91,
     },
     "necromantInitiate": {
       "survivors": 1,
-      "xp": 35,
+      "xp": 11,
     },
     "newRebornSkeleton": {
       "survivors": 2,
-      "xp": 30,
+      "xp": 32,
     },
   },
 }
@@ -458,26 +454,26 @@ exports[`replay of every battle with a fixed seed undead battleTop1W01 legendary
 
 exports[`replay of every battle with a fixed seed undead battleTop1W01 mixed starter army 1`] = `
 {
-  "dead": 4,
-  "deployed": 16,
-  "levelUps": 0,
+  "dead": 5,
+  "deployed": 17,
+  "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 194,
-  "ppLost": 24,
-  "rebuyCost": 24,
-  "seconds": 28.350000000000268,
+  "playerXp": 192,
+  "ppLost": 30,
+  "rebuyCost": 30,
+  "seconds": 31.600000000000314,
   "spiritStones": 80,
-  "survivorXp": 254,
+  "survivorXp": 242,
   "survivors": 12,
   "xpBySpecies": {
     "necromantInitiate": {
       "survivors": 4,
-      "xp": 128,
+      "xp": 134,
     },
     "newRebornSkeleton": {
       "survivors": 8,
-      "xp": 126,
+      "xp": 108,
     },
   },
 }
@@ -493,7 +489,7 @@ exports[`replay of every battle with a fixed seed undead battleTop1W01 two basic
   "playerXp": 0,
   "ppLost": 12,
   "rebuyCost": 12,
-  "seconds": 9.149999999999995,
+  "seconds": 10.15000000000001,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -502,22 +498,26 @@ exports[`replay of every battle with a fixed seed undead battleTop1W01 two basic
 
 exports[`replay of every battle with a fixed seed undead battleTuto basics starter army 1`] = `
 {
-  "dead": 21,
-  "deployed": 26,
+  "dead": 13,
+  "deployed": 22,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 1,
   "playerXp": 100,
-  "ppLost": 183,
-  "rebuyCost": 183,
-  "seconds": 51.39999999999922,
+  "ppLost": 78,
+  "rebuyCost": 78,
+  "seconds": 48.64999999999937,
   "spiritStones": 50,
-  "survivorXp": 145,
-  "survivors": 5,
+  "survivorXp": 221,
+  "survivors": 9,
   "xpBySpecies": {
     "necromantInitiate": {
+      "survivors": 4,
+      "xp": 146,
+    },
+    "newRebornSkeleton": {
       "survivors": 5,
-      "xp": 145,
+      "xp": 75,
     },
   },
 }
@@ -525,26 +525,22 @@ exports[`replay of every battle with a fixed seed undead battleTuto basics start
 
 exports[`replay of every battle with a fixed seed undead battleTuto flyers starter army 1`] = `
 {
-  "dead": 6,
-  "deployed": 24,
+  "dead": 18,
+  "deployed": 26,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 1,
   "playerXp": 100,
-  "ppLost": 150,
-  "rebuyCost": 150,
-  "seconds": 47.199999999999456,
+  "ppLost": 260,
+  "rebuyCost": 260,
+  "seconds": 54.14999999999906,
   "spiritStones": 50,
-  "survivorXp": 254,
-  "survivors": 18,
+  "survivorXp": 166,
+  "survivors": 8,
   "xpBySpecies": {
-    "necromantInitiate": {
-      "survivors": 2,
-      "xp": 126,
-    },
     "newRebornSkeleton": {
-      "survivors": 16,
-      "xp": 128,
+      "survivors": 8,
+      "xp": 166,
     },
   },
 }
@@ -552,26 +548,26 @@ exports[`replay of every battle with a fixed seed undead battleTuto flyers start
 
 exports[`replay of every battle with a fixed seed undead battleTuto legendaryFirst starter army 1`] = `
 {
-  "dead": 11,
-  "deployed": 23,
+  "dead": 5,
+  "deployed": 12,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 1,
   "playerXp": 100,
-  "ppLost": 208,
-  "rebuyCost": 208,
-  "seconds": 54.249999999999055,
+  "ppLost": 49,
+  "rebuyCost": 49,
+  "seconds": 49.79999999999931,
   "spiritStones": 50,
-  "survivorXp": 206,
-  "survivors": 12,
+  "survivorXp": 242,
+  "survivors": 7,
   "xpBySpecies": {
-    "necromantInitiate": {
-      "survivors": 4,
-      "xp": 142,
+    "athos": {
+      "survivors": 1,
+      "xp": 146,
     },
     "newRebornSkeleton": {
-      "survivors": 8,
-      "xp": 64,
+      "survivors": 6,
+      "xp": 96,
     },
   },
 }
@@ -579,15 +575,15 @@ exports[`replay of every battle with a fixed seed undead battleTuto legendaryFir
 
 exports[`replay of every battle with a fixed seed undead battleTuto mixed starter army 1`] = `
 {
-  "dead": 7,
-  "deployed": 19,
+  "dead": 8,
+  "deployed": 20,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 1,
   "playerXp": 100,
-  "ppLost": 42,
-  "rebuyCost": 42,
-  "seconds": 43.44999999999967,
+  "ppLost": 67,
+  "rebuyCost": 67,
+  "seconds": 44.749999999999595,
   "spiritStones": 50,
   "survivorXp": 295,
   "survivors": 12,
@@ -614,7 +610,7 @@ exports[`replay of every battle with a fixed seed undead battleTuto two basic un
   "playerXp": 0,
   "ppLost": 12,
   "rebuyCost": 12,
-  "seconds": 12.150000000000038,
+  "seconds": 13.150000000000052,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -631,18 +627,18 @@ exports[`replay of every battle with a fixed seed wyrms battleLow1W01 basics sta
   "playerXp": 193,
   "ppLost": 30,
   "rebuyCost": 30,
-  "seconds": 48.64999999999937,
+  "seconds": 50.44999999999927,
   "spiritStones": 80,
-  "survivorXp": 288,
+  "survivorXp": 294,
   "survivors": 11,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 2,
-      "xp": 90,
+      "xp": 126,
     },
     "lambtonWorm": {
       "survivors": 9,
-      "xp": 198,
+      "xp": 168,
     },
   },
 }
@@ -652,20 +648,20 @@ exports[`replay of every battle with a fixed seed wyrms battleLow1W01 flyers sta
 {
   "dead": 1,
   "deployed": 7,
-  "levelUps": 1,
+  "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 2,
   "playerXp": 194,
   "ppLost": 25,
   "rebuyCost": 25,
-  "seconds": 47.34999999999945,
+  "seconds": 44.749999999999595,
   "spiritStones": 80,
-  "survivorXp": 259,
+  "survivorXp": 277,
   "survivors": 6,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 6,
-      "xp": 259,
+      "xp": 277,
     },
   },
 }
@@ -675,24 +671,24 @@ exports[`replay of every battle with a fixed seed wyrms battleLow1W01 legendaryF
 {
   "dead": 3,
   "deployed": 6,
-  "levelUps": 1,
+  "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 2,
   "playerXp": 189,
   "ppLost": 45,
   "rebuyCost": 45,
-  "seconds": 52.34999999999916,
+  "seconds": 55.69999999999897,
   "spiritStones": 80,
-  "survivorXp": 239,
+  "survivorXp": 245,
   "survivors": 3,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 45,
+      "xp": 63,
     },
     "fafnir": {
       "survivors": 1,
-      "xp": 155,
+      "xp": 143,
     },
     "lambtonWorm": {
       "survivors": 1,
@@ -706,24 +702,24 @@ exports[`replay of every battle with a fixed seed wyrms battleLow1W01 mixed star
 {
   "dead": 1,
   "deployed": 10,
-  "levelUps": 1,
+  "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 2,
   "playerXp": 194,
   "ppLost": 25,
   "rebuyCost": 25,
-  "seconds": 47.199999999999456,
+  "seconds": 47.049999999999464,
   "spiritStones": 80,
   "survivorXp": 338,
   "survivors": 9,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 4,
-      "xp": 232,
+      "xp": 208,
     },
     "lambtonWorm": {
       "survivors": 5,
-      "xp": 106,
+      "xp": 130,
     },
   },
 }
@@ -739,7 +735,7 @@ exports[`replay of every battle with a fixed seed wyrms battleLow1W01 two basic 
   "playerXp": 0,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 15.050000000000079,
+  "seconds": 16.350000000000097,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -748,26 +744,26 @@ exports[`replay of every battle with a fixed seed wyrms battleLow1W01 two basic 
 
 exports[`replay of every battle with a fixed seed wyrms battleLow2W01 basics starter army 1`] = `
 {
-  "dead": 4,
-  "deployed": 14,
-  "levelUps": 2,
+  "dead": 6,
+  "deployed": 15,
+  "levelUps": 3,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 190,
-  "ppLost": 40,
-  "rebuyCost": 40,
-  "seconds": 52.999999999999126,
+  "playerXp": 186,
+  "ppLost": 60,
+  "rebuyCost": 60,
+  "seconds": 54.84999999999902,
   "spiritStones": 100,
-  "survivorXp": 416,
-  "survivors": 10,
+  "survivorXp": 380,
+  "survivors": 9,
   "xpBySpecies": {
     "amphiptere": {
-      "survivors": 2,
-      "xp": 127,
+      "survivors": 3,
+      "xp": 229,
     },
     "lambtonWorm": {
-      "survivors": 8,
-      "xp": 289,
+      "survivors": 6,
+      "xp": 151,
     },
   },
 }
@@ -775,26 +771,22 @@ exports[`replay of every battle with a fixed seed wyrms battleLow2W01 basics sta
 
 exports[`replay of every battle with a fixed seed wyrms battleLow2W01 flyers starter army 1`] = `
 {
-  "dead": 3,
-  "deployed": 10,
-  "levelUps": 2,
+  "dead": 10,
+  "deployed": 20,
+  "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 182,
-  "ppLost": 75,
-  "rebuyCost": 75,
-  "seconds": 56.64999999999892,
+  "playerXp": 148,
+  "ppLost": 220,
+  "rebuyCost": 220,
+  "seconds": 79.69999999999762,
   "spiritStones": 100,
-  "survivorXp": 421,
-  "survivors": 7,
+  "survivorXp": 210,
+  "survivors": 10,
   "xpBySpecies": {
-    "amphiptere": {
-      "survivors": 5,
-      "xp": 381,
-    },
     "lambtonWorm": {
-      "survivors": 2,
-      "xp": 40,
+      "survivors": 10,
+      "xp": 210,
     },
   },
 }
@@ -802,30 +794,30 @@ exports[`replay of every battle with a fixed seed wyrms battleLow2W01 flyers sta
 
 exports[`replay of every battle with a fixed seed wyrms battleLow2W01 legendaryFirst starter army 1`] = `
 {
-  "dead": 4,
-  "deployed": 7,
+  "dead": 5,
+  "deployed": 8,
   "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 187,
-  "ppLost": 55,
-  "rebuyCost": 55,
-  "seconds": 54.249999999999055,
+  "playerXp": 184,
+  "ppLost": 65,
+  "rebuyCost": 65,
+  "seconds": 78.0999999999977,
   "spiritStones": 100,
-  "survivorXp": 359,
+  "survivorXp": 345,
   "survivors": 3,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 28,
+      "xp": 31,
     },
     "fafnir": {
       "survivors": 1,
-      "xp": 303,
+      "xp": 277,
     },
     "lambtonWorm": {
       "survivors": 1,
-      "xp": 28,
+      "xp": 37,
     },
   },
 }
@@ -833,26 +825,26 @@ exports[`replay of every battle with a fixed seed wyrms battleLow2W01 legendaryF
 
 exports[`replay of every battle with a fixed seed wyrms battleLow2W01 mixed starter army 1`] = `
 {
-  "dead": 3,
-  "deployed": 12,
-  "levelUps": 2,
+  "dead": 12,
+  "deployed": 20,
+  "levelUps": 1,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 193,
-  "ppLost": 30,
-  "rebuyCost": 30,
-  "seconds": 50.899999999999245,
+  "playerXp": 158,
+  "ppLost": 180,
+  "rebuyCost": 180,
+  "seconds": 64.59999999999847,
   "spiritStones": 100,
-  "survivorXp": 438,
-  "survivors": 9,
+  "survivorXp": 190,
+  "survivors": 8,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 4,
-      "xp": 334,
+      "xp": 150,
     },
     "lambtonWorm": {
-      "survivors": 5,
-      "xp": 104,
+      "survivors": 4,
+      "xp": 40,
     },
   },
 }
@@ -868,7 +860,7 @@ exports[`replay of every battle with a fixed seed wyrms battleLow2W01 two basic 
   "playerXp": 0,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 12.000000000000036,
+  "seconds": 13.950000000000063,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -885,18 +877,18 @@ exports[`replay of every battle with a fixed seed wyrms battleStartW01 basics st
   "playerXp": 193,
   "ppLost": 30,
   "rebuyCost": 30,
-  "seconds": 46.59999999999949,
+  "seconds": 48.1999999999994,
   "spiritStones": 60,
-  "survivorXp": 270,
+  "survivorXp": 276,
   "survivors": 11,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 2,
-      "xp": 77,
+      "xp": 101,
     },
     "lambtonWorm": {
       "survivors": 9,
-      "xp": 193,
+      "xp": 175,
     },
   },
 }
@@ -906,13 +898,13 @@ exports[`replay of every battle with a fixed seed wyrms battleStartW01 flyers st
 {
   "dead": 0,
   "deployed": 6,
-  "levelUps": 2,
+  "levelUps": 3,
   "outcome": "playerVictory",
   "phasesReached": 2,
   "playerXp": 200,
   "ppLost": 0,
   "rebuyCost": 0,
-  "seconds": 43.54999999999966,
+  "seconds": 43.94999999999964,
   "spiritStones": 60,
   "survivorXp": 332,
   "survivors": 6,
@@ -935,22 +927,22 @@ exports[`replay of every battle with a fixed seed wyrms battleStartW01 legendary
   "playerXp": 195,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 53.04999999999912,
+  "seconds": 57.09999999999889,
   "spiritStones": 60,
-  "survivorXp": 254,
+  "survivorXp": 248,
   "survivors": 3,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 102,
+      "xp": 83,
     },
     "fafnir": {
       "survivors": 1,
-      "xp": 112,
+      "xp": 119,
     },
     "lambtonWorm": {
       "survivors": 1,
-      "xp": 40,
+      "xp": 46,
     },
   },
 }
@@ -958,26 +950,26 @@ exports[`replay of every battle with a fixed seed wyrms battleStartW01 legendary
 
 exports[`replay of every battle with a fixed seed wyrms battleStartW01 mixed starter army 1`] = `
 {
-  "dead": 1,
-  "deployed": 10,
-  "levelUps": 1,
+  "dead": 0,
+  "deployed": 9,
+  "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 194,
-  "ppLost": 25,
-  "rebuyCost": 25,
-  "seconds": 44.14999999999963,
+  "playerXp": 200,
+  "ppLost": 0,
+  "rebuyCost": 0,
+  "seconds": 43.89999999999964,
   "spiritStones": 60,
-  "survivorXp": 271,
+  "survivorXp": 332,
   "survivors": 9,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 4,
-      "xp": 147,
+      "xp": 216,
     },
     "lambtonWorm": {
       "survivors": 5,
-      "xp": 124,
+      "xp": 116,
     },
   },
 }
@@ -993,7 +985,7 @@ exports[`replay of every battle with a fixed seed wyrms battleStartW01 two basic
   "playerXp": 0,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 19.35000000000014,
+  "seconds": 19.900000000000148,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -1002,26 +994,26 @@ exports[`replay of every battle with a fixed seed wyrms battleStartW01 two basic
 
 exports[`replay of every battle with a fixed seed wyrms battleTop1W01 basics starter army 1`] = `
 {
-  "dead": 1,
+  "dead": 0,
   "deployed": 13,
   "levelUps": 0,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 197,
-  "ppLost": 10,
-  "rebuyCost": 10,
+  "playerXp": 200,
+  "ppLost": 0,
+  "rebuyCost": 0,
   "seconds": 28.000000000000263,
   "spiritStones": 80,
-  "survivorXp": 264,
-  "survivors": 12,
+  "survivorXp": 303,
+  "survivors": 13,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 21,
+      "xp": 33,
     },
     "lambtonWorm": {
-      "survivors": 11,
-      "xp": 243,
+      "survivors": 12,
+      "xp": 270,
     },
   },
 }
@@ -1029,26 +1021,26 @@ exports[`replay of every battle with a fixed seed wyrms battleTop1W01 basics sta
 
 exports[`replay of every battle with a fixed seed wyrms battleTop1W01 flyers starter army 1`] = `
 {
-  "dead": 3,
-  "deployed": 10,
+  "dead": 4,
+  "deployed": 13,
   "levelUps": 0,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 182,
-  "ppLost": 75,
-  "rebuyCost": 75,
-  "seconds": 57.64999999999886,
+  "playerXp": 176,
+  "ppLost": 100,
+  "rebuyCost": 100,
+  "seconds": 59.44999999999876,
   "spiritStones": 80,
-  "survivorXp": 212,
-  "survivors": 7,
+  "survivorXp": 219,
+  "survivors": 9,
   "xpBySpecies": {
     "amphiptere": {
-      "survivors": 5,
-      "xp": 172,
+      "survivors": 4,
+      "xp": 132,
     },
     "lambtonWorm": {
-      "survivors": 2,
-      "xp": 40,
+      "survivors": 5,
+      "xp": 87,
     },
   },
 }
@@ -1064,14 +1056,14 @@ exports[`replay of every battle with a fixed seed wyrms battleTop1W01 legendaryF
   "playerXp": 195,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 30.900000000000304,
+  "seconds": 43.849999999999646,
   "spiritStones": 80,
   "survivorXp": 216,
   "survivors": 3,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 46,
+      "xp": 40,
     },
     "fafnir": {
       "survivors": 1,
@@ -1079,7 +1071,7 @@ exports[`replay of every battle with a fixed seed wyrms battleTop1W01 legendaryF
     },
     "lambtonWorm": {
       "survivors": 1,
-      "xp": 40,
+      "xp": 46,
     },
   },
 }
@@ -1087,26 +1079,26 @@ exports[`replay of every battle with a fixed seed wyrms battleTop1W01 legendaryF
 
 exports[`replay of every battle with a fixed seed wyrms battleTop1W01 mixed starter army 1`] = `
 {
-  "dead": 2,
-  "deployed": 11,
+  "dead": 3,
+  "deployed": 12,
   "levelUps": 0,
   "outcome": "playerVictory",
   "phasesReached": 2,
-  "playerXp": 195,
-  "ppLost": 20,
-  "rebuyCost": 20,
-  "seconds": 29.500000000000284,
+  "playerXp": 193,
+  "ppLost": 30,
+  "rebuyCost": 30,
+  "seconds": 30.750000000000302,
   "spiritStones": 80,
-  "survivorXp": 252,
+  "survivorXp": 228,
   "survivors": 9,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 4,
-      "xp": 138,
+      "xp": 136,
     },
     "lambtonWorm": {
       "survivors": 5,
-      "xp": 114,
+      "xp": 92,
     },
   },
 }
@@ -1122,7 +1114,7 @@ exports[`replay of every battle with a fixed seed wyrms battleTop1W01 two basic 
   "playerXp": 0,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 11.150000000000023,
+  "seconds": 12.150000000000038,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,
@@ -1139,18 +1131,18 @@ exports[`replay of every battle with a fixed seed wyrms battleTuto basics starte
   "playerXp": 100,
   "ppLost": 0,
   "rebuyCost": 0,
-  "seconds": 48.69999999999937,
+  "seconds": 46.24999999999951,
   "spiritStones": 50,
   "survivorXp": 354,
   "survivors": 13,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 40,
+      "xp": 21,
     },
     "lambtonWorm": {
       "survivors": 12,
-      "xp": 314,
+      "xp": 333,
     },
   },
 }
@@ -1189,18 +1181,18 @@ exports[`replay of every battle with a fixed seed wyrms battleTuto legendaryFirs
   "playerXp": 100,
   "ppLost": 10,
   "rebuyCost": 10,
-  "seconds": 44.14999999999963,
+  "seconds": 47.64999999999943,
   "spiritStones": 50,
   "survivorXp": 309,
   "survivors": 3,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 1,
-      "xp": 93,
+      "xp": 99,
     },
     "fafnir": {
       "survivors": 1,
-      "xp": 166,
+      "xp": 160,
     },
     "lambtonWorm": {
       "survivors": 1,
@@ -1214,24 +1206,24 @@ exports[`replay of every battle with a fixed seed wyrms battleTuto mixed starter
 {
   "dead": 0,
   "deployed": 9,
-  "levelUps": 1,
+  "levelUps": 2,
   "outcome": "playerVictory",
   "phasesReached": 1,
   "playerXp": 100,
   "ppLost": 0,
   "rebuyCost": 0,
-  "seconds": 40.84999999999982,
+  "seconds": 40.99999999999981,
   "spiritStones": 50,
   "survivorXp": 357,
   "survivors": 9,
   "xpBySpecies": {
     "amphiptere": {
       "survivors": 4,
-      "xp": 241,
+      "xp": 137,
     },
     "lambtonWorm": {
       "survivors": 5,
-      "xp": 116,
+      "xp": 220,
     },
   },
 }
@@ -1247,7 +1239,7 @@ exports[`replay of every battle with a fixed seed wyrms battleTuto two basic uni
   "playerXp": 0,
   "ppLost": 20,
   "rebuyCost": 20,
-  "seconds": 47.59999999999943,
+  "seconds": 38.049999999999976,
   "spiritStones": 0,
   "survivorXp": 0,
   "survivors": 0,

@@ -44,7 +44,7 @@ export default {
     },
     {
       // « Les trois couloirs » : deux crêtes (colonnes 5-19) séparent trois couloirs ; seules les
-      // unités [Vol] passent de l'un à l'autre.
+      // unités [Vol] passent de l'un à l'autre, par-dessus les rochers d'une case.
       background: { image: 'battlefield-01', flipped: false },
       obstacles: [
         '........................',

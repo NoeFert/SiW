@@ -12,8 +12,8 @@
 
 | Unité | Keywords | Attaque | Taille | Coût | PV | Dégâts | Vitesse dépl. | Vitesse atk | Portée | Copies de départ |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Ver de Lambton | (basique) | Corps-à-corps | 1 case | 10 | 40 | 8 | 1,25 case/s | 1,0 s | — | 12 |
-| Amphiptère | [Vol] | À distance | 1 case | 25 | 18 | 10 | 2 cases/s | 1,3 s | 4 cases | 8 |
+| Ver de Lambton | (basique) | Corps-à-corps | 1 case | 10 | 50 | 8 | 1,25 case/s | 1,0 s | — | 12 |
+| Amphiptère | [Vol] | À distance | 1 case | 25 | 14 | 10 | 2 cases/s | 1,3 s | 4 cases | 8 |
 | Fafnir the Cursed One | [Légendaire], [Vol] | Hybride (voir `rules.md` 4.5) | 4 cases (2×2) | 110 | 220 | 30 (distance) / 45 (corps-à-corps) | 0,75 case/s | 1,8 s | 3 cases | 1 |
 
 **Dégâts de zone** ([Légendaire], `rules.md` 4.6) : chaque attaque de Fafnir touche aussi les ennemis à 1 case de sa cible, pour **50 %** des dégâts de l'attaque : 15 à distance, 23 au corps-à-corps, 30 / 45 pour l'Attaque dévastatrice (niveau 1).
@@ -28,8 +28,8 @@
 
 | Unité | Keywords | Attaque | Taille | Coût | PV | Dégâts | Vitesse dépl. | Vitesse atk | Portée | Copies de départ |
 |---|---|---|---|---|---|---|---|---|---|---|
-| New-reborn Skeleton | (basique) | Corps-à-corps | 1 case | 6 | 22 | 5 | 1,25 case/s | 1,0 s | — | 18 |
-| Necromant Initiate | [Vol] | À distance | 1 case | 25 | 18 | 10 | 2 cases/s | 1,3 s | 4 cases | 8 |
+| New-reborn Skeleton | (basique) | Corps-à-corps | 1 case | 6 | 28 | 5 | 1,25 case/s | 1,0 s | — | 18 |
+| Necromant Initiate | [Vol] | À distance | 1 case | 25 | 14 | 10 | 2 cases/s | 1,3 s | 4 cases | 8 |
 | Athos the Lord of Pain | [Légendaire], [Vol] | À distance uniquement, tire en avançant (voir `rules.md` 4.5) | 4 cases (2×2) | 110 | 145 | 50 | 0,6 case/s | 2,0 s | 5 cases | 1 |
 
 **Dégâts de zone** ([Légendaire], `rules.md` 4.6) : chaque tir d'Athos touche aussi les ennemis à 1 case de sa cible, pour **50 %** des dégâts de l'attaque : 25 au niveau 1. Soif de sang se déclenche pour chaque ennemi tué, cible ou zone ; la Frappe paralysante ne touche que la cible.
@@ -45,6 +45,6 @@
 
 | Paire | DPS/point | PV/point |
 |---|---|---|
-| Ver de Lambton / New-reborn Skeleton | 0,80 / 0,83 | 4,0 / 3,7 |
-| Amphiptère / Necromant Initiate | 0,31 / 0,31 (identiques) | 0,72 / 0,72 (identiques) |
+| Ver de Lambton / New-reborn Skeleton | 0,80 / 0,83 | 5,0 / 4,7 |
+| Amphiptère / Necromant Initiate | 0,31 / 0,31 (identiques) | 0,56 / 0,56 (identiques) |
 | Fafnir / Athos | 0,27 / 0,23 (sans compter les aptitudes ni la zone, `rules.md` 4.6) | 2,0 / 1,32 |

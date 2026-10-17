@@ -8,7 +8,7 @@ describe('faction undead — roster (units.md)', () => {
     expect(UNDEAD_ROSTER.newRebornSkeleton).toMatchObject({
       size: 1,
       cost: 6,
-      maxHp: 22,
+      maxHp: 28,
       damage: 5,
       moveSpeed: 1.25,
       attackSpeed: 1.0,
@@ -20,7 +20,7 @@ describe('faction undead — roster (units.md)', () => {
     expect(UNDEAD_ROSTER.necromantInitiate).toMatchObject({
       size: 1,
       cost: 25,
-      maxHp: 18,
+      maxHp: 14,
       damage: 10,
       moveSpeed: 2,
       attackSpeed: 1.3,

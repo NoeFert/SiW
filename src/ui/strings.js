@@ -204,7 +204,7 @@ export const TEXT = {
     melee: 'Frappe au contact : l\'unité va au contact de l\'ennemi le plus proche et l\'attaque depuis une case adjacente. Une fois engagée, elle ne change pas de cible tant que l\'ennemi n\'est pas mort.',
     ranged: 'Tire à distance sur l\'ennemi dès qu\'il est à portée. Ne peut pas tirer sur une cible collée à elle : une unité qui ne fait que tirer recule alors pour se remettre à distance.',
     legendary: 'Tu ne possèdes qu\'une seule unité légendaire, et une seule peut être sur le terrain à la fois. Morte, elle peut être réinvoquée jusqu\'au niveau qu\'elle avait à sa mort.',
-    flying: 'Survole les obstacles du terrain et peut s\'arrêter au-dessus. Les autres unités lui barrent toujours le passage.',
+    flying: 'Survole les rochers d\'une case et peut s\'arrêter au-dessus. Les gros rochers et les autres unités lui barrent toujours le passage.',
   },
 };
 

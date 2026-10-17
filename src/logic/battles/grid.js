@@ -25,11 +25,15 @@ export default class Grid {
     this.width = width;
     this.height = height;
     // Un obstacle occupe un bloc carré de `size` cases (1 par défaut) à partir de son coin
-    // haut-gauche.
+    // haut-gauche. Les cases des rochers 2x2 sont aussi gardées à part : elles bloquent les [Vol].
     this.obstacles = new Set();
+    this.largeObstacles = new Set();
     for (const { x, y, size = 1 } of obstacles) {
       for (let dx = 0; dx < size; dx++) {
-        for (let dy = 0; dy < size; dy++) this.obstacles.add(`${x + dx},${y + dy}`);
+        for (let dy = 0; dy < size; dy++) {
+          this.obstacles.add(`${x + dx},${y + dy}`);
+          if (size > 1) this.largeObstacles.add(`${x + dx},${y + dy}`);
+        }
       }
     }
   }
@@ -40,6 +44,11 @@ export default class Grid {
 
   isObstacle(x, y) {
     return this.obstacles.has(`${x},${y}`);
+  }
+
+  // rules.md 3 : une unité [Vol] survole les rochers d'une case, pas les rochers 2x2.
+  blocks(x, y, flying) {
+    return (flying ? this.largeObstacles : this.obstacles).has(`${x},${y}`);
   }
 
   isFree(x, y) {

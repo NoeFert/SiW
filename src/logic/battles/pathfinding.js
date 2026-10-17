@@ -50,22 +50,23 @@ export function occupiedCells(units, excludeUnit) {
   return occupied;
 }
 
-export function isPositionFree(x, y, size, grid, occupied, ignoreTerrainObstacles) {
+export function isPositionFree(x, y, size, grid, occupied, flying) {
   for (const cell of footprint(x, y, size)) {
     if (!grid.isInBounds(cell.x, cell.y)) return false;
-    if (!ignoreTerrainObstacles && grid.isObstacle(cell.x, cell.y)) return false;
+    if (grid.blocks(cell.x, cell.y, flying)) return false;
     if (occupied.has(`${cell.x},${cell.y}`)) return false;
   }
   return true;
 }
 
-// rules.md 3 : pas de (x, y) vers (x + dx, y + dy) — destination libre et, pour une unité au sol,
-// aucun coin d'obstacle coupé en diagonale. Les unités, elles, ne bloquent jamais la diagonale.
-export function canStep(x, y, dx, dy, size, grid, occupied, ignoreTerrainObstacles) {
-  if (!isPositionFree(x + dx, y + dy, size, grid, occupied, ignoreTerrainObstacles)) return false;
-  if (ignoreTerrainObstacles || dx === 0 || dy === 0) return true;
+// rules.md 3 : pas de (x, y) vers (x + dx, y + dy) — destination libre et aucun coin d'obstacle
+// coupé en diagonale (pour un [Vol], seuls les rochers 2x2 comptent). Les unités, elles, ne
+// bloquent jamais la diagonale.
+export function canStep(x, y, dx, dy, size, grid, occupied, flying) {
+  if (!isPositionFree(x + dx, y + dy, size, grid, occupied, flying)) return false;
+  if (dx === 0 || dy === 0) return true;
   return ![...footprint(x + dx, y, size), ...footprint(x, y + dy, size)]
-    .some((cell) => grid.isObstacle(cell.x, cell.y));
+    .some((cell) => grid.blocks(cell.x, cell.y, flying));
 }
 
 // Chemin le plus court (parcours en largeur, 8 directions à coût uniforme) de la position de
@@ -107,13 +108,12 @@ function parseKey(key) {
 
 // Chemin le plus court (A*, coin haut-gauche pour un bloc 2x2) de la position de `unit` vers
 // la case libre atteignable la plus proche de (targetX, targetY), en contournant les
-// obstacles (ignorés si [Vol]) et les autres unités. Tableau vide si `unit` est déjà au plus
-// près possible (bloquée ou déjà arrivée). La distance de Chebyshev est un coût admissible pour
+// obstacles (pour un [Vol], les seuls rochers 2x2) et les autres unités. Tableau vide si `unit`
+// est déjà au plus près possible (bloquée ou déjà arrivée). La distance de Chebyshev est un coût admissible pour
 // un déplacement 8 directions à coût uniforme (exact en terrain dégagé, un coin d'obstacle ne
 // pouvant que rallonger le trajet) : A* explore donc peu de cases, jamais toute la carte.
 export function findPath(unit, targetX, targetY, grid, units) {
   const occupied = occupiedCells(units, unit);
-  const ignoreTerrainObstacles = unit.isFlying;
   const size = unit.size;
   const startX = unit.x;
   const startY = unit.y;
@@ -164,7 +164,7 @@ export function findPath(unit, targetX, targetY, grid, units) {
       const ny = cy + dy;
       const key = `${nx},${ny}`;
       if (closed.has(key)) continue;
-      if (!canStep(cx, cy, dx, dy, size, grid, occupied, ignoreTerrainObstacles)) continue;
+      if (!canStep(cx, cy, dx, dy, size, grid, occupied, unit.isFlying)) continue;
 
       const tentativeG = g + 1;
       if (gScore.has(key) && tentativeG >= gScore.get(key)) continue;

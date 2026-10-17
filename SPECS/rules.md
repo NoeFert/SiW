@@ -41,10 +41,10 @@ Sans ordre, une unité va vers l'**ennemi le plus proche**, en contournant obsta
 - Déplacement en **8 directions**, à la vitesse de l'unité (`units.md`).
 - **Distances** (portée, ennemi le plus proche, trajet) : en cases, une diagonale valant une case. Pour une unité 2×2, entre les **cases les plus proches** des deux unités.
 - **Unité 2×2** : un bloc rigide ; un pas n'est valide que si ses 4 cases d'arrivée sont libres.
-- **Unité [Vol]** : ignore les obstacles du terrain (pas les unités) et peut s'arrêter au-dessus d'un obstacle.
+- **Unité [Vol]** : survole les rochers d'**une case** et peut s'arrêter au-dessus. Les rochers **2×2**, trop grands pour être survolés, la bloquent comme une unité au sol. Les unités la bloquent toujours.
 
 **Cas limites**
-- **Coin d'obstacle** : un pas en diagonale est interdit si l'une des deux cases du coin traversé est un obstacle. Les unités, elles, ne bloquent jamais une diagonale. Les [Vol] ne sont pas concernées.
+- **Coin d'obstacle** : un pas en diagonale est interdit si l'une des deux cases du coin traversé est un obstacle. Les unités, elles, ne bloquent jamais une diagonale. Pour une unité [Vol], seuls les rochers 2×2 comptent.
 - **Égalité de distance** : l'ennemi qui a le moins de PV actuels, puis le premier déployé.
 - **Ennemi inatteignable** (unité au sol) : on ne compte d'abord que les ennemis atteignables par le terrain — une case adjacente libre pour le corps-à-corps, une case d'où tirer pour un tireur. Les unités, qui bougent, ne rendent jamais un ennemi inatteignable. S'il ne reste que des ennemis inatteignables, l'unité s'approche au plus près du plus proche.
 - **Passage trop étroit** pour une unité 2×2 : elle attend ou contourne, comme devant un obstacle.
@@ -189,7 +189,7 @@ Une bataille enchaîne une ou plusieurs **phases**, chacune avec sa zone et son 
 | Zone | Description |
 |---|---|
 | **Le champ** | terrain de la bataille tutoriel (1) |
-| **« Le mur »** (fond retourné) | mur de rochers qui serpente (colonnes 14-17), percé d'un passage d'une case (rangée 3 — une unité 2×2 au sol n'y passe pas) et d'un passage de deux cases (rangées 10-11) ; les tireurs tirent par-dessus, les [Vol] le survolent |
+| **« Le mur »** (fond retourné) | mur de rochers qui serpente (colonnes 14-17), percé d'un passage d'une case (rangée 3 — une unité 2×2 au sol n'y passe pas) et d'un passage de deux cases (rangées 10-11) ; les tireurs tirent par-dessus, les [Vol] survolent ses rochers d'une case |
 | **« Les trois couloirs »** | deux crêtes séparent trois couloirs, franchissables seulement en volant |
 | **« Le fort »** (provisoire) | ruine en fer à cheval côté joueur, salle de 4×4 cases ouverte vers l'ennemi par une entrée de deux cases ; protège du corps-à-corps, pas des tirs. Cul-de-sac assumé |
 | **« L'essaim »** | terrain nu, sauf deux rochers 2×2 juste devant l'entrée de l'IA (colonnes 20-21, rangées 3-4 et 9-10), que les ennemis contournent en se groupant |

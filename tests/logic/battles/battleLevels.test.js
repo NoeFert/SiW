@@ -14,12 +14,12 @@ const UNDEAD_ROSTER = FACTIONS.undead.roster;
 describe('BattleUnit — stats du niveau (rules.md 11.6)', () => {
   test('niveau 1 par défaut : stats de units.md, sans individu', () => {
     const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 0, 0);
-    expect(unit).toMatchObject({ level: 1, individualId: null, maxHp: 40, hp: 40, damage: 8, killXp: 0 });
+    expect(unit).toMatchObject({ level: 1, individualId: null, maxHp: 50, hp: 50, damage: 8, killXp: 0 });
   });
 
   test('PV max et dégâts augmentés selon le niveau, arrondis au plus proche', () => {
     const unit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0, 4, 'u1');
-    expect(unit).toMatchObject({ level: 4, individualId: 'u1', maxHp: 52, hp: 52, damage: 10 });
+    expect(unit).toMatchObject({ level: 4, individualId: 'u1', maxHp: 65, hp: 65, damage: 10 });
   });
 
   test('hybride : les deux dégâts augmentent ; coût et vitesses inchangés', () => {
@@ -48,11 +48,11 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
     const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const rows = getTowerRows(state, 'player', []);
     expect(rows.map((r) => [r.species.name, r.level, r.count, r.hp])).toEqual([
-      ['Lambton Worm', 3, 1, 48],
-      ['Lambton Worm', 1, 2, 40],
+      ['Lambton Worm', 3, 1, 60],
+      ['Lambton Worm', 1, 2, 50],
       ['Fafnir the Cursed One', 4, 1, 286],
     ]);
-    expect(rows[0]).toMatchObject({ maxHp: 48, damage: 10, wounded: false });
+    expect(rows[0]).toMatchObject({ maxHp: 60, damage: 10, wounded: false });
   });
 
   test('sans individus (IA) : copies de niveau 1', () => {
@@ -74,7 +74,7 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
 
   test('regroupée, l\'espèce déploie les intacts d\'abord, les blessés en dernier (même de plus haut niveau)', () => {
     const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
-    const veteran = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 3, hp: 48 }).unit;
+    const veteran = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 3, hp: 60 }).unit;
     veteran.hp = 30;
     recordReturn(state, veteran); // le niveau 3 revient blessé de fuite
     const deployLambton = () => {
@@ -83,25 +83,25 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
       return [unit.level, unit.hp];
     };
 
-    expect([deployLambton(), deployLambton(), deployLambton()]).toEqual([[1, 40], [1, 40], [3, 30]]);
+    expect([deployLambton(), deployLambton(), deployLambton()]).toEqual([[1, 50], [1, 50], [3, 30]]);
   });
 
   test('regroupée : la case affiche le prochain individu déployé (intact) et le total de l\'espèce', () => {
     const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
-    const veteran = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 3, hp: 48 }).unit;
+    const veteran = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], { level: 3, hp: 60 }).unit;
     veteran.hp = 30;
     recordReturn(state, veteran);
 
     const [lambtons] = groupTowerRows(getTowerRows(state, 'player', []), new Set());
 
-    expect(lambtons).toMatchObject({ count: 3, level: 1, hp: 40, wounded: false, minLevel: 1, maxLevel: 3 });
+    expect(lambtons).toMatchObject({ count: 3, level: 1, hp: 50, wounded: false, minLevel: 1, maxLevel: 3 });
   });
 
   test('déployer une ligne déploie un individu de ce niveau, avec ses stats', () => {
     const state = createDeploymentState(WYRMS_ROSTER, FACTIONS.wyrms.startingArmy, individuals);
     const [row] = getTowerRows(state, 'player', []);
     const { unit } = deployUnit(state, 'player', row.species, 0, 0, [], row.copyChoice);
-    expect(unit).toMatchObject({ individualId: 'b', level: 3, hp: 48, maxHp: 48 });
+    expect(unit).toMatchObject({ individualId: 'b', level: 3, hp: 60, maxHp: 60 });
     expect(getTowerRows(state, 'player', []).map((r) => r.level)).toEqual([1, 4]);
   });
 
@@ -112,10 +112,10 @@ describe('réserve du joueur par individu et niveau (rules.md 2, ui-battle-scree
     unit.hp = 20;
     recordReturn(state, unit);
     const lambtonRows = getTowerRows(state, 'player', []).filter((r) => r.species === WYRMS_ROSTER.lambtonWorm);
-    expect(lambtonRows.map((r) => [r.level, r.hp, r.wounded])).toEqual([[3, 20, true], [1, 40, false]]);
+    expect(lambtonRows.map((r) => [r.level, r.hp, r.wounded])).toEqual([[3, 20, true], [1, 50, false]]);
 
     const again = deployUnit(state, 'player', WYRMS_ROSTER.lambtonWorm, 0, 0, [], lambtonRows[0].copyChoice);
-    expect(again.unit).toMatchObject({ individualId: 'b', level: 3, hp: 20, maxHp: 48 });
+    expect(again.unit).toMatchObject({ individualId: 'b', level: 3, hp: 20, maxHp: 60 });
   });
 
   test('un niveau absent de la réserve est refusé', () => {

@@ -39,7 +39,7 @@ Une case par ligne de la liste, deux cases par rangée.
 ┌──────────────────┐
 │[8x]           > │  carré en haut à gauche : nombre ; flèche : grouper / dégrouper
 │     [sprite]     │
-│  ♥ 40/40  niv 3  │  PV, niveau
+│  ♥ 50/50  niv 1  │  PV, niveau
 │     [10 PP]      │  tag de présence
 └──────────────────┘
 ```
@@ -52,7 +52,7 @@ Une case par ligne de la liste, deux cases par rangée.
 | Cas (espèce dégroupée) | Résultat |
 |---|---|
 | Ver qui revient de fuite avec tous ses PV | rejoint son groupe (`8x`) |
-| Ver qui revient à 25/40 PV | nouvelle ligne `1x` |
+| Ver qui revient à 25/50 PV | nouvelle ligne `1x` |
 | Deux Vers qui reviennent, à 25 et à 30 PV | deux lignes |
 | Deux Vers qui reviennent, tous deux à 25 PV | une ligne `2x` |
 

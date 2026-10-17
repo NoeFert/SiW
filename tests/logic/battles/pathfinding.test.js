@@ -178,12 +178,12 @@ describe('findPath — bloc rigide 2x2 face à un couloir trop étroit', () => {
   });
 });
 
-describe('findPath — unité [Vol] traversant un obstacle de terrain', () => {
-  // Mur complet en x=2, avec un unique passage en y=3 : une unité au sol
+describe('findPath — unité [Vol] et rochers (rules.md 3)', () => {
+  // Mur de rochers d'une case en x=2, avec un unique passage en y=3 : une unité au sol
   // doit détourner par ce passage (chemin plus long), une unité [Vol] va tout droit.
   const wallObstacles = [0, 1, 2, 4, 5, 6].map((y) => ({ x: 2, y }));
 
-  test('a flying unit ignores the terrain obstacle a ground unit must detour around', () => {
+  test('a flying unit flies over 1x1 rocks a ground unit must detour around', () => {
     const grid = new Grid(6, 7, wallObstacles);
     const groundUnit = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 0, 0);
     const flyingUnit = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
@@ -197,6 +197,30 @@ describe('findPath — unité [Vol] traversant un obstacle de terrain', () => {
     expect(lastStep(flyingPath)).toEqual({ x: 5, y: 0 });
     expect(flyingPath.length).toBe(5); // droit au but, distance de Chebyshev exacte
     expect(groundPath.length).toBeGreaterThan(flyingPath.length); // forcé de détourner par le seul passage
+  });
+
+  test('a flying unit is blocked by 2x2 rocks and never stops on them', () => {
+    // Mur de rochers 2x2 en x=2-3, unique passage en y=6.
+    const grid = new Grid(6, 7, [0, 2, 4].map((y) => ({ x: 2, y, size: 2 })));
+    const flyingUnit = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 0, 0);
+
+    const path = findPath(flyingUnit, 5, 0, grid, [flyingUnit]);
+    const pathOntoRock = findPath(flyingUnit, 2, 0, grid, [flyingUnit]);
+
+    expect(path.some((step) => grid.isObstacle(step.x, step.y))).toBe(false);
+    expect(lastStep(path)).toEqual({ x: 5, y: 0 });
+    expect(path.length).toBeGreaterThan(5); // détour par le passage
+    expect(pathOntoRock.some((step) => grid.isObstacle(step.x, step.y))).toBe(false);
+  });
+
+  test('a flying unit does not cut the corner of a 2x2 rock, but cuts the corner of a 1x1 rock', () => {
+    // Le pas diagonal (1,1) -> (2,2) traverse le coin de la case (2,1).
+    const flyingUnit = new BattleUnit(WYRMS_ROSTER.amphiptere, 'player', 1, 1);
+    const largeRock = new Grid(4, 4, [{ x: 2, y: 0, size: 2 }]);
+    const smallRock = new Grid(4, 4, [{ x: 2, y: 1 }]);
+
+    expect(findPath(flyingUnit, 2, 2, largeRock, [flyingUnit])).toHaveLength(2);
+    expect(findPath(flyingUnit, 2, 2, smallRock, [flyingUnit])).toEqual([{ x: 2, y: 2 }]);
   });
 
   test('a flying unit is still blocked by another unit occupying a cell', () => {

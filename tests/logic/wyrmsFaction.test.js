@@ -9,7 +9,7 @@ describe('faction wyrms — roster (units.md)', () => {
     expect(WYRMS_ROSTER.lambtonWorm).toMatchObject({
       size: 1,
       cost: 10,
-      maxHp: 40,
+      maxHp: 50,
       damage: 8,
       moveSpeed: 1.25,
       attackSpeed: 1.0,
@@ -21,7 +21,7 @@ describe('faction wyrms — roster (units.md)', () => {
     expect(WYRMS_ROSTER.amphiptere).toMatchObject({
       size: 1,
       cost: 25,
-      maxHp: 18,
+      maxHp: 14,
       damage: 10,
       moveSpeed: 2,
       attackSpeed: 1.3,

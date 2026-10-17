@@ -129,7 +129,7 @@ describe('deployScheduledUnits — entrée par le bord droit (rules.md 7.2)', ()
 
   test('renfort prioritaire : vise l\'ennemi engagé avec un allié à 50 % de PV ou moins', () => {
     const woundedAlly = new BattleUnit(UNDEAD_ROSTER.newRebornSkeleton, 'enemy', 12, 2);
-    woundedAlly.hp = 11; // 50 % de 22
+    woundedAlly.hp = 14; // 50 % de 28
     const attacker = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 11, 2);
     attacker.hp = 10;
     attacker.status = 'engaged';
