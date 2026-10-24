@@ -22,8 +22,8 @@ export const WAR_MAP_01 = {
     { id: 'low3', col: 7, row: 6 },
     { id: 'low4', col: 7, row: 4, invader: 'basic' },
     { id: 'low5', col: 9, row: 4 },
-    // Chemin du milieu (part du chemin du bas, le rejoint avant le boss).
-    { id: 'mid1', col: 2, row: 4 },
+    // Chemin du milieu (part du chemin du bas, le rejoint avant le boss) : mid1 porte « Le labyrinthe ».
+    { id: 'mid1', col: 2, row: 4, battle: 'battleMid1W01' },
     { id: 'mid2', col: 4, row: 4 },
     { id: 'mid3', col: 4, row: 2 },
     { id: 'mid4', col: 7, row: 2 },

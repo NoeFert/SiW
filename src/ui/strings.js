@@ -122,7 +122,7 @@ export const TEXT = {
   war: {
     title: 'Partir en guerre',
     battleNames: {
-      battleStartW01: 'La passe', battleLow1W01: 'Les crevasses', battleLow2W01: 'La citadelle', battleTop1W01: "L'essaim",
+      battleStartW01: 'La passe', battleLow1W01: 'Les crevasses', battleLow2W01: 'La citadelle', battleTop1W01: "L'essaim", battleMid1W01: 'Le labyrinthe',
     },
     upcoming: 'À venir', // emplacement de la map sans bataille définie (rules.md 11.7)
     xp: 'XP', // icône de la récompense en XP du joueur

@@ -1,5 +1,6 @@
 import { FOUNTAIN_MINUTE_MS } from '../logic/fountain.js';
 import { HOME_TIPS } from '../logic/homeTips.js';
+import { WAR_BATTLE_IDS } from '../data/battles/index.js';
 
 // Outil de dev — joueurs de test figés, pour tester à la main l'après-bataille tutoriel sans la
 // rejouer. Le menu devs remplace le profil sauvegardé par l'un d'eux (voir replaceProfile dans
@@ -69,7 +70,7 @@ export const TEST_PROFILES = {
     spiritStones: 10000,
     playerXp: 1700, // niveau 3, 200 / 1 500 dans le niveau
     fallenLegendaryLevel: null, // Fafnir n'est jamais mort
-    wonWarBattles: [], // aucune bataille de « Partir en guerre » gagnée
+    wonWarBattles: [...WAR_BATTLE_IDS], // toutes les batailles de « Partir en guerre » gagnées : toutes jouables
     fountainLastHarvest: fullFountain(),
     homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
   }),
@@ -81,7 +82,7 @@ export const TEST_PROFILES = {
     spiritStones: 10000,
     playerXp: 1700, // niveau 3, 200 / 1 500 dans le niveau
     fallenLegendaryLevel: null, // Athos n'est jamais mort
-    wonWarBattles: [], // aucune bataille de « Partir en guerre » gagnée
+    wonWarBattles: [...WAR_BATTLE_IDS], // toutes les batailles de « Partir en guerre » gagnées : toutes jouables
     fountainLastHarvest: fullFountain(),
     homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
   }),
