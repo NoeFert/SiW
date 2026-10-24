@@ -2,6 +2,7 @@ import {
   Fragment, useCallback, useEffect, useState,
 } from 'react';
 import IntroScreen from './screens/IntroScreen.jsx';
+import PrologueScreen from './screens/PrologueScreen.jsx';
 import FactionChoiceScreen from './screens/FactionChoiceScreen.jsx';
 import BattleScreen from './screens/BattleScreen.jsx';
 import VictoryScreen from './screens/VictoryScreen.jsx';
@@ -128,8 +129,10 @@ export default function App() {
   let content;
   if (screen === 'intro') {
     content = (
-      <IntroScreen onContinue={() => setScreen('factionChoice')} />
+      <IntroScreen onContinue={() => setScreen('prologue')} />
     );
+  } else if (screen === 'prologue') {
+    content = <PrologueScreen onContinue={() => setScreen('factionChoice')} />;
   } else if (screen === 'factionChoice') {
     content = <FactionChoiceScreen onChoose={startTutoBattle} />;
   } else if (screen === 'battle') {
@@ -201,11 +204,11 @@ export default function App() {
 
   return (
     <>
-      {/* GRAPHICS.md « Interface » : fond des écrans — noir pour l'intro, le choix de faction et
-          la bataille (la marge autour de la tour et du terrain se fond avec eux), dégradé vertical
-          #2a2c2f → #838796 pour les autres (l'accueil le couvre de son château). */}
+      {/* GRAPHICS.md « Interface » : fond des écrans — noir pour l'intro, le prologue, le choix de
+          faction et la bataille (la marge autour de la tour et du terrain se fond avec eux), dégradé
+          vertical #2a2c2f → #838796 pour les autres (l'accueil le couvre de son château). */}
       <div
-        className={`h-full p-game ${['intro', 'factionChoice', 'battle'].includes(screen)
+        className={`h-full p-game ${['intro', 'prologue', 'factionChoice', 'battle'].includes(screen)
           ? 'bg-neutral-900'
           : 'bg-linear-to-b from-[#2a2c2f] to-[#838796]'}`}
       >

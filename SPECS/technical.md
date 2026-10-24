@@ -90,13 +90,14 @@ Code DRY et direct, sans abstraction pensée pour la v2+ (pas de plugins, pas de
 
 ## 5. Écrans et navigation
 
-Onze écrans (`src/screens/`) ; seul `BattleScreen` contient le canevas Phaser. Apparence de chaque écran : `GRAPHICS.md`.
+Douze écrans (`src/screens/`) ; seul `BattleScreen` contient le canevas Phaser. Apparence de chaque écran : `GRAPHICS.md`.
 
 ### 5.1 Liste des écrans
 
 | Écran | Contenu et comportement |
 |---|---|
 | **IntroScreen** | texte d'introduction (le joueur est un souverain qui mènera les siens à la guerre) et un bouton pour continuer ; une seule fois, au tout début |
+| **PrologueScreen** | animation, une seule fois, après l'intro : deux paragraphes apparaissent en fondu l'un après l'autre (1 s de fondu, 4 s chacun), disparaissent en fondu (1 s) ; la Souveraine des Wyrms glisse depuis la gauche (1 s), puis le Souverain des Morts-Vivants depuis la droite (1 s) ; ils dialoguent, une réplique à la fois dans une bulle tournée vers le centre, « Continuer » passe à la suivante ; fondu vers le choix de faction (1 s). Pas de bouton pour passer. Le souverain qui glisse avec sa bulle est un composant à part (`SovereignDialogue`), réutilisable. Textes dans `strings.js` |
 | **FactionChoiceScreen** | choix entre la Souveraine des Wyrms et le Souverain des Morts-Vivants ; une seule fois |
 | **BattleScreen** | bataille tutoriel ou de « Partir en guerre » : tour de commandement à gauche, canevas à droite (`ui-battle-screen-decisions.md`) ; crée la bataille et la partage (2.2) |
 | **VictoryScreen** | récompenses, montées de niveau, pertes (5.3) |
@@ -140,7 +141,7 @@ Dans la grille des unités et dans les accordéons, les individus sont triés pa
 ### 5.2 Enchaînement
 
 ```
-IntroScreen → FactionChoiceScreen (une fois)
+IntroScreen → PrologueScreen → FactionChoiceScreen (une fois)
         │
         ▼
    BattleScreen ──────► DefeatScreen ──"Réessayer"──┐

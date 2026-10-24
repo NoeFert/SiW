@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/8bit/button.jsx';
-import {
-  TutorialBubble, TutorialHand, elementCenter, handPosition,
-} from './TutorialParts.jsx';
+import { TutorialHand, elementCenter, handPosition } from './TutorialParts.jsx';
+import SpeechBubble from './SpeechBubble.jsx';
 import { TEXT } from './strings.js';
 
 // Entrée de l'accueil que la main montre, par conseil (repérée par `data-tutorial`).
@@ -33,7 +32,7 @@ export default function HomeTip({ tip, onClose }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-40">
       <div className="absolute inset-x-0 top-game flex justify-center px-4">
-        <TutorialBubble
+        <SpeechBubble
           action={(
             <Button
               size="icon-sm"
@@ -47,7 +46,7 @@ export default function HomeTip({ tip, onClose }) {
           )}
         >
           {TEXT.homeTips[tip]}
-        </TutorialBubble>
+        </SpeechBubble>
       </div>
       {target && <TutorialHand position={handPosition([target], performance.now())} />}
     </div>

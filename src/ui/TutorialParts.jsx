@@ -1,9 +1,5 @@
-import {
-  Item, ItemActions, ItemContent, ItemDescription,
-} from '@/components/ui/8bit/item.jsx';
-
-// technical.md 5.5 : éléments communs aux tutoriels (bataille et accueil) — la bulle de message
-// et la main qui montre l'action attendue.
+// technical.md 5.5 : éléments communs aux tutoriels (bataille et accueil) — la main qui montre
+// l'action attendue (la bulle de message : SpeechBubble.jsx).
 
 // Main blanche des curseurs (assets/ui, 18×24 déjà agrandie ×2), affichée encore ×2 ; le bout
 // de l'index est au même point chaud que le curseur CSS (7, 1), ×2.
@@ -38,20 +34,5 @@ export function TutorialHand({ position }) {
         left: position.x - HAND_TIP.x, top: position.y - HAND_TIP.y, width: 18 * HAND_SCALE, height: 24 * HAND_SCALE,
       }}
     />
-  );
-}
-
-// Bulle de message (composant Item 8bitcn, dans la bulle blanche du pack, pixel-speech) ;
-// `action` : bouton éventuel à droite du texte.
-export function TutorialBubble({ children, action = null }) {
-  return (
-    <Item className="pixel-speech pointer-events-auto max-w-2xl rounded-none text-white">
-      <ItemContent>
-        <ItemDescription className="line-clamp-none whitespace-pre-line text-xs leading-relaxed text-white">
-          {children}
-        </ItemDescription>
-      </ItemContent>
-      {action && <ItemActions>{action}</ItemActions>}
-    </Item>
   );
 }
