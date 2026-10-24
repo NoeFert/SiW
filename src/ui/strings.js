@@ -18,6 +18,22 @@ export const TEXT = {
   ],
   start: 'Commencer',
 
+  // Prologue, entre l'introduction et le choix de faction (PrologueScreen).
+  prologue: {
+    paragraphs: [
+      'En ces temps sombres, la terre rocheuse est agitée de tremblements. Deux souverains voient le jour.',
+      'Le territoire est unique, seul l\'un d\'eux pourra le posséder.',
+    ],
+    // Répliques des souverains, dans l'ordre (`speaker` : faction qui parle).
+    dialogue: [
+      { speaker: 'wyrms', text: 'Je prendrai ce domaine.' },
+      { speaker: 'undead', text: 'Essaie donc, il sera mien avant le coucher du soleil.' },
+      { speaker: 'wyrms', text: 'Et avec quoi ? Des ossements décrépits ?' },
+      { speaker: 'undead', text: 'On verra qui l\'emportera !' },
+      { speaker: 'wyrms', text: 'Tu seras notre premier festin !' },
+    ],
+  },
+
   // Messages des tutoriels (clés = champ `message` des étapes, src/data/tutorials.js).
   tutorial: {
     // Tutoriel de départ (bataille tutoriel).

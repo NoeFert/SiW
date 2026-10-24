@@ -2,9 +2,8 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { continueTutorial, visibleTutorialStep, weakestPlayerUnit } from '../logic/battles/tutorial.js';
 import { playerDeploymentColumns } from '../logic/battles/deployment.js';
 import { canvasToScreen, getCanvasRect, gridToScreen } from '../renderConstants.js';
-import {
-  TutorialBubble, TutorialHand, elementCenter, handPosition,
-} from './TutorialParts.jsx';
+import { TutorialHand, elementCenter, handPosition } from './TutorialParts.jsx';
+import SpeechBubble from './SpeechBubble.jsx';
 import { TEXT } from './strings.js';
 
 // Cibles possibles de la main, par nom (champ `hand` des étapes, src/data/tutorials.js) :
@@ -50,13 +49,13 @@ export default function TutorialOverlay({ battle, unitDisplayCenter }) {
           className="absolute flex justify-center px-4"
           style={{ left: canvasRect.left, width: canvasRect.width, top: canvasRect.top + 16 }}
         >
-          <TutorialBubble
+          <SpeechBubble
             action={step.continueButton && (
               <Button size="sm" onClick={() => continueTutorial(battle)}>{TEXT.tutorial.continue}</Button>
             )}
           >
             {TEXT.tutorial[step.message]}
-          </TutorialBubble>
+          </SpeechBubble>
         </div>
       )}
 

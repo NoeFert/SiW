@@ -38,7 +38,8 @@ function FactionColumn({ faction, onChoose }) {
 // jeu compris (-inset-game) ; leur contenu reste centré, loin des bords.
 export default function FactionChoiceScreen({ onChoose }) {
   return (
-    <div className="relative h-full w-full text-white">
+    // Arrivée en fondu, à la suite du fondu de sortie du prologue.
+    <div className="relative h-full w-full text-white animate-in fade-in duration-1000">
       <div className="absolute -inset-game flex">
         <FactionColumn faction="wyrms" onChoose={onChoose} />
         <div className="w-1 bg-white/20" />
