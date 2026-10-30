@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,7 +12,7 @@
 
 @theme inline {
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sans: 'Press Start 2P', system-ui, sans-serif;
     /* Couleur principale de la faction du joueur (classes text-faction, bg-faction), posée par
        src/ui/factionTheme.js à partir de ses données (src/data/factions/). */
     --color-faction: var(--faction-color);

@@ -3,8 +3,9 @@ import { FACTIONS } from '../data/factions/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import { TEXT, unitName } from '../ui/strings.js';
 
-// Une colonne par faction : le souverain en fond, le bouton de choix, puis une rangée de 3
-// cases avec les monstres du roster (units.md, dans l'ordre basique / [Vol] / [Légendaire]).
+// Une colonne par faction : le souverain en fond, le bouton de choix, une rangée de 3 cases
+// avec les monstres du roster (units.md, dans l'ordre basique / [Vol] / [Légendaire]), puis
+// une ligne décrivant les particularités de la faction.
 function FactionColumn({ faction, onChoose }) {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center gap-8 overflow-hidden">
@@ -28,6 +29,9 @@ function FactionColumn({ faction, onChoose }) {
           </div>
         ))}
       </div>
+      <p className="relative max-w-xs text-center text-xs leading-relaxed">
+        {TEXT.factionDescriptions[faction]}
+      </p>
     </div>
   );
 }
