@@ -185,7 +185,7 @@ export default class CombatEffects {
     const view = this.units.get(unit.id);
     if (!view) return;
     const label = this.scene.add.text(0, -unit.size * CELL_SIZE / 2 - 16, message, {
-      fontSize: '13px', color, fontStyle: 'bold',
+      fontFamily: '"Press Start 2P"', fontSize: '10px', color,
     }).setOrigin(0.5, 1);
     view.container.add(label);
     this.scene.tweens.add({

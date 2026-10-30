@@ -170,6 +170,11 @@ export const TEXT = {
 
   chooseFaction: 'Choisis ta faction',
   factions: { wyrms: 'Wyrms', undead: 'Morts-Vivants' },
+  // Particularités de chaque faction, sous ses unités (FactionChoiceScreen).
+  factionDescriptions: {
+    wyrms: 'Créatures draconiques puissantes et très agressives qui sèmeront la dévastation',
+    undead: 'Squelettes et nécromanciens, misant sur la quantité et le debuff pour anéantir leurs ennemis',
+  },
 
   yourUnits: 'Vos unités',
   ungroupSpecies: 'Séparer les individus',
