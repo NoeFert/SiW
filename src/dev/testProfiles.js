@@ -35,7 +35,7 @@ const WYRM_UNITS = [
 ];
 
 // Joueur Morts-Vivants après la bataille tutoriel : 4 New-reborn Skeletons et 1 Necromant Initiate
-// perdus, restent 14 / 7 / 1 individus (369 PP), tous dans l'armée.
+// perdus, puis Athos tué au niveau 2 ; restent 14 / 7 / 0 individus (259 PP), tous dans l'armée.
 const UNDEAD_UNITS = [
   { id: 'skeleton-1', species: 'newRebornSkeleton', xp: 500 }, // niveau 5
   { id: 'skeleton-2', species: 'newRebornSkeleton', xp: 320 }, // niveau 4
@@ -58,7 +58,6 @@ const UNDEAD_UNITS = [
   { id: 'necromant-5', species: 'necromantInitiate', xp: 0 },
   { id: 'necromant-6', species: 'necromantInitiate', xp: 0 },
   { id: 'necromant-7', species: 'necromantInitiate', xp: 0 },
-  { id: 'athos', species: 'athos', xp: 350 }, // niveau 4
 ];
 
 export const TEST_PROFILES = {
@@ -81,8 +80,10 @@ export const TEST_PROFILES = {
     army: { name: 'Armée 1', unitIds: UNDEAD_UNITS.map((unit) => unit.id) },
     spiritStones: 10000,
     playerXp: 1700, // niveau 3, 200 / 1 500 dans le niveau
-    fallenLegendaryLevel: null, // Athos n'est jamais mort
-    wonWarBattles: [...WAR_BATTLE_IDS], // toutes les batailles de « Partir en guerre » gagnées : toutes jouables
+    fallenLegendaryLevel: 2, // Athos est mort au niveau 2 : réinvocable du niveau 1 au 2
+    // « La passe » et « Les crevasses » gagnées ; « L'essaim », « Le labyrinthe » et « La
+    // citadelle » restent à gagner.
+    wonWarBattles: ['battleStartW01', 'battleLow1W01'],
     fountainLastHarvest: fullFountain(),
     homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
   }),

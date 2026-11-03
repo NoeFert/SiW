@@ -19,7 +19,7 @@ export default function DevMenu({ onRestart, onSkipTutoBattle, onLoadProfile }) 
   ];
 
   return (
-    <div className="fixed top-2 left-2 z-[100] font-mono text-xs">
+    <div className="fixed top-2 left-2 z-100 font-mono text-xs">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
