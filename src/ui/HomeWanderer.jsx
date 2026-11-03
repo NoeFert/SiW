@@ -7,14 +7,13 @@ import { useProfileStore } from '../state/profileStore.js';
 
 const CROWD_SIZE = 3;
 const PICK_INTERVAL_MS = 5 * 60 * 1000;
-const ENTRY_GAP_MS = 2000; // décalage entre les entrées des unités d'un groupe
-const SPEED = 3; // en % de la largeur du couloir par seconde
-const OUTSIDE_LEFT = -6; // positions (en %) hors de l'écran, pour entrer et sortir
+const ENTRY_GAP_MS = 2000;
+const SPEED = 3; // % de la largeur par seconde
+const OUTSIDE_LEFT = -6;
 const OUTSIDE_RIGHT = 106;
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 
-// Jusqu'à 3 individus différents, tirés au hasard parmi les individus possédés d'une case (1×1) :
-// leurs espèces. Liste vide s'il n'y en a pas. Lit le profil au moment du tirage.
+// Jusqu'à 3 espèces tirées parmi les individus d'une case.
 function pickCrowd(roster) {
   const candidates = useProfileStore.getState().units.filter((unit) => roster[unit.species].size === 1);
   const picked = [];
@@ -24,10 +23,7 @@ function pickCrowd(roster) {
   return picked.map((unit) => roster[unit.species]);
 }
 
-// Une unité qui erre : elle entre par un bord après `entryDelay` ms, va et vient au hasard dans
-// le couloir (pauses de 1 à 4 s entre deux trajets), et sort par le bord le plus proche quand
-// `leaving` passe à vrai — puis `onLeft`. Elle regarde dans le sens de sa marche ; un clic la fait
-// sursauter.
+// Unité qui erre dans le couloir, puis sort quand `leaving` passe à vrai.
 function Wanderer({
   species, entryDelay, leaving, onLeft,
 }) {
@@ -39,11 +35,10 @@ function Wanderer({
   const spriteRef = useRef(null);
   const pause = useRef(null);
   const leavingRef = useRef(leaving);
-  const entered = useRef(false); // vrai dès que l'entrée a commencé
-  const entry = useRef({ timeout: null, frame: null }); // entrée programmée
+  const entered = useRef(false);
+  const entry = useRef({ timeout: null, frame: null });
 
-  // Position actuelle (en %), y compris en plein trajet : lue sur la mise en page. `left` est le
-  // centre de l'unité (elle est recentrée par -translate-x-1/2, ignoré par offsetLeft).
+  // `left` est le centre de l'unité.
   const moveTo = useCallback((target) => {
     const button = buttonRef.current;
     const from = (button.offsetLeft / button.parentElement.offsetWidth) * 100;
@@ -51,8 +46,7 @@ function Wanderer({
   }, []);
 
   useEffect(() => {
-    // Attend son tour (les unités d'un groupe entrent l'une après l'autre, sans se superposer),
-    // puis une frame pour que le navigateur ait placé l'unité hors de l'écran avant son entrée.
+    // Attend son tour, puis une frame pour que l'unité soit placée hors de l'écran.
     entry.current.timeout = setTimeout(() => {
       entry.current.frame = requestAnimationFrame(() => {
         entered.current = true;
@@ -70,7 +64,6 @@ function Wanderer({
     leavingRef.current = leaving;
     if (!leaving) return;
     clearTimeout(pause.current);
-    // Pas encore entrée : elle n'entrera pas, elle est déjà dehors.
     if (!entered.current) {
       clearTimeout(entry.current.timeout);
       cancelAnimationFrame(entry.current.frame);
@@ -100,7 +93,6 @@ function Wanderer({
     { duration: 350, easing: 'ease-out' },
   );
 
-  // Sprite retourné quand il marche dans le sens opposé à son dessin d'origine.
   const flipped = facing !== null && (facing === 'right') === move.towardsLeft;
   return (
     <button
@@ -122,9 +114,7 @@ function Wanderer({
   );
 }
 
-// GRAPHICS.md « Accueil » : jusqu'à 3 unités du joueur errent en bas de l'accueil, à la hauteur
-// de la Spirit Fountain. Toutes les 5 minutes, elles sortent de l'écran et un nouveau groupe,
-// tiré au hasard, entre ; aucune si le joueur n'a pas d'individu d'une case.
+// Unités qui errent en bas de l'accueil, renouvelées toutes les 5 minutes.
 export default function HomeWanderer({ playerFaction }) {
   const roster = FACTIONS[playerFaction].roster;
   const [crowd, setCrowd] = useState(() => ({ id: 0, species: pickCrowd(roster) }));
@@ -141,7 +131,6 @@ export default function HomeWanderer({ playerFaction }) {
 
   useEffect(() => {
     const id = setInterval(() => {
-      // Personne à l'écran : nouveau tirage direct ; sinon, on attend que tous soient sortis.
       if (crowdRef.current.species.length === 0) renew();
       else setLeaving(true);
     }, PICK_INTERVAL_MS);
@@ -155,9 +144,7 @@ export default function HomeWanderer({ playerFaction }) {
 
   if (crowd.species.length === 0) return null;
   return (
-    // Couloir sur toute la largeur de la fenêtre (padding du jeu compris), en bas de l'accueil.
-    // Découpé sur les côtés seulement (unités hors écran cachées), pas en haut : le sursaut
-    // dépasse.
+    // Découpé sur les côtés seulement : le sursaut dépasse.
     <div className="pointer-events-none absolute -right-game -bottom-0.5 -left-game h-14.5 overflow-x-clip">
       {crowd.species.map((species, i) => (
         <Wanderer

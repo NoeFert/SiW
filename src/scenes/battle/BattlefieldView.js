@@ -1,17 +1,12 @@
 import { CELL_SIZE, cellCenter } from '../../renderConstants.js';
 
-// Quadrillage de debug : repère de case utile en dev, pas pour le joueur. Passer à true pour
-// le réafficher pendant qu'on travaille sur le placement des obstacles ou des scripts.
+// Quadrillage de debug.
 const DEBUG_SHOW_GRID = false;
 
-// Clé de texture Phaser de l'image de fond `image` (champ `background` des phases,
-// src/data/battles/).
 const backgroundKey = (image) => `background-${image}`;
 
-// Le terrain de la bataille : image de fond et rochers de la zone affichée (rules.md 1, 7.3).
-// Profondeurs négatives : ils restent sous les unités, même redessinés au changement de phase.
+// Fond et rochers de la zone affichée, sous les unités.
 export default class BattlefieldView {
-  // `phases` : zones de la bataille (resolvePhases, src/logic/battles/battleSetup.js).
   static preload(scene, phases) {
     for (const image of new Set(phases.map(({ background }) => background.image))) {
       scene.load.image(backgroundKey(image), `backgrounds/${image}.png`);
@@ -19,22 +14,18 @@ export default class BattlefieldView {
     scene.load.image('rocks', 'sprites/rocks.png');
   }
 
-  // `grid` : grille de la première zone, qui donne la taille du terrain.
   constructor(scene, phases, grid) {
     this.scene = scene;
     this.phases = phases;
     this.width = grid.width * CELL_SIZE;
     this.height = grid.height * CELL_SIZE;
-    this.obstacles = []; // { x, y, image, fx } par rocher affiché
+    this.obstacles = [];
     this.shownPhaseIndex = null;
 
     const firstBackground = backgroundKey(phases[0].background.image);
     this.background = scene.add.image(0, 0, firstBackground).setOrigin(0, 0).setDepth(-3);
     this.backgroundFx = this.background.preFX?.addColorMatrix();
-    // Copie non filtrée du fond, montrée seulement sur la zone cliquable pendant une pause (voir
-    // tint) : c'est elle qui « reste en couleur » au-dessus du terrain désaturé. Masque en
-    // coordonnées écran plutôt qu'un crop : un crop se calcule dans la texture et se décale
-    // quand le fond est retourné.
+    // Copie non filtrée du fond, montrée sur la zone cliquable pendant une pause.
     this.colorZoneMask = scene.make.graphics({}, false);
     this.colorBackground = scene.add.image(0, 0, firstBackground).setOrigin(0, 0).setDepth(-2).setVisible(false)
       .setMask(this.colorZoneMask.createGeometryMask());
@@ -53,8 +44,6 @@ export default class BattlefieldView {
     graphics.setVisible(DEBUG_SHOW_GRID);
   }
 
-  // rules.md 7.3 : affiche la zone de la phase `index` — son fond, dans le bon sens, et ses
-  // rochers (un bloc 2x2 est dessiné comme un seul gros rocher).
   show(index) {
     const { obstacles, background } = this.phases[index];
     for (const { image } of this.obstacles) image.destroy();
@@ -73,9 +62,7 @@ export default class BattlefieldView {
     this.shownPhaseIndex = index;
   }
 
-  // Signal de pause (voir PauseTint.js) : désature le terrain au niveau `level` (0 = couleurs
-  // normales, -1 = niveaux de gris), sauf la zone cliquable `zone` ({ x, y, width, height } en
-  // cases, ou null), qui reste en couleur.
+  // Désature le terrain, sauf la zone cliquable `zone`.
   tint(level, zone) {
     const inZone = (x, y) => zone !== null
       && x >= zone.x && y >= zone.y && x < zone.x + zone.width && y < zone.y + zone.height;

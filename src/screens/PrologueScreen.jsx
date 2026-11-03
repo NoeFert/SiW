@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import SovereignDialogue, { SOVEREIGN_SLIDE_MS } from '../ui/SovereignDialogue.jsx';
 import { TEXT } from '../ui/strings.js';
 
-const FADE_MS = 1000; // apparition ou disparition d'un texte, fondu de sortie de l'écran
+const FADE_MS = 1000;
 
-// Étapes du prologue, dans l'ordre, avec leur durée en ms (null : le joueur avance au clic).
+// Durées en ms (null : le joueur avance au clic).
 const STEPS = [
   { id: 'firstParagraph', ms: 4000 },
   { id: 'secondParagraph', ms: 4000 },
@@ -22,16 +22,11 @@ function stepIndex(id) {
 
 const fade = { '--tw-animation-duration': `${FADE_MS}ms` };
 
-// technical.md 5.1 : entre l'introduction et le choix de faction, une seule fois. Deux
-// paragraphes en fondu, puis les deux souverains arrivent chacun de leur bord et dialoguent, une
-// réplique à la fois. Purement React.
 export default function PrologueScreen({ onContinue }) {
   const [step, setStep] = useState(0);
   const [lineIndex, setLineIndex] = useState(0);
   const reached = (id) => step >= stepIndex(id);
 
-  // Étapes chronométrées : passe à la suivante au bout de sa durée ; après la dernière, l'écran
-  // suivant.
   useEffect(() => {
     if (step === STEPS.length) {
       onContinue();
@@ -63,7 +58,6 @@ export default function PrologueScreen({ onContinue }) {
           className={`retro h-full flex flex-col items-center justify-center gap-8 max-w-3xl mx-auto px-8 text-center text-sm leading-loose ${step === stepIndex('paragraphsOut') ? 'animate-out fade-out fill-mode-forwards' : ''}`}
           style={fade}
         >
-          {/* Étape 0 : le premier paragraphe ; à partir de l'étape 1 : les deux. */}
           {TEXT.prologue.paragraphs.slice(0, step + 1).map((paragraph) => (
             <p key={paragraph} className="animate-in fade-in" style={fade}>{paragraph}</p>
           ))}

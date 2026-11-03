@@ -1,17 +1,12 @@
 import { FACTIONS } from '../data/factions/index.js';
 
-// Thème d'interface de la faction du joueur, tiré de ses données (src/data/factions/) : sa
-// couleur principale (`color`) et sa palette (`uiColor`, dossier assets/ui/<uiColor>/). Pour
-// changer les couleurs d'une faction, il suffit de modifier ces deux champs.
+// Thème de la faction du joueur, tiré de `color` et `uiColor`.
 
-// Chemin d'un asset d'interface : assets/ui/<couleur>/<nom>.png, ou assets/ui/<nom>.png pour un
-// asset neutre (sans couleur).
 export function uiAsset(name, color = null) {
   return color ? `/ui/${color}/${name}.png` : `/ui/${name}.png`;
 }
 
-// Fichiers que doit contenir le dossier de chaque palette utilisée par une faction (vérifié par
-// tests/ui/factionTheme.test.js).
+// Vérifié par tests/ui/factionTheme.test.js.
 export const PALETTE_FILES = [
   'badge-faction', 'bar-fill-faction', 'button-highlighted',
   'corner-top-left', 'corner-top-right', 'corner-bottom-left', 'corner-bottom-right',
@@ -21,15 +16,11 @@ export const PALETTE_FILES = [
   'war-connector-horizontal', 'war-connector-vertical',
 ];
 
-// Réglages de chaque palette qui ne sont pas des images : couleur de la barre de défilement sous
-// Firefox (pas d'image possible), texte du badge de la faction, survol du menu de l'accueil.
 const PALETTE_COLORS = {
   gold: { scrollbar: '#eeb632', badgeText: 'var(--faction-color)', menuHover: 'var(--faction-color)' },
   purple: { scrollbar: '#8061e6', badgeText: 'black', menuHover: '#c4b5fd' },
 };
 
-// Variables CSS du thème d'une faction, lues par pixel-ui.css et par les classes Tailwind
-// `text-faction` / `bg-faction` (index.css).
 export function themeVariables(faction) {
   const asset = (name) => `url("${uiAsset(name, faction.uiColor)}")`;
   const colors = PALETTE_COLORS[faction.uiColor];
@@ -50,9 +41,7 @@ export function themeVariables(faction) {
   };
 }
 
-// Pose le thème de la faction `factionId` sur <html> (il couvre aussi les tooltips et dialogues
-// rendus hors de l'app), ou le retire sans faction (intro, choix de faction) : pixel-ui.css
-// reprend alors ses valeurs par défaut (accents violets, curseurs blancs).
+// Sur <html>, pour couvrir aussi les tooltips et dialogues.
 export function applyFactionTheme(factionId) {
   const { style } = document.documentElement;
   const variables = factionId ? themeVariables(FACTIONS[factionId]) : {};

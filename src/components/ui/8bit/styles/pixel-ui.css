@@ -1,5 +1,4 @@
-/* GRAPHICS.md « Interface » : sprites du pack Pixel UI & HUD (assets/ui/), affichés à 2× en
-   9-slice (border-image), sans lissage. Largeur de bordure = découpe × 2.
+/* Sprites du pack Pixel UI & HUD à 2× en 9-slice. Largeur de bordure = découpe × 2. */
    Assets rangés par couleur (assets/ui/<couleur>/). Ce qui suit la faction du joueur lit les
    variables CSS posées sur <html> par src/ui/factionTheme.js (--faction-color, --ui-*,
    --cursor-*), tirées de ses données (src/data/factions/) ; sans faction (intro, choix de
@@ -18,7 +17,7 @@
   image-rendering: pixelated;
 }
 
-/* Boutons (ButtonA, 34×18) : liseré gris au repos, liseré de couleur au survol, enfoncé au clic. */
+/* Boutons (ButtonA) */
 .pixel-button {
   border-style: solid;
   border-width: 8px;
@@ -41,18 +40,18 @@
   border-image-source: url("/ui/button-pressed.png");
 }
 
-/* Cartes (PanelLarge, 48×48). */
+/* Cartes (PanelLarge) */
 .pixel-card {
   border-style: solid;
   border-width: 8px;
   border-image: url("/ui/panel.png") 4 fill / 8px stretch;
 }
-/* Variante dorée (Gold/PanelLarge) : case d'une espèce [Légendaire]. */
+/* Case d'une espèce [Légendaire] */
 .pixel-card-gold {
   border-image-source: url("/ui/gold/panel.png");
 }
 
-/* Badges (bannières, 64×15) : hauteur fixe 30 px pour garder les pointes nettes. */
+/* Badges : hauteur fixe pour garder les pointes nettes. */
 .pixel-badge {
   height: 30px;
   border-style: solid;
@@ -63,15 +62,13 @@
 .pixel-badge[data-variant="secondary"] {
   border-image-source: url("/ui/badge-secondary.png");
 }
-/* Badge de la faction du joueur (niveaux) : dans sa couleur. */
+/* Badge de la faction du joueur */
 .pixel-badge[data-variant="faction"] {
   border-image-source: var(--ui-badge-faction);
   color: var(--ui-badge-faction-text);
 }
 
-/* Barre de valeur (RegularBarA, 16×8) : fond et cadre en 9-slice, remplissage 12×4 étiré,
-   en retrait de 2 px (4 px à l'écran). Remplissage dans la couleur de la faction du joueur
-   (menthe = barre verte du pack, doré = barre orange recolorée), violet sans faction. */
+/* Barre de valeur (RegularBarA) */
 .pixel-bar {
   position: relative;
   height: 16px;
@@ -95,7 +92,7 @@
   border-image: url("/ui/bar-foreground.png") 3 / 6px stretch;
 }
 
-/* Panneau uni (Panels/Black/Panel, 48×48) : solde de Spirit Stones (accueil et Invocation). */
+/* Panneau uni : solde de Spirit Stones */
 .pixel-panel {
   border-style: solid;
   border-width: 4px;
@@ -103,8 +100,7 @@
   padding-block: 4px;
 }
 
-/* Infobulle (Tooltips/Black/SpeechTooltip, 32×32) : liseré gris, fond noir. La flèche de
-   l'infobulle shadcn est masquée : le cadre du pack n'en a pas. */
+/* Infobulle, sans flèche */
 .pixel-tooltip {
   border-style: solid;
   border-width: 8px;
@@ -115,8 +111,7 @@
   display: none;
 }
 
-/* Bulle de message blanche (Tooltips/White/Speech, 32×32) : liseré blanc, fond noir — bulle des
-   tutoriels. */
+/* Bulle des tutoriels */
 .pixel-speech {
   border-style: solid;
   border-width: 8px;
@@ -124,24 +119,21 @@
   image-rendering: pixelated;
 }
 
-/* Bande du nombre d'individus d'un groupe (Panels/Black/GridPanelInactive, 16×16), en haut des
-   cases de la grille des unités. */
+/* Nombre d'individus d'un groupe */
 .group-band {
   border-style: solid;
   border-width: 4px;
   border-image: url("/ui/group-band.png") 2 fill / 4px stretch;
 }
 
-/* Cadre en creux (Frame, 32×32) : portrait du souverain. */
+/* Portrait du souverain */
 .pixel-frame {
   border-style: solid;
   border-width: 8px;
   border-image: url("/ui/portrait-frame.png") 4 fill / 8px stretch;
 }
 
-/* Séparateur noir (Decorators/DividerD, 48×4, recoloré en gris très foncé : pas de variante
-   noire dans le pack) entre l'en-tête et le contenu des écrans de la couche méta. Extrémités de
-   12 px gardées, milieu étiré. */
+/* Séparateur des écrans de la couche méta */
 .pixel-divider {
   display: block;
   height: 8px;
@@ -151,13 +143,11 @@
   border-image: url("/ui/black/divider.png") 0 12 fill / 0 24px stretch;
 }
 
-/* Entrée du menu de l'accueil : couleur de la palette de la faction au survol. */
 .pixel-menu-item:hover {
   color: var(--ui-menu-hover, #c4b5fd);
 }
 
-/* Spirit Stone (Black/Jewel_Spin, 9 images de 11×11) : gemme noire fixe, première image de la
-   planche. */
+/* Spirit Stone */
 .spirit-stone-icon {
   display: inline-block;
   flex: none;
@@ -166,10 +156,7 @@
   background: url("/ui/spirit-stone.png") 0 0 / 198px 22px;
 }
 
-/* Barre de défilement (FormElements/ScrollbarVertical + ScrollbarHandle, pré-agrandies ×2) :
-   liste des unités de la tour de commandement. Rail noir (Black) de 3 px centré dans 7 px,
-   extrémités arrondies gardées ; poignée de la palette de la faction (violette par défaut),
-   losange plein au survol. Pas de style image sous Firefox : couleur seule. */
+/* Barre de défilement. Couleur seule sous Firefox. */
 .pixel-scrollbar::-webkit-scrollbar {
   width: 14px;
 }
@@ -191,14 +178,7 @@
   }
 }
 
-/* Curseurs (Cursors du pack, pré-agrandis ×2 pour la taille d'un curseur système : un curseur
-   CSS ne se met pas à l'échelle). Blancs par défaut (intro, choix de faction) ; ensuite ceux de la
-   palette de la faction du joueur, posés sur <html> par src/ui/factionTheme.js pour couvrir aussi
-   les fenêtres affichées hors de l'app (tooltips, dialogues).
-   Flèche partout par défaut ; main sur ce qui est cliquable (cursor-pointer), main fermée sur ce
-   qui se glisse (cursor-grab), « interdit » sur ce qui est indisponible (cursor-not-allowed).
-   Hors @layer : l'emporte sur les utilitaires Tailwind du même nom. Les boutons gardent la
-   flèche, comme avant. */
+/* Curseurs de la palette de la faction. Hors @layer : l'emporte sur Tailwind. */
 html {
   --cursor-arrow: url("/ui/white/cursor-arrow.png");
   --cursor-hand: url("/ui/white/cursor-hand.png");

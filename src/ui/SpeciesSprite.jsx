@@ -11,8 +11,6 @@ export default function SpeciesSprite({ species, className, style }) {
   );
 }
 
-// Une ligne « 8x [sprite] … » (bilans de victoire et de défaite, invocation) ; `children` suit
-// le sprite.
 export function SpeciesCountRow({
   count, species, spriteClassName = 'size-10', className = '', children,
 }) {

@@ -17,7 +17,6 @@ function Keywords({ species }) {
   ));
 }
 
-// Stats complètes de units.md, au niveau de l'individu (rules.md 11.6 : PV et dégâts).
 function statRows(species, level) {
   const damage = levelDamage(species.damage, level);
   return [
@@ -32,9 +31,7 @@ function statRows(species, level) {
   ];
 }
 
-// technical.md 5.1 : page de détail d'un individu (jamais d'un groupe) — niveau, barre d'XP,
-// stats à son niveau, aptitudes. Flèches à gauche et à droite, centrées en hauteur, vers
-// l'individu précédent / suivant (`onPrevious` / `onNext` : null au bout).
+// Page de détail d'un individu.
 export default function IndividualDetail({
   unit, species, onPrevious, onNext,
 }) {

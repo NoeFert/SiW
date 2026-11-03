@@ -3,16 +3,12 @@ import {
   isValidDeploymentPosition, getPresenceUsed, consumeFreshCopy, PRESENCE_CAP,
 } from './deployment.js';
 
-// Commandant IA : déploie les ennemis selon le script de la phase en cours (rules.md 7). Le
-// script ne fait QUE définir quoi/quand déployer, et la case est choisie au moment du
-// déploiement (7.2) — une fois créée via `new BattleUnit(...)`, l'unité IA suit exactement le
-// comportement autonome déjà codé dans unitBehavior.js, sans aucune logique de décision en plus.
+// IA : déploie selon le script de la phase (rules.md 7).
 export function createAiScriptState() {
   return { nextIndex: 0 };
 }
 
-// rules.md 7.2 : cibles stratégiques — renfort d'abord (ennemi engagé avec un allié à 50 % de
-// ses PV ou moins), sinon éradication (le ou les ennemis ayant le plus de PV actuels).
+// Cibles stratégiques (rules.md 7.2).
 function strategicTargets(enemies, allies) {
   const isWeak = (unit) => unit.hp <= unit.maxHp / 2;
   const reinforcement = enemies.filter((enemy) => allies.some((ally) => isWeak(ally) && (
@@ -25,10 +21,7 @@ function strategicTargets(enemies, allies) {
   return enemies.filter((enemy) => enemy.hp === maxHp);
 }
 
-// rules.md 7.2 : l'IA entre par le bord de son camp (droit pour 'enemy'), pour que le joueur
-// voie ses unités traverser le terrain. Parmi les positions libres collées à ce bord, elle
-// garde celles dont la rangée est la plus proche d'une cible stratégique, puis tire au hasard. Sans
-// ennemi sur le terrain, n'importe quelle position du bord. `null` si le bord est plein.
+// Entrée par le bord droit, au plus près d'une cible stratégique (rules.md 7.2).
 function chooseDeploymentPosition(species, faction, grid, unitsOnField, rng) {
   const x = faction === 'enemy' ? grid.width - species.size : 0;
   const valid = [];
@@ -41,8 +34,6 @@ function chooseDeploymentPosition(species, faction, grid, unitsOnField, rng) {
   const enemies = unitsOnField.filter((u) => u.faction !== faction);
   if (enemies.length === 0) return pick(valid);
 
-  // La colonne d'entrée est fixe : seul l'écart de rangées entre le bloc d'entrée et la cible
-  // compte (0 si leurs rangées se chevauchent).
   const rowGap = ({ y }, target) => Math.max(0, target.y - (y + species.size - 1), y - (target.y + target.size - 1));
   const targets = strategicTargets(enemies, unitsOnField.filter((u) => u.faction === faction));
   const distances = valid.map((position) => Math.min(...targets.map((target) => rowGap(position, target))));
@@ -50,13 +41,7 @@ function chooseDeploymentPosition(species, faction, grid, unitsOnField, rng) {
   return pick(valid.filter((_, i) => distances[i] === closest));
 }
 
-// `script` doit être trié par `time` croissant (voir src/data/battles/). Renvoie les
-// unités à déployer pour ce tick — celles dont l'heure de déploiement (temps depuis le début
-// de la phase) est atteinte depuis le dernier appel — sans jamais en redéployer
-// une deuxième fois. Si l'unité ferait dépasser le plafond vivant de points de présence
-// (rules.md 2, identique pour l'IA) ou si le bord d'entrée est plein (7.2), l'entrée attend un
-// tick suivant (les suivantes aussi, pour garder l'ordre du script). `rng` : source d'aléa,
-// injectable en test.
+// `script` trié par `time`. Une entrée bloquée attend, et les suivantes aussi.
 export function deployScheduledUnits(script, state, elapsedSeconds, faction, grid, units, rng = Math.random) {
   const unitsOnField = units.filter((u) => u.isOnField);
   const deployed = [];
@@ -67,18 +52,13 @@ export function deployScheduledUnits(script, state, elapsedSeconds, faction, gri
     if (!position) break;
     const unit = new BattleUnit(species, faction, position.x, position.y);
     deployed.push(unit);
-    unitsOnField.push(unit); // occupe déjà sa case pour l'entrée suivante du même tick
+    unitsOnField.push(unit);
     state.nextIndex += 1;
   }
   return deployed;
 }
 
-// Appelé à chaque tick par tickBattle : déploie les ennemis du script de la phase en cours dont
-// l'heure est venue (comptée depuis le début de la phase). Le plafond vivant et la case sont
-// vérifiés par deployScheduledUnits ; les copies et le [Légendaire] unique sont garantis par le
-// contenu du script (voir battleScript.test.js) : pas de passage par deployUnit, seul le
-// registre de copies est tenu à jour (consumeFreshCopy) pour que les réserves restent exactes
-// pour la fin de bataille (battleEnd.js).
+// Pas de passage par deployUnit : le script garantit copies et [Légendaire].
 export function deployDueEnemies(battle) {
   const due = deployScheduledUnits(
     battle.enemyScript, battle.aiScriptState, battle.elapsedSeconds - battle.phaseStartSeconds, 'enemy',

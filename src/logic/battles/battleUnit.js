@@ -2,11 +2,7 @@ import { levelDamage, levelStat } from '../levels.js';
 
 let nextId = 1;
 
-// Unité de bataille : une unité sur le terrain, le temps d'une bataille. À ne pas confondre avec
-// les individus possédés du profil ({ id, species, xp }, voir ownedUnits.js), qui survivent
-// d'une bataille à l'autre : côté joueur, chaque unité de bataille représente un individu
-// (`individualId`) avec son niveau (`level`, rules.md 11.6) ; les unités de l'IA restent
-// niveau 1, sans individu. PV max et dégâts sont ceux du niveau, figés pour toute la bataille.
+// Unité sur le terrain le temps d'une bataille (≠ individu possédé, ownedUnits.js).
 export default class BattleUnit {
   constructor(species, faction, x, y, level = 1, individualId = null) {
     this.id = nextId++;
@@ -19,12 +15,12 @@ export default class BattleUnit {
     this.maxHp = levelStat(species.maxHp, level);
     this.damage = levelDamage(species.damage, level);
     this.hp = this.maxHp;
-    this.killXp = 0; // coût en PP des ennemis achevés (XP de l'individu à la victoire, rules.md 11.6)
+    this.killXp = 0; // XP gagnée (rules.md 11.6)
     this.status = 'idle'; // idle | moving | attacking | engaged | fleeing
     this.target = null;
     this.attackTimer = 0;
     this.attacksLanded = 0;
-    this.paralyzedAttacks = 0; // prochaines attaques annulées (Frappe paralysante d'Athos)
+    this.paralyzedAttacks = 0;
     this.moveProgress = 0;
     this.command = null; // { type: 'attack', target } | { type: 'moveTo', x, y } | { type: 'flee' }
     this.hasFled = false;
@@ -46,7 +42,6 @@ export default class BattleUnit {
     return this.hp > 0;
   }
 
-  // Vivante et toujours sur le terrain (pas retirée par une fuite réussie, rules.md 2/5).
   get isOnField() {
     return this.isAlive && !this.hasFled;
   }

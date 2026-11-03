@@ -6,7 +6,7 @@ import {
 } from '../../../src/logic/battles/deployment.js';
 import { startingArmyOf } from './testFaction.js';
 
-// Roster fictif minimal, isolé de units.md, pour piloter précisément plafond/copies/légendaire.
+// Roster fictif, isolé de units.md.
 const ROSTER = {
   grunt: {
     name: 'Grunt', keywords: [], attackType: 'melee', size: 1,

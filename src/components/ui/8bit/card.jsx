@@ -27,8 +27,7 @@ export const cardVariants = cva("", {
   },
 });
 
-// GRAPHICS.md « Interface » : panneau PanelLarge du pack Pixel UI & HUD (styles/pixel-ui.css).
-// `dark` : le panneau est noir, les tokens shadcn du contenu passent en thème sombre.
+// Panneau PanelLarge du pack. `dark` : panneau noir.
 function Card({
   className,
   font,

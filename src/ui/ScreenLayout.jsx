@@ -2,11 +2,7 @@ import '@/components/ui/8bit/styles/pixel-ui.css';
 import ArrowButton from './ArrowButton.jsx';
 import { TEXT } from './strings.js';
 
-// GRAPHICS.md « Interface » : mise en page plein écran des écrans de la couche méta (Partir en
-// guerre, unités, Armées, Invocation), comme l'accueil — flèche « Retour » et titre en haut à
-// gauche, séparateur noir (DividerD) sur toute la largeur, puis le contenu sur toute la surface
-// restante (défilant si besoin). `background` (facultatif) : calque de fond posé derrière tout
-// l'écran, jusqu'au bord de la fenêtre (padding du jeu compris, -inset-game).
+// Mise en page des écrans de la couche méta. `background` : calque de fond facultatif.
 export default function ScreenLayout({
   title, onBack, background = null, children,
 }) {

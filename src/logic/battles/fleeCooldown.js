@@ -1,7 +1,4 @@
-// rules.md 5.1 : seul l'ordre Fuir a un cooldown, partagé par camp : une seule fuite toutes les
-// FLEE_COOLDOWN_SECONDS secondes, peu importe l'unité. Mesuré en temps de bataille, qui ne
-// s'écoule pas pendant les pauses : le cooldown est donc gelé lui aussi.
-// L'ordre lui-même est donné par playerActions.js (issuePlayerFlee).
+// Cooldown de la fuite, partagé par camp (rules.md 5.1).
 export const FLEE_COOLDOWN_SECONDS = 5;
 
 export function createFleeState() {

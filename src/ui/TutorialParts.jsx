@@ -1,20 +1,13 @@
-// technical.md 5.5 : éléments communs aux tutoriels (bataille et accueil) — la main qui montre
-// l'action attendue (la bulle de message : SpeechBubble.jsx).
-
-// Main blanche des curseurs (assets/ui, 18×24 déjà agrandie ×2), affichée encore ×2 ; le bout
-// de l'index est au même point chaud que le curseur CSS (7, 1), ×2.
+// Le bout de l'index est au point chaud du curseur CSS.
 const HAND_SCALE = 2;
 const HAND_TIP = { x: 7 * HAND_SCALE, y: 1 * HAND_SCALE };
-const HAND_PERIOD_MS = 6500; // durée d'un aller-retour de la main
+const HAND_PERIOD_MS = 6500; // aller-retour de la main
 
-// Centre à l'écran d'un élément repéré par un sélecteur (`data-tutorial`), ou null.
 export function elementCenter(selector) {
   const rect = document.querySelector(selector)?.getBoundingClientRect();
   return rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : null;
 }
 
-// Position de la main à l'instant `now` : aller-retour doux entre deux points, ou petit
-// tapotement vertical sur un point unique.
 export function handPosition(targets, now) {
   const phase = (1 - Math.cos((now / HAND_PERIOD_MS) * 2 * Math.PI)) / 2; // 0 -> 1 -> 0
   const [from, to] = targets;
@@ -22,7 +15,6 @@ export function handPosition(targets, now) {
   return { x: from.x + (to.x - from.x) * phase, y: from.y + (to.y - from.y) * phase };
 }
 
-// Main posée (bout de l'index) sur `position`, en px écran ; à placer dans un conteneur `fixed`.
 export function TutorialHand({ position }) {
   return (
     <img

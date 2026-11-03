@@ -1,7 +1,4 @@
-// battle.js n'implémente pas de règle nouvelle — c'est le fil qui relie les modules déjà
-// testés (déploiement, commandes, combat, fin de bataille). Ce fichier n'a donc pas été
-// demandé explicitement, mais un smoke test reste utile pour attraper une erreur de câblage
-// (CLAUDE.md : toute logique de jeu doit avoir un test associé).
+// Smoke test du câblage des modules par battle.js.
 import Grid from '../../../src/logic/battles/grid.js';
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { getReserve } from '../../../src/logic/battles/deployment.js';

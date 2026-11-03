@@ -3,20 +3,16 @@ import { invaderSpecies } from '../logic/war.js';
 import { uiAsset } from './factionTheme.js';
 import SpeciesSprite from './SpeciesSprite.jsx';
 
-// GRAPHICS.md « Partir en guerre » : map en arbre de compétences (sprites SkillTree du pack, à
-// 2×), dans la palette de la faction du joueur (`uiColor` de src/data/factions/), comme les
-// accents de l'interface ; gris pour ce qui est verrouillé.
-const SLOT = 42; // losange 21×21 à 2×, pointes au milieu des côtés
-const BOSS_SLOT = 56; // losange du boss, plus grand : SkillSlotLarge 28×28 à 2×
+// Map en arbre de compétences, dans la palette de la faction.
+const SLOT = 42;
+const BOSS_SLOT = 56;
 const HALF = SLOT / 2;
-const STEP = 80; // distance entre deux cases de la grille de la map
+const STEP = 80;
 
 const uiSprite = (name, color) => `url(${uiAsset(name, color)})`;
 const slotCenter = ({ col, row }) => ({ x: HALF + col * STEP, y: HALF + row * STEP });
 const slotSize = (node) => (node.boss ? BOSS_SLOT : SLOT);
 
-// Losange d'un emplacement : vide si disponible, plein si gagné, gris si verrouillé ; plus grand
-// pour le boss. Le sélecteur (à 3×, une fois et demie le losange) entoure l'emplacement choisi.
 function Slot({ node, color, selected, onSelect }) {
   const { x, y } = slotCenter(node);
   const size = slotSize(node);
@@ -31,7 +27,6 @@ function Slot({ node, color, selected, onSelect }) {
       className="absolute cursor-pointer hover:brightness-125"
       style={{ left: x - size / 2, top: y - size / 2, width: size, height: size }}
     >
-      {/* Intérieur noir du losange, pour qu'il se détache du fond de la map. */}
       <span className="absolute rotate-45 bg-black/80" style={{ inset: size / 7 }} />
       <span className="pixelated absolute inset-0 bg-size-[100%_100%]" style={{ backgroundImage: sprite }} />
       {selected && (
@@ -50,10 +45,7 @@ function Slot({ node, color, selected, onSelect }) {
   );
 }
 
-// Envahisseur posé au-dessus de son emplacement : le sprite de l'espèce ennemie, tourné vers la
-// gauche comme l'IA en bataille (rules.md 2), plus grand pour le [Légendaire], à INVADER_GAP de la
-// pointe haute du losange. Assombri, il s'éclaire quand son losange est sélectionné, pour montrer
-// qu'ils vont ensemble.
+// Envahisseur, éclairé quand son losange est sélectionné.
 const INVADER_SIZE = { basic: 40, flying: 40, legendary: 64 };
 const INVADER_GAP = 5;
 function Invader({ node, enemyRoster, selected }) {
@@ -72,13 +64,10 @@ function Invader({ node, enemyRoster, selected }) {
   );
 }
 
-// Connecteur droit entre deux emplacements liés (même ligne ou même colonne), de pointe à pointe.
-// Gris dès qu'un des deux bouts est verrouillé.
 function Connector({ from, to, color }) {
   const a = slotCenter(from);
   const b = slotCenter(to);
   const vertical = a.x === b.x;
-  // Demi-tailles des losanges aux deux bouts : `first` est celui du haut (ou de gauche).
   const [first, last] = (vertical ? a.y < b.y : a.x < b.x) ? [from, to] : [to, from];
   const start = slotSize(first) / 2;
   const gap = start + slotSize(last) / 2;
@@ -93,9 +82,7 @@ function Connector({ from, to, color }) {
   );
 }
 
-// Taille de la map à l'échelle 1 (px), marges comprises, pour que rien ne dépasse et que la mise
-// en page ne bouge pas avec la sélection : en haut, les envahisseurs de la ligne du haut ; en
-// bas, le sélecteur (une fois et demie le losange) d'un emplacement de la ligne du bas.
+// Taille fixe, marges comprises, pour que la mise en page ne bouge pas.
 export function warMapSize(map, nodes) {
   const marginTop = Math.max(0, ...nodes.filter((node) => node.invader).map(
     (node) => INVADER_SIZE[node.invader] + INVADER_GAP + slotSize(node) / 2 - slotCenter(node).y,
@@ -108,9 +95,7 @@ export function warMapSize(map, nodes) {
   };
 }
 
-// La map d'une guerre (rules.md 11.7), à l'échelle `scale` : liaisons, emplacements et
-// envahisseurs. `nodes` : emplacements de la map avec leur état ('available', 'won', 'locked') ;
-// `color` : palette de la faction du joueur ; `enemyRoster` : roster de l'IA (envahisseurs).
+// `nodes` : emplacements avec leur état.
 export default function WarMap({
   map, nodes, color, enemyRoster, selectedId, onSelect, scale,
 }) {

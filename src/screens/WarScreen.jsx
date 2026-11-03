@@ -17,13 +17,11 @@ import WarMap, { warMapSize } from '../ui/WarMap.jsx';
 import { TEXT } from '../ui/strings.js';
 
 const T = TEXT.war;
-const PANEL_WIDTH = 320; // panneau de l'emplacement sélectionné, à droite de la map
-const PANEL_GAP = 64; // entre la map et le panneau
+const PANEL_WIDTH = 320;
+const PANEL_GAP = 64;
 
-// Panneau de l'emplacement sélectionné : nom, état, « Combattre » (désactivé si verrouillé ou si
-// l'armée est vide) et récompenses de la prochaine victoire.
 function BattlePanel({ node, armyIsEmpty, onFight }) {
-  const replay = node.state === 'won'; // rules.md 11.7 : rejeu d'une bataille déjà gagnée
+  const replay = node.state === 'won';
   return (
     <div style={{ width: PANEL_WIDTH }} className={`flex shrink-0 flex-col items-center gap-3 text-center text-xs ${node.state === 'locked' ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-3">
@@ -33,8 +31,6 @@ function BattlePanel({ node, armyIsEmpty, onFight }) {
       <Button size="sm" disabled={node.state === 'locked' || armyIsEmpty} onClick={() => onFight(node.battle)}>
         {T.fight}
       </Button>
-      {/* Récompenses de la prochaine victoire : Spirit Stones (0 au rejeu, rules.md 11.7) et
-          XP du joueur (100 + jusqu'à 100 selon les PP survivants, 25 % au rejeu, 11.5). */}
       {node.state !== 'locked' && (
         <RewardRow
           spiritStones={victoryReward(BATTLES[node.battle].reward, replay)}
@@ -45,7 +41,6 @@ function BattlePanel({ node, armyIsEmpty, onFight }) {
   );
 }
 
-// Taille disponible (px) d'un élément, suivie quand la fenêtre change ; null avant la mesure.
 function useElementSize(ref) {
   const [size, setSize] = useState(null);
   useLayoutEffect(() => {
@@ -58,11 +53,7 @@ function useElementSize(ref) {
   return size;
 }
 
-// technical.md 5.1 / rules.md 11.7 : écran « Partir en guerre ». La map de la guerre 01 en réseau
-// (src/data/battles/war01/warMap01.js, affichée par WarMap) : trois chemins du départ au boss,
-// des passerelles et des impasses, sur le fond de la map en plein écran. Les emplacements qui
-// portent une bataille prennent son état ; les autres sont verrouillés (« À venir »). Un clic sur
-// un losange l'affiche dans le panneau de droite.
+// Écran « Partir en guerre » (rules.md 11.7).
 export default function WarScreen({ playerFaction, onFight, onBack }) {
   const units = useProfileStore((profile) => profile.units);
   const army = useProfileStore((profile) => profile.army);
@@ -72,14 +63,13 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
     ...node,
     state: node.battle ? warBattleState(WAR_MAP_01, wonIds, node.battle) : 'locked',
   }));
-  // Sélection par défaut : la dernière bataille débloquée, là où en est le joueur.
+  // Par défaut : la dernière bataille débloquée.
   const [selectedId, setSelectedId] = useState(
     () => nodes.findLast((node) => node.battle && node.state !== 'locked')?.id ?? nodes[0].id,
   );
   const invaders = invadersRepelled(nodes, wonIds);
 
-  // Map réduite (jamais agrandie) pour tenir, avec le panneau, dans la place laissée par la
-  // fenêtre : aucune barre de défilement, quelle que soit la taille de l'écran.
+  // Map réduite pour tenir sans barre de défilement.
   const rowRef = useRef(null);
   const rowSize = useElementSize(rowRef);
   const mapSize = warMapSize(WAR_MAP_01, nodes);
@@ -93,7 +83,6 @@ export default function WarScreen({ playerFaction, onFight, onBack }) {
     <ScreenLayout
       title={T.title}
       onBack={onBack}
-      // Fond de la map sur tout l'écran, en monochrome contrasté et assombri.
       background={(
         <div
           className="size-full bg-cover bg-center brightness-50 grayscale contrast-150"

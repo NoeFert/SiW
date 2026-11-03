@@ -5,17 +5,12 @@ import { BATTLES, TUTO_BATTLE_ID, WAR_BATTLE_IDS } from '../../src/data/battles/
 import { WAR_MAP_01 } from '../../src/data/battles/war01/warMap01.js';
 import { TEXT } from '../../src/ui/strings.js';
 
-// Données des batailles (src/data/battles/) : chaque bataille, et chaque phase de chaque
-// bataille, est vérifiée automatiquement — une nouvelle bataille l'est donc dès qu'elle est
-// ajoutée à BATTLES. Les plans doivent aussi jouer leur rôle (mur, couloirs, fort) sans fuite.
-// Même règle de déplacement que le jeu (`canStep`) : 8 directions, sans jamais couper le coin
-// d'un rocher (rules.md 3).
+// Vérifie automatiquement chaque bataille de BATTLES et chaque phase.
 const W = 24;
 const H = 14;
 const NO_UNITS = new Set();
 
-// Cases (coin haut-gauche) atteignables par un bloc de `size` cases depuis `start`. `closed` :
-// cases rendues infranchissables en plus ; `allowed(x, y)` : cases où le bloc a le droit d'aller.
+// `closed` : cases infranchissables en plus ; `allowed` : cases autorisées.
 function reachable(obstacles, start, size, { closed = [], allowed = () => true } = {}) {
   const grid = new Grid(W, H, [...obstacles, ...closed]);
   const fits = (from, dx, dy) => canStep(from.x, from.y, dx, dy, size, grid, NO_UNITS, false)
@@ -35,7 +30,6 @@ function reachable(obstacles, start, size, { closed = [], allowed = () => true }
   return seen;
 }
 
-// Une unité partie de la colonne 0 atteint-elle le bord d'entrée de l'IA (colonne 23) ?
 function crossesField(obstacles, size, options) {
   const seen = reachable(obstacles, { x: 0, y: 5 }, size, options);
   return [...seen].some((key) => Number(key.split(',')[0]) === W - size);
@@ -111,7 +105,6 @@ describe.each(ALL_PHASES)('%s', (_, phase) => {
   });
 });
 
-// Plans propres à certaines zones, pris dans la bataille qui les utilise en premier.
 const WALL_ZONE_OBSTACLES = parseObstacleMap(BATTLES.battleStartW01.phases[1].obstacles);
 const LANES_ZONE_OBSTACLES = parseObstacleMap(BATTLES.battleLow1W01.phases[1].obstacles);
 const FORT_ZONE_OBSTACLES = parseObstacleMap(BATTLES.battleLow2W01.phases[1].obstacles);

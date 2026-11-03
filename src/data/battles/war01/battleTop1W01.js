@@ -4,9 +4,7 @@ import { waves } from '../waves.js';
 const W = FACTIONS.wyrms.roster;
 const U = FACTIONS.undead.roster;
 
-// « L'essaim » : seulement deux rochers 2x2 juste devant l'entrée de l'IA (colonnes 20-21,
-// rangées 3-4 et 9-10). Les vagues de basiques qui entrent les contournent en trois flux, qui se
-// resserrent en paquets serrés : une proie pour les dégâts de zone d'un [Légendaire].
+// « L'essaim » : deux rochers 2x2 devant l'entrée de l'IA.
 const SWARM_FIELD = [
   '......@@...#....@@......',
   '...@@.@@......@@@@......',
@@ -24,12 +22,9 @@ const SWARM_FIELD = [
   '.........@@...@@........',
 ];
 
-// Guerre 01, bataille de l'emplacement « top1 » de la map (rules.md 11.7) : « L'essaim », deux
-// fois la même zone, avec seulement des vagues de basiques (au plus les copies de units.md pour
-// toute la bataille : 12 Vers de Lambton, 18 New-reborn Skeletons).
-// Scripts calibrés pour la difficulté selon la distance au boss (vérifiés avec `npm run balance`).
+// « L'essaim » deux fois, vagues de basiques seulement.
 export default {
-  reward: 80, // Spirit Stones de la première victoire (provisoire)
+  reward: 80, // provisoire
   tutorial: null,
   phases: [
     {

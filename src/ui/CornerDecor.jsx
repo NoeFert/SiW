@@ -1,8 +1,6 @@
 import { uiAsset } from './factionTheme.js';
 
-// GRAPHICS.md « Interface » : quatre coins décoratifs (Decorators/BorderC du pack, 11×11 à 2×)
-// posés dans les coins de l'élément parent, qui doit être positionné (relative). `color` :
-// dossier de couleur des coins (assets/ui/<color>/), 'gold' ou 'purple'.
+// Coins décoratifs ; le parent doit être en position relative.
 const CORNERS = [
   ['top-left', 'top-0 left-0'],
   ['top-right', 'top-0 right-0'],

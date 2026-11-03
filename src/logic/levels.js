@@ -1,22 +1,17 @@
-// Couche méta (rules.md 11.5 et 11.6) : niveaux du joueur et des individus.
-// Logique pure, sans Phaser ni localStorage (la sauvegarde vit dans src/state/profileStore.js).
+// Niveaux du joueur et des individus (rules.md 11.5 et 11.6).
 
 // --- Individus (rules.md 11.6) ---
 
 export const INDIVIDUAL_MAX_LEVEL = 5;
-// rules.md 11.6 : réserve d'XP de survie d'une bataille, partagée entre les individus déployés
-// (provisoire, rules.md 10).
 export const SURVIVAL_XP_POOL = 200;
 
-// rules.md 11.5 / 11.6 : au rejeu d'une bataille de « Partir en guerre » déjà gagnée, le joueur
-// et les individus gagnent 25 % de leur XP, arrondi à l'entier inférieur.
 export const REPLAY_XP_PERCENT = 25;
 
 export function replayXp(xp) {
   return Math.floor((xp * REPLAY_XP_PERCENT) / 100);
 }
 
-// XP cumulée pour atteindre `level` : passer de N à N + 1 demande 50 × N (0, 50, 150, 300, 500).
+// 0, 50, 150, 300, 500
 export function individualXpForLevel(level) {
   return 25 * (level - 1) * level;
 }
@@ -29,7 +24,6 @@ export function individualLevel(xp) {
   return level;
 }
 
-// Barre d'XP : progression dans le niveau en cours (`isMax` au niveau 5, affiché « MAX »).
 export function individualProgress(xp) {
   const level = individualLevel(xp);
   const isMax = level === INDIVIDUAL_MAX_LEVEL;
@@ -42,26 +36,17 @@ export function individualProgress(xp) {
   };
 }
 
-// rules.md 11.6 : +10 % par niveau au-dessus du 1, arrondi au plus proche (0,5 au-dessus),
-// calculé en entiers — base × (9 + niveau) / 10 — pour éviter les erreurs de virgule.
+// +10 % par niveau, calculé en entiers.
 export function levelStat(base, level) {
   return Math.floor((base * (9 + level) + 5) / 10);
 }
 
-// Dégâts d'une espèce au niveau donné ; une attaque hybride ({ ranged, melee }) augmente les deux.
 export function levelDamage(damage, level) {
   if (typeof damage === 'number') return levelStat(damage, level);
   return { ranged: levelStat(damage.ranged, level), melee: levelStat(damage.melee, level) };
 }
 
-// rules.md 11.6 : XP gagnée par chaque individu du joueur à la victoire, à partir des unités de
-// la bataille (`battle.units` : une instance par déploiement, qui reste dans la liste après une
-// mort ou une fuite). Un individu déployé et vivant à la fin gagne sa part de la réserve de
-// survie (200 / nombre d'individus déployés, morts compris, arrondi inférieur ; un individu
-// déployé plusieurs fois compte une fois) + le coût des ennemis qu'il a achevés (`killXp`,
-// cumulé sur tous ses déploiements) ; un individu mort ne gagne rien, sa part est perdue.
-// `replay` : rejeu d'une bataille déjà gagnée, gains réduits à 25 % (replayXp).
-// Renvoie aussi les individus morts et leur niveau (mémoire du [Légendaire], rules.md 11.4).
+// XP des individus à la victoire (rules.md 11.6). Renvoie aussi les morts et leur niveau.
 export function individualXpGains(battleUnits, replay = false) {
   const deployed = battleUnits.filter((u) => u.faction === 'player' && u.individualId);
   const dead = new Map(); // individualId -> niveau à la mort
@@ -79,7 +64,6 @@ export function individualXpGains(battleUnits, replay = false) {
   return { gains, dead };
 }
 
-// Applique les gains aux individus possédés (XP plafonnée à 500) et retire les morts.
 export function applyVictoryToUnits(units, { gains, dead }) {
   return units
     .filter((unit) => !dead.has(unit.id))
@@ -88,8 +72,7 @@ export function applyVictoryToUnits(units, { gains, dead }) {
       : unit));
 }
 
-// technical.md 5.3 : individus qui ont gagné au moins un niveau, regroupés par espèce et par
-// passage de niveau (« 2x Ver de Lambton niv 1 → 2 »), dans l'ordre de `before`.
+// Passages de niveau regroupés par espèce (technical.md 5.3).
 export function levelUps(before, after) {
   const afterById = new Map(after.map((unit) => [unit.id, unit]));
   const groups = new Map();
@@ -107,7 +90,6 @@ export function levelUps(before, after) {
   return [...groups.values()];
 }
 
-// Tri d'affichage des individus d'une espèce (technical.md 5.1) : niveau puis XP décroissants.
 export function sortByLevel(units) {
   return [...units].sort((a, b) => b.xp - a.xp);
 }
@@ -118,7 +100,7 @@ export const TUTO_BATTLE_PLAYER_XP = 100;
 export const VICTORY_PLAYER_XP = 100;
 export const SURVIVORS_BONUS_XP = 100;
 
-// XP cumulée pour atteindre `level` : passer de N à N + 1 demande 500 × N (0, 500, 1 500...).
+// 0, 500, 1 500...
 export function playerXpForLevel(level) {
   return 250 * (level - 1) * level;
 }
@@ -135,15 +117,11 @@ export function playerProgress(xp) {
   return { level, xpInLevel: xp - start, xpForLevel: playerXpForLevel(level + 1) - start };
 }
 
-// rules.md 11.5 : victoire d'une bataille de « Partir en guerre » — 100 + 100 × (PP des
-// survivants / PP de l'armée emmenée), arrondi à l'entier inférieur ; 25 % au rejeu (`replay`).
 export function victoryPlayerXp(armyCost, survivorsCost, replay = false) {
   const xp = VICTORY_PLAYER_XP + Math.floor((SURVIVORS_BONUS_XP * survivorsCost) / armyCost);
   return replay ? replayXp(xp) : xp;
 }
 
-// rules.md 11.5 : chaque niveau atteint rapporte 50 × le nouveau niveau en Spirit Stones
-// (provisoire, rules.md 10) ; tous les niveaux franchis d'un coup sont récompensés.
 export const LEVEL_REWARD_FACTOR = 50;
 
 export function playerLevelReward(xpBefore, xpAfter) {

@@ -3,11 +3,9 @@ import { SpiritStoneIcon } from './SpiritStonesBalance.jsx';
 
 const FLIGHT_MS = 700;
 const STAGGER_MS = 90;
-const ICON_HALF = 11; // icône de 22 px
+const ICON_HALF = 11;
 
-// GRAPHICS.md « Spirit Fountain » : à la récolte, `count` gemmes partent de `from` et volent
-// jusqu'au solde (`to`), l'une après l'autre ; `onDone` quand la dernière est arrivée. Points en
-// px écran (position fixe), centres des deux icônes.
+// Gemmes qui volent de `from` à `to` (px écran) ; `onDone` à l'arrivée de la dernière.
 export default function SpiritStonesFlight({
   from, to, count, onDone,
 }) {

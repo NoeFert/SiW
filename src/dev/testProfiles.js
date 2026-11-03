@@ -2,18 +2,10 @@ import { FOUNTAIN_MINUTE_MS } from '../logic/fountain.js';
 import { HOME_TIPS } from '../logic/homeTips.js';
 import { WAR_BATTLE_IDS } from '../data/battles/index.js';
 
-// Outil de dev — joueurs de test figés, pour tester à la main l'après-bataille tutoriel sans la
-// rejouer. Le menu devs remplace le profil sauvegardé par l'un d'eux (voir replaceProfile dans
-// src/state/profileStore.js). Chaque profil a la même forme que le profil sauvegardé
-// (EMPTY_PROFILE), tous les champs remplis.
-// XP des individus : seuils cumulés des niveaux 2 à 50, 3 à 150, 4 à 300, 5 à 500.
-// Fonctions plutôt que constantes : la Spirit Fountain est pleine au moment du chargement.
+// Outil de dev : joueurs de test chargés par le menu devs.
 
-// Dernière récolte il y a 24 h : la fontaine est pleine (rules.md 11.8).
 const fullFountain = () => Date.now() - 24 * 60 * FOUNTAIN_MINUTE_MS;
 
-// Joueur Wyrms après la bataille tutoriel : 3 Vers de Lambton et 1 Amphiptère perdus, restent
-// 9 / 7 / 1 individus, tous dans l'armée.
 const WYRM_UNITS = [
   { id: 'lambton-1', species: 'lambtonWorm', xp: 500 }, // niveau 5
   { id: 'lambton-2', species: 'lambtonWorm', xp: 320 }, // niveau 4
@@ -34,8 +26,6 @@ const WYRM_UNITS = [
   { id: 'fafnir', species: 'fafnir', xp: 350 }, // niveau 4
 ];
 
-// Joueur Morts-Vivants après la bataille tutoriel : 4 New-reborn Skeletons et 1 Necromant Initiate
-// perdus, puis Athos tué au niveau 2 ; restent 14 / 7 / 0 individus (259 PP), tous dans l'armée.
 const UNDEAD_UNITS = [
   { id: 'skeleton-1', species: 'newRebornSkeleton', xp: 500 }, // niveau 5
   { id: 'skeleton-2', species: 'newRebornSkeleton', xp: 320 }, // niveau 4
@@ -67,24 +57,22 @@ export const TEST_PROFILES = {
     units: WYRM_UNITS,
     army: { name: 'Armée 1', unitIds: WYRM_UNITS.map((unit) => unit.id) },
     spiritStones: 10000,
-    playerXp: 1700, // niveau 3, 200 / 1 500 dans le niveau
+    playerXp: 1700, // niveau 3
     fallenLegendaryLevel: null, // Fafnir n'est jamais mort
-    wonWarBattles: [...WAR_BATTLE_IDS], // toutes les batailles de « Partir en guerre » gagnées : toutes jouables
+    wonWarBattles: [...WAR_BATTLE_IDS],
     fountainLastHarvest: fullFountain(),
-    homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
+    homeTipsSeen: HOME_TIPS,
   }),
   'test-undead': () => ({
     faction: 'undead',
     tutoBattleWon: true,
     units: UNDEAD_UNITS,
     army: { name: 'Armée 1', unitIds: UNDEAD_UNITS.map((unit) => unit.id) },
-    spiritStones: 10000,
-    playerXp: 1700, // niveau 3, 200 / 1 500 dans le niveau
-    fallenLegendaryLevel: 2, // Athos est mort au niveau 2 : réinvocable du niveau 1 au 2
-    // « La passe » et « Les crevasses » gagnées ; « L'essaim », « Le labyrinthe » et « La
-    // citadelle » restent à gagner.
+    spiritStones: 50,
+    playerXp: 1700, // niveau 3
+    fallenLegendaryLevel: 2,
     wonWarBattles: ['battleStartW01', 'battleLow1W01'],
     fountainLastHarvest: fullFountain(),
-    homeTipsSeen: HOME_TIPS, // tutoriel de l'accueil déjà passé (technical.md 5.6)
+    homeTipsSeen: HOME_TIPS,
   }),
 };

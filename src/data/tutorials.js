@@ -1,20 +1,6 @@
-// Statique — tutoriels, rattachés aux batailles dans battles.js (technical.md 5.5). Déroulés par
-// src/logic/battles/tutorial.js (conditions, actions permises) et affichés par TutorialOverlay.jsx.
-//
-// Champs d'une étape :
-// - id            : nom de l'étape (unique dans le tutoriel).
-// - frozen        : la bataille est figée pendant l'étape.
-// - allows        : actions du joueur permises (null = toutes, [] = aucune ; voir tutorial.js).
-// - message       : clé du texte dans TEXT.tutorial (src/ui/strings.js), ou absent.
-// - messageSeconds: durée d'affichage maximale du message (temps de bataille), ou absent.
-// - continueButton: affiche [Continuer], qui ferme le message (condition `continueClicked`).
-// - hand          : 1 ou 2 cibles de la main (voir HAND_TARGETS dans TutorialOverlay.jsx).
-// - requires      : conditions à remplir pour ENTRER dans l'étape (toutes).
-// - next          : conditions pour PASSER à l'étape suivante (une seule suffit).
-// - back          : { when: condition, to: id } pour revenir à une étape précédente.
+// Tutoriels, déroulés par src/logic/battles/tutorial.js.
+// `requires` : toutes pour entrer ; `next` : une seule pour passer.
 
-// Tutoriel de départ, sur la bataille tutoriel : déployer, combat autonome, points de
-// présence, battre en retraite.
 export const STARTER_TUTORIAL = [
   {
     id: 'deploy',
@@ -43,27 +29,23 @@ export const STARTER_TUTORIAL = [
     next: [{ type: 'continueClicked' }],
   },
   {
-    // Pas de message : la bataille suit son cours jusqu'à l'avant-dernière vague de l'IA,
-    // 8 s au plus.
+    // Pas de message, 8 s au plus.
     id: 'waitingForWave',
     frozen: false,
     allows: null,
     next: [{ type: 'enemyWaveDeployed', fromEnd: 2 }, { type: 'elapsed', seconds: 8 }],
   },
   {
-    // Retraite en deux temps : d'abord le bouton Fuir...
     id: 'flee',
     frozen: true,
     allows: ['order:flee'],
     message: 'flee',
     hand: ['fleeOrder'],
-    // Il faut une unité à faire fuir, une fuite hors cooldown, et aucun geste en cours.
     requires: [{ type: 'playerUnitOnField' }, { type: 'fleeAvailable' }, { type: 'noGestureInProgress' }],
     next: [{ type: 'fleeOrderChosen' }],
   },
   {
-    // ... puis l'unité (n'importe laquelle ; la main montre la plus blessée). Fuite donnée :
-    // fin du tutoriel. Fuir annulé : retour au bouton Fuir.
+    // Fuir annulé : retour au bouton Fuir.
     id: 'fleeUnit',
     frozen: true,
     allows: ['selectUnit:flee'],

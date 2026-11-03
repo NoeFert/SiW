@@ -4,15 +4,13 @@ import { waves } from '../waves.js';
 const W = FACTIONS.wyrms.roster;
 const U = FACTIONS.undead.roster;
 
-// Guerre 01, bataille de l'emplacement « start » de la map (rules.md 11.7) : le champ de la
-// bataille tutoriel, puis « Le mur ».
-// Scripts calibrés pour la difficulté selon la distance au boss (vérifiés avec `npm run balance`).
+// Le champ de la bataille tutoriel, puis « Le mur ».
 export default {
-  reward: 60, // Spirit Stones de la première victoire (provisoire)
+  reward: 60, // provisoire
   tutorial: null,
   phases: [
     {
-      // Le champ : même terrain que la bataille tutoriel.
+      // Le champ
       background: { image: 'battlefield-01', flipped: false },
       obstacles: [
         '........................',
@@ -39,8 +37,7 @@ export default {
       },
     },
     {
-      // « Le mur » : un mur qui serpente (colonnes 14-17), percé d'un passage étroit (rangée 3,
-      // 1 case : une Légendaire 2x2 ne passe pas) et d'un passage large (rangées 10-11).
+      // « Le mur »
       background: { image: 'battlefield-01', flipped: true },
       obstacles: [
         '................##......',

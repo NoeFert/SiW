@@ -6,8 +6,7 @@ import { FACTIONS } from '../../../src/data/factions/index.js';
 const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 const UNDEAD_ROSTER = FACTIONS.undead.roster;
 
-// Cible neutre pour mesurer précisément les dégâts (PV élevés, ne bouge jamais, n'attaque
-// jamais dans la fenêtre d'un test) — évite que le clamp à 0 de takeDamage masque un montant exact.
+// Cible neutre pour mesurer les dégâts exacts.
 const DUMMY = {
   keywords: [],
   attackType: 'melee',

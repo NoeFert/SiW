@@ -1,6 +1,4 @@
-// Convertit un plan ASCII (une chaîne par rangée) en liste d'obstacles : '#' = rocher d'une
-// case, '@' = rocher 2x2 (bloc de 4 '@' dont le coin haut-gauche est lu en premier), tout
-// autre caractère = case libre. Sert à écrire les zones de bataille lisiblement (src/data/).
+// '#' = rocher d'une case, '@' = rocher 2x2.
 export function parseObstacleMap(rows) {
   const obstacles = [];
   const taken = new Set();
@@ -24,8 +22,6 @@ export default class Grid {
   constructor(width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, obstacles = []) {
     this.width = width;
     this.height = height;
-    // Un obstacle occupe un bloc carré de `size` cases (1 par défaut) à partir de son coin
-    // haut-gauche. Les cases des rochers 2x2 sont aussi gardées à part : elles bloquent les [Vol].
     this.obstacles = new Set();
     this.largeObstacles = new Set();
     for (const { x, y, size = 1 } of obstacles) {
@@ -46,7 +42,7 @@ export default class Grid {
     return this.obstacles.has(`${x},${y}`);
   }
 
-  // rules.md 3 : une unité [Vol] survole les rochers d'une case, pas les rochers 2x2.
+  // Un [Vol] survole les rochers d'une case (rules.md 3).
   blocks(x, y, flying) {
     return (flying ? this.largeObstacles : this.obstacles).has(`${x},${y}`);
   }

@@ -24,8 +24,6 @@ export const tooltipVariants = cva("", {
   },
 });
 
-// GRAPHICS.md « Interface » : cadre noir SpeechTooltip du pack Pixel UI & HUD (pixel-tooltip,
-// styles/pixel-ui.css), sans flèche.
 function TooltipContent({
   className,
   children,

@@ -13,22 +13,13 @@ import SpeciesSprite from '../ui/SpeciesSprite.jsx';
 import { CountSquare, GroupArrow } from '../ui/TileGroupBadges.jsx';
 import { TEXT, unitName } from '../ui/strings.js';
 
-// GRAPHICS.md « Interface » : la case d'une espèce [Légendaire] a un panneau doré
-// (Gold/PanelLarge) et des coins dorés (Decorators/Gold/BorderC).
 const legendaryClass = (species) => (isLegendary(species) ? 'pixel-card-gold' : '');
 
 function LegendaryCorners({ species }) {
   return isLegendary(species) ? <CornerDecor color="gold" /> : null;
 }
 
-// Case carrée d'une espèce regroupée, ou d'un groupe d'individus strictement identiques si
-// l'espèce est dégroupée (même espèce, même niveau ; voir speciesTiles et la tour de
-// commandement ; panneau PanelLarge) : sprite, puis nom et niveau (tranche « niv 1-5 » pour une
-// case qui regroupe plusieurs niveaux). Nombre d'individus dans un carré en haut à gauche (à
-// partir de 2). `grouping` ({ grouped, onToggle }, première case d'une espèce à plusieurs niveaux
-// seulement) : flèche en haut à droite qui regroupe / sépare l'espèce — hors du <button> de la
-// case (pas de bouton dans un bouton). Clic -> page de détail du premier individu de la case
-// (le plus avancé).
+// Case d'une espèce ou d'un groupe d'individus. Clic -> détail du premier individu.
 function UnitTile({
   tile, species, grouping, onSelect,
 }) {
@@ -52,8 +43,6 @@ function UnitTile({
   );
 }
 
-// Case d'une espèce sans individu (ex : [Légendaire] mort) : grisée, avec son bouton Invoquer /
-// Réinvoquer (rules.md 11.4).
 function EmptySpeciesTile({ species, onSummon }) {
   return (
     <div className={`pixel-card relative flex aspect-square flex-col items-center justify-center gap-2 text-[10px] ${legendaryClass(species)}`}>
@@ -67,23 +56,17 @@ function EmptySpeciesTile({ species, onSummon }) {
   );
 }
 
-// technical.md 5.1 : les unités de la civilisation (écran titré du nom de la faction), ouvert
-// depuis l'accueil. Grille de cases carrées, une par groupe d'individus strictement identiques,
-// individus triés par niveau puis XP décroissants ; clic -> page de détail de son premier
-// individu, puis flèches d'un individu à l'autre. Une espèce à 0 garde une case grisée avec son
-// bouton Invoquer / Réinvoquer (`onOpenSummon`).
+// Unités de la civilisation (technical.md 5.1).
 export default function UnitsScreen({ playerFaction, onBack, onOpenSummon }) {
-  const [selectedId, setSelectedId] = useState(null); // individu affiché en détail
-  // Espèces dégroupées dans la grille (toutes regroupées par défaut, rien n'est sauvegardé),
-  // comme dans la tour de commandement.
+  const [selectedId, setSelectedId] = useState(null);
+  // Rien n'est sauvegardé.
   const [ungroupedSpecies, setUngroupedSpecies] = useState(() => new Set());
   const units = useProfileStore((profile) => profile.units);
   const { roster } = FACTIONS[playerFaction];
   const speciesUnits = (key) => sortByLevel(units.filter((unit) => unit.species === key));
 
   const selected = units.find((unit) => unit.id === selectedId);
-  // Tous les individus, dans l'ordre de la grille (roster, puis niveaux décroissants, puis XP
-  // décroissante dans un groupe) : ordre de navigation de la page de détail.
+  // Ordre de navigation de la page de détail.
   const gridOrder = Object.keys(roster)
     .flatMap((key) => levelGroups(speciesUnits(key)).flatMap((group) => group.unitIds));
   const selectedIndex = gridOrder.indexOf(selectedId);
@@ -95,7 +78,6 @@ export default function UnitsScreen({ playerFaction, onBack, onOpenSummon }) {
     return next;
   });
 
-  // Sur la page de détail, « Retour » ramène à la grille.
   return (
     <ScreenLayout title={TEXT.factions[playerFaction]} onBack={selected ? () => setSelectedId(null) : onBack}>
       {selected ? (

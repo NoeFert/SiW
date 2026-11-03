@@ -15,11 +15,7 @@ const MESSAGE_DURATION_MS = 2500;
 
 const rowKey = (row) => `${row.species.name}-${row.level}-${row.hp}`;
 
-// Fantôme tenu pendant le drag : à la taille réelle de l'unité sur le terrain affiché (taille
-// d'une case à l'écran x `size`, sprite à 90 % comme dans UnitViews.create), tourné
-// vers la droite comme les unités du joueur. Le curseur est au centre de la case haut-gauche du
-// bloc : c'est elle que screenToGrid vise au relâché, donc le fantôme couvre exactement les
-// cases où l'unité sera déployée.
+// Fantôme du drag, à la taille de l'unité ; le curseur vise la case haut-gauche.
 function DragGhost({ drag }) {
   const rect = getCanvasRect();
   const cell = rect ? (CELL_SIZE * rect.width) / GAME_WIDTH : 48;
@@ -46,16 +42,12 @@ function DragGhost({ drag }) {
   );
 }
 
-// rules.md 2 : liste des unités déployables de la tour. Le drag part de n'importe où sur une
-// ligne (Pointer Events suivis sur `window`) et se termine sur le canevas (repéré par son
-// <canvas> DOM, pas par un objet Phaser). Toutes les règles (contenu et regroupement des
-// lignes, pause, plafond, copies, zone) sont dans src/logic/.
+// Liste des unités déployables. Les règles sont dans src/logic/.
 export default function DeploymentList({ battle, unitsOnField }) {
-  const [drag, setDrag] = useState(null); // { row, x, y } en coordonnées écran
+  const [drag, setDrag] = useState(null); // coordonnées écran
   const [blockedKey, setBlockedKey] = useState(null); // ligne grisée cliquée : tooltip ouvert
   const [message, setMessage] = useState('');
-  // Espèces dont les cases sont dégroupées (flèche de la première case) ; toutes regroupées par
-  // défaut. État de l'écran de bataille seulement, rien n'est sauvegardé.
+  // Rien n'est sauvegardé.
   const [ungroupedSpecies, setUngroupedSpecies] = useState(() => new Set());
   const timers = useRef({});
   useEffect(() => () => Object.values(timers.current).forEach(clearTimeout), []);
@@ -69,7 +61,6 @@ export default function DeploymentList({ battle, unitsOnField }) {
     return next;
   });
 
-  // Affiche une info temporaire ; une nouvelle remplace la précédente pour sa pleine durée.
   const flash = (name, setter, value) => {
     clearTimeout(timers.current[name]);
     setter(value);
@@ -80,9 +71,8 @@ export default function DeploymentList({ battle, unitsOnField }) {
     endDeploymentDrag(battle);
     const rect = getCanvasRect();
     if (!rect || clientX < rect.left || clientX >= rect.right || clientY < rect.top || clientY >= rect.bottom) {
-      return; // relâché hors du terrain : annulation silencieuse
+      return; // relâché hors du terrain : annulation
     }
-    // technical.md 3.1 : src/logic/ raisonne dans le référentiel fixe de 1536px.
     const { x, y } = screenToGrid(rect, clientX, clientY);
     const result = deployPlayerUnit(battle, row.species, x, y, row.copyChoice);
     if (!result.success) flash('message', setMessage, TEXT.deployRefused[result.reason]);
@@ -98,8 +88,7 @@ export default function DeploymentList({ battle, unitsOnField }) {
     setBlockedKey(null);
     setDrag({ row, x: event.clientX, y: event.clientY });
 
-    // La capture garantit de recevoir le relâché même hors de la fenêtre ; sinon le jeu
-    // resterait en pause avec le fantôme collé au curseur.
+    // Capture : reçoit le relâché même hors de la fenêtre.
     event.currentTarget.setPointerCapture(event.pointerId);
 
     const onMove = (e) => setDrag({ row, x: e.clientX, y: e.clientY });
@@ -112,7 +101,7 @@ export default function DeploymentList({ battle, unitsOnField }) {
       setDrag(null);
     };
     const onUp = (e) => end(e.clientX, e.clientY);
-    // pointercancel ou perte de focus (alt-tab) : annulation, comme un relâché hors du terrain.
+    // pointercancel ou alt-tab : annulation.
     const onCancel = () => end(-1, -1);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -121,14 +110,11 @@ export default function DeploymentList({ battle, unitsOnField }) {
   };
 
   return (
-    // Deux cases par rangée (ui-battle-screen-decisions.md 2.2).
     <div className="grid grid-cols-2 gap-2">
       {message && <p className="col-span-2 text-xs text-red-400">{message}</p>}
 
       {rows.map((row) => (
-        // Tooltip contrôlé : ouvert uniquement par un clic sur une ligne grisée, jamais au survol.
-        // Enveloppe flex-col : TooltipContent (8bitcn) rend toujours une <div> vide, qui sinon
-        // prendrait sa propre case de la grille.
+        // Tooltip ouvert au clic seulement. flex-col : TooltipContent rend une <div> vide.
         <div key={rowKey(row)} className="flex flex-col">
           <Tooltip open={blockedKey === rowKey(row)}>
             <TooltipTrigger>

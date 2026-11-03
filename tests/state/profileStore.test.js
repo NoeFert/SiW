@@ -15,7 +15,7 @@ const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
 const profile = () => useProfileStore.getState();
 
-// Unité de bataille minimale (voir src/logic/battles/battleUnit.js) qui représente l'individu `individualId`.
+// Unité de bataille minimale (voir src/logic/battles/battleUnit.js).
 const deployed = (individualId, { alive = true } = {}) => ({
   individualId, faction: 'player', level: 1, killXp: 0, isAlive: alive,
 });

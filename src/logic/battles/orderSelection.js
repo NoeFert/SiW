@@ -5,20 +5,13 @@ import { issuePlayerAttack, issuePlayerMoveTo, issuePlayerFlee } from './playerA
 import { startInteraction, endInteraction, recordPlayerAction } from './pause.js';
 import { tutorialAllows } from './tutorial.js';
 
-// rules.md 5 : déroulé d'un ordre depuis la rangée « Ordres » de la tour de commandement.
-// L'état vit dans `battle.orderSelection` : `null` hors ordre, sinon `{ order, unit }`.
-// Ordre (met en pause) -> unité du joueur -> cible (ennemi pour `attack`, case pour `move`,
-// aucune pour `flee`). Annuler à n'importe quel stade n'émet rien et ne consomme pas le
-// cooldown de la fuite.
+// Sélection d'un ordre : ordre -> unité -> cible (rules.md 5).
 export const ORDERS = ['move', 'attack', 'flee'];
 
 function isOpen(battle) {
   return battle.orderSelection !== null;
 }
 
-// Un ordre peut être choisi hors drag, hors changement de phase, si le tutoriel le permet et,
-// pour Fuir, hors cooldown (rules.md 5.1). Choisir un autre ordre en cours de sélection le
-// remplace.
 export function canChooseOrder(battle, order) {
   return battle.outcome === 'ongoing'
     && battle.pause.interaction !== 'deploy'
@@ -27,8 +20,7 @@ export function canChooseOrder(battle, order) {
     && (order !== 'flee' || canFlee(battle.playerFleeState, battle.elapsedSeconds));
 }
 
-// Clic sur un ordre : démarre la sélection (pause d'interaction), ou change d'ordre (l'unité
-// déjà sélectionnée est oubliée). Re-cliquer l'ordre en cours annule l'ordre.
+// Re-cliquer l'ordre en cours l'annule.
 export function chooseOrder(battle, order) {
   if (battle.orderSelection?.order === order) {
     cancelOrder(battle);
@@ -94,9 +86,6 @@ export function unitAt(battle, x, y) {
   ) ?? null;
 }
 
-// Clic sur la case (x, y) du terrain pendant la sélection : aiguille vers la bonne étape.
-// Une unité du joueur (re)devient l'unité sélectionnée ; un ennemi ou une case vide sert de
-// cible. Un clic invalide pour l'étape en cours est ignoré (la sélection continue).
 export function clickField(battle, x, y) {
   if (!isOpen(battle)) return false;
   const clicked = unitAt(battle, x, y);
@@ -105,8 +94,6 @@ export function clickField(battle, x, y) {
   return selectCell(battle, x, y);
 }
 
-// Ce qui est cliquable à l'instant, pour la mise en couleur du terrain (ui-battle-screen-
-// decisions.md 3) : `zone` = rectangle de cases valides (ou null), `unitIds` = unités valides.
 export function getClickableHighlights(battle) {
   const wholeField = { x: 0, y: 0, width: battle.grid.width, height: battle.grid.height };
   const onField = battle.units.filter((u) => u.isOnField);

@@ -1,12 +1,9 @@
-// Textes affichés au joueur (introduction, choix de faction, écran de bataille), regroupés pour
-// une traduction future (le jeu sera en anglais à terme ; français pour l'instant).
-// Nom affiché des Spirit Stones (rules.md 11.3) : singulier pour 0 et 1, comme en français.
+// Textes affichés au joueur, regroupés pour une traduction future.
 function gems(amount) {
   return `${amount} ${amount > 1 ? 'gemmes obscures' : 'gemme obscure'}`;
 }
 
 export const TEXT = {
-  // Titre du jeu, découpé pour la mise en forme ("in" plus petit, voir IntroScreen).
   title: { first: 'Sovereign', middle: 'in', last: 'War' },
   introLines: [
     'Tu es un souverain.',
@@ -18,13 +15,12 @@ export const TEXT = {
   ],
   start: 'Commencer',
 
-  // Prologue, entre l'introduction et le choix de faction (PrologueScreen).
   prologue: {
     paragraphs: [
       'En ces temps sombres, la terre rocheuse est agitée de tremblements. Deux souverains voient le jour.',
       'Le territoire est unique, seul l\'un d\'eux pourra le posséder.',
     ],
-    // Répliques des souverains, dans l'ordre (`speaker` : faction qui parle).
+    // `speaker` : faction qui parle.
     dialogue: [
       { speaker: 'wyrms', text: 'Je prendrai ce domaine.' },
       { speaker: 'undead', text: 'Essaie donc, il sera mien avant le coucher du soleil.' },
@@ -34,34 +30,27 @@ export const TEXT = {
     ],
   },
 
-  // Messages des tutoriels (clés = champ `message` des étapes, src/data/tutorials.js).
+  // Clés = champ `message` des étapes (src/data/tutorials.js).
   tutorial: {
-    // Tutoriel de départ (bataille tutoriel).
     deploy: 'Déploie ta 1ère unité.',
     autonomous: 'Ton unité va combattre d\'elle-même les ennemis. Certaines espèces de créatures tirent à distance, d\'autres au corps-à-corps.',
     presence: 'Chaque unité possède des points de présence (PP). Tu ne peux pas dépasser une présence de 150 sur le terrain. Choisis bien tes unités déployées !',
     flee: 'Tu peux donner des ordres à tes unités. Essaie de faire battre en retraite l\'une d\'entre elles.',
     fleeUnit: 'Clique ensuite sur l\'unité à qui tu veux donner cet ordre.',
 
-    continue: 'Continuer', // bouton commun à tous les tutoriels
+    continue: 'Continuer',
   },
 
-  // Pertes affichées par les écrans de victoire et de défaite.
   report: {
     lost: 'Unités perdues',
     noLosses: 'Aucune perte !',
   },
 
-  // Couche méta (rules.md 11).
-  defaultArmyName: 'Armée 1', // rules.md 10 : nom de l'armée de départ
-  // Tooltip provisoire de la Spirit Fountain (rules.md 11.8) : `amount` gemmes produites d'un coup
-  // à chaque minute entière.
+  defaultArmyName: 'Armée 1',
   fountainTooltip: (amount) => `Cette statue génère ${gems(amount)} par minute. Puisse le souverain faire bon usage de cette ressource précieuse.`,
-  spiritStones: (amount) => gems(amount), // Spirit Stones, affichées « gemmes obscures » (rules.md 11.3)
-  // Niveaux (rules.md 11.5 et 11.6).
+  spiritStones: (amount) => gems(amount),
   levels: {
     badge: (level) => `niv ${level}`,
-    // Case regroupant plusieurs niveaux : tranche des niveaux présents (« niv 1-5 »).
     range: (min, max) => (min === max ? `niv ${min}` : `niv ${min}-${max}`),
     player: (level) => `Niveau ${level}`,
     xp: (xpInLevel, xpForLevel) => `${xpInLevel} / ${xpForLevel} XP`,
@@ -75,18 +64,16 @@ export const TEXT = {
   },
   home: {
     goToWar: 'Partir en guerre',
-    units: (faction, count) => `${faction} (${count})`, // entrée vers l'écran des unités, avec le nombre d'individus possédés
+    units: (faction, count) => `${faction} (${count})`,
     army: 'Gestion d\'armée',
     summon: 'Invocation',
   },
-  // Conseils du tutoriel de l'accueil (src/logic/homeTips.js, technical.md 5.5).
   homeTips: {
     welcome: 'Voici ton noble domaine, le territoire de ton peuple.\nL\'ennemi continue cependant son invasion, repousse-le !',
     summon: 'En tant que souverain, tu possèdes un pouvoir puissant : fais grandir ton peuple en invoquant de nouvelles créatures.',
     armyRecruit: 'Ta recrue n\'est pas encore dans ton armée. Ajoute-la avant de repartir.',
     close: 'Fermer',
   },
-  // Menu des paramètres de l'accueil (engrenage à côté du solde).
   settings: {
     title: 'Paramètres',
     codex: 'Codex des mots-clés',
@@ -118,8 +105,7 @@ export const TEXT = {
     abilities: 'Aptitudes',
     army: 'Gestion d\'armée',
     armyCost: (cost, cap) => `${cost} / ${cap} PP`,
-    // Espaces insécables : au plus deux lignes, « 1 / 1 » puis « dans l'armée » (colonnes
-    // étroites).
+    // Espaces insécables : au plus deux lignes.
     armySummary: (inArmy, owned) => `${inArmy} / ${owned} dans l'armée`,
     removeOne: "Retirer un individu de l'armée",
     addOne: "Ajouter un individu à l'armée",
@@ -134,20 +120,20 @@ export const TEXT = {
     less: 'Invoquer un individu de moins',
     more: 'Invoquer un individu de plus',
   },
-  // « Partir en guerre » (rules.md 11.7). Noms des batailles provisoires.
+  // Noms des batailles provisoires.
   war: {
     title: 'Partir en guerre',
     battleNames: {
       battleStartW01: 'La passe', battleLow1W01: 'Les crevasses', battleLow2W01: 'La citadelle', battleTop1W01: "L'essaim", battleMid1W01: 'Le labyrinthe',
     },
-    upcoming: 'À venir', // emplacement de la map sans bataille définie (rules.md 11.7)
-    xp: 'XP', // icône de la récompense en XP du joueur
-    xpRange: (min, max) => `${min}–${max}`, // XP du joueur : selon les PP survivants (rules.md 11.5)
+    upcoming: 'À venir',
+    xp: 'XP',
+    xpRange: (min, max) => `${min}–${max}`,
     states: { locked: 'Verrouillée', available: 'Disponible', won: 'Gagnée' },
     fight: 'Combattre',
     emptyArmy: 'Composez votre armée',
     completed: "D'autres terres à conquérir arrivent bientôt…",
-    invaders: (repelled, total) => `Repousse l'envahisseur ${repelled}/${total}`, // objectif de la map (rules.md 11.7)
+    invaders: (repelled, total) => `Repousse l'envahisseur ${repelled}/${total}`,
   },
   defeat: {
     title: 'Défaite',
@@ -155,13 +141,11 @@ export const TEXT = {
     retry: 'Réessayer',
     home: "Retour à l'accueil",
   },
-  // rules.md 11.4 : libellé du bouton d'invocation (clé = résultat de summonAction ; un
-  // [Légendaire] vivant, 'alreadyOwned', est masqué de l'écran Invocation).
+  // Clé = résultat de summonAction.
   summonActions: {
     summon: 'Invoquer',
     resummon: 'Réinvoquer',
   },
-  // Texte des aptitudes (units.md), par nom d'aptitude (`abilities[].name` du roster).
   abilityDescriptions: {
     'Attaque dévastatrice': 'Toutes les 5 attaques (distance et corps-à-corps confondus), la 5e inflige +100 % de dégâts (60 à distance / 90 au corps-à-corps).',
     'Frappe paralysante': 'Toutes les 4 attaques, la cible touchée voit ses 2 prochaines attaques annulées.',
@@ -170,7 +154,6 @@ export const TEXT = {
 
   chooseFaction: 'Choisis ta faction',
   factions: { wyrms: 'Wyrms', undead: 'Morts-Vivants' },
-  // Particularités de chaque faction, sous ses unités (FactionChoiceScreen).
   factionDescriptions: {
     wyrms: 'Créatures draconiques puissantes et très agressives qui sèmeront la dévastation',
     undead: 'Squelettes et nécromanciens, misant sur la quantité et le debuff pour anéantir leurs ennemis',
@@ -188,18 +171,17 @@ export const TEXT = {
     noCopiesLeft: 'Plus aucune copie disponible.',
   },
 
-  // Textes flottants au-dessus des unités sur le terrain (feedback des aptitudes, units.md 6).
   fieldTexts: {
-    criticalHit: 'COUP CRITIQUE !', // Attaque dévastatrice (Fafnir)
-    missed: 'Raté !', // attaque annulée par la Frappe paralysante (Athos)
+    criticalHit: 'COUP CRITIQUE !', // Fafnir
+    missed: 'Raté !', // Athos
     heal: (amount) => `+${amount}`,
   },
 
   ordersTitle: 'Ordres',
   cancel: 'Annuler',
-  back: 'Retour', // en-tête des écrans de la couche méta (ScreenLayout)
+  back: 'Retour',
   orders: { move: 'Aller', attack: 'Attaquer', flee: 'Fuir' },
-  fleeCooldown: (seconds) => `Fuir (${seconds.toFixed(1)} s)`, // rules.md 5.1
+  fleeCooldown: (seconds) => `Fuir (${seconds.toFixed(1)} s)`,
 
   pause: 'Pause (Espace)',
   resume: 'Reprendre (Espace)',
@@ -209,8 +191,7 @@ export const TEXT = {
   surrenderDescription: 'Vos unités en réserve seront conservées.',
   surrenderCancel: 'Continuer',
 
-  // Noms d'affichage des espèces (clé = `species.name`, identifiant anglais du code) ; une
-  // espèce absente garde son nom de code.
+  // Clé = `species.name`.
   unitNames: {
     'Lambton Worm': 'Ver de Lambton',
   },
@@ -220,7 +201,6 @@ export const TEXT = {
     legendary: 'Légendaire',
     flying: 'Vol',
   },
-  // Codex des mots-clés (menu des paramètres) : effet de chaque tag, d'après rules.md.
   keywordEffects: {
     melee: 'Frappe au contact : l\'unité va au contact de l\'ennemi le plus proche et l\'attaque depuis une case adjacente. Une fois engagée, elle ne change pas de cible tant que l\'ennemi n\'est pas mort.',
     ranged: 'Tire à distance sur l\'ennemi dès qu\'il est à portée. Ne peut pas tirer sur une cible collée à elle : une unité qui ne fait que tirer recule alors pour se remettre à distance.',
@@ -229,7 +209,7 @@ export const TEXT = {
   },
 };
 
-// Nombre décimal à la française, avec au moins un chiffre après la virgule (units.md : « 1,0 s »).
+// Décimal à la française (« 1,0 s »).
 function formatDecimal(n) {
   return n.toLocaleString('fr-FR', { minimumFractionDigits: 1 });
 }
@@ -238,8 +218,6 @@ export function unitName(species) {
   return TEXT.unitNames[species.name] ?? species.name;
 }
 
-// Tags affichés d'une espèce (ou d'une ligne de la tour) : son type d'attaque — corps-à-corps,
-// tirs, ou les deux pour une attaque hybride (Fafnir) — puis ses keywords ([Légendaire], [Vol]).
 const ATTACK_TAGS = { melee: ['melee'], ranged: ['ranged'], hybrid: ['melee', 'ranged'] };
 export function keywordLabels({ attackType, keywords }) {
   return [...ATTACK_TAGS[attackType], ...keywords].map((keyword) => TEXT.keywords[keyword]);

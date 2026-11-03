@@ -6,15 +6,11 @@ import { TEXT } from '../../ui/strings.js';
 
 const EFFECT_DEPTH = 10; // au-dessus des unités
 
-// Images [premier, dernier] de la ligne `row` d'une planche d'effets (src/data/effects.js).
 const rowFrames = (scene, { key, frames, row }) => scene.anims.generateFrameNumbers(
   key, { start: row * frames, end: row * frames + frames - 1 },
 );
 
-// Feedback visuel du combat (units.md 6, rules.md 4.5) : missiles, entailles, animations
-// d'aptitude, textes flottants, flash et secousse. Purement visuel : les dégâts ont déjà été
-// appliqués par la logique (unitBehavior.js) au tick qui produit les évènements
-// (`battle.abilityEvents`) ; ces effets ne font que les illustrer.
+// Effets visuels du combat, purement visuels.
 export default class CombatEffects {
   static preload(scene) {
     const projectiles = Object.values(FACTIONS).map((faction) => faction.projectile);
@@ -23,7 +19,6 @@ export default class CombatEffects {
     }
   }
 
-  // `units` : UnitViews, pour placer les effets sur les sprites affichés.
   constructor(scene, units, { playerFaction, enemyFaction }) {
     this.scene = scene;
     this.units = units;
@@ -31,10 +26,9 @@ export default class CombatEffects {
     this.createAnimations();
   }
 
-  // Les animations sont globales au Game (recréé à chaque bataille) : créées une seule fois.
+  // Créées une seule fois : les animations sont globales au Game.
   createAnimations() {
     const { anims } = this.scene;
-    // Vol de chaque missile : la ligne de couleur de la faction, jouée en entier pendant le trajet.
     for (const { projectile } of Object.values(FACTIONS)) {
       if (!anims.exists(`${projectile.key}-flight`)) {
         anims.create({ key: `${projectile.key}-flight`, frames: rowFrames(this.scene, projectile), duration: PROJECTILE_FLIGHT_MS });
@@ -49,16 +43,12 @@ export default class CombatEffects {
     }
   }
 
-  // Joue les effets des évènements du dernier tick.
   play(events) {
-    // À distance, l'effet sur la victime attend l'arrivée du missile tiré au même tick.
     const impactDelay = (victim) => (events.some((e) => e.type === 'rangedAttack' && e.target === victim)
       ? PROJECTILE_FLIGHT_MS : 0);
     for (const event of events) {
       if (event.type === 'paralyze') {
-        // Une victime vivante montre la paralysie en continu (UnitViews). Tuée par le coup même
-        // (fréquent : 50 dégâts), elle n'a plus d'attaque à rater : l'animation est jouée une
-        // fois là où elle est morte, pour que l'aptitude reste visible.
+        // Victime tuée par le coup : l'animation est jouée une fois là où elle est morte.
         if (!event.unit.isAlive) this.playOnUnit(event.unit, ABILITY_EFFECTS.paralyze, impactDelay(event.unit));
       } else if (event.type === 'bonusDamage') {
         this.playOnUnit(event.target, ABILITY_EFFECTS.bonusDamage, impactDelay(event.target));
@@ -66,8 +56,7 @@ export default class CombatEffects {
         this.scene.cameras.main.shake(120, 0.006);
         this.floatingText(event.target, TEXT.fieldTexts.criticalHit, '#ffcc00');
       } else if (event.type === 'zoneHit') {
-        // rules.md 4.6 / GRAPHICS.md : clignotement dans la couleur principale de la faction du
-        // [Légendaire] (doré pour Fafnir, menthe pour Athos), à l'arrivée du missile s'il a tiré.
+        // Clignotement à la couleur de la faction du [Légendaire].
         const shot = events.some((e) => e.type === 'rangedAttack' && e.unit === event.unit);
         const color = factionColor(this.factions[event.unit.faction]);
         this.scene.time.delayedCall(shot ? PROJECTILE_FLIGHT_MS : 0, () => this.flashSilhouette(event.target, color));
@@ -84,7 +73,6 @@ export default class CombatEffects {
     }
   }
 
-  // rules.md 4.5 : missile du tireur vers sa cible, aux couleurs de la faction réelle du tireur.
   fireProjectile(shooter, target) {
     const from = this.units.get(shooter.id)?.container;
     const to = this.units.get(target.id)?.container;
@@ -92,7 +80,6 @@ export default class CombatEffects {
 
     const { scene } = this;
     const { projectile } = FACTIONS[this.factions[shooter.faction]];
-    // Le missile joue toute son animation pendant le vol, orienté vers la cible.
     const missile = scene.add.sprite(from.x, from.y, projectile.key)
       .setRotation(Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y))
       .setDepth(EFFECT_DEPTH)
@@ -114,9 +101,7 @@ export default class CombatEffects {
     });
   }
 
-  // Animation jouée une fois sur `unit` après `delayMs` : elle la suit tant qu'elle est sur le
-  // terrain ; si l'unité est morte (sa vue disparaît) — avant le début de l'animation (victime
-  // tuée par le coup, missile encore en vol) ou pendant —, elle se joue là où elle est morte.
+  // Suit l'unité ; si elle meurt, se joue là où elle est morte.
   playOnUnit(unit, effect, delayMs) {
     const { scene } = this;
     scene.time.delayedCall(delayMs, () => {
@@ -139,10 +124,7 @@ export default class CombatEffects {
     });
   }
 
-  // rules.md 4.6 / GRAPHICS.md : silhouette de la couleur pleine `color` posée sur le sprite de
-  // `unit`, qui clignote 3 fois puis disparaît. Une copie à part plutôt qu'une teinte du sprite :
-  // celui-ci porte le preFX de la désaturation (UnitViews), qui ne rend pas la teinte de façon
-  // fiable, et une teinte multipliée se voit à peine sur des sprites sombres.
+  // Copie du sprite plutôt qu'une teinte : la teinte se voit mal avec le preFX.
   flashSilhouette(unit, color) {
     const view = this.units.get(unit.id);
     if (!view) return;

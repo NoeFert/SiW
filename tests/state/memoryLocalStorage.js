@@ -1,6 +1,4 @@
-// Jest tourne sous Node, sans navigateur : ce faux localStorage en mémoire remplace celui du
-// navigateur pour le store du profil. À importer avant le store (les imports s'exécutent dans
-// l'ordre).
+// Faux localStorage pour Jest, à importer avant le store.
 const items = new Map();
 
 globalThis.localStorage = {

@@ -1,15 +1,10 @@
-// Couche méta (rules.md 11.1) : individus possédés par le joueur. Logique pure,
-// sans Phaser ni localStorage (la sauvegarde vit dans src/state/profileStore.js).
+// Individus possédés (rules.md 11.1).
 
-// rules.md 11.1 : un individu a un identifiant, une espèce (clé de roster) et une XP (11.6 ;
-// le niveau s'en déduit, voir levels.js). L'identifiant vient de crypto.randomUUID(), jamais de
-// la taille de la liste (technical.md 5.4).
+// Identifiant aléatoire, jamais la taille de la liste (technical.md 5.4).
 export function createUnit(species, xp = 0) {
   return { id: crypto.randomUUID(), species, xp };
 }
 
-// rules.md 11.1 : dotation de départ = l'armée de départ de la faction (`startingArmy`,
-// src/data/factions/), un individu niveau 1 par copie.
 export function createStartingUnits(startingArmy) {
   return Object.entries(startingArmy).flatMap(
     ([key, count]) => Array.from({ length: count }, () => createUnit(key)),
@@ -20,8 +15,7 @@ export function isLegendary(species) {
   return species.keywords.includes('legendary');
 }
 
-// rules.md 11.4 : niveau du [Légendaire] à sa mort, écrasé à chaque nouvelle mort. `dead` :
-// Map identifiant → niveau des individus tués (individualXpGains, levels.js).
+// Niveau du [Légendaire] à sa mort (rules.md 11.4).
 export function fallenLegendaryLevelAfter(roster, units, dead, previous) {
   let level = previous;
   for (const [id, deadLevel] of dead) {
@@ -31,7 +25,6 @@ export function fallenLegendaryLevelAfter(roster, units, dead, previous) {
   return level;
 }
 
-// Nombre d'individus par clé de roster (ex : { lambtonWorm: 9, ... }), 0 pour une espèce absente.
 export function countUnitsBySpecies(roster, units) {
   const counts = Object.fromEntries(Object.keys(roster).map((key) => [key, 0]));
   for (const unit of units) counts[unit.species] += 1;

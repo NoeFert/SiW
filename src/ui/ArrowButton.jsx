@@ -1,6 +1,4 @@
-// GRAPHICS.md « Interface » : flèche cliquable sans cadre de bouton (« Retour » des écrans,
-// navigation de la page de détail). `direction` : 'left' ou 'right' ; `label` : texte lu par les
-// lecteurs d'écran. Désactivée, elle est atténuée et non cliquable.
+// `direction` : 'left' ou 'right'.
 export default function ArrowButton({
   direction, label, onClick, disabled = false, className = '',
 }) {

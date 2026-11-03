@@ -2,17 +2,11 @@ import BattleUnit from './battleUnit.js';
 import { isPositionFree, occupiedCells } from './pathfinding.js';
 import { individualLevel, levelDamage, levelStat } from '../levels.js';
 
-// rules.md 2 : plafond vivant de points de présence, identique pour chaque camp.
+// Plafond de points de présence par camp (rules.md 2).
 export const PRESENCE_CAP = 150;
 
-// État de réserve d'un camp : par espèce, combien de copies "fraîches" (jamais encore
-// déployées) restent, et la liste des copies revenues de fuite (PV réduits conservés,
-// redéployables). Une copie tuée n'est jamais remise dans l'une ou l'autre : elle est perdue
-// définitivement (rules.md 2/4.4) simplement en n'y étant jamais rajoutée.
-// `individuals` (joueur, rules.md 2 et 11.6) : individus possédés engagés { id, species, xp } —
-// chaque copie fraîche est alors un individu précis, avec son niveau (`freshIndividuals`,
-// niveaux décroissants). Sans eux (IA), `startingArmy` donne le nombre de copies de chaque
-// espèce (armée de départ de la faction, units.md), anonymes et niveau 1.
+// Réserve d'un camp par espèce : copies fraîches et copies revenues de fuite (rules.md 2).
+// `individuals` : individus du joueur ; sans eux (IA), copies anonymes de niveau 1.
 export function createDeploymentState(roster, startingArmy, individuals = null) {
   const bySpecies = new Map();
   for (const [key, species] of Object.entries(roster)) {
@@ -35,8 +29,6 @@ export function getPresenceUsed(faction, unitsOnField) {
     .reduce((sum, u) => sum + u.species.cost, 0);
 }
 
-// Réserve actuelle d'une espèce : copies fraîches + PV de chacune des copies revenues de fuite
-// (rules.md 2).
 export function getReserve(state, species) {
   const speciesState = state.bySpecies.get(species);
   return {
@@ -45,13 +37,7 @@ export function getReserve(state, species) {
   };
 }
 
-// Lignes de la tour de commandement (ui-battle-screen-decisions.md 2.2) : uniquement les
-// copies en réserve (ni mortes, ni sur le terrain). Deux copies partagent une ligne seulement
-// si elles sont strictement identiques : même espèce, même niveau (rules.md 11.6) et mêmes PV
-// actuels.
-// Ordre : roster, puis niveaux décroissants, puis copies intactes et blessés (PV décroissants)
-// juste sous leur groupe. `deployable` est faux si le coût dépasse le budget restant (ou si le
-// [Légendaire] est déjà déployé). `copyChoice` ({ level, hp }) est à transmettre à deployUnit.
+// Lignes de la tour : une par espèce, niveau et PV identiques.
 export function getTowerRows(state, faction, unitsOnField) {
   const remainingBudget = PRESENCE_CAP - getPresenceUsed(faction, unitsOnField);
   const rows = [];
@@ -59,7 +45,6 @@ export function getTowerRows(state, faction, unitsOnField) {
     const legendaryOnField = species.keywords.includes('legendary')
       && unitsOnField.some((u) => u.faction === faction && u.species === species);
 
-    // Une copie revenue de fuite sans blessure est identique à une fraîche : même ligne.
     const groups = new Map();
     const add = (level, hp) => {
       const key = `${level}:${hp}`;
@@ -97,16 +82,7 @@ export function getTowerRows(state, faction, unitsOnField) {
   return rows;
 }
 
-// ui-battle-screen-decisions.md 2.2 : cases affichées dans la tour, à partir de getTowerRows.
-// Par défaut, toutes les lignes d'une espèce sont regroupées en une seule case (niveaux et PV
-// confondus) : son `count` est le total de l'espèce, et ses autres champs (niveau, PV,
-// `copyChoice`) sont ceux du prochain individu déployé — le premier intact (plus haut niveau),
-// les blessés passant en dernier (plus haut niveau, puis PV les plus hauts). `minLevel` /
-// `maxLevel` : tranche des niveaux de la case (un seul niveau pour une case dégroupée). Une
-// espèce présente dans `ungroupedSpecies` garde ses lignes séparées (déploiement du niveau et
-// des PV choisis). La première case de chaque espèce porte `speciesHead` ; `groupable` est vrai
-// si l'espèce a plusieurs lignes (le regroupement change alors quelque chose) et `grouped` dit
-// si elle est regroupée.
+// Cases de la tour : une par espèce, sauf les espèces de `ungroupedSpecies`.
 export function groupTowerRows(rows, ungroupedSpecies) {
   const rowsBySpecies = new Map();
   for (const row of rows) {
@@ -140,30 +116,24 @@ export function groupTowerRows(rows, ungroupedSpecies) {
   return displayed;
 }
 
-// rules.md 2 : le joueur ne déploie que dans le premier quart du terrain (colonnes 0 à 5 sur 24).
+// Premier quart du terrain (rules.md 2).
 export function playerDeploymentColumns(grid) {
   return Math.floor(grid.width / 4);
 }
 
-// Bloc entier entre les colonnes `fromX` (incluse) et `toX` (exclue), hors obstacle et libre de
-// toute autre unité déjà présente.
 export function isFreeBetweenColumns(grid, species, x, y, unitsOnField, fromX, toX) {
   if (x < fromX || x + species.size > toX) return false;
   return isPositionFree(x, y, species.size, grid, occupiedCells(unitsOnField, null), false);
 }
 
-// rules.md 1/2 : une position de déploiement doit être dans la zone de déploiement du camp — le
-// premier quart du terrain pour le joueur, la moitié droite pour l'IA (qui entre en fait par le
-// bord droit, aiScript.js) —, bloc 2×2 compris. Vérifiée à part : `deployUnit` ne connaît pas
-// la grille.
+// Zone de déploiement du camp (rules.md 2).
 export function isValidDeploymentPosition(grid, faction, species, x, y, unitsOnField) {
   return faction === 'player'
     ? isFreeBetweenColumns(grid, species, x, y, unitsOnField, 0, playerDeploymentColumns(grid))
     : isFreeBetweenColumns(grid, species, x, y, unitsOnField, Math.floor(grid.width / 2), grid.width);
 }
 
-// Prélève une copie fraîche (jamais déployée) d'un niveau donné (`null` : la première venue,
-// donc du plus haut niveau). Renvoie { hp, level, individualId } ou null.
+// `level` null : plus haut niveau.
 function takeFresh(speciesState, species, level) {
   if (speciesState.freshRemaining <= 0) return null;
   if (!speciesState.freshIndividuals) {
@@ -178,15 +148,7 @@ function takeFresh(speciesState, species, level) {
   return { hp: levelStat(species.maxHp, entry.level), level: entry.level, individualId: entry.individualId };
 }
 
-// Prélève une copie précise dans la réserve selon `copyChoice` :
-// - 'fresh' : exige une copie fraîche (jamais déployée), refuse même si une copie revenue de
-//   fuite existe.
-// - { level, hp } (lignes de la tour) ou un nombre (= PV, niveau 1) : exige une copie de ce
-//   niveau ayant EXACTEMENT ces PV — une revenue de fuite, ou une fraîche si ces PV sont les PV
-//   max du niveau (les deux sont alors strictement identiques, voir getTowerRows).
-// - omis/null : choix par défaut — revenue de fuite en priorité, puis fraîche.
-// Ne fait que muter `speciesState`, et renvoie { hp, level, individualId } ou null si la copie
-// demandée n'est pas disponible.
+// `copyChoice` : 'fresh', { level, hp }, PV seuls (niveau 1), ou null (revenue de fuite d'abord).
 function takeCopy(speciesState, species, copyChoice) {
   if (copyChoice === 'fresh') return takeFresh(speciesState, species, null);
 
@@ -201,15 +163,7 @@ function takeCopy(speciesState, species, copyChoice) {
   return takeFresh(speciesState, species, null);
 }
 
-// rules.md 2 : dépose une unité pour `faction` — plafond de 150 points de présence vivant
-// (dérivé de `unitsOnField`, donc se libère automatiquement à la mort/fuite d'une unité),
-// un seul [Légendaire] simultané par camp, et des copies limitées par espèce. `copyChoice`
-// permet à l'appelant (la tour de commandement) de garantir la copie exacte affichée —
-// fraîche ('fresh'), ou d'un niveau et de PV précis ({ level, hp }) — plutôt que de laisser le
-// choix par défaut (revenue de fuite en priorité, voir `takeCopy`). L'unité déployée porte le
-// niveau et l'individu de la copie (rules.md 11.6). Ne vérifie pas la position (voir
-// `isValidDeploymentPosition`) ; la pause pendant un glisser est gérée par startDeploymentDrag
-// (playerActions.js).
+// Déploiement (rules.md 2). Ne vérifie pas la position.
 export function deployUnit(state, faction, species, x, y, unitsOnField, copyChoice = null) {
   if (
     species.keywords.includes('legendary')
@@ -231,26 +185,19 @@ export function deployUnit(state, faction, species, x, y, unitsOnField, copyChoi
   return { success: true, unit };
 }
 
-// rules.md 2 : à appeler quand une unité quitte le terrain en fuite (rules.md 5) — sa copie
-// retourne en réserve avec ses PV réduits conservés (et son niveau et son individu), jamais
-// perdue contrairement à une mort.
+// Une unité enfuie retourne en réserve avec ses PV (rules.md 2).
 export function recordReturn(state, unit) {
   state.bySpecies.get(unit.species).returning.push({
     hp: unit.hp, level: unit.level, individualId: unit.individualId,
   });
 }
 
-// rules.md 7 : les déploiements scriptés de l'IA (aiScript.js) sont pré-autorisés — le script
-// est déjà équilibré (rules.md 7.1) — donc pas de vérification de plafond/légendaire ici, juste
-// la tenue du registre de copies pour que les réserves restent exactes pour la fin de bataille
-// (battleEnd.js, rules.md 8).
+// Déploiement scripté de l'IA : sans vérification (rules.md 7).
 export function consumeFreshCopy(state, species) {
   const speciesState = state.bySpecies.get(species);
   speciesState.freshRemaining = Math.max(0, speciesState.freshRemaining - 1);
 }
 
-// rules.md 8.1/8.2 : ce camp a-t-il encore une copie disponible (fraîche ou revenue de fuite),
-// toutes espèces confondues ?
 export function hasAnyReserves(state) {
   for (const speciesState of state.bySpecies.values()) {
     if (speciesState.freshRemaining > 0 || speciesState.returning.length > 0) return true;

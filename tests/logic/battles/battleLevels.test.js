@@ -1,5 +1,4 @@
-// Niveaux en bataille (rules.md 2, 11.6) : stats de niveau, réserve par individu, tour par
-// espèce et niveau, XP des coups fatals.
+// Niveaux en bataille (rules.md 2, 11.6).
 import Grid from '../../../src/logic/battles/grid.js';
 import BattleUnit from '../../../src/logic/battles/battleUnit.js';
 import { updateUnitBehaviors } from '../../../src/logic/battles/unitBehavior.js';

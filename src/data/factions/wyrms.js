@@ -1,22 +1,15 @@
-// Statique — faction des Wyrms (rules.md 9, units.md). Son nom et le titre de son souverain,
-// affichés au joueur, sont dans src/ui/strings.js (`factions`, `sovereignName`).
+// Wyrms (units.md).
 export default {
   id: 'wyrms',
-  sovereignSprite: 'wyrm_sovereign', // assets/sprites/<sovereignSprite>.png
-  // Couleur principale (doré) : textes et jauges de la faction, barres de vie sur le terrain.
+  sovereignSprite: 'wyrm_sovereign',
   color: '#eab532',
-  // Palette d'interface : dossier assets/ui/<uiColor>/ (survol des boutons, curseurs, coins, barre
-  // de défilement, map de guerre, badge et barre d'XP de la faction ; voir src/ui/factionTheme.js).
+  // Dossier assets/ui/<uiColor>/
   uiColor: 'gold',
-  // Missile des attaques à distance des unités de la faction (GRAPHICS.md « Projectiles »), joué
-  // en entier pendant son vol : planche d'effets assets/effect/ (images de 64 × 64, une ligne par
-  // couleur, une colonne par étape), `row` : ligne utilisée, `frames` : nombre d'étapes ;
-  // `impactColor` : cercle d'impact à l'arrivée.
+  // Missile des attaques à distance.
   projectile: {
     key: 'missile-burst', path: 'effect/missile-burst.png', frames: 15, row: 0, impactColor: 0xff8c1a, // orange
   },
-  // Espèces de la faction (units.md). `size` = côté du bloc carré occupé en cases (1, ou 2 pour
-  // un bloc 2x2) ; `range` = null pour une unité sans attaque à distance.
+  // `size` : 1, ou 2 pour un bloc 2x2.
   roster: {
     lambtonWorm: {
       name: 'Lambton Worm',
@@ -58,7 +51,6 @@ export default {
       ],
     },
   },
-  // « Copies de départ » de units.md, par espèce : les individus donnés au joueur au choix de la
-  // faction (rules.md 11.1), et la réserve de l'IA quand elle joue cette faction.
+  // Dotation de départ du joueur et réserve de l'IA.
   startingArmy: { lambtonWorm: 12, amphiptere: 8, fafnir: 1 },
 };

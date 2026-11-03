@@ -1,8 +1,7 @@
 import { FACTIONS } from '../../src/data/factions/index.js';
 
 const WYRMS_ROSTER = FACTIONS.wyrms.roster;
-// Vérifie que les données transcrites correspondent exactement à units.md,
-// pour détecter toute erreur de transcription des stats.
+// Vérifie que les données correspondent exactement à units.md.
 
 describe('faction wyrms — roster (units.md)', () => {
   test('Lambton Worm', () => {

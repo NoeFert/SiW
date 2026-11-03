@@ -6,8 +6,7 @@ import { FACTIONS } from '../../src/data/factions/index.js';
 
 const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
-// technical.md 5.5 : tutoriel de l'accueil — des conseils un par un, chacun une seule fois.
-// Par défaut : dotation de départ intacte (aucune perte), toute dans l'armée, aucun solde.
+// Par défaut : dotation intacte, toute dans l'armée, aucun solde.
 function context(overrides = {}) {
   const units = createStartingUnits(FACTIONS.wyrms.startingArmy);
   return {

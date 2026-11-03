@@ -2,9 +2,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TEXT } from './strings.js';
 
-// Cases d'unités regroupées (tour de commandement et écran des unités,
-// ui-battle-screen-decisions.md 2.2) : nombre d'individus dans un carré en haut à gauche de la
-// case (GridPanelInactive du pack), seulement à partir de 2.
 export function CountSquare({ count }) {
   if (count < 2) return null;
   return (
@@ -14,15 +11,13 @@ export function CountSquare({ count }) {
   );
 }
 
-// Flèche en haut à droite de la première case d'une espèce : regroupe (‹) ou sépare (›) ses
-// individus. `className` : position, selon que la flèche est dans la case ou à côté.
 export function GroupArrow({ grouped, onToggle, className }) {
   const label = grouped ? TEXT.ungroupSpecies : TEXT.groupSpecies;
   const Icon = grouped ? ChevronRight : ChevronLeft;
   return (
     <button
       type="button"
-      // Dans la tour, le clic sur la flèche ne doit pas lancer le drag de la case.
+      // Le clic ne doit pas lancer le drag de la case.
       onPointerDown={(event) => event.stopPropagation()}
       onClick={onToggle}
       aria-label={label}

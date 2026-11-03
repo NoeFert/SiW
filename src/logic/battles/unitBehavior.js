@@ -1,8 +1,4 @@
-// Comportement des unités sur le terrain (rules.md 3 à 6) : à chaque tick, chaque unité vivante
-// choisit sa cible, se déplace, attaque, déclenche ses aptitudes, exécute l'ordre du joueur ou
-// fuit vers le bord. Identique pour les deux camps : ce module ne sait pas qui a déployé une
-// unité, ni ce qu'est une pause ou une phase. Point d'entrée : updateUnitBehaviors, appelé par
-// tickBattle (battle.js).
+// Comportement des unités à chaque tick (rules.md 3 à 6), identique pour les deux camps.
 import {
   compareTargets, findPath, findPathToNearest, footprint, minDistanceBetweenFootprints, occupiedCells, isPositionFree, DIRECTIONS,
 } from './pathfinding.js';
@@ -11,14 +7,14 @@ export function isAdjacent(a, b) {
   return minDistanceBetweenFootprints(a, b) === 1;
 }
 
-// rules.md 4.5 : jamais de tir sur une cible adjacente (portée minimale de 2 cases).
+// Portée minimale de 2 cases (rules.md 4.5).
 export function isInRange(attacker, target) {
   if (!attacker.species.range) return false;
   const dist = minDistanceBetweenFootprints(attacker, target);
   return dist > 1 && dist <= attacker.species.range;
 }
 
-// rules.md 4.2/4.3 : au moins une case libre autour de la cible (empreinte incluse) pour `mover`.
+// Au moins une case libre pour `mover` autour de la cible (rules.md 4.2).
 function hasFreeAdjacentSlot(target, aliveUnits, mover, grid) {
   const occupied = occupiedCells(aliveUnits, mover);
   const targetCells = new Set(footprint(target.x, target.y, target.size).map(({ x, y }) => `${x},${y}`));
@@ -36,9 +32,7 @@ function hasFreeAdjacentSlot(target, aliveUnits, mover, grid) {
   return false;
 }
 
-// rules.md 4.2 : cible par défaut = ennemi le plus proche ; une unité engagée au corps-à-corps
-// garde sa cible. Une unité au corps-à-corps qui ne trouve aucune case libre sur l'ennemi le
-// plus proche se redirige vers le suivant, et n'attend que s'il n'y a aucun autre ennemi.
+// Ennemi le plus proche, ou le suivant si aucune case libre autour (rules.md 4.2).
 export function chooseTarget(unit, aliveUnits, grid) {
   if (unit.target && unit.target.isOnField && unit.status === 'engaged') {
     return unit.target;
@@ -77,9 +71,7 @@ function queueAttack(unit, target, mode, deltaSeconds, pendingAttacks) {
   }
 }
 
-// Avance case par case au rythme de la vitesse de déplacement, en redemandant le chemin à
-// chaque case (`nextPath`). Renvoie false si l'unité ne peut plus progresser (déjà arrivée,
-// ou au plus près possible).
+// Renvoie false si l'unité ne peut plus progresser.
 function advance(unit, deltaSeconds, nextPath) {
   unit.moveProgress += unit.species.moveSpeed * deltaSeconds;
   while (unit.moveProgress >= 1) {
@@ -99,29 +91,20 @@ function moveToward(unit, targetX, targetY, grid, aliveUnits, deltaSeconds) {
   return advance(unit, deltaSeconds, () => findPath(unit, targetX, targetY, grid, aliveUnits));
 }
 
-// rules.md 4.5 : unité purement à distance qui tire en avançant (ex : Athos) — elle continue
-// d'approcher sa cible pendant qu'elle tire, mais s'arrête à 2 cases (portée minimale de tir) :
-// un pas ne réduit la distance que d'une case, elle n'entre donc jamais au contact.
+// Tir en avançant (Athos) : s'arrête à 2 cases (rules.md 4.5).
 function advanceToMinRange(unit, target, grid, aliveUnits, deltaSeconds) {
   advance(unit, deltaSeconds, () => (
     minDistanceBetweenFootprints(unit, target) <= 2 ? [] : findPath(unit, target.x, target.y, grid, aliveUnits)
   ));
 }
 
-// rules.md 4.5 : une unité purement à distance ne recule que si sa cible devient adjacente —
-// vers la case hors contact la plus proche, en contournant si le recul direct est bloqué
-// (coin du terrain, obstacle, autre unité) plutôt que de rester collée sans pouvoir tirer.
+// Recul vers la case hors contact la plus proche (rules.md 4.5).
 function stepAwayFrom(unit, target, grid, aliveUnits, deltaSeconds) {
   const isOutOfContact = (x, y) => minDistanceBetweenFootprints({ x, y, size: unit.size }, target) > 1;
   advance(unit, deltaSeconds, () => findPathToNearest(unit, grid, aliveUnits, isOutOfContact));
 }
 
-// units.md — aptitudes automatiques (section 6.1) : périodiques (tous les N coups portés) ou au
-// coup fatal. Renvoie aussi les aptitudes déclenchées (`triggered`), pour que la couche Phaser
-// puisse en tirer un feedback visuel sans que unitBehavior.js sache quoi que ce soit du rendu.
-// La paralysie n'est que signalée (`paralyzes` : nombre d'attaques annulées, 0 sinon) :
-// applyAttacks la pose après coup, pour qu'elle ne touche jamais une attaque du même tick
-// (rules.md 4.1).
+// Aptitudes périodiques (rules.md 6.1). La paralysie est posée plus tard par applyAttacks.
 function applyPeriodicAbilities(attacker, target, baseDamage) {
   let damage = baseDamage;
   let paralyzes = 0;
@@ -152,16 +135,13 @@ function applyOnKillAbilities(attacker) {
   return healed;
 }
 
-// rules.md 4.6 : chaque attaque d'un [Légendaire] touche aussi les ennemis à 1 case de sa cible,
-// pour 50 % des dégâts de l'attaque (niveau et Attaque dévastatrice compris), arrondis au plus
-// proche (0,5 au-dessus) — provisoire, rules.md 10.
+// Dégâts de zone des [Légendaire] (rules.md 4.6).
 export const ZONE_DAMAGE_PERCENT = 50;
 
 function zoneDamage(damage) {
   return Math.floor((damage * ZONE_DAMAGE_PERCENT + 50) / 100);
 }
 
-// Ennemis de l'attaquant (jamais ses alliés) à 1 case de la cible, à l'instant de l'attaque.
 function zoneVictims(attacker, target, units) {
   return units.filter((u) => u.isOnField && u.faction !== attacker.faction && u !== target
     && minDistanceBetweenFootprints(u, target) === 1);
@@ -173,13 +153,7 @@ function isOnEdge(x, y, size, grid) {
   );
 }
 
-// rules.md 5 : la fuite est toujours possible immédiatement, même engagée au corps-à-corps —
-// chaque ennemi alors engagé sur elle porte une dernière attaque au désengagement (une seule
-// fois, au premier tick de fuite), hors de son propre timer d'attaque et sans compter pour les
-// aptitudes (`free`, rules.md 6.1). La fuite vise la case de bord atteignable la plus proche,
-// n'importe laquelle : un bord bloqué est contourné. Aucun bord atteignable : l'unité reste en
-// fuite sur place et riposte au corps-à-corps (sauf unité purement à distance) jusqu'à ce qu'un
-// chemin se libère ; `target` n'est posée que pendant cette riposte.
+// Fuite vers le bord le plus proche (rules.md 5).
 function processFlee(unit, grid, aliveUnits, deltaSeconds, pendingAttacks) {
   if (unit.status !== 'fleeing') {
     for (const enemy of aliveUnits) {
@@ -209,9 +183,7 @@ function processFlee(unit, grid, aliveUnits, deltaSeconds, pendingAttacks) {
   }
 }
 
-// rules.md 5 : "se déplacer" ignore le combat autonome tant que la destination n'est pas atteinte.
-// Une destination inatteignable (obstacle, bloc 2x2 qui déborderait de la grille, case occupée)
-// termine l'ordre au plus près possible, sinon l'unité resterait figée sans riposter.
+// Ordre « se déplacer » (rules.md 5).
 function processMoveCommand(unit, grid, aliveUnits, deltaSeconds) {
   const { x, y } = unit.command;
   if (unit.x === x && unit.y === y) {
@@ -224,21 +196,7 @@ function processMoveCommand(unit, grid, aliveUnits, deltaSeconds) {
   if (!canProgress || (unit.x === x && unit.y === y)) unit.command = null;
 }
 
-// rules.md 4.1 : toutes les attaques du tick sont calculées (queueAttack) avant d'être appliquées
-// ici ensemble — aucune unité ne peut mourir "avant" une autre au sein du même tick. Renvoie la
-// liste des évènements d'aptitude déclenchés ce tick (voir applyPeriodicAbilities), plus un
-// évènement 'rangedAttack' par tir à distance porté (rules.md 4.5) ou 'meleeAttack' par coup au
-// corps-à-corps porté (rules.md 4.2), pour le feedback visuel côté Phaser — unitBehavior.js ne sait
-// rien du rendu lui-même.
-// Le résultat ne dépend jamais de l'ordre des attaques dans la liste : une paralysie posée ce
-// tick ne vise que les attaques suivantes (ticks suivants), et quand plusieurs attaques du même
-// tick tuent une cible, chacun de ces attaquants compte comme ayant porté le coup fatal pour
-// les aptitudes — sauf s'il meurt lui-même ce tick (un mort ne se soigne pas) — mais un seul
-// gagne l'XP du coup fatal (rules.md 11.6).
-// Dégâts de zone d'un [Légendaire] (rules.md 4.6) : appliqués au même instant, comme des coups de
-// l'attaquant sur chaque victime (coup fatal, XP et Soif de sang compris) ; un évènement
-// 'zoneHit' par victime. Ni la paralysie, ni les compteurs d'aptitude ne les voient, et la
-// dernière attaque gratuite sur une unité qui fuit (`free`) n'a pas de zone.
+// Applique toutes les attaques du tick en même temps (rules.md 4.1). Renvoie les évènements.
 function applyAttacks(pendingAttacks, units) {
   const events = [];
   const landed = [];
@@ -270,10 +228,8 @@ function applyAttacks(pendingAttacks, units) {
   }
 
   for (const { target, damage } of landed) target.takeDamage(damage);
-  // units.md : une nouvelle paralysie remet le compteur à sa valeur, sans cumul.
-  for (const { target, attacks } of toParalyze) target.paralyzedAttacks = attacks;
+  for (const { target, attacks } of toParalyze) target.paralyzedAttacks = attacks; // sans cumul
 
-  // Tueurs de chaque cible tuée ce tick (vivants), avec les dégâts qu'ils lui ont infligés ce tick.
   const killers = new Map(); // cible -> Map(attaquant -> dégâts)
   for (const { attacker, target, damage, targetWasAlive } of landed) {
     if (!targetWasAlive || target.isAlive || !attacker.isAlive) continue;
@@ -283,13 +239,11 @@ function applyAttacks(pendingAttacks, units) {
   }
 
   for (const [target, byAttacker] of killers) {
-    // rules.md 4.1 : chaque tueur compte pour les aptitudes au coup fatal (Soif de sang).
     for (const attacker of byAttacker.keys()) {
       const healed = applyOnKillAbilities(attacker);
       if (healed > 0) events.push({ type: 'heal', unit: attacker, amount: healed });
     }
-    // rules.md 11.6 : un seul tueur gagne l'XP — le plus de dégâts ce tick, puis le premier
-    // déployé (identifiant d'unité le plus petit : les identifiants suivent l'ordre de création).
+    // Un seul tueur gagne l'XP (rules.md 11.6).
     const [xpKiller] = [...byAttacker].sort(([a, da], [b, db]) => db - da || a.id - b.id)[0];
     xpKiller.killXp += target.species.cost;
   }
@@ -297,22 +251,16 @@ function applyAttacks(pendingAttacks, units) {
   return events;
 }
 
-// Fait agir toutes les unités pendant `deltaSeconds` : ordres, ciblage, mouvement, attaque
-// (rules.md sections 4, 5 et 6). Une unité sans ordre garde son comportement autonome.
-// Renvoie les évènements d'aptitude déclenchés ce tick (voir applyAttacks).
 export function updateUnitBehaviors(units, grid, deltaSeconds) {
   const aliveUnits = units.filter((u) => u.isOnField);
   const pendingAttacks = [];
 
-  // rules.md 4.1 : les unités en fuite bougent en dernier — toutes les autres décident de leurs
-  // attaques en les voyant encore à leur place, quel que soit l'ordre des unités.
+  // Les unités en fuite bougent en dernier (rules.md 4.1).
   const isFleeing = (u) => u.command?.type === 'flee';
   const processingOrder = [...aliveUnits.filter((u) => !isFleeing(u)), ...aliveUnits.filter(isFleeing)];
 
   for (const unit of processingOrder) {
-    // Le timer d'attaque ne court que pendant un échange de coups : une unité qui arrive au
-    // contact ou à portée repart de zéro, sans frappe instantanée héritée d'un combat précédent.
-    // Une unité en fuite qui riposte (rules.md 5) garde elle aussi son rythme d'un tick à l'autre.
+    // Le timer d'attaque ne court que pendant un échange de coups.
     const isTrading = unit.status === 'engaged' || unit.status === 'attacking'
       || (unit.status === 'fleeing' && unit.target);
     if (!isTrading) unit.attackTimer = 0;
@@ -328,7 +276,7 @@ export function updateUnitBehaviors(units, grid, deltaSeconds) {
     }
 
     if (unit.command?.type === 'attack' && !unit.command.target.isOnField) {
-      unit.command = null; // cible morte/enfuie : l'ordre se termine, retour à l'autonome
+      unit.command = null; // cible morte ou enfuie
     }
 
     const target = unit.command?.type === 'attack' ? unit.command.target : chooseTarget(unit, aliveUnits, grid);
@@ -352,7 +300,6 @@ export function updateUnitBehaviors(units, grid, deltaSeconds) {
       continue;
     }
 
-    // ranged (pure ou hybride pas encore au contact)
     if (isAdjacent(unit, target)) {
       unit.status = 'moving';
       stepAwayFrom(unit, target, grid, aliveUnits, deltaSeconds);

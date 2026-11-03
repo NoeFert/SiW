@@ -1,8 +1,7 @@
 import { WAR_MAP_01 } from '../../src/data/battles/war01/warMap01.js';
 import { WAR_BATTLE_IDS } from '../../src/data/battles/index.js';
 
-// rules.md 11.7 / GRAPHICS.md « Partir en guerre » : le réseau de la map doit pouvoir se dessiner
-// avec des connecteurs droits, sans ambiguïté.
+// Le réseau doit pouvoir se dessiner avec des connecteurs droits.
 describe('map 1 de « Partir en guerre » (rules.md 11.7)', () => {
   const byId = new Map(WAR_MAP_01.nodes.map((node) => [node.id, node]));
   // Cases traversées par un lien, extrémités exclues.

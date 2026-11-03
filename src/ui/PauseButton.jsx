@@ -6,23 +6,20 @@ import { togglePlayerPause } from '../logic/battles/playerActions.js';
 import { tutorialAllows } from '../logic/battles/tutorial.js';
 import { TEXT } from './strings.js';
 
-// Espace ne doit pas basculer la pause quand le joueur tape du texte, ni pendant une boîte de
-// dialogue (confirmation d'abandon).
 function isTypingOrInDialog(target) {
   return target.isContentEditable
     || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
     || target.closest?.('[role="alertdialog"]');
 }
 
-// rules.md 5.2 : interrupteur de la pause principale (⏸ / ▶), pas un menu modal. Le ▶ pulse
-// doucement tant que la pause est active. Raccourci : barre Espace.
+// Pause principale (rules.md 5.2). Raccourci : Espace.
 export default function PauseButton({ battle }) {
   const paused = battle.pause.main;
 
   useEffect(() => {
     const onKey = (event) => {
       if (event.code !== 'Space' || isTypingOrInDialog(event.target)) return;
-      // Empêche aussi un bouton qui aurait le focus d'être "cliqué" par la même touche.
+      // Empêche aussi le « clic » d'un bouton qui a le focus.
       event.preventDefault();
       if (event.type === 'keydown' && !event.repeat) togglePlayerPause(battle);
     };

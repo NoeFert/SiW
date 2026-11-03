@@ -1,8 +1,6 @@
 import { PRESENCE_CAP } from '../logic/battles/deployment.js';
 
-// Fiole du pack (ValueBars/White : FlaskBackground et FlaskForeground, 13 × 13 px) affichée à 8×.
-// Son intérieur fait 9 × 9 px à 2 px du bord ; le remplissage (couleur de la faction, pas les
-// FlaskFill du pack) y est découpé à la forme ronde de l'intérieur, pixel par pixel.
+// Fiole du pack à 8× ; le remplissage est découpé à sa forme ronde.
 const SCALE = 8;
 const INNER_CLIP = 'polygon('
   + [[2, 0], [7, 0], [7, 1], [8, 1], [8, 2], [9, 2], [9, 7], [8, 7], [8, 8], [7, 8], [7, 9], [2, 9],
@@ -10,8 +8,6 @@ const INNER_CLIP = 'polygon('
     .map(([x, y]) => `${(x / 9) * 100}% ${(y / 9) * 100}%`).join(', ')
   + ')';
 
-// ui-battle-screen-decisions.md 2.1 : fiole qui se remplit de bas en haut, comme un liquide,
-// selon les points de présence sur le terrain, avec le ratio par-dessus.
 export default function PresenceGauge({ used }) {
   const ratio = Math.min(1, used / PRESENCE_CAP);
   return (

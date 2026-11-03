@@ -1,8 +1,5 @@
-// Filet de sécurité du refactor : chaque bataille du jeu, jouée sans navigateur par le bot de
-// l'outil d'équilibrage avec un aléa fixé, doit donner exactement le même résultat (issue,
-// durée, pertes, XP…) qu'au moment où l'instantané a été enregistré. Un écart signale un
-// changement de comportement du moteur. Si ce changement est voulu, régénérer l'instantané
-// avec `npx jest battleReplay -u`.
+// Chaque bataille, jouée par le bot avec un aléa fixé, doit donner le même résultat que l'instantané.
+// Changement voulu : `npx jest battleReplay -u`.
 import { buildArmy, runBattle, starterArmy } from '../../../src/debug/balance/simulate.js';
 import { STRATEGIES } from '../../../src/debug/balance/bot.js';
 import { TUTO_BATTLE_ID, WAR_BATTLE_IDS } from '../../../src/data/battles/index.js';

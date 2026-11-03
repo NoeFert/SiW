@@ -1,12 +1,9 @@
 import { Button } from '@/components/ui/8bit/button.jsx';
 import { TEXT } from '../ui/strings.js';
 
-// technical.md 5.1 : texte d'introduction, affiché juste avant le choix de faction (donc une
-// seule fois, au tout début d'une partie). Purement React.
 export default function IntroScreen({ onContinue }) {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-12 text-white">
-      {/* Espace court entre les mots, "in" en plus petit, tous alignés sur la ligne de base. */}
       <h1 className="retro flex items-baseline gap-3 text-4xl">
         <span>{TEXT.title.first}</span>
         <span className="text-lg">{TEXT.title.middle}</span>

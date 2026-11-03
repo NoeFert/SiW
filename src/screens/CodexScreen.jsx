@@ -2,8 +2,7 @@ import { Badge } from '@/components/ui/8bit/badge.jsx';
 import ScreenLayout from '../ui/ScreenLayout.jsx';
 import { TEXT } from '../ui/strings.js';
 
-// Codex des mots-clés, ouvert depuis le menu des paramètres de l'accueil : chaque tag affiché sur
-// les unités (type d'attaque puis keywords, voir keywordLabels) avec son effet en quelques mots.
+// Codex des mots-clés.
 export default function CodexScreen({ onBack }) {
   return (
     <ScreenLayout title={TEXT.settings.codex} onBack={onBack}>

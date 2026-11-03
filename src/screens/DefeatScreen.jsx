@@ -2,12 +2,7 @@ import { Button } from '@/components/ui/8bit/button.jsx';
 import { ReportList } from './VictoryScreen.jsx';
 import { TEXT } from '../ui/strings.js';
 
-// technical.md 5.3 : squelette minimal, même principe que VictoryScreen. "Réessayer" relance
-// la même bataille — la faction déjà choisie n'est jamais redemandée (5.1). Sert aussi au match
-// nul (rules.md 8.1) : aucun vainqueur, donc même suite qu'une défaite.
-// Après une bataille de « Partir en guerre » (rules.md 11.7, `lost` fourni) : liste des unités
-// perdues, bouton « Retour à l'accueil » (`onHome`), et « Réessayer » désactivé si l'armée est
-// vide (`canRetry`).
+// Sert aussi au match nul. `lost` : pertes d'une bataille de guerre.
 export default function DefeatScreen({
   isDraw, onRetry, lost = null, onHome = null, canRetry = true,
 }) {

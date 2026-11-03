@@ -180,16 +180,14 @@ describe('issuePlayerFlee — atteindre le bord (rules.md 5 et 2)', () => {
     const a = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'player', 5, 5);
     const b = new BattleUnit(WYRMS_ROSTER.lambtonWorm, 'enemy', 6, 5); // adjacente à a
 
-    // Tick d'échauffement (delta trop court pour déclencher une attaque normale) : les deux
-    // s'engagent mutuellement au corps-à-corps sans encore échanger de dégâts.
+    // Engagement mutuel, sans encore de dégâts.
     updateUnitBehaviors([a, b], grid, 0.1);
     expect(a.status).toBe('engaged');
     expect(b.status).toBe('engaged');
 
     expect(issuePlayerFlee(state, 0.1, a)).toBe(true);
 
-    // Delta volontairement minuscule : si la dernière attaque n'était pas garantie,
-    // le timer d'attaque normal de b (0.1 + 0.1 = 0.2s) ne suffirait pas à déclencher un coup.
+    // Delta trop court pour une attaque normale : seule la dernière attaque garantie frappe.
     updateUnitBehaviors([a, b], grid, 0.1);
 
     expect(a.status).toBe('fleeing');

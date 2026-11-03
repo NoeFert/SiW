@@ -3,9 +3,7 @@ import { cn } from "@/lib/utils";
 import "@/components/ui/8bit/styles/retro.css";
 import "@/components/ui/8bit/styles/pixel-ui.css";
 
-// GRAPHICS.md « Interface » : bannière du pack Pixel UI & HUD (styles/pixel-ui.css).
-// `variant` : "default" (bannière à liseré blanc), "secondary" (liseré gris), ou la faction
-// du joueur, "wyrms" / "undead" (badges de niveau).
+// `variant` : "default", "secondary", ou la faction du joueur.
 function Badge({
   children,
   className,

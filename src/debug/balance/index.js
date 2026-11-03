@@ -1,6 +1,4 @@
-// Outil d'équilibrage (skill /balancer) — `npm run balance -- [options]`. Pas une fonctionnalité
-// du jeu : simule des batailles sans Phaser ni localStorage et affiche un tableau par
-// configuration (faction × bataille × stratégie × niveau de l'armée).
+// Outil d'équilibrage : `npm run balance -- [options]`.
 //
 // Options (valeurs multiples séparées par des virgules, `all` pour toutes) :
 //   --faction wyrms,undead     faction du joueur (défaut : all)
@@ -83,7 +81,6 @@ if (args.json) {
       + `${num(r.xpPerSurvivor, 8)} ${num(r.levelUps, 5)} ${num(r.playerXp, 9)} ${num(r.spiritStones, 11)} ${num(r.netStones, 10)}`,
     );
   }
-  // rules.md 11.7 : cible de difficulté = pertes en victoire, en % des PP de l'armée.
   console.log('\nPertes en victoire (% des PP de l\'armée) :');
   for (const r of rows) {
     console.log(`${r.faction.padEnd(8)} ${r.battleId.padEnd(9)} ${r.strategy.padEnd(15)} ${String(r.level).padStart(3)} | ${(100 * r.ppLostWins / r.armyCost).toFixed(1)} %`);

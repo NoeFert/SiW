@@ -6,13 +6,7 @@ import OrdersRow from './OrdersRow.jsx';
 import DeploymentList from './DeploymentList.jsx';
 import { TEXT } from './strings.js';
 
-// ui-battle-screen-decisions.md 1-2 : tour de commandement, à gauche du terrain. De haut en
-// bas : Abandonner (coin haut-droit), jauge de présence, rangée « Ordres » (Pause et ordres),
-// "Vos unités", liste (seule zone qui défile). GRAPHICS.md « Interface » : la tour va jusqu'au
-// bord de la fenêtre, son contenu reste à la distance du padding du jeu (game, 48 px) en haut, à
-// gauche et en bas. À droite (côté terrain) : 16 px ; dans la liste, la scrollbar (14 px,
-// gouttière toujours réservée) + 2 px.
-// `battle` : la bataille en cours (BattleScreen.jsx, qui redessine la tour à chaque frame).
+// Tour de commandement, à gauche du terrain.
 export default function CommandTower({ battle }) {
   const unitsOnField = battle.units.filter((u) => u.isOnField);
 

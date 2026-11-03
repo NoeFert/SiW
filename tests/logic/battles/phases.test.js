@@ -24,8 +24,6 @@ const PHASE_1_SCRIPT = [{ time: 0, species: ROSTER.fighter }];
 const PHASE_2_SCRIPT = [{ time: 2, species: ROSTER.fighter }];
 const PHASE_2_OBSTACLES = [{ x: 9, y: 0 }];
 
-// Bataille en deux phases : le joueur a une unité blessée sur le terrain ; l'unique ennemi de
-// la phase 1 est déployé au premier tick.
 function twoPhaseBattle() {
   const battle = createBattle(new Grid(10, 10), testFaction(ROSTER), testFaction(ROSTER), PHASE_1_SCRIPT, () => 0);
   setUpcomingPhases(battle, [{ enemyScript: PHASE_2_SCRIPT, obstacles: PHASE_2_OBSTACLES }]);

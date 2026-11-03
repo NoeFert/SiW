@@ -15,8 +15,7 @@ import { TEXT, unitName } from '../ui/strings.js';
 
 const T = TEXT.civilization;
 
-// rules.md 11.2 : nom de l'armée, renommable. Entrée ou ✓ valide, Échap annule ; la saisie est
-// bornée à 20 caractères, et un nom refusé par renameArmy (vide ou espaces) garde l'ancien.
+// Entrée ou ✓ valide, Échap annule.
 function ArmyName({ name, onRename }) {
   const [draft, setDraft] = useState(null); // null = pas en cours d'édition
 
@@ -52,8 +51,6 @@ function ArmyName({ name, onRename }) {
   );
 }
 
-// technical.md 5.1 : en-tête d'accordéon d'une espèce — clic pour ouvrir ou fermer la liste de
-// ses individus. Une espèce sans individu reste affichée, grisée.
 function SpeciesAccordion({
   species, owned, open, onToggle, children,
 }) {
@@ -80,9 +77,7 @@ function SpeciesAccordion({
   );
 }
 
-// rules.md 11.2 : ligne d'un groupe d'individus strictement identiques (même niveau, comme la
-// tour de commandement) : nombre, niveau, combien sont dans l'armée, et − / + pour en retirer
-// ou en ajouter un. `onRemove` / `onAdd` : null si impossible.
+// `onRemove` / `onAdd` : null si impossible.
 function ArmyGroupRow({
   group, inArmy, onRemove, onAdd,
 }) {
@@ -97,14 +92,10 @@ function ArmyGroupRow({
   );
 }
 
-// technical.md 5.1 / rules.md 11.2 : l'armée (« Armées »), ouverte depuis l'accueil. Son nom, le
-// compteur « X / 500 PP », puis une colonne par espèce : un accordéon qui liste ses individus
-// par niveau, avec − / + pour les retirer de l'armée ou les y ajouter. Chaque changement est
-// sauvegardé tout de suite (setArmy).
+// Écran « Armées » (rules.md 11.2). Chaque changement est sauvegardé tout de suite.
 export default function ArmyScreen({ playerFaction, onBack }) {
   const { roster } = FACTIONS[playerFaction];
-  // Accordéons ouverts : tous par défaut, pour que les boutons − / + se voient tout de suite
-  // (technical.md 5.1) ; chacun se ferme et se rouvre indépendamment (rien n'est sauvegardé).
+  // Tous ouverts par défaut.
   const [openKeys, setOpenKeys] = useState(() => new Set(Object.keys(roster)));
   const army = useProfileStore((profile) => profile.army);
   const units = useProfileStore((profile) => profile.units);
@@ -124,7 +115,6 @@ export default function ArmyScreen({ playerFaction, onBack }) {
           <ArmyName name={army.name} onRename={(name) => setArmy(renameArmy(army, name))} />
           <span className="retro text-xs">{T.armyCost(armyCost(army, units, roster), ARMY_PP_CAP)}</span>
         </div>
-        {/* Une colonne par espèce, côte à côte. */}
         <div className="grid grid-cols-3 items-start gap-3">
           {Object.entries(roster).map(([key, species]) => {
             const members = speciesUnits(key);

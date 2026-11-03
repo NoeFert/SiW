@@ -153,9 +153,7 @@ describe('findPath — blocage par une autre unité', () => {
 });
 
 describe('findPath — bloc rigide 2x2 face à un couloir trop étroit', () => {
-  // Mur en x=2 sur toute la hauteur de la grille, avec un unique passage
-  // d'une case de large en y=3 : une unité normale passe, un bloc 2x2 non.
-  // Espèce générique au sol (pas Fafnir : il est [Vol] et ignorerait ce mur de toute façon).
+  // Mur en x=2 avec un passage d'une case en y=3 : un bloc 2x2 ne passe pas.
   const wallObstacles = [0, 1, 2, 4, 5, 6].map((y) => ({ x: 2, y }));
   const groundColossus = { keywords: [], size: 2, maxHp: 999, damage: 1 };
 
@@ -179,8 +177,7 @@ describe('findPath — bloc rigide 2x2 face à un couloir trop étroit', () => {
 });
 
 describe('findPath — unité [Vol] et rochers (rules.md 3)', () => {
-  // Mur de rochers d'une case en x=2, avec un unique passage en y=3 : une unité au sol
-  // doit détourner par ce passage (chemin plus long), une unité [Vol] va tout droit.
+  // Même mur : une unité au sol détourne, une unité [Vol] va tout droit.
   const wallObstacles = [0, 1, 2, 4, 5, 6].map((y) => ({ x: 2, y }));
 
   test('a flying unit flies over 1x1 rocks a ground unit must detour around', () => {

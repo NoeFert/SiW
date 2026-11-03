@@ -3,9 +3,6 @@ import { FACTIONS } from '../data/factions/index.js';
 import { SPECIES_SPRITES, spritePath } from '../data/sprites.js';
 import { TEXT, unitName } from '../ui/strings.js';
 
-// Une colonne par faction : le souverain en fond, le bouton de choix, une rangée de 3 cases
-// avec les monstres du roster (units.md, dans l'ordre basique / [Vol] / [Légendaire]), puis
-// une ligne décrivant les particularités de la faction.
 function FactionColumn({ faction, onChoose }) {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center gap-8 overflow-hidden">
@@ -36,13 +33,8 @@ function FactionColumn({ faction, onChoose }) {
   );
 }
 
-// technical.md 5.1 : affiché une seule fois, au tout début d'une partie. Purement React, aucune
-// dépendance à Phaser (rules.md 9 : le choix détermine le roster joué et celui de l'IA).
-// Les deux colonnes (souverains en fond, séparateur) vont jusqu'au bord de la fenêtre, padding du
-// jeu compris (-inset-game) ; leur contenu reste centré, loin des bords.
 export default function FactionChoiceScreen({ onChoose }) {
   return (
-    // Arrivée en fondu, à la suite du fondu de sortie du prologue.
     <div className="relative h-full w-full text-white animate-in fade-in duration-1000">
       <div className="absolute -inset-game flex">
         <FactionColumn faction="wyrms" onChoose={onChoose} />

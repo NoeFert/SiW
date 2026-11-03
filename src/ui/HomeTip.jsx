@@ -5,17 +5,15 @@ import { TutorialHand, elementCenter, handPosition } from './TutorialParts.jsx';
 import SpeechBubble from './SpeechBubble.jsx';
 import { TEXT } from './strings.js';
 
-// Entrée de l'accueil que la main montre, par conseil (repérée par `data-tutorial`).
 const HAND_TARGETS = {
   welcome: '[data-tutorial="home-war"]',
   summon: '[data-tutorial="home-summon"]',
   armyRecruit: '[data-tutorial="home-army"]',
 };
 
-// technical.md 5.5 : conseil du tutoriel de l'accueil — bulle en haut de l'écran et main qui
-// tapote l'entrée concernée. Rien n'est figé : tout reste cliquable ; [×] ferme le conseil.
+// Conseil de l'accueil : bulle et main, rien n'est figé.
 export default function HomeTip({ tip, onClose }) {
-  // Re-rendu à chaque frame : la main s'anime et suit la mise en page.
+  // Re-rendu à chaque frame pour animer la main.
   const [, forceRender] = useState(0);
   useEffect(() => {
     let frameId;

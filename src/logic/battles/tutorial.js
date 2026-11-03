@@ -1,24 +1,12 @@
 import { canFlee } from './fleeCooldown.js';
 
-// technical.md 5.5 : moteur de tutoriel. Le contenu d'un tutoriel (ses étapes) est une donnée
-// propre à chaque bataille (src/data/tutorials.js) ; ce module ne fait que le dérouler.
-//
-// Une étape figée (`frozen`) arrête la bataille (`pause.tutorial`) et n'autorise que les
-// actions listées dans `allows` (null = toutes). Noms d'action : 'deploy', 'mainPause',
-// 'order:<ordre>', 'selectUnit:<ordre>', 'selectTarget'. L'abandon
-// n'est jamais bloqué (rules.md 8.2).
-//
-// Passage à l'étape suivante : dès qu'UNE des conditions de `next` est remplie, et que TOUTES
-// les conditions `requires` de l'étape suivante le sont aussi. `back` ramène à une étape
-// précédente.
+// Moteur de tutoriel (technical.md 5.5). Le contenu est dans src/data/tutorials.js.
 
-// Conditions utilisables dans les données, par `type`. `tutorial.stepSeconds` est du temps
-// de bataille : il n'avance pas pendant une pause.
 const CONDITIONS = {
   playerUnitOnField: (battle) => battle.units.some((u) => u.faction === 'player' && u.isOnField),
   elapsed: (battle, { seconds }) => battle.tutorial.stepSeconds >= seconds,
   continueClicked: (battle) => battle.tutorial.continued,
-  // `fromEnd` : 1 = dernière vague du script IA, 2 = avant-dernière, etc.
+ // 1 = dernière vague du script IA
   enemyWaveDeployed: (battle, { fromEnd }) => battle.aiScriptState.nextIndex >= battle.enemyScript.length - fromEnd + 1,
   fleeAvailable: (battle) => canFlee(battle.playerFleeState, battle.elapsedSeconds),
   fleeIssued: (battle) => !canFlee(battle.playerFleeState, battle.elapsedSeconds),
@@ -27,8 +15,6 @@ const CONDITIONS = {
   noOrderChosen: (battle) => battle.orderSelection === null,
 };
 
-// Unité du joueur sur le terrain qui a le moins de PV actuels (la première déployée en cas
-// d'égalité), ou null : cible de la main à l'étape « choisis l'unité qui fuit ».
 export function weakestPlayerUnit(battle) {
   let weakest = null;
   for (const unit of battle.units) {
@@ -48,7 +34,6 @@ function currentStep(battle) {
   return tutorial.steps[tutorial.index];
 }
 
-// Entre dans l'étape `index` ; au-delà de la dernière, le tutoriel est terminé.
 function goTo(battle, index) {
   const { steps } = battle.tutorial;
   if (index >= steps.length) {
@@ -72,7 +57,6 @@ export function tutorialAllows(battle, action) {
   return allows === null || allows.includes(action);
 }
 
-// Bouton [Continuer] du message : le ferme, et fait avancer l'étape si elle l'attend.
 export function continueTutorial(battle) {
   if (!battle.tutorial || !currentStep(battle).continueButton) return;
   battle.tutorial.messageDismissed = true;
@@ -80,7 +64,6 @@ export function continueTutorial(battle) {
   updateTutorial(battle, 0);
 }
 
-// Étape dont le message est à afficher (null si aucun).
 export function visibleTutorialStep(battle) {
   const { tutorial } = battle;
   if (!tutorial) return null;
@@ -90,8 +73,6 @@ export function visibleTutorialStep(battle) {
   return step;
 }
 
-// Appelé par tickBattle : avec `deltaSeconds` = 0 pendant un gel (une étape figée peut se
-// terminer), avec le temps écoulé sinon.
 export function updateTutorial(battle, deltaSeconds) {
   const { tutorial } = battle;
   if (!tutorial) return;

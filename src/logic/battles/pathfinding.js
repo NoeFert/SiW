@@ -8,15 +8,13 @@ export function chebyshevDistance(x1, y1, x2, y2) {
   return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
 }
 
-// rules.md 3 : ennemi le plus proche ; à égalité, le moins de PV actuels, puis le premier
-// déployé (`id` croissant — une unité redéployée après une fuite est une nouvelle `BattleUnit`).
+// Ennemi le plus proche, puis moins de PV, puis `id` (rules.md 3).
 export function compareTargets(unit, a, b) {
   return minDistanceBetweenFootprints(unit, a) - minDistanceBetweenFootprints(unit, b)
     || a.hp - b.hp
     || a.id - b.id;
 }
 
-// Cases occupées par une unité selon sa position (coin haut-gauche) et sa taille (1 ou 2x2).
 export function footprint(x, y, size) {
   const cells = [];
   for (let dx = 0; dx < size; dx++) {
@@ -27,7 +25,6 @@ export function footprint(x, y, size) {
   return cells;
 }
 
-// rules.md 3 : distance entre les cases les plus proches de deux unités (2x2 comprises).
 export function minDistanceBetweenFootprints(a, b) {
   let min = Infinity;
   for (const cellA of footprint(a.x, a.y, a.size)) {
@@ -59,9 +56,7 @@ export function isPositionFree(x, y, size, grid, occupied, flying) {
   return true;
 }
 
-// rules.md 3 : pas de (x, y) vers (x + dx, y + dy) — destination libre et aucun coin d'obstacle
-// coupé en diagonale (pour un [Vol], seuls les rochers 2x2 comptent). Les unités, elles, ne
-// bloquent jamais la diagonale.
+// Pas de coin d'obstacle coupé en diagonale (rules.md 3).
 export function canStep(x, y, dx, dy, size, grid, occupied, flying) {
   if (!isPositionFree(x + dx, y + dy, size, grid, occupied, flying)) return false;
   if (dx === 0 || dy === 0) return true;
@@ -69,11 +64,7 @@ export function canStep(x, y, dx, dy, size, grid, occupied, flying) {
     .some((cell) => grid.blocks(cell.x, cell.y, flying));
 }
 
-// Chemin le plus court (parcours en largeur, 8 directions à coût uniforme) de la position de
-// `unit` vers la case libre la plus proche qui satisfait `isGoal(x, y)` (coin haut-gauche pour
-// un bloc 2x2). Tableau vide si `unit` y est déjà, ou si aucune case de ce type n'est
-// atteignable. Utile quand la destination n'est pas un point précis mais une condition
-// (n'importe quel bord pour la fuite, n'importe quelle case hors contact pour un recul).
+// Parcours en largeur vers la case la plus proche qui satisfait `isGoal`.
 export function findPathToNearest(unit, grid, units, isGoal) {
   if (isGoal(unit.x, unit.y)) return [];
   const occupied = occupiedCells(units, unit);
@@ -106,22 +97,14 @@ function parseKey(key) {
   return { x, y };
 }
 
-// Chemin le plus court (A*, coin haut-gauche pour un bloc 2x2) de la position de `unit` vers
-// la case libre atteignable la plus proche de (targetX, targetY), en contournant les
-// obstacles (pour un [Vol], les seuls rochers 2x2) et les autres unités. Tableau vide si `unit`
-// est déjà au plus près possible (bloquée ou déjà arrivée). La distance de Chebyshev est un coût admissible pour
-// un déplacement 8 directions à coût uniforme (exact en terrain dégagé, un coin d'obstacle ne
-// pouvant que rallonger le trajet) : A* explore donc peu de cases, jamais toute la carte.
+// A* vers la case libre la plus proche de (targetX, targetY).
 export function findPath(unit, targetX, targetY, grid, units) {
   const occupied = occupiedCells(units, unit);
   const size = unit.size;
   const startX = unit.x;
   const startY = unit.y;
 
-  // Départage les cases à coût réel égal en faveur de celles les plus proches de la ligne
-  // droite start->cible (produit spontanément une ligne droite/diagonale plutôt qu'un
-  // "escalier" arbitraire). Poids minuscule : ne peut jamais rendre un chemin plus long
-  // préférable à un chemin plus court, seulement départager une vraie égalité de coût.
+  // Départage les égalités en faveur de la ligne droite.
   const dxLine = targetX - startX;
   const dyLine = targetY - startY;
   const lineBias = (x, y) => Math.abs(dxLine * (y - startY) - dyLine * (x - startX)) * 0.001;
@@ -156,7 +139,7 @@ export function findPath(unit, targetX, targetY, grid, units) {
       bestKey = currentKey;
       bestDist = dist;
       bestG = g;
-      if (dist === 0) break; // arrivée exacte : aucun chemin ne peut faire mieux
+      if (dist === 0) break;
     }
 
     for (const { dx, dy } of DIRECTIONS) {

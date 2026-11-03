@@ -2,13 +2,9 @@ import { FACTIONS } from '../data/factions/index.js';
 import { spritePath } from '../data/sprites.js';
 import SpeechBubble from './SpeechBubble.jsx';
 
-// Durée du glissement d'un souverain depuis son bord de l'écran (ms).
 export const SOVEREIGN_SLIDE_MS = 1000;
 
-// Un souverain qui arrive en glissant depuis son bord (`side` : 'left' ou 'right'), avec sa
-// réplique `line` dans une bulle tournée vers le centre (aucune bulle si `line` est vide) ;
-// `action` : bouton éventuel de la bulle. L'écran qui l'utilise décide de l'enchaînement des
-// répliques.
+// `side` : 'left' ou 'right' ; pas de bulle si `line` est vide.
 export default function SovereignDialogue({
   faction, side, line = null, action = null,
 }) {
@@ -22,7 +18,7 @@ export default function SovereignDialogue({
         style={{ '--tw-animation-duration': `${SOVEREIGN_SLIDE_MS}ms` }}
       />
       {line && (
-        // Clé = la réplique : la bulle réapparaît en fondu à chaque nouvelle réplique.
+        // Clé = la réplique : fondu à chaque nouvelle réplique.
         <SpeechBubble key={line} action={action} className="animate-in fade-in">
           {line}
         </SpeechBubble>

@@ -1,5 +1,4 @@
-// Outil de debug temporaire : affiche l'état d'une bataille en ASCII dans le terminal.
-// Pas une fonctionnalité du jeu — sert uniquement à vérifier la logique sans Phaser.
+// Outil de debug : affiche une bataille en ASCII.
 import Grid, { parseObstacleMap } from '../logic/battles/grid.js';
 import { footprint } from '../logic/battles/pathfinding.js';
 import { createBattle, tickBattle } from '../logic/battles/battle.js';
@@ -9,7 +8,6 @@ import { FACTIONS } from '../data/factions/index.js';
 
 const WYRMS_ROSTER = FACTIONS.wyrms.roster;
 
-// Terrain et script de l'IA (Morts-Vivants) de la bataille tutoriel.
 const FIRST_PHASE = BATTLES.battleTuto.phases[0];
 const BATTLEFIELD_OBSTACLES = parseObstacleMap(FIRST_PHASE.obstacles);
 const UNDEAD_AI_SCRIPT = FIRST_PHASE.enemyScripts.undead;
@@ -38,7 +36,7 @@ export function renderGrid(grid, units) {
   }
 
   for (const unit of units) {
-    if (!unit.isOnField) continue; // morte ou a fui : plus sur le terrain
+    if (!unit.isOnField) continue;
     const symbol = symbolFor(unit);
     for (const { x, y } of footprint(unit.x, unit.y, unit.size)) {
       if (grid.isInBounds(x, y)) cells[y][x] = symbol;
@@ -66,7 +64,6 @@ const OUTCOME_LABELS = {
   draw: 'Match nul',
 };
 
-// rules.md 8 : "en cours" / terminée (résultat).
 export function renderBattleStatus(battle) {
   if (battle.outcome !== 'ongoing') return `Bataille terminée : ${OUTCOME_LABELS[battle.outcome]}`;
   return 'Bataille en cours';
@@ -80,8 +77,6 @@ export function printBattle(battle) {
   console.log(renderBattleStatus(battle));
 }
 
-// Pilote une bataille complète via battle.js : déploiement joueur, script IA Morts-Vivants,
-// une commande de fuite en cours de route, jusqu'à la fin de bataille ou t=45s.
 function runFullBattleDemo() {
   const grid = new Grid(24, 14, BATTLEFIELD_OBSTACLES);
   const battle = createBattle(grid, FACTIONS.wyrms, FACTIONS.undead, UNDEAD_AI_SCRIPT);
@@ -96,10 +91,9 @@ function runFullBattleDemo() {
   };
 
   console.log('=== t=0s : déploiement initial du joueur ===');
-  // 10 + 25 + 110 = 145 <= 150 : tient dans le plafond de points de présence (rules.md 2).
   deployAt(WYRMS_ROSTER.lambtonWorm, 5, 5);
   deployAt(WYRMS_ROSTER.amphiptere, 3, 2);
-  const fafnir = deployAt(WYRMS_ROSTER.fafnir, 5, 10); // (3,10) est un obstacle, décalé pour l'éviter
+  const fafnir = deployAt(WYRMS_ROSTER.fafnir, 5, 10);
   console.log('');
   printBattle(battle);
 

@@ -5,9 +5,7 @@ import { SpeciesCountRow } from '../ui/SpeciesSprite.jsx';
 import RewardRow from '../ui/RewardRow.jsx';
 import { TEXT, unitName } from '../ui/strings.js';
 
-// Une ligne du bilan : "8x [sprite] Ver de Lambton". Les unités perdues sont grisées.
-// Aussi utilisé par DefeatScreen (pertes d'une défaite de « Partir en guerre »).
-// Une liste trop longue pour la fenêtre défile dans sa colonne (REPORT_COLUMN), jamais la page.
+// Ligne du bilan, aussi utilisée par DefeatScreen.
 export const REPORT_COLUMN = 'pixel-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto *:shrink-0';
 export function ReportList({ title, rows, count, lost }) {
   return (
@@ -27,17 +25,12 @@ export function ReportList({ title, rows, count, lost }) {
   );
 }
 
-// Bilan des pertes : « 8x [sprite] Ver de Lambton » par espèce, ou « Aucune perte ! ».
 function LossReport({ rows }) {
   return rows.length > 0
     ? <ReportList title={TEXT.report.lost} rows={rows} count={(row) => row.lost} lost />
     : <p className="retro text-xs">{TEXT.report.noLosses}</p>;
 }
 
-// technical.md 5.3 : rangée de récompenses (Spirit Stones : victoire + niveaux du
-// joueur, puis XP du joueur), individus qui ont gagné au moins un niveau, regroupés
-// (« 2x [sprite] Ver de Lambton niv 1 → 2 », bloc absent s'il n'y en a aucun), puis unités perdues
-// (rules.md 11.5 et 11.6). Niveaux gagnés et pertes côte à côte, pour tenir en hauteur.
 function ProgressReport({ progress, playerFaction }) {
   const roster = FACTIONS[playerFaction].roster;
   return (
@@ -61,7 +54,6 @@ function ProgressReport({ progress, playerFaction }) {
   );
 }
 
-// technical.md 5.3 : `progress` (resolveVictory) affiche récompenses, niveaux gagnés et pertes.
 export default function VictoryScreen({ onContinue, progress, playerFaction }) {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-6 text-white">

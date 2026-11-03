@@ -5,10 +5,8 @@ import {
 import { surrenderPlayer, startSurrenderConfirm, endSurrenderConfirm } from '../logic/battles/playerActions.js';
 import { TEXT } from './strings.js';
 
-// rules.md 8.2 : abandon = défaite, réserves conservées. Disponible en permanence, tutoriel
-// compris. BattleScreen navigue vers l'écran de défaite dès que `battle.outcome` change.
-// TODO(design) : emplacement provisoire (discret, en haut de la tour à côté de Pause), non
-// encore tranché (ui-battle-screen-decisions.md 4).
+// Abandon (rules.md 8.2).
+// TODO(design) : emplacement provisoire.
 export default function SurrenderButton({ battle }) {
   return (
     <AlertDialog onOpenChange={(open) => (open ? startSurrenderConfirm(battle) : endSurrenderConfirm(battle))}>

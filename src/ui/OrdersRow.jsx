@@ -12,17 +12,12 @@ import {
 import PauseButton from './PauseButton.jsx';
 import { TEXT } from './strings.js';
 
-// Icônes provisoires (ui-battle-screen-decisions.md 2.3).
+// Icônes provisoires.
 const ORDER_ICONS = { move: MoveRight, attack: Swords, flee: Flag };
 
-// Ordre en cours de sélection : fond de la couleur de la faction du joueur.
 const SELECTED_CLASS = 'bg-faction text-black hover:bg-faction';
 
-// rules.md 5 : rangée « Ordres » de la tour, entre la jauge et la liste des unités. Pause, puis
-// un bouton par ordre : un clic choisit l'ordre (pause d'interaction), l'unité et la cible se
-// choisissent sur le terrain (BattleScene -> clickField). Re-cliquer l'ordre surligné, faire un
-// clic droit sur le terrain ou appuyer sur Échap annule. Seul Fuir a un cooldown, qui remplit
-// son bouton de bas en haut.
+// Rangée « Ordres » de la tour (rules.md 5).
 export default function OrdersRow({ battle }) {
   const selectedOrder = battle.orderSelection?.order ?? null;
 
@@ -46,10 +41,9 @@ export default function OrdersRow({ battle }) {
           const selected = selectedOrder === order;
           const cooling = order === 'flee' && fleeRemaining > 0;
           const label = cooling ? TEXT.fleeCooldown(fleeRemaining) : TEXT.orders[order];
-          // Pas d'attribut disabled : le tooltip (temps restant) doit rester visible au survol.
+          // Pas de disabled : le tooltip doit rester visible au survol.
           const unavailable = !selected && !canChooseOrder(battle, order);
-          // Enveloppe flex-col : TooltipContent (8bitcn) rend toujours une <div> vide, qui sinon
-          // ajouterait un écart dans la rangée.
+          // flex-col : TooltipContent rend une <div> vide.
           return (
             <div key={order} className="flex flex-col">
               <Tooltip>

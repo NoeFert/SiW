@@ -2,12 +2,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { TEST_PROFILES } from './testProfiles.js';
 
-// Outil de dev (pas une fonctionnalité joueur) : menu burger fixe en haut à gauche, affiché
-// seulement avec `npm run dev` (voir App.jsx). Libellés en dur, hors strings.js : ils ne sont
-// jamais montrés au joueur. Actions :
-// - `onRestart` : repartir comme au tout premier lancement ;
-// - `onSkipTutoBattle` : passer la bataille tutoriel (null hors de cette bataille) ;
-// - `onLoadProfile(profile)` : remplacer le profil par un joueur de test (testProfiles.js).
+// Outil de dev, seulement avec `npm run dev`. Libellés en dur.
 export default function DevMenu({ onRestart, onSkipTutoBattle, onLoadProfile }) {
   const [open, setOpen] = useState(false);
   const actions = [

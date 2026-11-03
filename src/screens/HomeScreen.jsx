@@ -13,7 +13,6 @@ import SpiritStonesBalance from '../ui/SpiritStonesBalance.jsx';
 import SettingsMenu from '../ui/SettingsMenu.jsx';
 import { TEXT } from '../ui/strings.js';
 
-// GRAPHICS.md « Interface » : entrée de menu sans cadre de bouton.
 function MenuItem({ onClick, tutorial, children }) {
   return (
     <button type="button" onClick={onClick} data-tutorial={tutorial} className="pixel-menu-item retro text-sm">
@@ -22,8 +21,7 @@ function MenuItem({ onClick, tutorial, children }) {
   );
 }
 
-// GRAPHICS.md « Accueil » : château sombre en fond, gris chaud pour les Wyrms, gris froid pour les
-// Morts-Vivants (provisoire).
+// Provisoire.
 const HOME_BACKGROUNDS = {
   wyrms: 'backgrounds/dark-castle-warm-grey.png',
   undead: 'backgrounds/dark-castle-cold-grey.png',
@@ -31,13 +29,7 @@ const HOME_BACKGROUNDS = {
 
 const rectCenter = (rect) => ({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
 
-// technical.md 5.1 : écran d'accueil, point central du jeu, accessible uniquement après la première
-// victoire. En haut à gauche, le portrait du souverain avec, à sa droite, son nom, sa barre d'XP et
-// son niveau (rules.md 11.5) ; solde de Spirit Stones en haut à droite (rules.md 11.3), et à sa
-// droite l'engrenage du menu des paramètres (codex des mots-clés, réinitialiser le jeu) ; menu de
-// quatre entrées alignées à gauche — « Partir en guerre » (WarScreen), les unités (entrée au nom de
-// la faction, UnitsScreen) et « Armées » (ArmyScreen), invocation — et la Spirit Fountain alignée à
-// gauche (rules.md 11.8).
+// Écran d'accueil (technical.md 5.1).
 export default function HomeScreen({
   playerFaction, onOpenWar, onOpenUnits, onOpenArmy, onOpenSummon, onOpenCodex, onResetGame, justSummoned, onArrived,
 }) {
@@ -46,9 +38,7 @@ export default function HomeScreen({
   const playerXp = useProfileStore((profile) => profile.playerXp);
   const progress = playerProgress(playerXp);
 
-  // technical.md 5.5 : au plus un conseil par arrivée, choisi à l'arrivée et marqué vu dès qu'il
-  // s'affiche. `justSummoned` : au moins une invocation depuis l'arrivée précédente (remis à
-  // zéro par `onArrived`).
+  // Au plus un conseil par arrivée (technical.md 5.5).
   const [tip, setTip] = useState(() => {
     const profile = useProfileStore.getState();
     return homeTipToShow({
@@ -64,11 +54,9 @@ export default function HomeScreen({
   useEffect(() => {
     if (tip) markHomeTipSeen(tip);
     onArrived();
-  }, []); // une seule fois, à l'arrivée
+  }, []);
 
-  // rules.md 11.8 : la récolte est ajoutée au solde tout de suite (SpiritFountain) ; le solde
-  // affiché n'augmente qu'à l'arrivée des gemmes qui volent de la fontaine jusqu'à lui (au plus
-  // 5), pour montrer où elles vont. `flight.amount` : gemmes encore en vol, pas encore affichées.
+  // Le solde affiché n'augmente qu'à l'arrivée des gemmes en vol.
   const [flight, setFlight] = useState(null);
   const collect = (amount, iconRect) => {
     const target = document.querySelector('[data-spirit-balance-icon]')?.getBoundingClientRect();
@@ -82,7 +70,6 @@ export default function HomeScreen({
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-center gap-10 text-white">
-      {/* Fond jusqu'au bord de la fenêtre, padding du jeu compris (-inset-game), sans lissage. */}
       <div
         className="pixelated absolute -inset-game bg-cover bg-center"
         style={{ backgroundImage: `url(${HOME_BACKGROUNDS[playerFaction]})` }}
@@ -113,8 +100,6 @@ export default function HomeScreen({
         <MenuItem onClick={onOpenSummon} tutorial="home-summon">{TEXT.home.summon}</MenuItem>
       </nav>
       <HomeWanderer playerFaction={playerFaction} />
-      {/* Fontaine posée sur le sol du château du fond, dans le padding du jeu comme le reste du
-          contenu. */}
       <div className="absolute left-2 -bottom-0.5">
         <SpiritFountain playerLevel={progress.level} onHarvest={collect} />
       </div>

@@ -64,8 +64,7 @@ function AlertDialogOverlay({
   return <ShadcnAlertDialogOverlay className={cn(className)} {...props} />;
 }
 
-// GRAPHICS.md « Interface » : cadre noir PanelLarge du pack Pixel UI & HUD (pixel-card,
-// styles/pixel-ui.css) ; les tokens shadcn du contenu passent en thème sombre.
+// Cadre noir PanelLarge du pack.
 function AlertDialogContent({
   className,
   children,
@@ -77,7 +76,7 @@ function AlertDialogContent({
       <AlertDialogOverlay />
       <ShadcnAlertDialogContent
         className={cn(
-          // Plus large que shadcn (max-w-sm) : les deux boutons en police rétro doivent tenir côte à côte.
+          // Plus large que shadcn : les deux boutons doivent tenir côte à côte.
           "dark pixel-card rounded-none bg-transparent ring-0 text-white data-[size=default]:sm:max-w-md",
           font !== "normal" && "retro",
           className
@@ -103,7 +102,6 @@ function AlertDialogFooter({
 }) {
   return (
     <ShadcnAlertDialogFooter
-      // Pas de bande de fond propre (celle de shadcn débordait du cadre du pack).
       className={cn(
         "m-0 flex flex-col-reverse sm:flex-row gap-4 rounded-none border-t-0 bg-transparent p-0 pt-2",
         className
@@ -127,8 +125,6 @@ function AlertDialogDescription({
   return <ShadcnAlertDialogDescription className={cn(className)} {...props} />;
 }
 
-// Boutons de la boîte : le bouton ButtonA du pack (pixel-button), comme Button — liseré blanc
-// pour l'action (variante "default"), gris pour l'annulation ("outline").
 const PIXEL_BUTTON = "pixel-button rounded-none bg-transparent hover:bg-transparent text-white ring-0";
 
 function AlertDialogAction({

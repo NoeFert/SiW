@@ -81,8 +81,7 @@ describe.each(Object.entries(PAUSES))('gel de tous les compteurs — %s (rules.m
   });
 });
 
-// La barre de commandes ne s'ouvre pas pendant le cooldown : seules les deux autres pauses
-// peuvent coexister avec un cooldown en cours.
+// Seules les deux autres pauses peuvent coexister avec un cooldown en cours.
 describe.each([
   ['pause principale', PAUSES['pause principale']],
   ['drag de déploiement', PAUSES["pause d'interaction (drag de déploiement)"]],
